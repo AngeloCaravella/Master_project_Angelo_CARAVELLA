@@ -2,23 +2,40 @@
 % CHAPTER 1: INTRODUCTION
 % ===================================================================
 \chapter{Introduction}
-The shift toward electric mobility is a pivotal element in global strategies for decarbonizing transport. However, the large-scale integration of electric vehicles into existing power grids presents a complex set of challenges and opportunities, which this thesis aims to investigate.
+The shift toward electric mobility is a pivotal element in global strategies for decarbonizing transport. However, the large-scale integration of electric vehicles ( as it can be seen by
+\ref{fig:growth}) into existing power grids presents a complex set of challenges and opportunities, which this thesis aims to investigate.
 
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\textwidth]{ExpectedEV.png}
+    \caption{Expected growth of EV sales in the coming years}
+    \label{fig:growth}
+\end{figure}
 
 \subsection{Background and Relevance of Electric Vehicles and Vehicle-to-Grid} % 
 The surging Electric Vehicle (EV) market is accelerating a major reconfiguration of modern mobility, promising to lower carbon emissions and foster greater energy efficiency \footcite{orfanoudakis2024ev2gym}. 
 This evolution is more than a technological trend: it underpins environmental sustainability by reducing dependence on fossil resources, alleviating the impacts of climate change through diminished greenhouse gas emissions, and improving air quality in densely populated areas. 
 However, embedding millions of EVs into existing power systems is a non-trivial task. 
 It can intensify peak demand, place additional stress on transmission and distribution networks, and trigger side effects such as voltage irregularities or higher line losses \footcite{orfanoudakis2024ev2gym, salvatti2020electric}.
-
-The discourse surrounding this challenge raises a critical question: can we transform this apparent liability into a foundational asset for grid stability? The answer to this may lie in the Vehicle-to-Grid (V2G) paradigm. A growing body of research, systematically reviewed in works by Qiu et al. \footcite{Qiu2023} and Xie \footcite{Xie2025}, posits that intelligent, bidirectional charging strategies can mitigate these negative impacts. However, this hypothesis is not without its own set of falsifiable conditions. For V2G to be a viable solution, we must demonstrate that its economic and grid-stabilizing benefits demonstrably outweigh the costs, including battery degradation and infrastructure investment. The central thesis of this work is to test this very proposition: that through advanced control methodologies, the V2G concept can be proven not just theoretically sound, but practically indispensable.
+\\
+\noindent
+The discourse surrounding this challenge raises a critical question: \textbf{can we transform this apparent liability into a foundational asset for grid stability?} The answer to this may lie in the Vehicle-to-Grid (V2G) paradigm. A growing body of research, systematically reviewed in works by Qiu et al. \footcite{Qiu2023} and Xie \footcite{Xie2025}, posits that intelligent, bidirectional charging strategies can mitigate these negative impacts. However, this hypothesis is not without its own set of falsifiable conditions. For V2G to be a viable solution, we must demonstrate that its economic and grid-stabilizing benefits demonstrably outweigh the costs, including battery degradation and infrastructure investment. The central thesis of this work is to test this very proposition: that through advanced control methodologies, the V2G concept can be proven not just theoretically sound, but practically indispensable.
 \\
 \noindent
 It is in this context that the \textbf{Vehicle-to-Grid (V2G)} concept emerges as a strategic solution. 
 Through bidirectional power exchange, V2G redefines EVs: no longer passive electrical loads, but mobile and flexible energy assets, able to deliver a spectrum of services to the power system \footcite{alfaverh2022optima}. 
 This potential becomes even more compelling when one considers that, on average, EVs remain parked and unused for nearly 96\% of the day, offering an ample time window to actively engage with the grid \footcite{evertsson2024investigating}. 
 A further distinctive benefit lies in the rapid responsiveness of EV batteries, which makes them especially suitable for ancillary services demanding quick interventions, such as frequency regulation \footcite{alfaverh2022optima}. 
-Alongside V2G, other schemes of bidirectional power flow have been proposed, each with its own scope: 
+Alongside V2G, other schemes of bidirectional power flow have been proposed ( as it can be seen in  \ref{fig:schemes}), each with its own scope: 
+
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\textwidth]{Ev_1.png}
+    \caption{Other schemes of bidirectional power flow}
+    \label{fig:schemes}
+\end{figure}
+
 \begin{enumerate}
     \item 
 \textbf{Vehicle-to-Home (V2H)}, where an EV sustains household demand during outages or periods of elevated prices, strengthening domestic energy resilience;
@@ -34,21 +51,22 @@ Modern electricity systems are increasingly shaped by the penetration of intermi
 Their variability causes pronounced swings in power generation and persistent mismatches between supply and demand, which in turn fuels price volatility and complicates dispatch strategies. 
 This continuously puts the stability and economic efficiency of the grid under strain. 
 Managing these fluctuations, while making rapid operational choices to balance the system and minimize costs, has proven difficult for conventional control frameworks \footcite{orfanoudakis2024ev2gym, minchala2025systematic}. 
-
-Is it possible, then, that a new control paradigm is needed? The literature suggests a strong affirmative. Reviews by NaXu et al. \footcite{NaXu} and Feyijimi et al. \footcite{Feyijimi} explore the evolution of smart grid technologies and consistently highlight the limitations of traditional, rule-based systems in the face of high uncertainty. They frame the problem in a way that naturally leads to data-driven methods. Could it be that the very unpredictability of the system is not a bug, but a feature that learning-based systems are uniquely equipped to handle? This question is at the heart of the pivot towards Artificial Intelligence. While some researchers have explored meta-heuristic algorithms for this task, as surveyed by Srihari et al. \footcite{Srihari}, these methods often lack the real-time adaptability required for dynamic control. This has led to a surge in research focused on Reinforcement Learning, a paradigm that, in theory, can learn optimal control policies directly from interaction with the environment, without needing a perfect model of the world. The hypothesis to be tested is whether this theoretical promise holds up against the engineering realities of the V2G problem.
+\\
+\noindent
+\textbf{Is it possible, then, that a new control paradigm is needed?} The literature suggests a strong affirmative. Reviews by NaXu et al. \footcite{NaXu} and Feyijimi et al. \footcite{Feyijimi} explore the evolution of smart grid technologies and consistently highlight the limitations of traditional, rule-based systems in the face of high uncertainty. They frame the problem in a way that naturally leads to data-driven methods. Could it be that the very unpredictability of the system is not a bug, but a feature that learning-based systems are uniquely equipped to handle? This question is at the heart of the pivot towards Artificial Intelligence. While some researchers have explored meta-heuristic algorithms for this task, as surveyed by Srihari et al. \footcite{Srihari}, these methods often lack the real-time adaptability required for dynamic control. This has led to a surge in research focused on Reinforcement Learning, a paradigm that, in theory, can learn optimal control policies directly from interaction with the environment, without needing a perfect model of the world. The hypothesis to be tested is whether this theoretical promise holds up against the engineering realities of the V2G problem.
 \\
 \noindent
 The parallel rise of EV adoption and RES deployment has produced an environment marked by both uncertainty and complexity. 
-In such conditions, traditional approaches are increasingly inadequate, prompting a growing reliance on methods rooted in artificial intelligence—and particularly in \textbf{Reinforcement Learning (RL)}. 
+In such conditions, traditional approaches are increasingly inadequate, prompting a growing reliance on methods rooted in artificial intelligence,and particularly in \textbf{Reinforcement Learning (RL)}. 
 This shift alters the very nature of the grid: from a relatively predictable and centralized infrastructure to one that is decentralized, stochastic, and highly dynamic. 
 Rule-based or deterministic controllers, designed for a past paradigm, are ill-suited to cope with this degree of volatility. 
 The result is a pressing need for more adaptive and intelligent decision-making mechanisms. 
 This transformation extends beyond the simple challenge of absorbing extra load or integrating new generators: it signals a genuine paradigm change towards a \emph{smart grid} \footcite{NaXu}, where adaptive, real-time, and autonomous operation is no longer optional but vital to preserve efficiency, resilience, and reliability. 
-From this perspective, RL is not just an optimization tool, but an enabling technology for a more cognitive and robust energy infrastructure—one capable of navigating the uncertainties of a decarbonized, electrified future.
+From this perspective, RL is not just an optimization tool, but an \textbf{enabling technology} for a more cognitive and robust energy infrastructure—one capable of navigating the uncertainties of a decarbonized, electrified future.
 \\
 \noindent
 Against this backdrop, \textbf{Deep Reinforcement Learning (DRL)} has gained attention as an especially powerful approach. 
-Its capacity to derive near-optimal strategies in dynamic and uncertain environments—without requiring a precise model of the system or flawless forecasts—makes DRL particularly well-suited for EV integration and advanced grid management \footcite{orfanoudakis2024ev2gym}.
+Its capacity to derive near-optimal strategies in dynamic and uncertain environments—without requiring a precise model of the system or flawless forecasts,makes DRL particularly well-suited for EV integration and advanced grid management \footcite{orfanoudakis2024ev2gym}.
 
 
 %====================================================================
@@ -83,11 +101,49 @@ Following the literature review, this work transitioned to an empirical phase ce
 \end{itemize}
 This iterative process of exploration, implementation, and critical evaluation forms the methodological backbone of the contributions presented in this thesis.
 
+\noindent
+This methodological approach is deeply rooted in the philosophical principles of \textbf{falsifiability}, as articulated by Karl Popper. Rather than seeking to definitively prove a hypothesis, this research is structured around formulating specific, testable propositions that can be rigorously challenged and potentially refuted by empirical evidence. The experiments and simulations in the subsequent chapters are designed not as mere demonstrations, but as critical tests of the core hypotheses, wherein failure to achieve a predicted outcome is as informative as success. This commitment to falsifiability ensures that the contributions of this thesis are grounded in scientific rigor, providing a transparent and critically-evaluated exploration of V2G control strategies.
+
+\noindent
+To further systematize the initial literature review, a quantitative analysis was performed using a custom Python script. This script constructed a citation graph from the collected papers in the \texttt{Papers\_read} directory, allowing for the computation of each paper's \textbf{PageRank} score to identify the most influential works in the field. Concurrently, a weighted word cloud was generated from the titles and abstracts of these papers, providing a visual summary of the most prominent research themes.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{Page_rank.png}
+    \caption{Weighted word cloud generated from the literature review, highlighting key research themes. The size of each word corresponds to its frequency and importance, derived from the PageRank analysis.}
+    \label{fig:pagerank_wordcloud}
+\end{figure}
+
+\noindent
+The updated word cloud, shown in Figure \ref{fig:pagerank_wordcloud}, offers a clear visual summary of the key concepts at the heart of this research domain. The primary keywords immediately draw attention to the core components: \textbf{Energy}, \textbf{Power}, and \textbf{Grid} establish the setting as the electrical power system, while \textbf{EVs} (Electric Vehicles) and the associated actions of \textbf{Charging} and \textbf{Discharging} define the main actors and operations. Crucially, the terms \textbf{Learning} and \textbf{Control} are equally prominent, which, combined with the strong secondary keywords \textbf{Reinforcement}, \textbf{Agent}, and \textbf{Policy}, firmly anchors the primary solution methodology in the field of Reinforcement Learning. This indicates that the central challenge is not merely managing energy flow, but learning an optimal \textit{policy} for an \textit{agent} to \textit{control} EV charging. The presence of secondary keywords like \textbf{V2G}, \textbf{Battery}, \textbf{Storage}, and \textbf{Network} further refines the context, highlighting the specific technology (Vehicle-to-Grid) and the key hardware components involved. Finally, the inclusion of \textbf{MPC} (Model Predictive Control) as a significant secondary term underscores the importance of this alternative control paradigm, reinforcing the ongoing dialogue between model-free and model-based approaches that is a central theme of this thesis.
+\noindent
+\\
+To systematize the literature review beyond a simple list of sources, a quantitative analysis was performed to map the intellectual structure of the field. The result is the "Document Similarity Graph" shown in Figure \ref{fig:similarity_graph}. This graph serves as a visual narrative of the research landscape, where each node is a paper and the connections between them are citations, illustrating how ideas are built upon one another.
+\noindent
+\\
+In this map, the size of each node is not arbitrary; it is proportional to the paper's PageRank score, reflecting its influence and authority. A larger node represents a foundational work that has become a "center of gravity" for other research in this domain.
+\noindent
+\\
+What immediately becomes apparent is the dense, bustling cluster at the heart of the graph. This is where the core dialogue of our research is happening. It's a vibrant hub where the foundational algorithms of Deep Reinforcement Learning—from pioneers like Schulman \cite{schulman2017proximal}, Haarnoja \cite{haarnoja2018soft}, and Lillicrap \cite{lillicrap2015continuous}—are being adapted and tested for V2G control. Woven into this very same cluster are the key papers on Model Predictive Control (MPC), such as \cite{parisio2014mpc} and \cite{borrelli2017predictive}, visually confirming the crucial and ongoing conversation between model-free and model-based strategies that is a central theme of this thesis.
+\noindent
+\\
+Surrounding this energetic core are other vital contributors. Some represent the deep roots of the field, like the classic papers on control theory \cite{Richalet1978ModelPH} that provided the initial seeds for MPC. Others tackle critical, specialized challenges essential for real-world application, such as the science of battery degradation, with key works from Vetter \cite{vetter2005ageing} and Birkl \cite{birkl2017degradation}.
+\noindent
+\\
+Ultimately, this graph does more than just organize sources. It tells the story of how a scientific field has evolved, validates our focus on the interplay between RL and MPC, and shows precisely where the contributions of this thesis fit into that ongoing, dynamic discussion.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{similarity_graph.png}
+    \caption{The Document Similarity Graph. Each node represents a paper from the literature review, and the connections represent citations. The size of each node is proportional to its PageRank score, indicating its influence within this specific body of research. The dense central cluster highlights the strong interplay between modern Reinforcement Learning and Model Predictive Control literature.}
+    \label{fig:similarity_graph}
+\end{figure}
+
 
 %====================================================================
 % SEZIONE AGGIORNATA: STRUTTURA DELLA TESI
 %====================================================================
-\newpage
+
 \subsection{Thesis Structure}
 The remainder of this thesis is organized as follows:
 \begin{itemize}

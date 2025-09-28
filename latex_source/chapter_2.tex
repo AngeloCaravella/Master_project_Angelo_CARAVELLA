@@ -30,7 +30,7 @@ These transformations are not merely aspirational targets but constitute binding
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=1\linewidth]{red.png}
+    \includegraphics[width=0.8\linewidth]{red.png}
     \caption{RED 3}
     \label{fig:placeholder}
 \end{figure}
@@ -47,7 +47,7 @@ The transformative potential of V2G becomes apparent when individual vehicles ar
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=1\linewidth]{Reinforcement_learning_V2G_operations.png}
+    \includegraphics[width=0.8\linewidth]{Reinforcement_learning_V2G_operations.png}
     \caption{Reinforcement learning for V2G operations}
     \label{fig:placeholder}
 \end{figure}
@@ -62,7 +62,7 @@ The grid services enabled by V2G technology form the technical foundation for th
 \textbf{Demand Response and Peak Shaving:} Through intelligent temporal shifting of charging activities to off-peak periods—when energy is abundant and inexpensive—combined with strategic discharging during peak demand when energy becomes scarce and costly, V2G systems can effectively flatten daily load profiles. This approach directly addresses the "duck curve" phenomenon associated with high solar photovoltaic penetration. Such load profile management reduces dependence on expensive and carbon-intensive "peaker" plants, typically gas or diesel turbine facilities, while potentially deferring or eliminating requirements for costly transmission and distribution infrastructure upgrades \footcite{orfanoudakis2024ev2gym, sadeghi2022deep}.
     \begin{figure}[H]
         \centering
-        \includegraphics[width=1\linewidth]{duck.png}
+        \includegraphics[width=0.8\linewidth]{duck.png}
         \caption{Duck curve- "La Duck Curve e la scomposizione della stagionalità dei
  consumi elettrici. Aspetti teorici e modelli statistici"-Bisetto Francesca}
         \label{fig:placeholder}
@@ -183,7 +183,7 @@ This substantial gap between retail purchasing prices and wholesale selling pric
 A further perspective on this issue is provided by Parisio et al. 
 \footcite{parisio2014mpc}
 (2014), who develop a model predictive control (MPC) framework for microgrid operation. Their formulation explicitly considers the decision of when to buy from or sell to the utility grid, under time-varying spot prices and operational constraints. Importantly, the model prevents physically and economically unrealistic behaviors such as simultaneous buying and selling, and accounts for the real cost of storage and generation. This reinforces the notion that optimal energy management strategies must capture the full set of economic signals—including retail charges, network tariffs, and non-commodity costs—rather than relying solely on wholesale price arbitrage. In the V2G context, this highlights the need for predictive, multi-constraint optimization frameworks capable of managing battery limitations, retail–wholesale spreads, and market participation simultaneously in order to ensure profitability.
-\newpage
+
 \section{Modelling the V2G Ecosystem}
 \label{sec:ev_and_scenario}
 
@@ -223,7 +223,7 @@ From a power grid perspective, electric vehicles represent sophisticated mobile 
 \\
 \noindent
 Combined with vehicle availability patterns—arrival and departure times plus user energy requirements—these characteristics transform EVs from simple loads into fully dispatchable grid resources.
-\newpage
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%\section{A New Paradigm for Control: Reinforcement Learning}
@@ -254,17 +254,18 @@ The problem of reinforcement learning is formalized as the interaction between a
 \subsection{The Agent-Environment Interface}
 At each time step $t$, the agent receives a representation of the environment's \textbf{state}, $S_t \in \mathcal{S}$, and on that basis selects an \textbf{action}, $A_t \in \mathcal{A}(S_t)$. One time step later, as a consequence of its action, the agent receives a numerical \textbf{reward}, $R_{t+1} \in \mathcal{R}$, and finds itself in a new state, $S_{t+1}$. This interaction loop forms the foundational framework of the RL problem.
 
-\begin{figure}[h!]
+\begin{figure}[H]
     \centering
     % Placeholder for a standard RL interaction diagram
-    \includegraphics[width=0.8\linewidth]{red.png}
+    \includegraphics[width=0.8\linewidth]{RL.png}
     \caption{The agent-environment interaction loop in reinforcement learning \cite{Sutton2018}.}
     \label{fig:rl_loop}
 \end{figure}
 
 \subsection{Goals, Rewards, and Returns}
 The agent's objective is formalized by the \textbf{reward hypothesis}: that all goals and purposes can be framed as the maximization of the expected cumulative reward. The agent's goal is not to maximize the immediate reward, $R_{t+1}$, but the cumulative reward in the long run. This cumulative reward is known as the \textbf{return}, denoted $G_t$.
-
+\\
+\noindent
 For \textit{episodic tasks} that terminate, the return is the finite sum of future rewards. For \textit{continuing tasks} that do not terminate, the return is defined as the discounted sum of future rewards:
 \begin{equation}
     G_t \doteq \sum_{k=0}^{\infty} \gamma^k R_{t+k+1}
@@ -360,7 +361,7 @@ This separation of concerns allows for direct policy optimization in continuous 
 % ===================================================================
  \input{reward}
 
-\newpage
+
 \section{The Rise of Deep Reinforcement Learning for V2G Control}
 
 The convergence of RL with the substantial representational capabilities of deep neural networks has given rise to \textbf{Deep Reinforcement Learning (DRL)}, which currently represents the leading edge of V2G control research. The development of DRL algorithms has yielded a comprehensive toolkit, primarily divided into two main families: off-policy and on-policy methods, each exhibiting distinct operational characteristics.
@@ -408,18 +409,20 @@ anchor=west,
 \subsection{Off-Policy Methods: Data-Efficient Learning from Experience}
 
 Off-policy algorithms distinguish themselves through their capacity to learn optimal policies from data generated by different, often more exploratory, behavioral policies. This enables them to reuse historical experiences stored in large \textit{replay buffers}, breaking temporal correlation between experiences and achieving high sample efficiency.
-
+\\
+\noindent
 A pivotal question in this domain is how to balance the exploration of new actions with the exploitation of known good actions. Off-policy methods, by their nature, are well-suited to this challenge. Can an agent learn about the optimal way to behave while behaving sub-optimally? The development of algorithms like Soft Actor-Critic (SAC) \footcite{haarnoja2018soft} provides a compelling, falsifiable hypothesis: that by explicitly encouraging policy entropy—a measure of randomness—an agent can be guided to explore more broadly and avoid collapsing into a narrow, locally optimal policy. This work builds on that premise, testing whether such an approach can robustly discover profitable and stable V2G control strategies in the face of profound uncertainty.
 
 \paragraph{Deep Deterministic Policy Gradient (DDPG)}
 
 A foundational algorithm that successfully extended Deep Q-Networks (DQN) to high-dimensional, continuous action spaces, DDPG represented a significant breakthrough for control problems including V2G \footcite{lillicrap2015continuous}. It employs an actor-critic architecture where the actor deterministically maps states to actions. However, practical applications often encounter substantial training instability and systematic vulnerability to \textbf{overestimation bias}, where critic networks systematically overestimate Q-values, resulting in suboptimal policy learning \footcite{orfanoudakis2024ev2gym, alfaverh2022optima}.
-
+\\
+\noindent
 Despite these limitations, the foundational concepts of DDPG have been successfully applied and extended in various V2G contexts. For instance, Wang et al. \footcite{wang2022electrical} propose a DDPG-based system for demand response management, demonstrating its potential to reduce charging costs. But can such an approach scale to large, complex systems? Zhang et al. \footcite{Zhang2023} tackle this question by introducing a transfer learning framework built on DDPG, aiming to coordinate large-scale V2G operations with renewable energy sources. Their work puts forth a testable hypothesis: that knowledge learned in a small-scale environment can be effectively transferred to a large-scale one, thus mitigating the sample inefficiency of DRL. This thesis will implicitly test this hypothesis by evaluating the performance of DRL agents in scenarios of varying complexity.
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=1\linewidth]{DDPG.png}
+    \includegraphics[width=0.5\linewidth]{DDPG.png}
     \caption{DDPG Structure}
     \label{fig:placeholder}
 \end{figure}
@@ -428,19 +431,21 @@ Despite these limitations, the foundational concepts of DDPG have been successfu
 \paragraph{Twin Delayed DDPG (TD3)}
 
 Developed as a direct successor to address DDPG's instabilities, TD3 introduces three key innovations that have become standard in contemporary DRL \footcite{fujimoto2018addressing}. It incorporates (1) clipped double Q-learning, utilizing paired critic networks and selecting minimum estimates to mitigate overestimation bias; (2) delayed policy updates, updating actors less frequently than critics for enhanced stability; and (3) target policy smoothing, adding noise to target actions for learning regularization. These enhancements establish TD3 as a more robust and reliable baseline for complex V2G applications \footcite{Ding, wang2022multi}.
-
+\\
+\noindent
 The effectiveness of TD3 in V2G scheduling has been explored by multiple researchers. For example, Dou et al. \footcite{Dou} apply a TD3-based approach to the optimal scheduling of EV charging and discharging, demonstrating its ability to find profitable strategies. But can this profitability be achieved without negatively impacting the grid? Ding et al. \footcite{Ding} investigate this by using TD3 for charging scheduling while considering distribution network voltage stability. Their work provides a clear, falsifiable test of the hypothesis that a DRL agent can learn to balance its own economic incentives with the physical constraints of the power grid. This thesis builds upon this line of inquiry by incorporating explicit penalties for transformer overloads into the reward function, directly testing the agent's ability to learn this trade-off.
 
 \paragraph{Soft Actor-Critic (SAC)}
 \begin{figure}[H]
     \centering
-    \includegraphics[width=1\linewidth]{SAC.png}
+    \includegraphics[width=0.5\linewidth]{SAC.png}
     \caption{SAC Structure}
     \label{fig:placeholder}
 \end{figure}
 
 SAC represents a state-of-the-art off-policy algorithm for continuous control, recognized for superior sample efficiency and stability \footcite{haarnoja2019soft}. Its fundamental innovation involves the \textbf{maximum entropy framework}. The agent's objective is modified to maximize both expected reward and policy entropy. This entropy bonus encourages agents to act as randomly as possible while maintaining task success, promoting broader exploration, improved noise robustness, and reduced risk of poor local optima convergence.
-
+\\
+\noindent
 The principle of maximum entropy, while powerful, raises a critical question: does encouraging random behavior compromise the safety and reliability of the system? Gu et al. \footcite{gu2025optimization} directly confront this by proposing a safe reinforcement learning approach that considers battery health. Their work tests the hypothesis that one can achieve the exploration benefits of SAC while simultaneously satisfying hard constraints related to battery degradation. This is a crucial step towards making DRL a viable technology for real-world V2G deployment, and it underscores the importance of the multi-objective reward functions explored in this thesis.
 
 \paragraph{Truncated Quantile Critics (TQC)}
@@ -458,7 +463,8 @@ On-policy methods learn exclusively from data generated by current policies bein
 \paragraph{Advantage Actor-Critic (A2C/A3C)}
 
 A2C represents a foundational synchronous, on-policy Actor-Critic algorithm. Its powerful extension, \textbf{Asynchronous Advantage Actor-Critic (A3C)}, was a landmark contribution demonstrating parallelism benefits \footcite{mnih2016asynchronous}. A3C utilizes multiple parallel workers, each with individual model and environment copies. These workers interact with their environments independently, and collected gradients update a global model asynchronously. This decorrelates data streams and provides powerful stabilizing effects on learning processes.
-
+\\
+\noindent
 While often considered less sample-efficient than their off-policy counterparts, on-policy methods like A2C and its variants are still actively explored in the V2G domain. For example, Chifu et al. \footcite{chifu2024deep} propose a Deep Q-Learning based approach for smart scheduling of EVs for demand response, which shares some of the on-policy characteristics. Their work raises the question: can the stability and reliability of on-policy training outweigh the sample efficiency of off-policy methods in a problem where the environment is highly stochastic? This thesis provides a direct comparison by benchmarking several state-of-the-art off-policy agents against on-policy baselines, allowing for an empirical test of this long-standing hypothesis in the DRL community.
 
 \paragraph{Trust Region Policy Optimization (TRPO)}
@@ -479,6 +485,7 @@ As a counterpoint to dominant gradient-based methods, ARS represents a gradient-
 
 While DRL offers powerful model-free approaches, model based techniques  requires benchmarking against its most robust model-based counterpart: \textbf{Model Predictive Control (MPC)}. MPC originated in the 1970s within the process control industry, with pioneering contributions by Richalet et al. \footcite{Richalet1978ModelPH} and Cutler and Ramaker \footcite{Cutler1980}. The theoretical foundations for stability and optimality were subsequently established rigorously by researchers including Mayne and Rawlings \footcite{mayne2000constraine}.
 \noindent
+\\
 At its core, MPC represents a proactive, forward-looking strategy that employs explicit mathematical system models to predict future evolution. At each control step, it solves finite-horizon optimal control problems to determine optimal control action sequences. Its primary strength, explaining widespread industrial adoption, lies in its inherent capability to proactively handle complex system dynamics and operational constraints \footcite{minchala2025systematic}.
 \section{Model Predictive Control Formulation}
 \textit{Section based on "Predictive Control for Linear and Hybrid Systems" by F. Borrelli, A. Bemporad, and M. Morari.}
@@ -647,7 +654,8 @@ The state space is partitioned into a set of convex polyhedral regions $\mathcal
 \subsection{Deep Learning for an Efficient Explicit MPC Representation}
 
 While implicit MPC provides an optimal control action, its reliance on solving a numerical optimization problem at each sampling time makes it unsuitable for systems with fast dynamics. An alternative is Explicit MPC, where the control law---a Piecewise Affine (PWA) function of the state---is pre-computed offline. However, this approach suffers from a significant drawback: the number of polyhedral regions, and thus the memory required to store the corresponding affine laws, can grow exponentially with the prediction horizon and the number of constraints \cite{karg2020efficient}. This "curse of dimensionality" severely limits its practical application, especially in memory-constrained embedded systems.
-
+\\
+\noindent
 To address this challenge, the work in \cite{karg2020efficient} proposes a novel approach that leverages deep learning to create a highly efficient representation of the explicit MPC law. The methodology bridges the gap between the implicit and explicit approaches by using the former to train the latter.
 
 \subsubsection{Training via Implicit MPC Data Generation}
@@ -661,7 +669,8 @@ This dataset is then used to train a deep neural network via supervised learning
 
 \subsubsection{Exact PWA Representation with Deep ReLU Networks}
 The power of this method stems from the theoretical insight that a deep neural network with Rectified Linear Unit (ReLU) activation functions is not merely an approximator but can, in fact, \textbf{exactly represent} the PWA function that defines the explicit MPC feedback law \cite{karg2020efficient}.
-
+\\
+\noindent
 The foundation of this exact representation lies in two main results. First, any scalar PWA function $K_i(x_t)$ (representing the $i$-th component of the control vector) can be expressed as the difference of two convex PWA functions:
 \begin{equation}
     K_i(x_t) = \gamma_i(x_t) - \eta_i(x_t)
@@ -710,14 +719,14 @@ While DRL represents the cutting edge, contextualizing it within the broader con
 
 \noindent
 \textbf{Model Predictive Control (MPC)} stands as the most powerful model-based alternative. Its primary and most compelling strength lies in its native ability to handle hard constraints, which is critical for ensuring safe operation (such as never violating transformer limits or user energy requirements). However, its performance remains fundamentally constrained by the accuracy of its internal model and forecasts of future disturbances (prices, user behavior) \footcite{faggio2023design}. In practice, creating accurate, tractable models for the entire V2G domain proves nearly impossible due to non-linear battery dynamics, extreme market volatility, and the profound unpredictability of human behavior. Furthermore, as EV fleet sizes grow, optimization problem dimensionality explodes, making online computation required at each time step intractable for large fleets.
-
+\\
 \noindent
 Other methods, such as \textbf{meta-heuristic algorithms} (including genetic algorithms and particle swarm optimization), are sometimes proposed. However, these are typically employed for offline scheduling and lack the real-time, reactive responsiveness required for dynamic V2G control in rapidly changing environments.
-
+\\
 \noindent
 Ultimately, DRL's singular advantage lies in its ability to learn and internalize the complex, non-linear trade-offs of multi-objective V2G problems directly from data, without requiring explicit models. This makes it uniquely suited to navigating the profound uncertainties of real-world operations. While other methods have their applications, DRL stands out as the most promising technology for deploying truly intelligent, autonomous, and scalable V2G management systems required to achieve the ambitious energy and climate objectives of the European Union.
 
-\newpage
+
 \section{A Primer on Lithium-Ion Battery Chemistries and Degradation}
 
 The effectiveness, safety, and economic viability of any V2G strategy remain fundamentally constrained by the physical and chemical characteristics of vehicle batteries. Battery chemistry selection dictates EV operational envelopes, influencing energy density, power capabilities, lifespan, and safety profiles. Clear understanding of these trade-offs proves essential for developing robust, realistic, and responsible control algorithms.
