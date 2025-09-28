@@ -6,10 +6,12 @@ The shift toward electric mobility is a pivotal element in global strategies for
 
 
 \subsection{Background and Relevance of Electric Vehicles and Vehicle-to-Grid} % 
-The surging Electric Vehicle (EV) market is accelerating a major reconfiguration of modern mobility, promising to lower carbon emissions and foster greater energy efficiency \footcite{orfanoudakis2022deep}. 
+The surging Electric Vehicle (EV) market is accelerating a major reconfiguration of modern mobility, promising to lower carbon emissions and foster greater energy efficiency \footcite{orfanoudakis2024ev2gym}. 
 This evolution is more than a technological trend: it underpins environmental sustainability by reducing dependence on fossil resources, alleviating the impacts of climate change through diminished greenhouse gas emissions, and improving air quality in densely populated areas. 
 However, embedding millions of EVs into existing power systems is a non-trivial task. 
-It can intensify peak demand, place additional stress on transmission and distribution networks, and trigger side effects such as voltage irregularities or higher line losses \footcite{orfanoudakis2022deep, salvatti2020electric}.
+It can intensify peak demand, place additional stress on transmission and distribution networks, and trigger side effects such as voltage irregularities or higher line losses \footcite{orfanoudakis2024ev2gym, salvatti2020electric}.
+
+The discourse surrounding this challenge raises a critical question: can we transform this apparent liability into a foundational asset for grid stability? The answer to this may lie in the Vehicle-to-Grid (V2G) paradigm. A growing body of research, systematically reviewed in works by Qiu et al. \footcite{Qiu2023} and Xie \footcite{Xie2025}, posits that intelligent, bidirectional charging strategies can mitigate these negative impacts. However, this hypothesis is not without its own set of falsifiable conditions. For V2G to be a viable solution, we must demonstrate that its economic and grid-stabilizing benefits demonstrably outweigh the costs, including battery degradation and infrastructure investment. The central thesis of this work is to test this very proposition: that through advanced control methodologies, the V2G concept can be proven not just theoretically sound, but practically indispensable.
 \\
 \noindent
 It is in this context that the \textbf{Vehicle-to-Grid (V2G)} concept emerges as a strategic solution. 
@@ -31,7 +33,9 @@ Taken together, these modalities highlight the versatility of EV batteries as di
 Modern electricity systems are increasingly shaped by the penetration of intermittent \textbf{Renewable Energy Sources (RESs)} such as wind and solar. 
 Their variability causes pronounced swings in power generation and persistent mismatches between supply and demand, which in turn fuels price volatility and complicates dispatch strategies. 
 This continuously puts the stability and economic efficiency of the grid under strain. 
-Managing these fluctuations, while making rapid operational choices to balance the system and minimize costs, has proven difficult for conventional control frameworks \footcite{orfanoudakis2022deep, minchala2025systematic}. 
+Managing these fluctuations, while making rapid operational choices to balance the system and minimize costs, has proven difficult for conventional control frameworks \footcite{orfanoudakis2024ev2gym, minchala2025systematic}. 
+
+Is it possible, then, that a new control paradigm is needed? The literature suggests a strong affirmative. Reviews by NaXu et al. \footcite{NaXu} and Feyijimi et al. \footcite{Feyijimi} explore the evolution of smart grid technologies and consistently highlight the limitations of traditional, rule-based systems in the face of high uncertainty. They frame the problem in a way that naturally leads to data-driven methods. Could it be that the very unpredictability of the system is not a bug, but a feature that learning-based systems are uniquely equipped to handle? This question is at the heart of the pivot towards Artificial Intelligence. While some researchers have explored meta-heuristic algorithms for this task, as surveyed by Srihari et al. \footcite{Srihari}, these methods often lack the real-time adaptability required for dynamic control. This has led to a surge in research focused on Reinforcement Learning, a paradigm that, in theory, can learn optimal control policies directly from interaction with the environment, without needing a perfect model of the world. The hypothesis to be tested is whether this theoretical promise holds up against the engineering realities of the V2G problem.
 \\
 \noindent
 The parallel rise of EV adoption and RES deployment has produced an environment marked by both uncertainty and complexity. 
@@ -39,12 +43,12 @@ In such conditions, traditional approaches are increasingly inadequate, promptin
 This shift alters the very nature of the grid: from a relatively predictable and centralized infrastructure to one that is decentralized, stochastic, and highly dynamic. 
 Rule-based or deterministic controllers, designed for a past paradigm, are ill-suited to cope with this degree of volatility. 
 The result is a pressing need for more adaptive and intelligent decision-making mechanisms. 
-This transformation extends beyond the simple challenge of absorbing extra load or integrating new generators: it signals a genuine paradigm change towards a \emph{smart grid} \footcite{alhmoud2024review}, where adaptive, real-time, and autonomous operation is no longer optional but vital to preserve efficiency, resilience, and reliability. 
+This transformation extends beyond the simple challenge of absorbing extra load or integrating new generators: it signals a genuine paradigm change towards a \emph{smart grid} \footcite{NaXu}, where adaptive, real-time, and autonomous operation is no longer optional but vital to preserve efficiency, resilience, and reliability. 
 From this perspective, RL is not just an optimization tool, but an enabling technology for a more cognitive and robust energy infrastructure—one capable of navigating the uncertainties of a decarbonized, electrified future.
 \\
 \noindent
 Against this backdrop, \textbf{Deep Reinforcement Learning (DRL)} has gained attention as an especially powerful approach. 
-Its capacity to derive near-optimal strategies in dynamic and uncertain environments—without requiring a precise model of the system or flawless forecasts—makes DRL particularly well-suited for EV integration and advanced grid management \footcite{orfanoudakis2022deep, shibl2023electric}.
+Its capacity to derive near-optimal strategies in dynamic and uncertain environments—without requiring a precise model of the system or flawless forecasts—makes DRL particularly well-suited for EV integration and advanced grid management \footcite{orfanoudakis2024ev2gym}.
 
 
 %====================================================================
@@ -66,9 +70,11 @@ More than a simple review of existing literature, this work focuses on the pract
 
 \subsection{Research Methodology}
 The research conducted for this thesis was guided by a central question: how can the economic profit of Vehicle-to-Grid (V2G) operations be maximized without imposing undue costs in terms of battery degradation or creating instability by overloading local grid infrastructure? To address this, a systematic research methodology was adopted.
-
+\\
+\noindent
 The initial phase consisted of an extensive literature review, primarily leveraging Google Scholar as a search engine for academic papers. This review focused on identifying the state-of-the-art in V2G control strategies, with a particular emphasis on identifying the common trade-offs between profitability and physical constraints.
-
+\\
+\noindent
 Following the literature review, this work transitioned to an empirical phase centered on the simulation framework detailed in Chapter 3. The development and testing of various control agents were not performed in a vacuum. The significance of the obtained results was continuously evaluated through a multi-faceted validation process, which included:
 \begin{itemize}
     \item \textbf{Comparative Analysis:} Benchmarking the performance of novel agents against the results reported by other researchers in the field.

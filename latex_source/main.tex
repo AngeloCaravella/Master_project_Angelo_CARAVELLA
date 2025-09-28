@@ -41,7 +41,7 @@
 % ---------------------------------------------------
 \usepackage{graphicx}
 \usepackage{longtable}
-\usepackage{amssymb}
+%\usepackage{amssymb}
 \usepackage{array}
 \newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
 \usepackage{hyperref}
@@ -54,6 +54,10 @@
 % LISTINGS (for code)
 % ---------------------------------------------------
 \usepackage{listings}
+% Colonne personalizzate per tabularx
+\newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}} % left
+\newcolumntype{C}[1]{>{\centering\arraybackslash}p{#1}}   % center
+\newcolumntype{R}[1]{>{\raggedleft\arraybackslash}p{#1}}  % right
 
 \definecolor{codegreen}{rgb}{0,0.6,0}
 \definecolor{codegray}{rgb}{0.5,0.5,0.5}
@@ -140,30 +144,9 @@
 % TABLE OF CONTENTS
 % ---------------------------------------------------
 \tableofcontents
-\newpage
-% ===================================================================
-% ABSTRACT - ITALIAN
-% ===================================================================
-\begin{otherlanguage}{italian}
-\section*{Abstract in italian}
 
-L'adozione crescente dei \textbf{Veicoli Elettrici (EV)} in concomitanza con la sempre maggiore penetrazione di \textbf{Fonti di Energia Rinnovabile (RES)} intermittenti, presenta sfide significative alla \textbf{stabilità} e all'\textbf{efficienza della rete elettrica}. La tecnologia \textbf{Vehicle-to-Grid (V2G)} emerge come soluzione fondamentale, trasformando gli EV da carichi passivi a \textbf{risorse energetiche flessibili} capaci di fornire vari \textbf{servizi di rete}. Questa tesi affronta il complesso \textbf{problema di ottimizzazione multi-obiettivo} della gestione intelligente di carica e scarica degli EV, che intrinsecamente implica un equilibrio tra \textbf{benefici economici}, \textbf{esigenze di mobilità dell'utente}, \textbf{preservazione della salute della batteria} e \textbf{stabilità della rete} in condizioni stocastiche.
-\\
-Di fronte alla complessa sfida di ottimizzare la ricarica dei veicoli elettrici (EV) in scenari Vehicle-to-Grid (V2G), un approccio che si limita a un singolo modello di controllo, come il Deep Q-Networks (DQN), risulterebbe inadeguato. La natura del problema, caratterizzata da molteplici obiettivi contrastanti (benefici economici, esigenze dell'utente, salute della batteria, stabilità della rete) e da una profonda incertezza; richiede un'analisi comparativa e rigorosa di un'ampia gamma di strategie di controllo.
-Per questo motivo, la ricerca si concentra sulla valutazione di un portafoglio diversificato di algoritmi, che include numerosi modelli di Deep Reinforcement Learning (DRL), approcci euristici e il Model Predictive Control (MPC). Questo metodo consente di mappare in modo completo il panorama delle soluzioni, identificando i punti di forza e di debolezza di ciascun approccio in relazione alle diverse sfaccettature del problema V2G.
-\\
-In conclusione questa lavoro di tesi non si focalizza su un singolo modello, ma adotta un approccio comparativo su larga scala perché:
-\\
-\textbf{Non esiste una soluzione unica}: La complessità del problema V2G rende improbabile che un solo algoritmo sia ottimale in tutte le condizioni.
-\\
-\textbf{Si ricercano i compromessi}: L'obiettivo è comprendere i trade-off tra l'efficienza dei dati, la stabilità dell'addestramento, la robustezza all'incertezza e la complessità computazionale delle diverse famiglie di algoritmi.
-\\
-\textbf{La validazione è più rigorosa}: Confrontare i modelli di DRL non solo tra loro ma anche con benchmark consolidati come le euristiche e l'MPC fornisce una misura molto più credibile del loro reale valore aggiunto.
-
-\end{otherlanguage}
 \newpage
 \input{abstract}
-
 \newpage
 
 \input{chapter_1}
@@ -171,6 +154,8 @@ In conclusione questa lavoro di tesi non si focalizza su un singolo modello, ma 
 \input{chapter_2}
 \clearpage
 \input{chapter_3}
+\clearpage
+\input{chapter_4}
 \clearpage
 
 % ===================================================================
