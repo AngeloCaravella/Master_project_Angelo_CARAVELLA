@@ -1,7 +1,10 @@
 \subsection{A History-Based Adaptive Reward for Profit Maximization}
 \label{sec:adaptive_reward}
 
-To effectively steer the learning agent towards a policy that is both highly profitable and reliable, we have designed and implemented a novel, history-based adaptive reward function, named \texttt{FastProfitAdaptiveReward}. This function departs from traditional static-weight penalties and instead introduces a dynamic feedback mechanism where the severity of penalties is directly influenced by the agent's recent performance. The core philosophy is to aggressively prioritize economic profit while using adaptive penalties as guardrails that become stricter only when the agent begins to consistently violate operational constraints.
+\paragraph{Implementation Details}
+This reward function, along with a suite of other reward strategies, is implemented in the \texttt{ev2gym/rl_agent/reward.py} module. The main experimentation script, \texttt{run_experiments.py}, allows the user to dynamically select which reward function to use for a given training run. The \texttt{FastProfitAdaptiveReward} function, specifically, uses \texttt{collections.deque} objects attached to the environment instance to efficiently maintain a sliding window of recent performance for satisfaction and overload events.
+
+To effectively steer the learning agent towards a policy that is both highly profitable and reliable, we have designed and implemented a novel, history-based adaptive reward function, named \texttt{FastProfitAdaptiveReward}. This function departs from traditional static-weight penalties and instead introduces a dynamic feedback mechanism where the severity of penalties is directly influenced by the agent\'s recent performance. The core philosophy is to aggressively prioritize economic profit while using adaptive penalties as guardrails that become stricter only when the agent begins to consistently violate operational constraints.
 
 The total reward at each timestep $t$, $R_t$, is calculated as the net economic profit minus any active penalties for user dissatisfaction or transformer overload.
 

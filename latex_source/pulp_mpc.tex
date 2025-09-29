@@ -2,6 +2,9 @@
 
 The Model Predictive Control (MPC) implemented with PuLP solves a profit maximization problem at each time step $t$ over a finite prediction horizon $H$. This formulation is designed for online, real-time control, where decisions are made based on the current system state and future predictions.
 
+\paragraph{Implementation Details}
+This online controller is implemented as the \texttt{OnlineMPC\_Solver} class within the \texttt{ev2gym/baselines/pulp\_mpc.py} module. At each invocation of its \texttt{get\_action} method, it dynamically constructs the full Mixed-Integer Linear Program (MILP) described below using the \textbf{PuLP} modeling library. The problem is then solved using the default CBC (COIN-OR Branch and Cut) solver.
+
 \subsection{Mathematical Formulation}
 At each time step $t$, the MPC controller solves the following optimization problem.
 
@@ -30,7 +33,7 @@ The optimization is subject to the following constraints for each station $i$ an
 
 \paragraph{Energy Balance Dynamics.} The state of energy of the EV battery evolves according to:
 \begin{equation}
-E_{i,k} = E_{i,k-1} + \left( \eta^{\text{ch}} P^{\text{ch}}_{i,k} - \frac{1}{\eta^{\text{dis}}} P^{\text{dis}}_{i,k} \right) \cdot \Delta t
+E_{i,k} = E_{i,k-1} + \left( \eta_{\text{ch}} P^{\text{ch}}_{i,k} - \frac{1}{\eta_{\text{dis}}} P^{\text{dis}}_{i,k} \right) \cdot \Delta t
 \end{equation}
 where the initial state $E_{i,t-1}$ is the currently measured energy level of the EV.
 
@@ -56,11 +59,34 @@ where $k_{\text{dep}}$ is the predicted departure step of the EV within the hori
 \sum_{i \in \text{CS}} (P^{\text{ch}}_{i,k} - P^{\text{dis}}_{i,k}) \le P^{\text{tr,max}}
 \end{equation}
 
+\subsubsection{Problem Classification}
+In the field of Operations Research, a Mixed-Integer Linear Program (MILP) is a powerful modeling tool for optimization problems involving complex decisions. A problem is classified as a MILP if it seeks to optimize a linear objective function, subject to a set of linear equality and inequality constraints, where the decision variables can be a mix of continuous and integer values. The general mathematical formulation of a MILP can be expressed as follows:
+\begin{equation}
+\begin{aligned}
+& \underset{x, y}{\text{minimize}} & & c^T x + h^T y \\
+& \text{subject to} & & Ax + Gy \leq b \\
+& & & x \in \mathbb{Z}^n, \quad y \in \mathbb{R}^p
+\end{aligned}
+\end{equation}
+where $x$ represents the vector of integer variables and $y$ represents the vector of continuous variables. The vectors $c$ and $h$ contain the objective function coefficients, while $A$, $G$, and $b$ define the linear constraints of the system. The requirement for some variables to be integers ($x \in \mathbb{Z}^n$) is what makes MILPs fundamentally different from standard Linear Programs (LPs) and significantly more challenging to solve, forming a core part of the field of combinatorial optimization.
+
+Based on this definition, the mathematical structure of the optimization problem described above is a classic \textbf{Mixed-Integer Linear Program (MILP)}.
+This classification is justified as follows:
+\begin{itemize}
+    \item \textbf{Linear Objective Function:} The objective function is a linear combination of the continuous power variables $P^{\text{ch}}$ and $P^{\text{dis}}$.
+    \item \textbf{Linear Constraints:} All system constraints, including energy dynamics, power limits, and state of energy bounds, are formulated as linear equations or inequalities.
+    \item \textbf{Mixed-Integer Variables:} The formulation employs both continuous variables (e.g., $P^{\text{ch}}_{i,k}$, $E_{i,k}$) and discrete, binary integer variables ($z_{i,k}$). The binary variables are essential for modeling the logical decision to either charge or discharge at any given time step, but not both simultaneously.
+\end{itemize}
+The problem is not a Quadratic Program (QP) or Mixed-Integer Quadratic Program (MIQP) because the objective function does not contain any quadratic terms (e.g., minimizing the square of power). Similarly, it is not a Quadratically Constrained Quadratic Program (QCQP) as all constraints are linear. The \texttt{OnlineMPC\_Solver} is therefore designed to solve this specific MILP formulation at each control step.
+
 
 \section{Approximate Explicit MPC: A Machine Learning Approach}
 The online, implicit MPC formulation provides high-quality control decisions by solving an optimization problem at every time step. However, this approach has a significant drawback: its computational complexity. For scenarios with a large number of EVs or a long control horizon, solving a Mixed-Integer Linear Program (MILP) in real-time can be prohibitively slow, making it impractical for many real-world applications.
 
 To overcome this limitation, this work implements an \textbf{Approximate Explicit Model Predictive Controller (A-MPC)}. This controller leverages machine learning to replace the computationally expensive online optimization with a fast, lightweight inference step.
+
+\paragraph{Implementation Details}
+The A-MPC is implemented in the \texttt{ApproximateExplicitMPC} class, located in the same \texttt{ev2gym/baselines/pulp\_mpc.py} file. It utilizes a pre-trained \texttt{RandomForestRegressor} model from the \textbf{scikit-learn} library. This model is serialized and stored in the \texttt{mpc\_approximator.joblib} file, and it is generated by the dedicated \texttt{train\_mpc\_approximator.py} script, which executes the data generation and offline training steps. During online operation, the controller's \texttt{get\_action} method simply performs a fast inference call to this loaded model.
 
 \subsection{Methodology: From Oracle to Apprentice}
 The core idea is to treat the slow but powerful online MPC as an "oracle" or expert teacher. An apprentice model, in this case a \texttt{RandomForestRegressor} from the \texttt{scikit-learn} library, is trained to mimic the oracle's behavior. The process is as follows:
@@ -87,6 +113,9 @@ The core idea is to treat the slow but powerful online MPC as an "oracle" or exp
 
 \section{Lyapunov-based Adaptive Horizon MPC}
 While the A-MPC offers a significant speed-up, it is an approximation and may not always match the performance of the fully-fledged online MPC. A second enhancement developed in this work is the \textbf{Lyapunov-based Adaptive Horizon MPC}, which aims to reduce the computational burden of the online MPC while retaining its optimality and stability guarantees. This method represents an essential improvement, creating an intelligent trade-off between computational cost and control performance.
+
+\paragraph{Implementation Details}
+This adaptive horizon mechanism is not a separate controller but rather an advanced operational mode of the \texttt{OnlineMPC\_Solver} class. Its logic is integrated directly within the solver's \texttt{get\_action} method and is activated by setting the \texttt{use\_adaptive\_horizon} flag to true during instantiation. When active, the solver performs the Lyapunov stability check after each optimization step and adjusts its internal horizon parameter, \texttt{current\_H}, accordingly for the next iteration.
 
 \subsection{Core Concept: Dynamic Horizon Adjustment}
 The key insight is that a long prediction horizon is not always necessary. When the system is in a stable state and far from its operational constraints, a shorter horizon is sufficient for making good decisions. Conversely, when the system is in a complex or critical state (e.g., an EV is close to its departure time but has a low SoC), a longer horizon is needed for careful planning.

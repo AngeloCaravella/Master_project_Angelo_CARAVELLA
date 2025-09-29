@@ -11,6 +11,13 @@ This enhanced framework offers a two-pronged approach to experimentation: it all
 \section{Core Simulator Architecture}
 The framework is built on the modular architecture of EV2Gym, which mirrors the key entities of a real-world V2G system. Its foundation on the OpenAI Gym (now Gymnasium) API is a cornerstone, providing a standardized agent-environment interface defined by the familiar language of states, actions, and rewards \footcite{brockman2016openai}.
 
+\begin{figure}[H]
+    \centering
+   
+    \includegraphics[width=0.8\linewidth]{Diagram_charge.png}
+    \caption{Diagram of charging and discharging scheduling for EVs. \footcite{Dou}.}
+    \label{fig:rl_cahrg}
+\end{figure}
 The architecture consists of several interacting components:
 \begin{itemize}
     \item \textbf{Charge Point Operator (CPO):} The central intelligence of the simulation, managing the charging infrastructure and serving as the primary interface for the control algorithm (the DRL agent). The CPO aggregates system state information and dispatches control actions to individual chargers.
@@ -20,6 +27,19 @@ The architecture consists of several interacting components:
 \end{itemize}
 The simulation process follows a reproducible three-phase structure: (1) \textbf{Initialization} from a comprehensive YAML configuration file, (2) a discrete-time \textbf{Simulation Loop} where the agent interacts with the environment, and (3) a final \textbf{Evaluation and Visualization} phase that generates standardized performance metrics.
 
+\subsection{Software Implementation and Project Structure}
+\label{sec:software_implementation}
+While the conceptual architecture describes the simulator's components, the practical implementation is organized within a modular Python package named \texttt{ev2gym}. This structure promotes code reusability and a clear separation of concerns. The high-level experimentation scripts, such as \texttt{run\_experiments.py} and \texttt{train\_mpc\_approximator.py}, reside in the project's root directory and act as orchestrators, utilizing the core functionalities provided by the \texttt{ev2gym} package.
+
+The key subdirectories within the \texttt{ev2gym} package are:
+\begin{itemize}
+    \item \texttt{baselines/}: This directory contains the implementations for all non-RL controllers. This includes rule-based heuristics (in \texttt{heuristics.py}) and, crucially, all variants of the Model Predictive Controllers (in \texttt{pulp\_mpc.py}).
+    \item \texttt{rl\_agent/}: This is the central hub for all Reinforcement Learning logic. It contains modules for state vector construction (\texttt{state.py}), the library of available reward functions (\texttt{reward.py}), and the implementation of custom RL algorithms (\texttt{custom\_algorithms.py}).
+    \item \texttt{utilities/}: A collection of helper functions and utility classes that are used across the entire framework.
+    \item \texttt{models/}: This directory is designated for storing the serialized, pre-trained machine learning models, such as the Random Forest model used by the Approximate-Explicit MPC.
+\end{itemize}
+This modular software design allows for the independent development and testing of different components, such as control algorithms and reward functions, while maintaining a consistent and unified simulation environment.
+
 \section{Core Physical Models}
 The simulation's fidelity is anchored in its detailed, empirically validated models, which are essential for developing control strategies robust enough for real-world application.
 
@@ -27,12 +47,23 @@ The simulation's fidelity is anchored in its detailed, empirically validated mod
 The framework implements a realistic two-stage charging/discharging model that captures the non-linear behavior of lithium-ion batteries, simulating both the \textbf{constant current (CC)} and \textbf{constant voltage (CV)} phases. Each EV is defined by a rich parameter set: maximum capacity ($E_{max}$), a minimum safety capacity ($E_{min}$), separate power limits for charging and discharging ($P_{ch}^{max}, P_{dis}^{max}$), and distinct efficiencies for each process ($\eta_{ch}, \eta_{dis}$).
 
 \subsection{Battery Degradation Model}
-To address the critical issue of battery health in V2G operations, the simulator incorporates a semi-empirical battery degradation model. It quantifies capacity loss ($Q_{lost}$) as the sum of two primary aging mechanisms \footcite{orfanoudakis2024ev2gym}:
+To address the critical issue of battery health in V2G operations, the simulator incorporates a semi-empirical battery degradation model. It quantifies capacity loss ($Q_{lost}$) as the sum of two primary aging mechanisms \footcite{orfanoudakis2024ev2gym}: calendar aging and cyclic aging.
+
 \begin{itemize}
-    \item \textbf{Calendar Aging ($d_{cal}$):} Time-dependent capacity loss, influenced by the battery's average State of Charge (SoC) and temperature.
-    \item \textbf{Cyclic Aging ($d_{cyc}$):} Wear resulting from charge/discharge cycles, dependent on energy throughput, depth-of-cycle, and C-rate.
+    \item \textbf{Calendar Aging ($d_{cal}$):} Time-dependent capacity loss, influenced by the battery's average State of Charge (SoC) and temperature ($\Theta$). The formula is given by:
+    \begin{equation}
+        d_{cal} = 0.75 \cdot (\epsilon_0 \cdot \overline{SoC} - \epsilon_1) \cdot e^{-\epsilon_2/\Theta} \cdot \frac{t_{days}}{(t_{days}+1)^{0.25}}
+    \end{equation}
+    
+    \item \textbf{Cyclic Aging ($d_{cyc}$):} Wear resulting from charge/discharge cycles, dependent on energy throughput ($E_{exchanged}$), depth-of-cycle (implicitly via $\overline{SoC}$), and the total accumulated charge ($Q_{acc}$). The formula is:
+    \begin{equation}
+        d_{cyc} = (\zeta_0 + \zeta_1 \cdot |\overline{SoC}-0.5|) \cdot \frac{E_{exchanged}}{\sqrt{Q_{acc}}}
+    \end{equation}
 \end{itemize}
-This integrated model allows for the direct quantification of how different control strategies impact the battery's long-term State of Health (SoH), enabling the training of agents that balance profitability with battery preservation.
+
+The total capacity loss is the sum $Q_{lost} = d_{cal} + d_{cyc}$. This integrated model allows for the direct quantification of how different control strategies impact the battery's long-term State of Health (SoH), enabling the training of agents that balance profitability with battery preservation.
+
+A key feature of this framework is that the physical parameters for this model ($\epsilon_0, \epsilon_1, \epsilon_2, \zeta_0, \zeta_1, Q_{acc}$) are not fixed. They can be empirically calibrated from real-world experimental data using the provided \texttt{Fit_battery.py} script, as detailed in Section \ref{sec:sim_architecture}.
 
 \subsection{EV Behavior and Grid Models}
 To ensure realism, the simulation is driven by authentic, open-source datasets. EV arrival/departure patterns and energy requirements are modeled using probability distributions derived from a large real-world dataset from \textbf{ElaadNL}. Grid conditions are similarly grounded in reality, using inflexible load data from the \textbf{Pecan Street} project and solar generation profiles from the \textbf{Renewables.ninja} platform \footcite{orfanoudakis2024ev2gym}.
@@ -58,6 +89,24 @@ The new workflow elegantly unifies the training of both "specialist" and "genera
 
 \subsection{Reproducible Benchmarking and Evaluation}
 To ensure a fair and scientifically valid comparison, the \texttt{run\_benchmark} function implements a rigorous evaluation protocol. For each scenario, it first generates a "replay" file containing the exact sequence of stochastic events (e.g., EV arrivals, energy demands). This exact same sequence is then used to evaluate every algorithm, eliminating randomness as a factor in performance differences. The script runs multiple simulations for statistical robustness, aggregates the mean results, and automatically generates a suite of comparative plots, including overall performance metrics and detailed battery degradation analyses.
+
+\subsection{Interactive Web-Based Dashboard}
+\label{sec:streamlit_app}
+To complement the command-line-driven workflow, the project includes an interactive web-based dashboard built with the Streamlit library, executed via the \texttt{streamlit\_app.py} script. This graphical user interface (GUI) serves two primary functions, significantly enhancing usability and accessibility for experimentation and results analysis.
+
+\subsubsection{Simulation Orchestrator}
+The first part of the dashboard acts as a GUI wrapper for the \texttt{run\_experiments.py} script. It provides a user-friendly web form where users can:
+\begin{itemize}
+    \item Select which algorithms to benchmark from a multi-select list.
+    \item Choose one or more scenarios to test.
+    \item Pick a specific reward function for the RL agents from a dropdown menu.
+    \item Set simulation parameters, such as the number of evaluation runs.
+    \item Toggle optional steps, like running the \texttt{Fit\_battery.py} calibration or enabling RL model training.
+\end{itemize}
+Upon clicking the "Run Simulation" button, the application constructs the equivalent command-line arguments and executes \texttt{run\_experiments.py} as a subprocess. It captures and displays the console output in real-time on the web page, providing a seamless user experience without requiring direct terminal interaction.
+
+\subsubsection{Results Visualizer}
+The second part of the dashboard is a dedicated results browser. It automatically scans the \texttt{results/} directory and presents a list of all completed benchmark runs (organized by timestamp). The user can select a specific benchmark, and the application will find and display all the generated plots (e.g., performance comparisons, battery degradation graphs) directly on the page. This feature allows for quick and convenient inspection and comparison of outcomes from different experiments.
 
 \section{Evaluation Metrics}
 To ensure a fair and comprehensive comparison, all algorithms are evaluated against an identical set of pre-generated scenarios through a "replay" mechanism. The \textbf{mean} and \textbf{standard deviation} of performance are calculated across multiple simulation runs. The key metrics include:
@@ -158,12 +207,22 @@ This work benchmarks several state-of-the-art Deep Reinforcement Learning algori
 
 \subsubsection{Soft Actor-Critic (SAC)}
 SAC is an off-policy actor-critic algorithm designed for continuous action spaces that optimizes a stochastic policy. Its core feature is entropy maximization, which encourages exploration and improves robustness. The agent aims to maximize not only the expected sum of rewards but also the entropy of its policy.
+\paragraph{Soft Actor-Critic (SAC)}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\linewidth]{SAC.png}
+    \caption{SAC Structure Image from \footcite{Qiu2023}}}
+    \label{fig:SAC}
+\end{figure}
 
 The objective function is:
 \[
 J(\pi) = \sum_{t=0}^{T} \mathbb{E}_{(s_t, a_t) \sim \rho_\pi} \left[ r(s_t, a_t) + \alpha \mathcal{H}(\pi(\cdot|s_t)) \right]
 \]
 where $\mathcal{H}$ is the entropy of the policy $\pi$ and $\alpha$ is the temperature parameter, which controls the trade-off between reward and entropy.
+
+\paragraph{Implementation Details}
+The implementation of SAC is built upon the robust, industry-standard \textbf{Stable-Baselines3} library, which provides a highly optimized and well-tested version of the algorithm. The standard \texttt{SAC} class from this library is used directly, leveraging its PyTorch-based backend for efficient training and inference.
 
 SAC uses a soft Q-function, trained to minimize the soft Bellman residual:
 \[
@@ -178,6 +237,12 @@ To mitigate positive bias, SAC employs two Q-networks (Clipped Double-Q) and tak
 \subsubsection{Deep Deterministic Policy Gradient + PER (DDPG+PER)}
 DDPG is an off-policy algorithm that concurrently learns a deterministic policy $\mu(s | \theta^\mu)$ and a Q-function $Q(s, a | \theta^Q)$. It is the deep-learning extension of the DPG algorithm for continuous action spaces.
 
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.5\linewidth]{DDPG.png}
+    \caption{DDPG Structure (Image from \footcite{Qiu2023}}
+    \label{fig:DDPG}
+\end{figure}
 \begin{itemize}
     \item \textbf{Critic Update:} The critic is updated by minimizing the mean-squared Bellman error, similar to Q-learning. Target networks ($Q'$ and $\mu'$) are used to stabilize training.
     \[
@@ -200,6 +265,9 @@ DDPG is an off-policy algorithm that concurrently learns a deterministic policy 
     where $p_i = |\delta_i| + \epsilon$ is the priority based on the TD-error $\delta_i$, and $\beta$ controls the degree of prioritization. To correct for the bias introduced by non-uniform sampling, PER uses importance-sampling (IS) weights.
 \end{itemize}
 
+\paragraph{Implementation Details}
+To integrate Prioritized Experience Replay (PER) with DDPG, a custom class, \texttt{CustomDDPG}, was developed in the \texttt{ev2gym/rl\_agent/custom\_algorithms.py} module. This class inherits from the standard \texttt{DDPG} agent provided by \textbf{Stable-Baselines3}. The core \texttt{train} method is overridden to replace the default uniform-sampling replay buffer with one that supports prioritized sampling. This involves calculating TD-errors for each transition, updating their priorities in the buffer, and using the resulting importance-sampling weights during the critic update, thereby focusing the learning process on the most informative experiences.
+
 \subsubsection{Truncated Quantile Critics (TQC)}
 TQC enhances the stability of SAC by modeling the entire distribution of returns instead of just its mean. This is achieved through quantile regression and a novel truncation mechanism to combat Q-value overestimation.
 
@@ -216,6 +284,9 @@ TQC enhances the stability of SAC by modeling the entire distribution of returns
     \]
     where $Q_{\text{trunc}}$ represents the value derived from the truncated set of target quantiles.
 \end{itemize}
+
+\paragraph{Implementation Details}
+The TQC algorithm is leveraged from the \textbf{SB3-Contrib} library, a collection of community-contributed extensions to Stable-Baselines3. Using the library's standard \texttt{TQC} implementation allows the framework to benefit from this state-of-the-art distributional RL algorithm without requiring a custom implementation from scratch.
 
 
 

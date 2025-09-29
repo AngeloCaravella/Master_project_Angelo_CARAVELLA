@@ -227,6 +227,37 @@
       \field{pages}{373\bibrangedash 386}
       \range{pages}{14}
     \endentry
+    \entry{Bisetto_Francesca}{thesis}{}{}
+      \name{author}{1}{}{%
+        {{hash=18f133c0268c34ba49732a817fcb3bea}{%
+           family={Bisetto},
+           familyi={B\bibinitperiod},
+           given={Francesca},
+           giveni={F\bibinitperiod}}}%
+      }
+      \list{institution}{1}{%
+        {Università degli Studi di Padova}%
+      }
+      \list{location}{1}{%
+        {Padova}%
+      }
+      \strng{namehash}{18f133c0268c34ba49732a817fcb3bea}
+      \strng{fullhash}{18f133c0268c34ba49732a817fcb3bea}
+      \strng{fullhashraw}{18f133c0268c34ba49732a817fcb3bea}
+      \strng{bibnamehash}{18f133c0268c34ba49732a817fcb3bea}
+      \strng{authorbibnamehash}{18f133c0268c34ba49732a817fcb3bea}
+      \strng{authornamehash}{18f133c0268c34ba49732a817fcb3bea}
+      \strng{authorfullhash}{18f133c0268c34ba49732a817fcb3bea}
+      \strng{authorfullhashraw}{18f133c0268c34ba49732a817fcb3bea}
+      \field{sortinit}{B}
+      \field{sortinithash}{d7095fff47cda75ca2589920aae98399}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{note}{Dipartimento di Scienze Statistiche, Correlatore: Luigi Grossi}
+      \field{title}{La Duck Curve e la scomposizione della stagionalità dei consumi elettrici. Aspetti teorici e modelli statistici}
+      \field{type}{Tesi di laurea magistrale}
+      \field{year}{2023}
+    \endentry
     \entry{borrelli2017predictive}{book}{}{}
       \name{author}{3}{}{%
         {{hash=23f97b926e58810b9d3d65d50516ca6e}{%
@@ -1275,6 +1306,46 @@
       \field{pages}{278\bibrangedash 287}
       \range{pages}{10}
     \endentry
+    \entry{NielsonElton2021InductionPopperML}{article}{}{}
+      \name{author}{2}{}{%
+        {{hash=fcf627eefe176283480ee71cb4d9dfd0}{%
+           family={Nielson},
+           familyi={N\bibinitperiod},
+           given={Bruce},
+           giveni={B\bibinitperiod}}}%
+        {{hash=e9e3c7454d9ab277e128c574829a241b}{%
+           family={Elton},
+           familyi={E\bibinitperiod},
+           given={Daniel\bibnamedelima C.},
+           giveni={D\bibinitperiod\bibinitdelim C\bibinitperiod}}}%
+      }
+      \strng{namehash}{d2e3383fd9aea0cbcbaba67774442fc3}
+      \strng{fullhash}{d2e3383fd9aea0cbcbaba67774442fc3}
+      \strng{fullhashraw}{d2e3383fd9aea0cbcbaba67774442fc3}
+      \strng{bibnamehash}{d2e3383fd9aea0cbcbaba67774442fc3}
+      \strng{authorbibnamehash}{d2e3383fd9aea0cbcbaba67774442fc3}
+      \strng{authornamehash}{d2e3383fd9aea0cbcbaba67774442fc3}
+      \strng{authorfullhash}{d2e3383fd9aea0cbcbaba67774442fc3}
+      \strng{authorfullhashraw}{d2e3383fd9aea0cbcbaba67774442fc3}
+      \field{sortinit}{N}
+      \field{sortinithash}{22369a73d5f88983a108b63f07f37084}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{arXiv preprint}
+      \field{note}{cs.AI}
+      \field{title}{Induction, Popper, and Machine Learning}
+      \field{volume}{arXiv:2110.00840}
+      \field{year}{2021}
+      \verb{eprint}
+      \verb 2110.00840
+      \endverb
+      \verb{urlraw}
+      \verb https://arxiv.org/abs/2110.00840
+      \endverb
+      \verb{url}
+      \verb https://arxiv.org/abs/2110.00840
+      \endverb
+    \endentry
     \entry{orfanoudakis2024ev2gym}{article}{}{}
       \name{author}{5}{}{%
         {{hash=b91bc3e164dfa99a9e9851b80e389a6d}{%
@@ -1366,6 +1437,57 @@
       \verb 10.1109/TCST.2013.2295737
       \endverb
     \endentry
+    \entry{Qiu2022}{article}{}{}
+      \name{author}{5}{}{%
+        {{hash=b29f57b12d719bfd06de59e790f837de}{%
+           family={Qiu},
+           familyi={Q\bibinitperiod},
+           given={Dajun},
+           giveni={D\bibinitperiod}}}%
+        {{hash=8c7d4dd2fe6ecb5720d0b869dc1b83ee}{%
+           family={Wang},
+           familyi={W\bibinitperiod},
+           given={Siyuan},
+           giveni={S\bibinitperiod}}}%
+        {{hash=7bfd12a15b465b2833eabb0849908454}{%
+           family={Wang},
+           familyi={W\bibinitperiod},
+           given={Beibei},
+           giveni={B\bibinitperiod}}}%
+        {{hash=899fbb974edae95e834251e0e9d2d510}{%
+           family={Zhang},
+           familyi={Z\bibinitperiod},
+           given={Nu},
+           giveni={N\bibinitperiod}}}%
+        {{hash=f2d80c66c3a3b2268372b2cd79beb98b}{%
+           family={Li},
+           familyi={L\bibinitperiod},
+           given={Zhengmao},
+           giveni={Z\bibinitperiod}}}%
+      }
+      \list{publisher}{1}{%
+        {Elsevier}%
+      }
+      \strng{namehash}{af8b3c0a9361aaa9ca9fc4525a793a92}
+      \strng{fullhash}{48dac23a83f789426ebc163a7575aca8}
+      \strng{fullhashraw}{48dac23a83f789426ebc163a7575aca8}
+      \strng{bibnamehash}{af8b3c0a9361aaa9ca9fc4525a793a92}
+      \strng{authorbibnamehash}{af8b3c0a9361aaa9ca9fc4525a793a92}
+      \strng{authornamehash}{af8b3c0a9361aaa9ca9fc4525a793a92}
+      \strng{authorfullhash}{48dac23a83f789426ebc163a7575aca8}
+      \strng{authorfullhashraw}{48dac23a83f789426ebc163a7575aca8}
+      \field{extraname}{1}
+      \field{sortinit}{Q}
+      \field{sortinithash}{ce69a400a872ddd02ee7fdb3b38c6abd}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{Renewable and Sustainable Energy Reviews}
+      \field{title}{Reinforcement learning for vehicle-to-grid: A review}
+      \field{volume}{167}
+      \field{year}{2022}
+      \field{pages}{112702}
+      \range{pages}{1}
+    \endentry
     \entry{Qiu2023}{article}{}{}
       \name{author}{4}{}{%
         {{hash=519c62393bef0079eec3f7c024dd23f2}{%
@@ -1397,6 +1519,7 @@
       \strng{authornamehash}{8cc121c83eb31d98f6d1155a87019411}
       \strng{authorfullhash}{4701a558d80abc262e7da25aa9842ff3}
       \strng{authorfullhashraw}{4701a558d80abc262e7da25aa9842ff3}
+      \field{extraname}{2}
       \field{sortinit}{Q}
       \field{sortinithash}{ce69a400a872ddd02ee7fdb3b38c6abd}
       \field{labelnamesource}{author}
@@ -1866,6 +1989,39 @@
       \field{year}{2005}
       \field{pages}{269\bibrangedash 281}
       \range{pages}{13}
+    \endentry
+    \entry{Mnih2015}{article}{}{}
+      \name{author}{1}{}{%
+        {{hash=87f9d559eee392a2ccdcb77153386674}{%
+           family={Volodymyr\bibnamedelima Mnih},
+           familyi={V\bibinitperiod\bibinitdelim M\bibinitperiod},
+           given={David\bibnamedelimb Silver\bibnamedelimb et.\bibnamedelimi al},
+           giveni={D\bibinitperiod\bibinitdelim S\bibinitperiod\bibinitdelim e\bibinitperiod\bibinitdelim a\bibinitperiod},
+           suffix={Koray\bibnamedelima Kavukcuoglu},
+           suffixi={K\bibinitperiod\bibinitdelim K\bibinitperiod}}}%
+      }
+      \list{publisher}{1}{%
+        {Nature Publishing Group}%
+      }
+      \strng{namehash}{87f9d559eee392a2ccdcb77153386674}
+      \strng{fullhash}{87f9d559eee392a2ccdcb77153386674}
+      \strng{fullhashraw}{87f9d559eee392a2ccdcb77153386674}
+      \strng{bibnamehash}{87f9d559eee392a2ccdcb77153386674}
+      \strng{authorbibnamehash}{87f9d559eee392a2ccdcb77153386674}
+      \strng{authornamehash}{87f9d559eee392a2ccdcb77153386674}
+      \strng{authorfullhash}{87f9d559eee392a2ccdcb77153386674}
+      \strng{authorfullhashraw}{87f9d559eee392a2ccdcb77153386674}
+      \field{sortinit}{V}
+      \field{sortinithash}{afb52128e5b4dc4b843768c0113d673b}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{Nature}
+      \field{number}{7540}
+      \field{title}{Human-level control through deep reinforcement learning}
+      \field{volume}{518}
+      \field{year}{2015}
+      \field{pages}{529\bibrangedash 533}
+      \range{pages}{5}
     \endentry
     \entry{wang2022multi}{article}{}{}
       \name{author}{7}{}{%

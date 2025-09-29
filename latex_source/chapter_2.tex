@@ -1,8 +1,8 @@
 \chapter{State of the Art in Optimal V2G Management}
-\vspace*{2cm} % spazio verticale prima della citazione
+\vspace*{1cm} % vertical space before the quote
 
 \begin{center}
-  \begin{minipage}{0.85\textwidth}
+  \begin{minipage}{0.8\textwidth}
     \begin{displayquote}
       \large\itshape
       ``The green transition is the most ambitious industrial transformation ever. 
@@ -12,7 +12,7 @@
   \end{minipage}
 \end{center}
 
-\vspace{0.5cm}
+\vspace{0.1cm}
 
 \begin{flushright}
   --- \textsc{Ursula von der Leyen}
@@ -20,71 +20,76 @@
 
 \section{The V2G Imperative: A Foundation of Europe's Green Transition}
 
-
-Europe finds itself at the confluence of two unprecedented and deeply interlinked transformations that are reshaping the continent’s technological, economic, and societal landscape: on one hand, the large-scale electrification of the transport sector, which involves a radical shift from internal combustion engines to battery electric and hydrogen-powered vehicles, and on the other hand, a comprehensive restructuring of energy systems, encompassing the integration of renewable generation, the modernization of grids, and the deployment of advanced storage and demand-side management solutions.
+Europe finds itself at the confluence of two unprecedented and deeply interlinked transformations reshaping its technological, economic, and societal landscape: the large-scale electrification of transport and a comprehensive restructuring of its energy systems. These parallel transitions involve a radical shift from internal combustion engines to battery electric vehicles and a simultaneous integration of renewable generation, grid modernization, and the deployment of advanced storage and demand-side management solutions.
 \noindent
 \\
-These transformations are not merely aspirational targets but constitute binding legal obligations established under the \textbf{European Green Deal}, which sets the overarching climate and sustainability strategy for the European Union, and the detailed \textbf{"Fit for 55"} legislative package, which translates these ambitions into enforceable measures aimed at reducing greenhouse gas emissions by 55\% by 2030 across multiple sectors \footcite{european_commission_2021_fit_for_55}.
- The policy architecture demands a 55\% reduction in net greenhouse gas emissions by 2030, necessitating the rapid elimination of internal combustion engines alongside a dramatic expansion of renewable energy capacity, as outlined in the revised \textbf{Renewable Energy Directive }(RED III). Electric Vehicles (EVs) occupy a central position in this transition, simultaneously driving decarbonisation efforts while presenting complex challenges for grid stability and management.
-\noindent
+These transformations are not merely aspirational targets but constitute binding legal obligations established under the \textbf{European Green Deal} and the detailed \textbf{"Fit for 55"} legislative package. These frameworks translate climate ambitions into enforceable measures aimed at reducing net greenhouse gas emissions by 55\% by 2030 \footcite{european_commission_2021_fit_for_55}. This policy architecture necessitates the rapid phase-out of fossil-fuelled vehicles alongside a dramatic expansion of renewable energy capacity, a goal further reinforced by the revised \textbf{Renewable Energy Directive (RED III)}, as detailed in Figure \ref{fig:RED3}.
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.8\linewidth]{red.png}
-    \caption{RED 3}
-    \label{fig:placeholder}
+    \includegraphics[width=0.9\linewidth]{red.png}
+    \caption{Comparison of key targets between the Renewable Energy Directive II (RED II, 2018) and the revised RED III (2023). The figure highlights the significantly increased ambition in RED III, including a higher overall renewable energy target, a more aggressive goal for the transport sector, and stricter requirements for traceability and legal enforceability. This escalation in policy ambition underscores the critical need for flexibility solutions like V2G to manage the grid and integrate higher shares of renewables.}
+    \label{fig:RED3}
 \end{figure}
+
 \noindent
-The initial response to mass EV adoption was characterised by considerable concern within the power sector. The prospect of millions of new electric vehicles was perceived primarily through the lens of risk—vast, temporally correlated loads threatening to overwhelm local distribution networks during peak evening hours. This perspective has undergone a fundamental reassessment. EVs are now recognised not as burdens to be managed, but as essential infrastructure for achieving Europe's energy transition objectives. 
+Electric Vehicles (EVs) occupy a central position in this transition, simultaneously driving decarbonisation efforts while presenting complex challenges for grid stability. The initial response to mass EV adoption was characterised by concern within the power sector, viewing millions of new EVs as vast, correlated loads threatening to overwhelm distribution networks. This perspective has undergone a fundamental reassessment. EVs are now recognised not as burdens to be managed, but as essential, flexible assets for achieving Europe's energy objectives.
 \\
 This conceptual shift finds its most concrete expression in \textbf{Vehicle-to-Grid (V2G)} technology, which fundamentally reimagines the role of electric vehicles within the energy system.
+\\
 \noindent
-V2G technology transforms what were previously passive, unidirectional energy consumers into active, distributed, and smart grid resources. The underlying opportunity is both elegant and substantial: private vehicles spend approximately 96\% of their operational lifetime parked and connected \footcite{evertsson2024investigating}, representing an enormous, geographically distributed, and currently underutilised repository of mobile energy storage capacity.
+V2G technology transforms previously passive, unidirectional energy consumers into active, distributed, and intelligent grid resources. The underlying opportunity is substantial: private vehicles spend approximately 96\% of their operational lifetime parked \footcite{evertsson2024investigating}, representing an enormous, geographically distributed, and currently underutilised repository of mobile energy storage.
+\\
 \noindent
-The transformative potential of V2G becomes apparent when individual vehicles are coordinated through centrally managed aggregation. While a single EV's contribution remains modest, a carefully orchestrated fleet can function as a unified entity—a \textbf{Virtual Power Plant (VPP)}. These software-defined power plants aggregate the collective capacity of numerous distributed energy resources, delivering grid services at scales and reliability levels comparable to conventional generation facilities. The rapid response characteristics of contemporary battery inverters, operating at millisecond timescales, enable these aggregated fleets to provide a comprehensive range of critical grid services. This capability extends beyond mere utility; it represents a prerequisite for maintaining stability in grids increasingly dependent on the variable and non-dispatchable output of wind and solar generation, thereby enabling the technical and economic viability of the EU's ambitious renewable energy targets \footcite{Tavakoli2019}.
-
-
+The transformative potential of V2G becomes apparent when individual vehicles are coordinated through centrally managed aggregation. While a single EV's contribution is modest, an orchestrated fleet can function as a unified \textbf{Virtual Power Plant (VPP)}. These software-defined power plants aggregate the collective capacity of numerous distributed energy resources, delivering grid services at scales comparable to conventional generation facilities. The rapid response characteristics of contemporary battery inverters, operating at millisecond timescales, enable these aggregated fleets to provide a comprehensive range of critical grid services. This capability is a prerequisite for maintaining stability in grids increasingly dependent on variable wind and solar generation, thereby enabling the technical and economic viability of the EU's ambitious renewable energy targets \footcite{Tavakoli2019}.
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.8\linewidth]{Reinforcement_learning_V2G_operations.png}
-    \caption{Reinforcement learning for V2G operations}
-    \label{fig:placeholder}
+    \includegraphics[width=0.9\linewidth]{Reinforcement_learning_V2G_operations.png}
+    \caption{Reinforcement learning (RL) applications in V2G from the perspective of participating entities. This diagram illustrates the multifaceted roles an EV fleet can play, orchestrated by an aggregator using RL. Key operations include grid-stabilizing services (frequency control, demand response), economic optimization (bidding and pricing strategies), and user-centric management (energy storage, battery health). The objectives range from reducing electricity costs and enhancing grid flexibility to ensuring data privacy and transaction security, showcasing the complexity of optimizing V2G operations.}
+    \label{fig:rl_v2g_ops}
 \end{figure}
 
-
-The grid services enabled by V2G technology form the technical foundation for the smart, resilient, and decarbonised electricity system required for Europe's energy future:
+\noindent
+The grid services enabled by V2G technology, many of which are illustrated in Figure \ref{fig:rl_v2g_ops}, form the technical foundation for the smart, resilient, and decarbonised electricity system required for Europe's energy future:
 \\
-    \noindent
- \textbf{Frequency Regulation:} Grid stability fundamentally depends on maintaining precise equilibrium between electricity supply and demand, manifested as stable grid frequency (50 Hz across European networks). Frequency deviations signal supply-demand imbalances that, if uncorrected, can trigger cascading failures across interconnected systems. V2G fleets, leveraging their rapid response capabilities, can participate directly in ancillary service markets including Frequency Containment Reserve (FCR) and automatic Frequency Restoration Reserve (aFRR). These systems can inject or absorb power within seconds of frequency deviations, providing immediate counteraction to imbalances and preventing system-wide failures or blackouts \footcite{alfaverh2022optima, white2011vehicle}.
-   \\
-    \noindent 
-\textbf{Demand Response and Peak Shaving:} Through intelligent temporal shifting of charging activities to off-peak periods—when energy is abundant and inexpensive—combined with strategic discharging during peak demand when energy becomes scarce and costly, V2G systems can effectively flatten daily load profiles. This approach directly addresses the "duck curve" phenomenon associated with high solar photovoltaic penetration. Such load profile management reduces dependence on expensive and carbon-intensive "peaker" plants, typically gas or diesel turbine facilities, while potentially deferring or eliminating requirements for costly transmission and distribution infrastructure upgrades \footcite{orfanoudakis2024ev2gym, sadeghi2022deep}.
-    \begin{figure}[H]
-        \centering
-        \includegraphics[width=0.8\linewidth]{duck.png}
-        \caption{Duck curve- "La Duck Curve e la scomposizione della stagionalità dei
- consumi elettrici. Aspetti teorici e modelli statistici"-Bisetto Francesca}
-        \label{fig:placeholder}
-    \end{figure}
-    \noindent
-  \textbf{Renewable Energy Integration:} The most strategically significant contribution of V2G lies in addressing renewable energy intermittency challenges. V2G fleets function as large-scale energy buffers, absorbing excess solar and wind generation during periods of high production and low demand that would otherwise require curtailment. This stored renewable energy can subsequently be released during periods of low generation, such as evening hours or periods of limited wind availability. This mechanism directly increases the utilisation efficiency of renewable energy resources, supporting the integration objectives outlined in RED III while enhancing overall energy system efficiency.
+\noindent
+\textbf{Frequency Regulation:} Grid stability depends on maintaining a precise equilibrium between electricity supply and demand, manifested as a stable grid frequency (50 Hz in Europe). Deviations signal imbalances that can trigger cascading failures. V2G fleets, with their rapid-response inverters, can participate in ancillary service markets like Frequency Containment Reserve (FCR) and automatic Frequency Restoration Reserve (aFRR), injecting or absorbing power within seconds to counteract deviations and prevent blackouts \footcite{alfaverh2022optima, white2011vehicle}.
+\\
+\noindent 
+\textbf{Demand Response and Peak Shaving:} By intelligently shifting charging to off-peak periods and strategically discharging during peak demand, V2G systems flatten daily load profiles. This directly mitigates the "duck curve" phenomenon (Figure \ref{fig:duck_curve}) associated with high solar penetration. Such load management reduces reliance on expensive, carbon-intensive "peaker" plants and can defer or eliminate costly grid infrastructure upgrades \footcite{orfanoudakis2024ev2gym, sadeghi2022deep}.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\linewidth]{duck.png}
+    \caption{The "Duck Curve" illustrating the evolution of net load on the California grid. Net load is the total electricity demand minus variable renewable energy generation. The deepening "belly" of the duck during midday reflects overgeneration from solar power, while the steep "neck" in the evening represents a rapid increase in demand as solar generation fades. This steep ramp poses a significant challenge for grid operators. V2G helps mitigate this by absorbing excess energy during the day (charging) and discharging it during the evening ramp to "flatten the curve".\footcite{Bisetto_Francesca}}
+    \label{fig:duck_curve}
+\end{figure}
 
 \noindent
-This vision is being actively incorporated into European legal frameworks and technical standards. The transformative \textbf{Alternative Fuels Infrastructure Regulation (AFIR, EU 2023/1804)} now requires that new public charging infrastructure incorporate smart charging capabilities and, critically, bidirectional power flow capacity. The technical implementation of these requirements is supported by standards such as \textbf{ISO 15118-20}, which provides detailed specifications for "Vehicle-to-Grid Communication Interface" (V2GCI) protocols, enabling secure, interoperable bidirectional power transfer. With mandatory implementation scheduled for 2027, the necessary technological and regulatory infrastructure is being systematically established. This regulatory push is supported by significant pilot initiatives including the \textbf{'SCALE'} and \textbf{'V2G Balearic Islands'} projects, which are conducting comprehensive testing of the technology's technical performance and economic viability under real-world operating conditions.
-
+\textbf{Renewable Energy Integration:} The most strategically significant contribution of V2G is addressing renewable energy intermittency. V2G fleets act as large-scale energy buffers, absorbing excess solar and wind generation that would otherwise be curtailed. This stored energy is then released during periods of low generation. This mechanism directly increases the utilisation of renewable resources, supporting the integration objectives of RED III and enhancing overall system efficiency.
+\\
 \noindent
-Despite this regulatory progress, substantial obstacles to widespread V2G deployment persist. These challenges span technical, economic, and social dimensions:
+\textbf{Economic and Market Optimization:} Beyond grid stability, V2G enables sophisticated market participation. As shown in Figure \ref{fig:rl_v2g_ops}, aggregators can deploy intelligent bidding and pricing strategies. Reinforcement learning algorithms can learn optimal policies for participating in day-ahead and intraday energy markets, maximizing revenue for both the aggregator and EV owners by capitalizing on price volatility.
+\\
+\noindent
+\textbf{User-Centric Management and Security:} For V2G to succeed, it must align with user needs and address concerns. This includes optimizing charging and discharging cycles to minimize \textbf{battery degradation}, thus preserving vehicle lifespan. Furthermore, as V2G involves financial transactions and data exchange, robust \textbf{cyber security} is paramount to protect user privacy and ensure transaction security, another key domain for intelligent management systems.
+\\
+\noindent
+This vision is being actively incorporated into European legal frameworks. The transformative \textbf{Alternative Fuels Infrastructure Regulation (AFIR, EU 2023/1804)} now mandates that new public charging infrastructure incorporate smart and bidirectional capabilities. This is supported by technical standards like \textbf{ISO 15118-20}, which specifies protocols for a "Vehicle-to-Grid Communication Interface" (V2GCI). With mandatory implementation scheduled for 2027, the necessary infrastructure is being systematically established, supported by pilot initiatives like the \textbf{'SCALE'} and \textbf{'V2G Balearic Islands'} projects.
+\\
+\noindent
+Despite this progress, substantial obstacles to widespread V2G deployment persist:
 
 \begin{itemize}
-    \item \textbf{Market and Economic Barriers:} A coherent, pan-European framework for compensating EV owners for grid service provision remains undeveloped. While value streams exist within energy markets, accessing these markets involves significant complexity. Critical issues such as \textbf{"double taxation"} of electricity—where energy faces taxation both during charging and discharging phases—create substantial economic disincentives that require resolution through coordinated policy intervention.
+    \item \textbf{Market and Economic Barriers:} A coherent, pan-European framework for compensating EV owners for grid services is still undeveloped. Accessing existing value streams is complex, and issues like the \textbf{"double taxation"} of electricity—taxing energy during both charging and discharging—create significant economic disincentives.
     
-    \item \textbf{Regulatory and Grid Access Challenges:} The recognition of EV fleets as qualified flexibility resources varies significantly across national electricity markets. Standardised procedures for grid interconnection, aggregator certification, secure data exchange protocols, and baseline calculation methodologies remain under development, creating a fragmented operational environment that complicates commercial deployment.
+    \item \textbf{Regulatory and Grid Access Challenges:} The qualification of EV fleets as flexibility resources varies across national markets. Standardised procedures for grid interconnection, aggregator certification, and secure data exchange are needed to reduce fragmentation and simplify commercial deployment.
     
-    \item \textbf{Technical and Consumer Adoption Barriers:} Consumer concerns regarding accelerated \textbf{battery degradation} and its implications for vehicle warranty coverage represent primary obstacles to participation. Additionally, the current installed base of EVs and charging infrastructure lacks universal bidirectional capability, although this limitation is being addressed through new vehicle platforms and evolving charging standards.
+    \item \textbf{Technical and Consumer Adoption Barriers:} Consumer concerns regarding accelerated \textbf{battery degradation} and its impact on vehicle warranties are primary obstacles. Furthermore, much of the current EV and charging infrastructure lacks bidirectional capability, though this is changing with new vehicle platforms and standards.
 \end{itemize}
 \noindent
-The fundamental challenge addressed by this thesis extends beyond simply enabling V2G technology to encompass its \textit{intelligent orchestration}. This requires developing control strategies sophisticated enough to operate within emerging regulatory frameworks, navigate economic uncertainties, accommodate diverse user preferences, and overcome existing technical constraints. The objective is to unlock the substantial potential of EVs as fundamental components of Europe's energy transition while ensuring system reliability, economic viability, and user acceptance.
+The fundamental challenge addressed by this thesis extends beyond simply enabling V2G technology to encompass its \textit{intelligent orchestration}. This requires developing control strategies sophisticated enough to operate within emerging regulatory frameworks, navigate economic uncertainties, accommodate diverse user preferences, and overcome technical constraints. The objective is to unlock the substantial potential of EVs as fundamental components of Europe's energy transition while ensuring system reliability, economic viability, and user acceptance.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -106,7 +111,7 @@ The fundamental challenge addressed by this thesis extends beyond simply enablin
   \end{minipage}
 \end{center}
 
-\vspace{0.5cm}
+\vspace{0.1cm}
 
 \begin{flushright}
   --- \textsc{Omar Ghattas \& Karen Willcox}, \textit{Uncertainty Quantification in Computational Science and Engineering} (2016)
@@ -148,7 +153,7 @@ Access to reliable, real-time, and historical market data remains crucial for bo
 
 \subsection{Buying vs. Selling: The Critical Retail-Wholesale Spread}
 \begin{center}
-  \begin{minipage}{0.85\textwidth}
+  \begin{minipage}{0.8\textwidth}
     \begin{displayquote}
       \large\itshape
       ``Price spreads, or marketing margins, are the difference between prices at different stages of the supply chain. 
@@ -157,7 +162,7 @@ Access to reliable, real-time, and historical market data remains crucial for bo
   \end{minipage}
 \end{center}
 
-\vspace{0.5cm}
+\vspace{0.1cm}
 
 \begin{flushright}
   --- \textsc{Sebastien Pouliot \& Lee L. Schulz}, \textit{Measuring Price Spreads in Red Meat} (2016)
@@ -192,7 +197,7 @@ Before examining control algorithms, establishing clear, high-fidelity models of
 \subsection{The Grid-Interactive EV as a Controllable Asset}
 
 \begin{center}
-  \begin{minipage}{0.85\textwidth}
+  \begin{minipage}{0.8\textwidth}
     \begin{displayquote}
       \large\itshape
       "Electric car sales continue to break records globally, particularly in China and other emerging economies."\\[1em]
@@ -201,13 +206,12 @@ Before examining control algorithms, establishing clear, high-fidelity models of
     
   \end{minipage} 
 \end{center}
+\vspace{0.1cm}
 
 \begin{flushright}
   \textsc{\textbf{International Energy Agency (IEA)}
 \footnote{\href{https://www.iea.org/reports/global-ev-outlook-2025/executive-summary}{Global EV Outlook 2025 - Executive Summary}}}
 \end{flushright}
-
-
 
 \noindent
 From a power grid perspective, electric vehicles represent sophisticated mobile energy storage devices. For V2G applications, EVs can be characterised through several key state variables and parameters:
@@ -233,16 +237,16 @@ Combined with vehicle availability patterns—arrival and departure times plus u
 
 
 \begin{center}
-    \begin{minipage}{0.85\textwidth}
+    \begin{minipage}{0.8\textwidth}
         \large\itshape
         ``Reinforcement learning is learning what to do---how to map situations to actions---so as to maximize a numerical reward signal.''
     \end{minipage}
 \end{center}
 
-\vspace{0.5cm}
+\vspace{0.1cm}
 
 \begin{flushright}
---- Richard S. Sutton \& Andrew G. Barto, \textit{Reinforcement Learning: An Introduction} (2018) \cite{Sutton2018}
+--- Richard S. Sutton \& Andrew G. Barto, \textit{Reinforcement Learning: An Introduction} (2018) \footcite{Sutton2018}
 \end{flushright}
 
 \noindent
@@ -258,7 +262,7 @@ At each time step $t$, the agent receives a representation of the environment's 
     \centering
     % Placeholder for a standard RL interaction diagram
     \includegraphics[width=0.8\linewidth]{RL.png}
-    \caption{The agent-environment interaction loop in reinforcement learning \cite{Sutton2018}.}
+    \caption{The agent-environment interaction loop in reinforcement learning \footcite{Sutton2018}.}
     \label{fig:rl_loop}
 \end{figure}
 
@@ -273,8 +277,31 @@ For \textit{episodic tasks} that terminate, the return is the finite sum of futu
 where $\gamma \in [0, 1)$ is the \textbf{discount factor}. It determines the present value of future rewards, ensuring the infinite sum is finite and balancing immediate gratification against long-term gains. A value of $\gamma=0$ results in a myopic agent concerned only with maximizing immediate rewards.
 
 \section{The Language of Learning: Markov Decision Processes}
-The mathematical foundation of RL is the \textbf{Markov Decision Process (MDP)}, a formal framework for modeling decision-making in stochastic environments where outcomes are partly random and partly under the control of a decision maker.
 
+The mathematical foundation of Reinforcement Learning (RL) is the \textbf{Markov Decision Process (MDP)}. An MDP provides a formal framework for modeling decision-making in stochastic environments where outcomes are partly random and partly under the control of a decision-maker.
+\\
+\noindent
+An MDP is formally defined as a tuple \( \langle S, A, P, R \rangle \), where:
+\begin{itemize}
+    \item \(S\) is a finite set of states.
+    \item \(A\) is a finite set of actions.
+    \item \(P\) is the state transition probability function, \(P(s'|s, a)\), which represents the probability of transitioning to state \(s'\) from state \(s\) after taking action \(a\).
+    \item \(R\) is the reward function, \(R(s, a, s')\), which is the immediate reward received after transitioning from state \(s\) to state \(s'\) as a result of action \(a\).
+\end{itemize}
+
+A key assumption in an MDP is that the environment is fully observable, meaning the agent knows its current state with certainty. However, in many real-world scenarios, the agent may not have complete information about its state. This is where the \textbf{Partially Observable Markov Decision Process (POMDP)} comes into play.
+\\
+\noindent
+A POMDP extends the MDP framework to situations where the agent's observations of the environment are incomplete or noisy. A POMDP is represented by a tuple \( \langle S, A, P, R, \Omega, O \rangle \), which includes all the elements of an MDP plus:
+\begin{itemize}
+    \item \(\Omega\) is a finite set of observations the agent can receive from the environment.
+    \item \(O\) is the observation probability function, \(O(o|s', a)\), which is the probability of observing \(o\) after transitioning to state \(s'\) having taken action \(a\).
+\end{itemize}
+
+The fundamental difference between an MDP and a POMDP lies in the agent's perception of the environment's state. In an MDP, the agent directly observes the state \(s\). In a POMDP, the agent receives an observation \(o\) and must infer a belief, which is a probability distribution over the possible states, to make a decision. As discussed in Sadeghi's work, this partial observability in POMDPs introduces a significant layer of complexity because the agent must act based on a belief state rather than a certain state.\footcite{sadeghi2022deep}
+\\
+\noindent
+In our current discussion, we will focus on the MDP framework, assuming that the state of the environment is fully observable to the agent.
 \subsection{The Markov Property}
 The future is independent of the past given the present. A state signal $S_t$ is said to have the \textbf{Markov Property} if the environment's response at time $t+1$ depends only on the state and action at time $t$. The probability of transitioning to state $s'$ and receiving reward $r$ is independent of all previous states and actions:
 \begin{equation}
@@ -314,7 +341,7 @@ This is the \textbf{Bellman optimality equation}. Solving it means finding the o
 
 \section{Solution Methods: A Unified Perspective}
 \subsection{Generalized Policy Iteration (GPI)}
-Most RL algorithms can be understood within the framework of \textbf{Generalized Policy Iteration (GPI)}, as described in Chapter 4 of \cite{Sutton2018}. GPI refers to the general idea of letting two interacting processes, policy evaluation and policy improvement, work towards a common optimal solution.
+Most RL algorithms can be understood within the framework of \textbf{Generalized Policy Iteration (GPI)}, as described in Chapter 4 of \footcite{Sutton2018}. GPI refers to the general idea of letting two interacting processes, policy evaluation and policy improvement, work towards a common optimal solution.
 
 \begin{itemize}
     \item \textbf{Policy Evaluation}: Given a policy $\pi$, compute its value function $v_\pi$. This step aims to make the value function consistent with the current policy.
@@ -324,7 +351,7 @@ Most RL algorithms can be understood within the framework of \textbf{Generalized
 These two processes compete in the short term (improving the policy makes the value function inaccurate) but cooperate in the long term to converge to the optimal policy and optimal value function. \textbf{Dynamic Programming (DP)} methods like policy iteration and value iteration are classic examples of GPI, assuming a perfect model of the environment.
 
 \section{Learning from Experience: MC and TD Methods}
-When a model of the environment is not available, we must learn from sampled experience. Chapters 5 and 6 of \cite{Sutton2018} introduce two primary model-free approaches.
+When a model of the environment is not available, we must learn from sampled experience. Chapters 5 and 6 of \footcite{Sutton2018} introduce two primary model-free approaches.
 
 \subsection{Monte Carlo (MC) Methods}
 MC methods learn value functions by averaging the returns from sample episodes.
@@ -363,7 +390,47 @@ This separation of concerns allows for direct policy optimization in continuous 
 
 
 \section{The Rise of Deep Reinforcement Learning for V2G Control}
+The convergence of Reinforcement Learning (RL) with the substantial representational capabilities of deep neural networks has given rise to Deep Reinforcement Learning (DRL), which currently represents the leading edge of V2G control research. The development of DRL algorithms has yielded a comprehensive toolkit, primarily divided into two main families: off-policy and on-policy methods, each exhibiting distinct operational characteristics. The following figure illustrates the evolutionary relationships between the algorithms that will be discussed, highlighting how newer ideas were built to overcome the limitations of their predecessors.
 
+\subsection{Neural Networks as Function Approximators}
+
+Neural networks are computational models, inspired by the interconnected structure of neurons in the human brain, designed to recognize complex patterns in data. They are comprised of layers of interconnected nodes, or \textit{neurons}. Each neuron receives inputs, performs a weighted sum of these inputs, adds a bias, and then passes the result through a non-linear activation function to produce an output. This process can be described mathematically for a single neuron as:
+
+\begin{equation}
+ y = f\left(\sum_{i=1}^{n} w_i x_i + b\right)
+\end{equation}
+
+Here, $y$ represents the neuron's output, $x_i$ are the inputs, which are multiplied by their corresponding weights $w_i$. A bias, $b$, is added to the weighted sum. This entire result is then transformed by an activation function, $f$. The role of the activation function is crucial as it introduces non-linearity, enabling the network to learn and model complex, non-linear relationships in the data. Common examples of activation functions include the Sigmoid, hyperbolic tangent (tanh), and the Rectified Linear Unit (ReLU).
+\\
+\noindent
+A neural network is constructed with an input layer, which receives the raw data, one or more \textit{hidden layers} where the computation occurs, and an output layer that produces the final prediction or decision. When a network contains multiple hidden layers, it is termed a \textit{deep neural network} (DNN). This depth allows the network to learn a hierarchical representation of features from the data, where each layer learns to identify progressively more complex patterns.
+
+\section{The Fundamental Role of DNNs in DRL}
+
+In the domain of Deep Reinforcement Learning (DRL), deep neural networks play a fundamentally transformative role by serving as powerful function approximators. Traditional reinforcement learning methods, which often rely on tabular representations for value functions or policies (e.g., Q-tables), become impractical and suffer from the "curse of dimensionality" when dealing with large, high-dimensional, or continuous state and action spaces, which are common in real-world problems like V2G control. Deep neural networks overcome this limitation by learning a generalized mapping from states to values or actions, allowing the agent to handle previously intractable problems.
+\\
+\noindent
+A prime example of this is the Deep Q-Network (DQN) algorithm, where a DNN is used to approximate the action-value function, $Q(s, a)$. The network receives the environment's state, $s$, as input and outputs the estimated Q-value for each possible action, $a$. The network is trained by minimizing a loss function, typically the mean squared error between the predicted Q-value and a target Q-value derived from the Bellman equation. The loss function is given by:
+
+\begin{equation}
+ L(\theta) = \mathbb{E}_{(s, a, r, s') \sim D} \left[ \left( r + \gamma \max_{a'} Q(s', a'; \theta^{-}) - Q(s, a; \theta) \right)^2 \right]
+\end{equation}
+
+In this equation, $\theta$ are the weights of the neural network being trained, while $\theta^{-}$ are the weights of a separate, periodically updated target network used to stabilize training. The term $r + \gamma \max_{a'} Q(s', a'; \theta^{-})$ is the target value, and the expectation $\mathbb{E}$ is taken over a batch of experiences $(s, a, r, s')$ sampled from a replay memory $D$. This approach enabled the agent to learn directly from high-dimensional sensory inputs, like raw pixels in Atari games, achieving human-level performance.\footcite{Mnih2015}
+\\
+\noindent
+Beyond value approximation, deep neural networks are also pivotal in policy gradient methods, where they directly parameterize the agent's policy, $\pi$. In this setup, the network, often called a \textit{policy network}, takes a state as input and outputs a probability distribution over the possible actions. The network's weights, $\theta$, are updated by performing gradient ascent on an objective function, $J(\theta)$, which represents the expected cumulative reward. The policy gradient theorem provides a way to update the policy parameters:
+
+\begin{equation}
+ \nabla_{\theta} J(\theta) = \mathbb{E}_{\tau \sim \pi_{\theta}} \left[ \sum_{t=0}^{T} \nabla_{\theta} \log \pi_{\theta}(a_t|s_t) G_t \right]
+\end{equation}
+
+Here, the gradient of the objective function is calculated as the expectation of the sum of the gradients of the log probabilities of the actions taken, each weighted by the cumulative future reward, $G_t$. This effectively increases the probability of actions that lead to higher returns.\footcite{Sutton2018}
+\\
+\noindent
+The integration of deep neural networks has thus marked a significant leap in the quality and capability of reinforcement learning. By enabling agents to learn from high-dimensional raw data and generalize across vast state spaces, DRL has unlocked solutions to complex control problems previously considered out of reach, and it now stands as a critical tool for advancing research in V2G control systems.\footcite{Qiu2022}
+\\
+\noindent
 The convergence of RL with the substantial representational capabilities of deep neural networks has given rise to \textbf{Deep Reinforcement Learning (DRL)}, which currently represents the leading edge of V2G control research. The development of DRL algorithms has yielded a comprehensive toolkit, primarily divided into two main families: off-policy and on-policy methods, each exhibiting distinct operational characteristics.
 The following figure illustrates the evolutionary relationships between the algorithms that  will be discussed, highlighting how newer ideas were built to overcome the limitations of their predecessors.
 
@@ -420,12 +487,6 @@ A foundational algorithm that successfully extended Deep Q-Networks (DQN) to hig
 \noindent
 Despite these limitations, the foundational concepts of DDPG have been successfully applied and extended in various V2G contexts. For instance, Wang et al. \footcite{wang2022electrical} propose a DDPG-based system for demand response management, demonstrating its potential to reduce charging costs. But can such an approach scale to large, complex systems? Zhang et al. \footcite{Zhang2023} tackle this question by introducing a transfer learning framework built on DDPG, aiming to coordinate large-scale V2G operations with renewable energy sources. Their work puts forth a testable hypothesis: that knowledge learned in a small-scale environment can be effectively transferred to a large-scale one, thus mitigating the sample inefficiency of DRL. This thesis will implicitly test this hypothesis by evaluating the performance of DRL agents in scenarios of varying complexity.
 
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.5\linewidth]{DDPG.png}
-    \caption{DDPG Structure}
-    \label{fig:placeholder}
-\end{figure}
 
 
 \paragraph{Twin Delayed DDPG (TD3)}
@@ -434,15 +495,8 @@ Developed as a direct successor to address DDPG's instabilities, TD3 introduces 
 \\
 \noindent
 The effectiveness of TD3 in V2G scheduling has been explored by multiple researchers. For example, Dou et al. \footcite{Dou} apply a TD3-based approach to the optimal scheduling of EV charging and discharging, demonstrating its ability to find profitable strategies. But can this profitability be achieved without negatively impacting the grid? Ding et al. \footcite{Ding} investigate this by using TD3 for charging scheduling while considering distribution network voltage stability. Their work provides a clear, falsifiable test of the hypothesis that a DRL agent can learn to balance its own economic incentives with the physical constraints of the power grid. This thesis builds upon this line of inquiry by incorporating explicit penalties for transformer overloads into the reward function, directly testing the agent's ability to learn this trade-off.
-
-\paragraph{Soft Actor-Critic (SAC)}
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.5\linewidth]{SAC.png}
-    \caption{SAC Structure}
-    \label{fig:placeholder}
-\end{figure}
-
+\\
+\noindent
 SAC represents a state-of-the-art off-policy algorithm for continuous control, recognized for superior sample efficiency and stability \footcite{haarnoja2019soft}. Its fundamental innovation involves the \textbf{maximum entropy framework}. The agent's objective is modified to maximize both expected reward and policy entropy. This entropy bonus encourages agents to act as randomly as possible while maintaining task success, promoting broader exploration, improved noise robustness, and reduced risk of poor local optima convergence.
 \\
 \noindent
@@ -543,7 +597,7 @@ U = [u_{t|t}, \dots, u_{t+N-1|t}]
 \] 
 that minimize a cost function $J$ over a prediction horizon $N$.
 \noindent
-A key insight from \cite{borrelli2017predictive} is that in this formulation, the control law is defined \textbf{implicitly} as the result of an optimization problem. There is no pre-computed algebraic function; the control action is discovered at each step through a numerical computation. This approach is powerful due to its directness but is fundamentally limited by the need to perform this computation online. The authors of \cite{borrelli2017predictive} highlight this on page xii, stating: 
+A key insight from \footcite{borrelli2017predictive} is that in this formulation, the control law is defined \textbf{implicitly} as the result of an optimization problem. There is no pre-computed algebraic function; the control action is discovered at each step through a numerical computation. This approach is powerful due to its directness but is fundamentally limited by the need to perform this computation online. The authors of \footcite{borrelli2017predictive} highlight this on page xii, stating: 
 \begin{quote}
 “One limitation of MPC is that running the optimization algorithm on-line at each time step requires substantial time and computational resources.”
 \end{quote}
@@ -559,12 +613,12 @@ x_{\min} \leq\ &x_{t+k|t} \leq x_{\max} \\
 u_{\min} \leq\ &u_{t+k|t} \leq u_{\max}
 \end{align}
 \noindent
-At each time step $t$, this complete problem is solved, but only the first action of the optimal sequence, $u_{t|t}^*$, is applied to the system. The process then repeats at the next time step, $t+1$, using new system state measurements. This feedback mechanism, known as a \textit{receding horizon} strategy, makes MPC robust to disturbances and model mismatch \cite{camacho2013model}.
+At each time step $t$, this complete problem is solved, but only the first action of the optimal sequence, $u_{t|t}^*$, is applied to the system. The process then repeats at the next time step, $t+1$, using new system state measurements. This feedback mechanism, known as a \textit{receding horizon} strategy, makes MPC robust to disturbances and model mismatch \footcite{camacho2013model}.
 
 
 \section{Improvement of the Standard Fixed-Horizon MPC Formulation}
 
-Model Predictive Control (MPC) addresses the control of a discrete-time nonlinear system, as described in \cite{krener2016adaptive}:
+Model Predictive Control (MPC) addresses the control of a discrete-time nonlinear system, as described in \footcite{krener2016adaptive}:
 \begin{equation}
     x^{+} = f(x, u)
     \label{eq:system}
@@ -574,22 +628,22 @@ where $x \in \mathbb{R}^n$ is the state and $u \in \mathbb{R}^m$ is the control 
     V_N(x) = \sum_{k=0}^{N-1} l(x(k), u(k)) + V_f(x(N))
     \label{eq:cost}
 \end{equation}
-This minimization is subject to system dynamics, state and input constraints, and the crucial terminal constraint $x(N) \in \mathcal{X}_f$. Here, $\mathcal{X}_f$ is a terminal set where stability is guaranteed, and $V_f(x)$ is a terminal cost that acts as a control Lyapunov function on $\mathcal{X}_f$ \cite{krener2016adaptive}.
+This minimization is subject to system dynamics, state and input constraints, and the crucial terminal constraint $x(N) \in \mathcal{X}_f$. Here, $\mathcal{X}_f$ is a terminal set where stability is guaranteed, and $V_f(x)$ is a terminal cost that acts as a control Lyapunov function on $\mathcal{X}_f$ \footcite{krener2016adaptive}.
 
 \subsection{Limitation of the Fixed-Horizon Approach}
-The primary drawback of this standard formulation is the static nature of the horizon $N$. The choice of $N$ represents a difficult compromise. As Krener points out on page 2, "One would expect when the current state $x$ is far from the operating point, a relatively long horizon $N$ is needed... but as the state approaches the operating point shorter and shorter horizons can be used" \cite{krener2016adaptive}. A fixed horizon long enough for the worst-case scenario is computationally wasteful for the majority of the operational time, as it increases the dimensionality of the optimization problem ($m \times N$) solved online.
+The primary drawback of this standard formulation is the static nature of the horizon $N$. The choice of $N$ represents a difficult compromise. As Krener points out on page 2, "One would expect when the current state $x$ is far from the operating point, a relatively long horizon $N$ is needed... but as the state approaches the operating point shorter and shorter horizons can be used" \footcite{krener2016adaptive}. A fixed horizon long enough for the worst-case scenario is computationally wasteful for the majority of the operational time, as it increases the dimensionality of the optimization problem ($m \times N$) solved online.
 
 \section{Improving the Formulation with Adaptive Horizon MPC (AHMPC)}
 
 The core innovation of Adaptive Horizon Model Predictive Control (AHMPC) is to make the horizon length state-dependent, adapting it online to be as short as possible while maintaining stability.
 
 \subsection{The Ideal (but Impractical) AHMPC Scheme}
-The paper first introduces an "ideal" version of AHMPC. This scheme relies on a function $N(x)$, defined as the minimum integer $N$ for which a feasible control sequence exists that drives the state $x$ into the terminal set $\mathcal{X}_f$ (see Assumption 4 in \cite{krener2016adaptive}). The resulting optimal cost and control law are then state-dependent through this horizon:
+The paper first introduces an "ideal" version of AHMPC. This scheme relies on a function $N(x)$, defined as the minimum integer $N$ for which a feasible control sequence exists that drives the state $x$ into the terminal set $\mathcal{X}_f$ (see Assumption 4 in \footcite{krener2016adaptive}). The resulting optimal cost and control law are then state-dependent through this horizon:
 \begin{align}
     V(x) &= V_{N(x)}(x) \label{eq:ideal_cost} \\
     \kappa(x) &= \kappa_{N(x)}(x) \label{eq:ideal_control}
 \end{align}
-As shown in Section II of the paper, this formulation leads to a valid Lyapunov function, confirming its stabilizing properties. However, this scheme is impractical because "in general, it is impossible to compute the function $N(x)$" \cite{krener2016adaptive}.
+As shown in Section II of the paper, this formulation leads to a valid Lyapunov function, confirming its stabilizing properties. However, this scheme is impractical because "in general, it is impossible to compute the function $N(x)$" \footcite{krener2016adaptive}.
 
 \subsection{The Practical AHMPC Algorithm}
 Section III of the paper presents a practical algorithm that circumvents the need to know $N(x)$ or even the terminal set $\mathcal{X}_f$ explicitly. The key idea is to use the terminal controller $\kappa_f(x)$ and terminal cost $V_f(x)$ to \textit{verify online} if the chosen horizon is sufficient.
@@ -602,7 +656,7 @@ At a given state $x$ and with a current horizon guess $N$, the algorithm is as f
         x^0(k+1) = f(x^0(k), \kappa_f(x^0(k))), \quad \text{for } k = N, \dots, N+L-1
     \end{equation}
     
-    \item \textbf{Verify Stability Conditions:} Check if the Lyapunov conditions, given as equations (18) and (19) in \cite{krener2016adaptive}, hold along this extended part of the trajectory:
+    \item \textbf{Verify Stability Conditions:} Check if the Lyapunov conditions, given as equations (18) and (19) in \footcite{krener2016adaptive}, hold along this extended part of the trajectory:
     \begin{align}
         V_f(x^0(k)) &\ge \alpha(|x^0(k)|) \\
         V_f(x^0(k)) - V_f(x^0(k+1)) &\ge \alpha(|x^0(k)|)
@@ -612,15 +666,15 @@ At a given state $x$ and with a current horizon guess $N$, the algorithm is as f
     \item \textbf{Adapt the Horizon:} The adaptation logic is described on page 5 of the paper:
     \begin{itemize}
         \item \textbf{If conditions hold:} The horizon $N$ is considered sufficient. The control $u^0(0)$ is applied. At the next state $x^+$, the controller attempts a shorter horizon, typically $N-1$.
-        \item \textbf{If conditions fail:} The horizon $N$ is too short. The controller "increase[s] N by 1 and... solve[s] the optimal control problem over the new horizon" from the same state $x$ \cite{krener2016adaptive}. This is repeated until a sufficient horizon is found.
+        \item \textbf{If conditions fail:} The horizon $N$ is too short. The controller "increase[s] N by 1 and... solve[s] the optimal control problem over the new horizon" from the same state $x$ \footcite{krener2016adaptive}. This is repeated until a sufficient horizon is found.
     \end{itemize}
 \end{enumerate}
 
 \subsection{Advantages of the AHMPC Formulation}
 This practical scheme offers significant advantages, as highlighted in the paper's conclusion:
 \begin{itemize}
-    \item \textbf{Computational Efficiency:} The primary advantage is that "the AHMPC horizon length decreases as the process is stabilized thereby lessening the on-line computational burden" \cite{krener2016adaptive}.
-    \item \textbf{No Explicit Terminal Set:} The algorithm cleverly "proceeds without knowing the minimum horizon length function $N(x)$ and without knowing the domain of Lyapunov stability of the terminal cost $V_f(x)$" \cite{krener2016adaptive}. This removes a major hurdle in traditional MPC design.
+    \item \textbf{Computational Efficiency:} The primary advantage is that "the AHMPC horizon length decreases as the process is stabilized thereby lessening the on-line computational burden" \footcite{krener2016adaptive}.
+    \item \textbf{No Explicit Terminal Set:} The algorithm cleverly "proceeds without knowing the minimum horizon length function $N(x)$ and without knowing the domain of Lyapunov stability of the terminal cost $V_f(x)$" \footcite{krener2016adaptive}. This removes a major hurdle in traditional MPC design.
 \end{itemize}
 
 \section{Further Enhancements via Learning-Based Approaches}
@@ -628,7 +682,7 @@ This practical scheme offers significant advantages, as highlighted in the paper
 While the practical AHMPC algorithm provides a significant advantage, it still relies on an iterative, trial-and-error process of increasing $N$ when the current horizon is insufficient. This can introduce computational delays.
 \\
 \noindent
-Modern data-driven techniques, such as Deep Reinforcement Learning (DRL), offer a path to mitigate this. DRL has proven effective for learning complex control policies for challenging problems, such as managing Electric Vehicle charging in volatile markets \cite{orfanoudakis2024ev2gym}. A hybrid approach could be envisioned where a DRL agent is trained offline to approximate the ideal horizon function $N(x)$. This learned function would provide a highly accurate initial guess for the horizon at each step, potentially eliminating the need for online iterative adjustments and combining the computational speed of a learned policy with the rigorous stability and constraint-handling framework of AHMPC.
+Modern data-driven techniques, such as Deep Reinforcement Learning (DRL), offer a path to mitigate this. DRL has proven effective for learning complex control policies for challenging problems, such as managing Electric Vehicle charging in volatile markets \footcite{orfanoudakis2024ev2gym}. A hybrid approach could be envisioned where a DRL agent is trained offline to approximate the ideal horizon function $N(x)$. This learned function would provide a highly accurate initial guess for the horizon at each step, potentially eliminating the need for online iterative adjustments and combining the computational speed of a learned policy with the rigorous stability and constraint-handling framework of AHMPC.
 
 
 
@@ -637,10 +691,10 @@ Modern data-driven techniques, such as Deep Reinforcement Learning (DRL), offer 
 %%%%%%%%%%%%%%%%%%%%%%
 \section{Explicit MPC: Offline Pre-computation}
 
-For systems with fast dynamics or limited online computational capacity, \textbf{Explicit MPC} offers an alternative approach. The key idea is to move the computational effort entirely offline. As detailed extensively in \cite{borrelli2017predictive}, this is achieved by treating the current state $x_t$ not as a fixed value, but as a vector of parameters. The constrained optimization problem is then solved offline for all possible initial states within a given range using \textbf{multi-parametric programming}.
+For systems with fast dynamics or limited online computational capacity, \textbf{Explicit MPC} offers an alternative approach. The key idea is to move the computational effort entirely offline. As detailed extensively in \footcite{borrelli2017predictive}, this is achieved by treating the current state $x_t$ not as a fixed value, but as a vector of parameters. The constrained optimization problem is then solved offline for all possible initial states within a given range using \textbf{multi-parametric programming}.
 
 \noindent
-The authors of \cite{borrelli2017predictive} frame this as the main contribution of their work (Preface, page xii): 
+The authors of \footcite{borrelli2017predictive} frame this as the main contribution of their work (Preface, page xii): 
 \begin{quote}
 “we want to determine the [...] feedback control law $f(x)$ that generates the optimal $u_k = f(x(k))$ \textbf{explicitly} and not just \textbf{implicitly} as the result of an optimization problem.”
 \end{quote}
@@ -650,16 +704,16 @@ The result is not an online algorithm, but a pre-computed, explicit control law,
 u^*(x_t) = \mathbf{F}_i x_t + \mathbf{g}_i \quad \text{if } x_t \in \mathcal{X}_i
 \end{equation}
 \noindent
-The state space is partitioned into a set of convex polyhedral regions $\mathcal{X}_i$, with a unique affine control law defined for each region. Online operation is thereby reduced from solving a QP to a simple function evaluation: first, a fast lookup operation identifies which region $\mathcal{X}_i$ the current state $x_t$ occupies, and second, the corresponding simple affine control law is applied. This trades a very high offline computational burden and significant memory requirements for extremely fast and deterministic online execution \cite{bemporad2013explicit, borrelli2017predictive}.
+The state space is partitioned into a set of convex polyhedral regions $\mathcal{X}_i$, with a unique affine control law defined for each region. Online operation is thereby reduced from solving a QP to a simple function evaluation: first, a fast lookup operation identifies which region $\mathcal{X}_i$ the current state $x_t$ occupies, and second, the corresponding simple affine control law is applied. This trades a very high offline computational burden and significant memory requirements for extremely fast and deterministic online execution \footcite{bemporad2013explicit, borrelli2017predictive}.
 \subsection{Deep Learning for an Efficient Explicit MPC Representation}
 
-While implicit MPC provides an optimal control action, its reliance on solving a numerical optimization problem at each sampling time makes it unsuitable for systems with fast dynamics. An alternative is Explicit MPC, where the control law---a Piecewise Affine (PWA) function of the state---is pre-computed offline. However, this approach suffers from a significant drawback: the number of polyhedral regions, and thus the memory required to store the corresponding affine laws, can grow exponentially with the prediction horizon and the number of constraints \cite{karg2020efficient}. This "curse of dimensionality" severely limits its practical application, especially in memory-constrained embedded systems.
+While implicit MPC provides an optimal control action, its reliance on solving a numerical optimization problem at each sampling time makes it unsuitable for systems with fast dynamics. An alternative is Explicit MPC, where the control law---a Piecewise Affine (PWA) function of the state---is pre-computed offline. However, this approach suffers from a significant drawback: the number of polyhedral regions, and thus the memory required to store the corresponding affine laws, can grow exponentially with the prediction horizon and the number of constraints \footcite{karg2020efficient}. This "curse of dimensionality" severely limits its practical application, especially in memory-constrained embedded systems.
 \\
 \noindent
-To address this challenge, the work in \cite{karg2020efficient} proposes a novel approach that leverages deep learning to create a highly efficient representation of the explicit MPC law. The methodology bridges the gap between the implicit and explicit approaches by using the former to train the latter.
+To address this challenge, the work in \footcite{karg2020efficient} proposes a novel approach that leverages deep learning to create a highly efficient representation of the explicit MPC law. The methodology bridges the gap between the implicit and explicit approaches by using the former to train the latter.
 
 \subsubsection{Training via Implicit MPC Data Generation}
-The core idea is to train a deep neural network to act as the explicit controller. This requires a comprehensive dataset of optimal state-action pairs, which is generated in a crucial offline phase. As detailed in \cite{karg2020efficient}, this is achieved by repeatedly using the \textbf{implicit MPC solver}:
+The core idea is to train a deep neural network to act as the explicit controller. This requires a comprehensive dataset of optimal state-action pairs, which is generated in a crucial offline phase. As detailed in \footcite{karg2020efficient}, this is achieved by repeatedly using the \textbf{implicit MPC solver}:
 \begin{enumerate}
     \item A large number of state points ($x_{tr,i}$) are sampled from the relevant operating region of the system.
     \item For each state point, the full MPC optimization problem (a Quadratic Program, or QP) is solved to find the corresponding optimal control input ($u^*_{tr,i}$). This is precisely the task an implicit MPC controller performs online.
@@ -668,14 +722,14 @@ The core idea is to train a deep neural network to act as the explicit controlle
 This dataset is then used to train a deep neural network via supervised learning, minimizing the error between the network's output and the optimal control actions. In essence, the computationally intensive implicit solver is used offline to "teach" a fast and compact neural network how to behave optimally.
 
 \subsubsection{Exact PWA Representation with Deep ReLU Networks}
-The power of this method stems from the theoretical insight that a deep neural network with Rectified Linear Unit (ReLU) activation functions is not merely an approximator but can, in fact, \textbf{exactly represent} the PWA function that defines the explicit MPC feedback law \cite{karg2020efficient}.
+The power of this method stems from the theoretical insight that a deep neural network with Rectified Linear Unit (ReLU) activation functions is not merely an approximator but can, in fact, \textbf{exactly represent} the PWA function that defines the explicit MPC feedback law \footcite{karg2020efficient}.
 \\
 \noindent
 The foundation of this exact representation lies in two main results. First, any scalar PWA function $K_i(x_t)$ (representing the $i$-th component of the control vector) can be expressed as the difference of two convex PWA functions:
 \begin{equation}
     K_i(x_t) = \gamma_i(x_t) - \eta_i(x_t)
 \end{equation}
-Second, any convex PWA function, which can be described as the pointwise maximum of a set of affine functions, can be exactly represented by a deep ReLU network. Specifically, a convex function composed of $N$ affine regions can be perfectly modeled by a network with width $n_x + 1$ (where $n_x$ is the state dimension) and depth $N$ \cite{karg2020efficient}.
+Second, any convex PWA function, which can be described as the pointwise maximum of a set of affine functions, can be exactly represented by a deep ReLU network. Specifically, a convex function composed of $N$ affine regions can be perfectly modeled by a network with width $n_x + 1$ (where $n_x$ is the state dimension) and depth $N$ \footcite{karg2020efficient}.
 
 Combining these findings, the complete multi-output MPC control law $K(x_t)$ can be exactly represented by a vector of $n_u$ pairs of deep neural networks, where each pair models the $\gamma_i$ and $\eta_i$ components for a single control output:
 \begin{equation}
@@ -688,7 +742,7 @@ Combining these findings, the complete multi-output MPC control law $K(x_t)$ can
 \end{equation}
 where $\mathcal{N}$ denotes a deep ReLU network with its corresponding set of parameters $\theta$.
 
-The particular advantage of using \textit{deep} neural networks lies in their representational efficiency. While the number of parameters (and thus, the memory footprint) of a deep network grows linearly with its depth, the number of linear regions it can represent can grow exponentially \cite{karg2020efficient}. This provides an inverse relationship to the problem of traditional Explicit MPC, allowing a deep network to capture an exponentially large number of control regions with only a modest, linearly growing memory cost. Consequently, this deep learning-based representation transforms the explicit MPC law into a highly compact and fast-to-evaluate form, overcoming the primary obstacle of prohibitive memory requirements and enabling the deployment of complex predictive controllers on embedded systems.
+The particular advantage of using \textit{deep} neural networks lies in their representational efficiency. While the number of parameters (and thus, the memory footprint) of a deep network grows linearly with its depth, the number of linear regions it can represent can grow exponentially \footcite{karg2020efficient}. This provides an inverse relationship to the problem of traditional Explicit MPC, allowing a deep network to capture an exponentially large number of control regions with only a modest, linearly growing memory cost. Consequently, this deep learning-based representation transforms the explicit MPC law into a highly compact and fast-to-evaluate form, overcoming the primary obstacle of prohibitive memory requirements and enabling the deployment of complex predictive controllers on embedded systems.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -802,7 +856,7 @@ As shown in Figure \ref{fig:voltage_curves_detailed}, LFP's remarkably flat volt
 
 The trade-offs between chemistries are summarized in Table \ref{tab:chem_comparison_detailed}. Safety remains paramount, with the primary risk being thermal runaway—a dangerous, self-sustaining exothermic reaction. This risk relates directly to cathode material chemical and thermal stability. Higher energy density generally means more energy packed into smaller mass, which can be released violently if cells are compromised. Consequently, critical temperatures for initiating thermal runaway are generally lower for higher energy density chemistries. LFP's stable phosphate-based structure makes it far more resistant to thermal runaway than nickel-based counterparts, a key reason for its growing popularity.
 
-\begin{table}[h!]
+\begin{table}[H]
 \centering
 \small
 \caption{Comparative analysis of key automotive battery chemistries, highlighting the trade-offs between performance and safety.}
