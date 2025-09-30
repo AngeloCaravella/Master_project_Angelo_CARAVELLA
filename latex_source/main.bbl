@@ -185,6 +185,38 @@
       \field{pages}{883\bibrangedash 898}
       \range{pages}{16}
     \endentry
+    \entry{Bemporad_Filippi}{article}{}{}
+      \name{author}{2}{}{%
+        {{hash=08cd00186045f5193f38f238d6caee47}{%
+           family={Bemporad},
+           familyi={B\bibinitperiod},
+           given={Alberto},
+           giveni={A\bibinitperiod}}}%
+        {{hash=13b8e0e1184a37ed619ca51918b4bce2}{%
+           family={Filippi},
+           familyi={F\bibinitperiod},
+           given={Carlo},
+           giveni={C\bibinitperiod}}}%
+      }
+      \strng{namehash}{79805f36a6c02e1e2c8d7f0276876b02}
+      \strng{fullhash}{79805f36a6c02e1e2c8d7f0276876b02}
+      \strng{fullhashraw}{79805f36a6c02e1e2c8d7f0276876b02}
+      \strng{bibnamehash}{79805f36a6c02e1e2c8d7f0276876b02}
+      \strng{authorbibnamehash}{79805f36a6c02e1e2c8d7f0276876b02}
+      \strng{authornamehash}{79805f36a6c02e1e2c8d7f0276876b02}
+      \strng{authorfullhash}{79805f36a6c02e1e2c8d7f0276876b02}
+      \strng{authorfullhashraw}{79805f36a6c02e1e2c8d7f0276876b02}
+      \field{sortinit}{B}
+      \field{sortinithash}{d7095fff47cda75ca2589920aae98399}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{Proceedings of the 40th IEEE Conference on Decision and Control}
+      \field{month}{12}
+      \field{title}{Suboptimal Explicit MPC via Approximate Multiparametric Quadratic Programming}
+      \field{year}{2001}
+      \field{pages}{4851\bibrangedash 4856}
+      \range{pages}{6}
+    \endentry
     \entry{birkl2017degradation}{article}{}{}
       \name{author}{4}{}{%
         {{hash=baf641ca48045dddf0ce669ea80044ca}{%
@@ -521,6 +553,54 @@
       \field{title}{Design and Testing of Online and Offline Optimization Algorithms for Vehicle-to-Grid (V2G) Industrial Applications}
       \field{type}{mathesis}
       \field{year}{2023}
+    \endentry
+    \entry{Curriculum_learning}{article}{}{}
+      \name{author}{5}{}{%
+        {{hash=ba575e0cbde43dcdf3cd8b33492757f6}{%
+           family={Freitag},
+           familyi={F\bibinitperiod},
+           given={Kilian},
+           giveni={K\bibinitperiod}}}%
+        {{hash=b6b5fa3d2202047e9d9c9cfc578e44dc}{%
+           family={Ceder},
+           familyi={C\bibinitperiod},
+           given={Kristian},
+           giveni={K\bibinitperiod}}}%
+        {{hash=0ceee44db9a5fe316aa2bf91318d0d4c}{%
+           family={Laezza},
+           familyi={L\bibinitperiod},
+           given={Rita},
+           giveni={R\bibinitperiod}}}%
+        {{hash=277af6833a995bd6b152363dfd00ca30}{%
+           family={{Å}kesson},
+           familyi={Å\bibinitperiod},
+           given={Knut},
+           giveni={K\bibinitperiod}}}%
+        {{hash=a4ec8e21031eab5b83e5df10ac31f6d6}{%
+           family={Chehreghani},
+           familyi={C\bibinitperiod},
+           given={Morteza\bibnamedelima Haghir},
+           giveni={M\bibinitperiod\bibinitdelim H\bibinitperiod}}}%
+      }
+      \list{institution}{1}{%
+        {Chalmers University of Technology, Gothenburg, Sweden; University of Gothenburg, Gothenburg, Sweden}%
+      }
+      \strng{namehash}{691c3477cb7244da92a53c56d4c6f5f2}
+      \strng{fullhash}{319f6df6825cc5e6eae7795280b70e9b}
+      \strng{fullhashraw}{319f6df6825cc5e6eae7795280b70e9b}
+      \strng{bibnamehash}{691c3477cb7244da92a53c56d4c6f5f2}
+      \strng{authorbibnamehash}{691c3477cb7244da92a53c56d4c6f5f2}
+      \strng{authornamehash}{691c3477cb7244da92a53c56d4c6f5f2}
+      \strng{authorfullhash}{319f6df6825cc5e6eae7795280b70e9b}
+      \strng{authorfullhashraw}{319f6df6825cc5e6eae7795280b70e9b}
+      \field{sortinit}{F}
+      \field{sortinithash}{2638baaa20439f1b5a8f80c6c08a13b4}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{arXiv preprint arXiv:2410.16790}
+      \field{note}{Emails: \{tamino, cederk, laezza, knut.akesson, morteza.chehreghani\}@chalmers.se}
+      \field{title}{Curriculum Reinforcement Learning for Complex Reward Functions}
+      \field{year}{2024}
     \endentry
     \entry{fujimoto2018addressing}{inproceedings}{}{}
       \name{author}{3}{}{%
@@ -1436,6 +1516,52 @@
       \verb{doi}
       \verb 10.1109/TCST.2013.2295737
       \endverb
+    \endentry
+    \entry{Curriculum_learning_2}{article}{}{}
+      \name{author}{4}{}{%
+        {{hash=600ecfe48dd071b6d5fa724bb8a3101b}{%
+           family={Pocius},
+           familyi={P\bibinitperiod},
+           given={Rey},
+           giveni={R\bibinitperiod}}}%
+        {{hash=53b9365115c808b8efcd9ed093aabf77}{%
+           family={Isele},
+           familyi={I\bibinitperiod},
+           given={David},
+           giveni={D\bibinitperiod}}}%
+        {{hash=5df48ee49adad17520c9f344641c9e20}{%
+           family={Roberts},
+           familyi={R\bibinitperiod},
+           given={Mark},
+           giveni={M\bibinitperiod}}}%
+        {{hash=92a14ac89f93c224dc339aaaa178fd94}{%
+           family={Aha},
+           familyi={A\bibinitperiod},
+           given={David\bibnamedelima W.},
+           giveni={D\bibinitperiod\bibinitdelim W\bibinitperiod}}}%
+      }
+      \list{institution}{1}{%
+        {Oregon State University; University of Pennsylvania; Naval Research Laboratory}%
+      }
+      \list{location}{1}{%
+        {Corvallis, OR, USA; Philadelphia, PA, USA; Washington, DC, USA}%
+      }
+      \strng{namehash}{6bc57409e458b32bb6f328e2d93d4e70}
+      \strng{fullhash}{bef06158f3724398c9fd59a35270f05d}
+      \strng{fullhashraw}{bef06158f3724398c9fd59a35270f05d}
+      \strng{bibnamehash}{6bc57409e458b32bb6f328e2d93d4e70}
+      \strng{authorbibnamehash}{6bc57409e458b32bb6f328e2d93d4e70}
+      \strng{authornamehash}{6bc57409e458b32bb6f328e2d93d4e70}
+      \strng{authorfullhash}{bef06158f3724398c9fd59a35270f05d}
+      \strng{authorfullhashraw}{bef06158f3724398c9fd59a35270f05d}
+      \field{sortinit}{P}
+      \field{sortinithash}{ff3bcf24f47321b42cb156c2cc8a8422}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{Proceedings of the AAAI Conference on Artificial Intelligence}
+      \field{note}{Oregon State University, School of EECS, Corvallis, OR 97331, USA | pociusr@oregonstate.edu; University of Pennsylvania, School of EAS, Philadelphia, Pennsylvania, 19104, USA | isele@seas.upenn.edu; Naval Research Laboratory, Code 5514; Washington, DC, 20375, USA}
+      \field{title}{Comparing Reward Shaping, Visual Hints, and Curriculum Learning}
+      \field{year}{2019}
     \endentry
     \entry{Qiu2022}{article}{}{}
       \name{author}{5}{}{%

@@ -196,22 +196,6 @@ Before examining control algorithms, establishing clear, high-fidelity models of
 
 \subsection{The Grid-Interactive EV as a Controllable Asset}
 
-\begin{center}
-  \begin{minipage}{0.8\textwidth}
-    \begin{displayquote}
-      \large\itshape
-      "Electric car sales continue to break records globally, particularly in China and other emerging economies."\\[1em]
-
-    \end{displayquote} 
-    
-  \end{minipage} 
-\end{center}
-\vspace{0.1cm}
-
-\begin{flushright}
-  \textsc{\textbf{International Energy Agency (IEA)}
-\footnote{\href{https://www.iea.org/reports/global-ev-outlook-2025/executive-summary}{Global EV Outlook 2025 - Executive Summary}}}
-\end{flushright}
 
 \noindent
 From a power grid perspective, electric vehicles represent sophisticated mobile energy storage devices. For V2G applications, EVs can be characterised through several key state variables and parameters:
@@ -288,7 +272,7 @@ An MDP is formally defined as a tuple \( \langle S, A, P, R \rangle \), where:
     \item \(P\) is the state transition probability function, \(P(s'|s, a)\), which represents the probability of transitioning to state \(s'\) from state \(s\) after taking action \(a\).
     \item \(R\) is the reward function, \(R(s, a, s')\), which is the immediate reward received after transitioning from state \(s\) to state \(s'\) as a result of action \(a\).
 \end{itemize}
-
+\noindent
 A key assumption in an MDP is that the environment is fully observable, meaning the agent knows its current state with certainty. However, in many real-world scenarios, the agent may not have complete information about its state. This is where the \textbf{Partially Observable Markov Decision Process (POMDP)} comes into play.
 \\
 \noindent
@@ -297,7 +281,14 @@ A POMDP extends the MDP framework to situations where the agent's observations o
     \item \(\Omega\) is a finite set of observations the agent can receive from the environment.
     \item \(O\) is the observation probability function, \(O(o|s', a)\), which is the probability of observing \(o\) after transitioning to state \(s'\) having taken action \(a\).
 \end{itemize}
-
+\begin{figure}[H]
+    \centering
+   
+    \includegraphics[width=0.8\linewidth]{MDP.png}
+    \caption{Differences between  POMDP and MDP  \footcite{sadeghi2022deep}.}
+    \label{fig:mdp}
+\end{figure}
+\noindent
 The fundamental difference between an MDP and a POMDP lies in the agent's perception of the environment's state. In an MDP, the agent directly observes the state \(s\). In a POMDP, the agent receives an observation \(o\) and must infer a belief, which is a probability distribution over the possible states, to make a decision. As discussed in Sadeghi's work, this partial observability in POMDPs introduces a significant layer of complexity because the agent must act based on a belief state rather than a certain state.\footcite{sadeghi2022deep}
 \\
 \noindent
@@ -339,7 +330,6 @@ The ultimate goal is to find an \textbf{optimal policy}, $\pi_*$, which is a pol
 \end{equation}
 This is the \textbf{Bellman optimality equation}. Solving it means finding the optimal policy.
 
-\section{Solution Methods: A Unified Perspective}
 \subsection{Generalized Policy Iteration (GPI)}
 Most RL algorithms can be understood within the framework of \textbf{Generalized Policy Iteration (GPI)}, as described in Chapter 4 of \footcite{Sutton2018}. GPI refers to the general idea of letting two interacting processes, policy evaluation and policy improvement, work towards a common optimal solution.
 
@@ -347,7 +337,7 @@ Most RL algorithms can be understood within the framework of \textbf{Generalized
     \item \textbf{Policy Evaluation}: Given a policy $\pi$, compute its value function $v_\pi$. This step aims to make the value function consistent with the current policy.
     \item \textbf{Policy Improvement}: Given a value function $v$, improve the policy by making it greedy with respect to $v$. For a given state $s$, the new policy will select the action $a$ that maximizes $q_\pi(s, a)$.
 \end{itemize}
-
+\noindent
 These two processes compete in the short term (improving the policy makes the value function inaccurate) but cooperate in the long term to converge to the optimal policy and optimal value function. \textbf{Dynamic Programming (DP)} methods like policy iteration and value iteration are classic examples of GPI, assuming a perfect model of the environment.
 
 \section{Learning from Experience: MC and TD Methods}
@@ -359,7 +349,7 @@ MC methods learn value functions by averaging the returns from sample episodes.
     \item \textbf{Principle}: An update to $V(S_t)$ is made only at the end of an episode.
     \item \textbf{Update Target}: The target for the update is the actual, complete return $G_t$.
     \item \textbf{Update Rule} (Constant-$\alpha$): $V(S_t) \leftarrow V(S_t) + \alpha [G_t - V(S_t)]$
-    \item \textbf{Properties}: MC methods are unbiased but can have high variance and are only applicable to episodic tasks. They do not \textit{bootstrap}.
+    \item \textbf{Properties}: MC methods are unbiased but can have high variance and are only applicable to episodic tasks. They do not \textit{bootstrap} \footnote{It means that MC updates only from complete sampled returns.}.
 \end{itemize}
 
 \subsection{Temporal-Difference (TD) Learning}
@@ -368,7 +358,7 @@ TD learning is a central and novel idea in RL, combining ideas from both MC and 
     \item \textbf{Principle}: TD methods update the value estimate for a state based on the observed reward and the estimated value of the successor state. They learn from incomplete episodes.
     \item \textbf{Update Target}: The target is an estimate of the return, called the TD Target: $R_{t+1} + \gamma V(S_{t+1})$.
     \item \textbf{Update Rule} (TD(0)): $V(S_t) \leftarrow V(S_t) + \alpha [R_{t+1} + \gamma V(S_{t+1}) - V(S_t)]$
-    \item \textbf{Properties}: TD methods \textit{bootstrap}—they update a guess from a guess. This introduces bias but often leads to lower variance and faster learning. They are naturally implemented in an online, fully incremental fashion.
+    \item \textbf{Properties}: TD methods \textit{bootstrap}:they update a guess from a guess. This introduces bias but often leads to lower variance and faster learning. They are naturally implemented in an online, fully incremental fashion.
 \end{itemize}
 
 \section{Actor-Critic Architectures}
@@ -381,7 +371,7 @@ The \textbf{Actor-Critic} architecture provides a powerful and widely adopted me
     \end{equation}
     \item \textbf{The Actor}: Represents the policy, $\pi_\theta(a|s)$, parameterized by $\theta$. It receives the current state as input and outputs an action. It uses the TD error from the critic as a learning signal to update its parameters via policy gradient methods, improving its strategy over time.
 \end{itemize}
-
+\noindent
 This separation of concerns allows for direct policy optimization in continuous or large action spaces while leveraging the stable learning dynamics of TD-based value estimation.
 % ===================================================================
 % REWARD SHAPING SECTION
@@ -399,23 +389,29 @@ Neural networks are computational models, inspired by the interconnected structu
 \begin{equation}
  y = f\left(\sum_{i=1}^{n} w_i x_i + b\right)
 \end{equation}
-
+\noindent
 Here, $y$ represents the neuron's output, $x_i$ are the inputs, which are multiplied by their corresponding weights $w_i$. A bias, $b$, is added to the weighted sum. This entire result is then transformed by an activation function, $f$. The role of the activation function is crucial as it introduces non-linearity, enabling the network to learn and model complex, non-linear relationships in the data. Common examples of activation functions include the Sigmoid, hyperbolic tangent (tanh), and the Rectified Linear Unit (ReLU).
 \\
 \noindent
-A neural network is constructed with an input layer, which receives the raw data, one or more \textit{hidden layers} where the computation occurs, and an output layer that produces the final prediction or decision. When a network contains multiple hidden layers, it is termed a \textit{deep neural network} (DNN). This depth allows the network to learn a hierarchical representation of features from the data, where each layer learns to identify progressively more complex patterns.
+
+\begin{figure}[H]
+    \centering
+   
+    \includegraphics[width=0.8\linewidth]{NN.png}
+    \caption{Structure of a Neural network }
+    \label{fig:nn}
+\end{figure}
+\noindent
+A neural network is constructed with an input layer \ref{fig:nn}, which receives the raw data, one or more \textit{hidden layers} where the computation occurs, and an output layer that produces the final prediction or decision. \textbf{When a network contains multiple hidden layers, it is termed a \textit{deep neural network} }(DNN). This depth allows the network to learn a hierarchical representation of features from the data, where each layer learns to identify progressively more complex patterns.
 
 \section{The Fundamental Role of DNNs in DRL}
 
-In the domain of Deep Reinforcement Learning (DRL), deep neural networks play a fundamentally transformative role by serving as powerful function approximators. Traditional reinforcement learning methods, which often rely on tabular representations for value functions or policies (e.g., Q-tables), become impractical and suffer from the "curse of dimensionality" when dealing with large, high-dimensional, or continuous state and action spaces, which are common in real-world problems like V2G control. Deep neural networks overcome this limitation by learning a generalized mapping from states to values or actions, allowing the agent to handle previously intractable problems.
-\\
-\noindent
 A prime example of this is the Deep Q-Network (DQN) algorithm, where a DNN is used to approximate the action-value function, $Q(s, a)$. The network receives the environment's state, $s$, as input and outputs the estimated Q-value for each possible action, $a$. The network is trained by minimizing a loss function, typically the mean squared error between the predicted Q-value and a target Q-value derived from the Bellman equation. The loss function is given by:
 
 \begin{equation}
  L(\theta) = \mathbb{E}_{(s, a, r, s') \sim D} \left[ \left( r + \gamma \max_{a'} Q(s', a'; \theta^{-}) - Q(s, a; \theta) \right)^2 \right]
 \end{equation}
-
+\noindent
 In this equation, $\theta$ are the weights of the neural network being trained, while $\theta^{-}$ are the weights of a separate, periodically updated target network used to stabilize training. The term $r + \gamma \max_{a'} Q(s', a'; \theta^{-})$ is the target value, and the expectation $\mathbb{E}$ is taken over a batch of experiences $(s, a, r, s')$ sampled from a replay memory $D$. This approach enabled the agent to learn directly from high-dimensional sensory inputs, like raw pixels in Atari games, achieving human-level performance.\footcite{Mnih2015}
 \\
 \noindent
@@ -424,7 +420,7 @@ Beyond value approximation, deep neural networks are also pivotal in policy grad
 \begin{equation}
  \nabla_{\theta} J(\theta) = \mathbb{E}_{\tau \sim \pi_{\theta}} \left[ \sum_{t=0}^{T} \nabla_{\theta} \log \pi_{\theta}(a_t|s_t) G_t \right]
 \end{equation}
-
+\noindent
 Here, the gradient of the objective function is calculated as the expectation of the sum of the gradients of the log probabilities of the actions taken, each weighted by the cumulative future reward, $G_t$. This effectively increases the probability of actions that lead to higher returns.\footcite{Sutton2018}
 \\
 \noindent
@@ -475,38 +471,92 @@ anchor=west,
 \end{forest}
 \subsection{Off-Policy Methods: Data-Efficient Learning from Experience}
 
-Off-policy algorithms distinguish themselves through their capacity to learn optimal policies from data generated by different, often more exploratory, behavioral policies. This enables them to reuse historical experiences stored in large \textit{replay buffers}, breaking temporal correlation between experiences and achieving high sample efficiency.
+Off-policy algorithms distinguish themselves through their capacity to learn optimal policies from data generated by different, often more exploratory, behavioral policies. \textbf{This enables them to reuse historical experiences stored in large \textit{replay buffers}}, breaking temporal correlation between experiences and achieving high sample efficiency.
 \\
 \noindent
-A pivotal question in this domain is how to balance the exploration of new actions with the exploitation of known good actions. Off-policy methods, by their nature, are well-suited to this challenge. Can an agent learn about the optimal way to behave while behaving sub-optimally? The development of algorithms like Soft Actor-Critic (SAC) \footcite{haarnoja2018soft} provides a compelling, falsifiable hypothesis: that by explicitly encouraging policy entropy—a measure of randomness—an agent can be guided to explore more broadly and avoid collapsing into a narrow, locally optimal policy. This work builds on that premise, testing whether such an approach can robustly discover profitable and stable V2G control strategies in the face of profound uncertainty.
+A pivotal question in this domain is how to balance the exploration of new actions with the exploitation of known good actions. Off-policy methods, by their nature, are well-suited to this challenge.
 
-\paragraph{Deep Deterministic Policy Gradient (DDPG)}
+\begin{flushright}
+ Can an agent learn about the optimal way to behave while behaving sub-optimally?
+ \end{flushright}
+\noindent
+ The development of algorithms like Soft Actor-Critic (SAC) \footcite{haarnoja2018soft} provides a compelling, falsifiable hypothesis: that by explicitly encouraging policy entropy—a measure of randomness—an agent can be guided to explore more broadly and avoid collapsing into a narrow, locally optimal policy. This work builds on that premise, testing whether such an approach can robustly discover profitable and stable V2G control strategies in the face of profound uncertainty.
+
+\subsubsection{Deep Deterministic Policy Gradient (DDPG)}
 
 A foundational algorithm that successfully extended Deep Q-Networks (DQN) to high-dimensional, continuous action spaces, DDPG represented a significant breakthrough for control problems including V2G \footcite{lillicrap2015continuous}. It employs an actor-critic architecture where the actor deterministically maps states to actions. However, practical applications often encounter substantial training instability and systematic vulnerability to \textbf{overestimation bias}, where critic networks systematically overestimate Q-values, resulting in suboptimal policy learning \footcite{orfanoudakis2024ev2gym, alfaverh2022optima}.
 \\
 \noindent
-Despite these limitations, the foundational concepts of DDPG have been successfully applied and extended in various V2G contexts. For instance, Wang et al. \footcite{wang2022electrical} propose a DDPG-based system for demand response management, demonstrating its potential to reduce charging costs. But can such an approach scale to large, complex systems? Zhang et al. \footcite{Zhang2023} tackle this question by introducing a transfer learning framework built on DDPG, aiming to coordinate large-scale V2G operations with renewable energy sources. Their work puts forth a testable hypothesis: that knowledge learned in a small-scale environment can be effectively transferred to a large-scale one, thus mitigating the sample inefficiency of DRL. This thesis will implicitly test this hypothesis by evaluating the performance of DRL agents in scenarios of varying complexity.
+Despite these limitations, the foundational concepts of DDPG have been successfully applied and extended in various V2G contexts. For instance, Wang et al. \footcite{wang2022electrical} propose a DDPG-based system for demand response management, demonstrating its potential to reduce charging costs.
+\\
+\noindent
+ But can such an approach scale to large, complex systems? Zhang et al. \footcite{Zhang2023} tackle this question by introducing a transfer learning framework built on DDPG, aiming to coordinate large-scale V2G operations with renewable energy sources. Their work puts forth a testable hypothesis: that knowledge learned in a small-scale environment can be effectively transferred to a large-scale one, thus mitigating the sample inefficiency of DRL. This thesis will implicitly test this hypothesis by evaluating the performance of DRL agents in scenarios of varying complexity.
 
 
 
-\paragraph{Twin Delayed DDPG (TD3)}
+\subsubsection{Twin Delayed DDPG (TD3)}
 
 Developed as a direct successor to address DDPG's instabilities, TD3 introduces three key innovations that have become standard in contemporary DRL \footcite{fujimoto2018addressing}. It incorporates (1) clipped double Q-learning, utilizing paired critic networks and selecting minimum estimates to mitigate overestimation bias; (2) delayed policy updates, updating actors less frequently than critics for enhanced stability; and (3) target policy smoothing, adding noise to target actions for learning regularization. These enhancements establish TD3 as a more robust and reliable baseline for complex V2G applications \footcite{Ding, wang2022multi}.
 \\
 \noindent
 The effectiveness of TD3 in V2G scheduling has been explored by multiple researchers. For example, Dou et al. \footcite{Dou} apply a TD3-based approach to the optimal scheduling of EV charging and discharging, demonstrating its ability to find profitable strategies. But can this profitability be achieved without negatively impacting the grid? Ding et al. \footcite{Ding} investigate this by using TD3 for charging scheduling while considering distribution network voltage stability. Their work provides a clear, falsifiable test of the hypothesis that a DRL agent can learn to balance its own economic incentives with the physical constraints of the power grid. This thesis builds upon this line of inquiry by incorporating explicit penalties for transformer overloads into the reward function, directly testing the agent's ability to learn this trade-off.
+
+\subsubsection{SAC}
+SAC represents a state-of-the-art off-policy algorithm for continuous control, \textbf{recognized for superior sample efficiency and stability} \footcite{haarnoja2019soft}. Its fundamental innovation involves the \textbf{maximum entropy framework}. The agent's objective is modified to maximize both expected reward and policy entropy. This entropy bonus encourages agents to act as randomly as possible while maintaining task success, promoting broader exploration, improved noise robustness, and reduced risk of poor local optima convergence.
 \\
 \noindent
-SAC represents a state-of-the-art off-policy algorithm for continuous control, recognized for superior sample efficiency and stability \footcite{haarnoja2019soft}. Its fundamental innovation involves the \textbf{maximum entropy framework}. The agent's objective is modified to maximize both expected reward and policy entropy. This entropy bonus encourages agents to act as randomly as possible while maintaining task success, promoting broader exploration, improved noise robustness, and reduced risk of poor local optima convergence.
+The principle of maximum entropy, while powerful, raises a critical question: 
 \\
 \noindent
-The principle of maximum entropy, while powerful, raises a critical question: does encouraging random behavior compromise the safety and reliability of the system? Gu et al. \footcite{gu2025optimization} directly confront this by proposing a safe reinforcement learning approach that considers battery health. Their work tests the hypothesis that one can achieve the exploration benefits of SAC while simultaneously satisfying hard constraints related to battery degradation. This is a crucial step towards making DRL a viable technology for real-world V2G deployment, and it underscores the importance of the multi-objective reward functions explored in this thesis.
+does encouraging random behavior compromise the safety and reliability of the system?
+\\
+\noindent
+ Gu et al. \footcite{gu2025optimization} directly confront this by proposing a safe reinforcement learning approach that considers battery health. Their work tests the hypothesis that one can achieve the exploration benefits of SAC while simultaneously satisfying hard constraints related to battery degradation. This is a crucial step towards making DRL a viable technology for real-world V2G deployment, and it underscores the importance of the multi-objective reward functions explored in this thesis.
 
-\paragraph{Truncated Quantile Critics (TQC)}
+\subsubsection{Truncated Quantile Critics (TQC)}
 
-TQC addresses overestimation bias through a distributional RL approach \footcite{kuznetsov2020controlling}. Rather than learning single expected returns (Q-values), its critic learns complete return probability distributions using quantile regression. By learning multiple return distribution quantiles and truncating the most optimistic quantile estimates before averaging, it provides a more principled and effective method for removing primary overestimation bias sources, frequently achieving superior performance.
+TQC addresses overestimation bias through a distributional RL approach \footcite{kuznetsov2020controlling}. Rather than learning single expected returns (Q-values), its critic \textbf{learns complete return probability distributions using quantile regression}.
+\\
+\noindent
+Digression on Quantile regression:
+\\
+\noindent
+Quantile regression is an extension of the classical linear regression model, 
+which estimates the conditional mean of a response variable. 
+Instead of focusing only on the mean, quantile regression estimates the conditional 
+quantiles of the response distribution, providing a more complete statistical view.
+\noindent
+Formally, given data $\{(x_i, y_i)\}_{i=1}^n$ with predictors $x_i \in \mathbb{R}^p$ 
+and response $y_i \in \mathbb{R}$, the $\tau$-th conditional quantile 
+($0 < \tau < 1$) of $Y$ given $X = x$ is modeled as
 
-\paragraph{Enhancement: Prioritized Experience Replay (PER)}
+\[
+Q_Y(\tau \mid X = x) = x^\top \beta_\tau,
+\]
+\noindent
+where $\beta_\tau$ are the regression coefficients associated with the quantile $\tau$.
+\noindent
+The quantile regression estimator is obtained by solving the optimization problem:
+
+\[
+\hat{\beta}_\tau = \underset{\beta \in \mathbb{R}^p}{\arg\min} 
+\sum_{i=1}^n \rho_\tau \big( y_i - x_i^\top \beta \big),
+\]
+\noindent
+where $\rho_\tau(u)$ is the so-called "check function," defined as
+
+\[
+\rho_\tau(u) = u \cdot \big( \tau - \mathbf{1}_{\{u < 0\}} \big).
+\]
+\noindent
+This asymmetric loss function penalizes underestimation and overestimation differently, 
+depending on the chosen quantile $\tau$. 
+For example, $\tau = 0.5$ corresponds to the conditional median regression.
+\\
+\noindent 
+After learned this can be affirmed that: learning multiple return distribution quantiles and truncating the most optimistic quantile estimates before averaging, it provides a more \textbf{principled and effective method for removing primary overestimation bias sources}, frequently achieving superior performance.
+
+\subsubsection{Enhancement: Prioritized Experience Replay (PER)}
 
 This represents not a standalone algorithm but a crucial orthogonal modification for off-policy methods. Standard replay buffers sample past transitions uniformly. PER samples transitions based on their "importance," typically proportional to TD error magnitude \footcite{schaul2015prioritized}. This focuses learning processes on surprising or informative experiences, significantly accelerating convergence and improving final performance.
 
@@ -514,24 +564,27 @@ This represents not a standalone algorithm but a crucial orthogonal modification
 
 On-policy methods learn exclusively from data generated by current policies being optimized. Once data is used for updates, it is discarded. While this makes them inherently less sample-efficient than off-policy counterparts, their updates often demonstrate greater stability and reduced divergence risk.
 
-\paragraph{Advantage Actor-Critic (A2C/A3C)}
+\subsubsection{Advantage Actor-Critic (A2C/A3C)}
 
 A2C represents a foundational synchronous, on-policy Actor-Critic algorithm. Its powerful extension, \textbf{Asynchronous Advantage Actor-Critic (A3C)}, was a landmark contribution demonstrating parallelism benefits \footcite{mnih2016asynchronous}. A3C utilizes multiple parallel workers, each with individual model and environment copies. These workers interact with their environments independently, and collected gradients update a global model asynchronously. This decorrelates data streams and provides powerful stabilizing effects on learning processes.
 \\
 \noindent
-While often considered less sample-efficient than their off-policy counterparts, on-policy methods like A2C and its variants are still actively explored in the V2G domain. For example, Chifu et al. \footcite{chifu2024deep} propose a Deep Q-Learning based approach for smart scheduling of EVs for demand response, which shares some of the on-policy characteristics. Their work raises the question: can the stability and reliability of on-policy training outweigh the sample efficiency of off-policy methods in a problem where the environment is highly stochastic? This thesis provides a direct comparison by benchmarking several state-of-the-art off-policy agents against on-policy baselines, allowing for an empirical test of this long-standing hypothesis in the DRL community.
+While often considered less sample-efficient than their off-policy counterparts, on-policy methods like A2C and its variants are still actively explored in the V2G domain. For example, Chifu et al. \footcite{chifu2024deep} propose a Deep Q-Learning based approach for smart scheduling of EVs for demand response, which shares some of the on-policy characteristics. Their work raises the question:
+\\
+\noindent
+Can the stability and reliability of on-policy training outweigh the sample efficiency of off-policy methods in a problem where the environment is highly stochastic? This thesis provides a direct comparison by benchmarking several state-of-the-art off-policy agents against on-policy baselines, allowing for an empirical test of this long-standing hypothesis in the DRL community.
 
-\paragraph{Trust Region Policy Optimization (TRPO)}
+\subsubsection{Trust Region Policy Optimization (TRPO)}
 
 TRPO was the first algorithm to formalize policy update size constraints for guaranteed monotonic policy improvement \footcite{schulman2020trust}. It maximizes a "surrogate" objective function subject to policy change constraints, measured by Kullback-Leibler (KL) divergence. This creates a "trust region" within which new policies are guaranteed to improve upon previous ones, preventing catastrophic updates that can permanently derail learning. However, implementation complexity arises from second-order optimization requirements.
 
-\paragraph{Proximal Policy Optimization (PPO)}
+\subsubsection{Proximal Policy Optimization (PPO)}
 
 PPO achieves TRPO's stability benefits and reliable performance using only first-order optimization, making it far simpler to implement and more broadly applicable \footcite{schulman2017proximal}. It employs a novel \textbf{clipping} mechanism in its objective function to discourage large policy updates that would move new policies too far from previous ones, effectively creating "soft" trust regions. Due to its excellent balance of performance, stability, and implementation simplicity, PPO has become a default choice for many on-policy applications.
 
 \subsection{Gradient-Free Methods: An Alternative Path}
 
-\paragraph{Augmented Random Search (ARS)}
+\subsubsection{Augmented Random Search (ARS)}
 
 As a counterpoint to dominant gradient-based methods, ARS represents a gradient-free approach that optimizes policies directly in parameter space \footcite{mania2018simple}. It operates by exploring random policy parameter perturbations and updating central policy parameter vectors based on observed performance of these perturbations. While often less sample-efficient for complex, high-dimensional problems, its extreme simplicity, scalability, and robustness to noisy rewards can make it competitive in certain domains.
 
@@ -690,7 +743,14 @@ Modern data-driven techniques, such as Deep Reinforcement Learning (DRL), offer 
 %%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%
 \section{Explicit MPC: Offline Pre-computation}
-
+\begin{figure}[H]
+    \centering
+   
+    \includegraphics[width=0.8\linewidth]{polyhedral.png}
+    \caption{Example of a structure of a polyhedral region by Alberto Bemporad and Carlo Filippi }
+    \label{fig:PO}
+\end{figure}
+\footcite{Bemporad_Filippi}
 For systems with fast dynamics or limited online computational capacity, \textbf{Explicit MPC} offers an alternative approach. The key idea is to move the computational effort entirely offline. As detailed extensively in \footcite{borrelli2017predictive}, this is achieved by treating the current state $x_t$ not as a fixed value, but as a vector of parameters. The constrained optimization problem is then solved offline for all possible initial states within a given range using \textbf{multi-parametric programming}.
 
 \noindent
@@ -730,7 +790,7 @@ The foundation of this exact representation lies in two main results. First, any
     K_i(x_t) = \gamma_i(x_t) - \eta_i(x_t)
 \end{equation}
 Second, any convex PWA function, which can be described as the pointwise maximum of a set of affine functions, can be exactly represented by a deep ReLU network. Specifically, a convex function composed of $N$ affine regions can be perfectly modeled by a network with width $n_x + 1$ (where $n_x$ is the state dimension) and depth $N$ \footcite{karg2020efficient}.
-
+\noindent
 Combining these findings, the complete multi-output MPC control law $K(x_t)$ can be exactly represented by a vector of $n_u$ pairs of deep neural networks, where each pair models the $\gamma_i$ and $\eta_i$ components for a single control output:
 \begin{equation}
     K(x_t) = 
@@ -741,7 +801,7 @@ Combining these findings, the complete multi-output MPC control law $K(x_t)$ can
     \end{bmatrix}
 \end{equation}
 where $\mathcal{N}$ denotes a deep ReLU network with its corresponding set of parameters $\theta$.
-
+\noindent
 The particular advantage of using \textit{deep} neural networks lies in their representational efficiency. While the number of parameters (and thus, the memory footprint) of a deep network grows linearly with its depth, the number of linear regions it can represent can grow exponentially \footcite{karg2020efficient}. This provides an inverse relationship to the problem of traditional Explicit MPC, allowing a deep network to capture an exponentially large number of control regions with only a modest, linearly growing memory cost. Consequently, this deep learning-based representation transforms the explicit MPC law into a highly compact and fast-to-evaluate form, overcoming the primary obstacle of prohibitive memory requirements and enabling the deployment of complex predictive controllers on embedded systems.
 
 
@@ -785,7 +845,6 @@ Ultimately, DRL's singular advantage lies in its ability to learn and internaliz
 
 The effectiveness, safety, and economic viability of any V2G strategy remain fundamentally constrained by the physical and chemical characteristics of vehicle batteries. Battery chemistry selection dictates EV operational envelopes, influencing energy density, power capabilities, lifespan, and safety profiles. Clear understanding of these trade-offs proves essential for developing robust, realistic, and responsible control algorithms.
 \subsection{Fundamental Concepts and Degradation Mechanisms}
-
 Battery degradation is a complex and irreversible process that gradually reduces a cell’s ability to store and deliver energy. It manifests primarily as capacity loss (energy fade) and as an increase in internal resistance (power fade). These phenomena are usually attributed to two categories of mechanisms: \textit{calendar aging} and \textit{cyclic aging} \footcite{birkl2017degradation}.
 \noindent   
 \\

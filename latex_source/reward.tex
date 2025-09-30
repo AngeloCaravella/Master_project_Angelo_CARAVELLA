@@ -1,33 +1,125 @@
 \section{Reward Engineering: Shaping Agent Behavior}
 \label{sec:reward_shaping}
 
-The reward function constitutes perhaps the most crucial element in any Reinforcement Learning system, serving as the primary mechanism through which designers communicate desired behaviors to learning agents. Poor reward design can result in unintended and suboptimal behaviors, even when agents successfully maximise their assigned objectives. The field of reward engineering has emerged as a fundamental aspect of modern RL, proving essential for effective algorithm application in complex, real-world scenarios \footcite{ibrahim2024comprehensive}. The V2G challenge, characterised by multiple competing objectives—profit maximisation, user satisfaction assurance, battery health preservation, and grid stability maintenance—presents particularly demanding reward design requirements. This work investigates several sophisticated techniques for effective learning guidance.
-\subsection{Potential-Based Reward Shaping (PBRS)}
+The design of an effective reward function is arguably the most critical aspect of any Reinforcement Learning (RL) system.
+It serves as the primary communication channel through which designers convey desired behaviors and objectives to a learning agent. 
+A poorly designed reward function can lead to agents learning unintended, suboptimal, or even harmful behaviors,despite successfully maximizing their assigned objective.
+Consequently, reward engineering has emerged as a fundamental and increasingly sophisticated discipline within modern RL,
+proving indispensable for the successful application of algorithms in complex, real-world scenarios \cite{ibrahim2024comprehensive}.
+\noindent
+The Vehicle-to-Grid (V2G) challenge, with its inherent multi-objective nature—encompassing profit maximization, assurance of user satisfaction, preservation of battery health, and maintenance of grid stability—presents particularly stringent demands on reward function design.
+\noindent
+This section investigates several advanced techniques for effectively guiding agent learning in such intricate environments.
 
-Potential-Based Reward Shaping (PBRS) represents one of the most theoretically robust methods for reward augmentation \footcite{ng1999policy}. The approach involves supplementing the environment's intrinsic reward, $R(s, a, s')$, with a shaping term, $F(s, s')$. The resulting shaped reward $R'$ is defined as:
+\subsection{Potential-Based Reward Shaping (PBRS)}
+\label{sec:pbrs}
+
+Potential-Based Reward Shaping (PBRS) stands as one of the most theoretically grounded and widely adopted methods for augmenting an environment's intrinsic reward signal. 
+\noindent
+The core idea behind PBRS is to supplement the original reward, $R(s, a, s')$, received by an agent for transitioning from state $s$ to state $s'$ via action $a$, with an additional shaping term, $F(s, s')$. The resulting shaped reward, $R'$, is defined as:
 
 \[
 R'(s, a, s') = R(s, a, s') + F(s, s')
 \]
 
-The shaping term itself derives from the difference between a potential function, $\Phi$, evaluated at successive states:
+The crucial characteristic of PBRS lies in the specific construction of the shaping term. It is derived from the difference in value of an arbitrary potential function, $\Phi: \mathcal{S} \to \mathbb{R}$, evaluated at the successive states $s$ and $s'$:
 
 \[
 F(s, s') = \gamma \Phi(s') - \Phi(s)
 \]
-\noindent
-where $\gamma$ represents the discount factor. 
-\noindent
-A key property of PBRS, as highlighted by Ng et al. \footcite{ng1999policy}, is \textbf{policy invariance}: adding a potential-based shaping reward does not change the optimal policy of the underlying MDP. In their paper, Ng et al. explicitly state that ""\textbf{for any MDP and any potential function $\Phi$, the optimal policy for the shaped reward function $R'$ is identical to the optimal policy for the original reward $R$}"". This ensures that while the agent may experience denser feedback and faster learning, the long-term optimal behavior remains exactly the same.
+where $\gamma \in [0, 1)$ is the discount factor of the Markov Decision Process (MDP). The potential function $\Phi(s)$ assigns a scalar value to each state, intuitively representing how "good" or "desirable" that state is.
+
+\subsection{Theoretical Foundation and Policy Invariance}
+
+The seminal work by Ng et al. \cite{ng1999policy} established the theoretical robustness of PBRS by proving a critical property: \textbf{policy invariance}. 
 \\
 \noindent
-By providing intermediate guidance through the shaping term, PBRS effectively accelerates learning without compromising the correctness of the learned policy.
+This property guarantees that adding a potential-based shaping reward to an MDP does not alter its set of optimal policies. 
+\\
+\noindent
+In other words, \textbf{any policy that is optimal for the shaped reward function $R'$ will also be optimal for the original reward function $R$, and vice versa}. This is a profound result because it ensures that while PBRS can significantly accelerate learning by providing denser and more informative feedback, it will not mislead the agent into converging on a suboptimal policy with respect to the original task.
+\\
+\noindent
+The proof of policy invariance hinges on the observation that the shaping term $F(s, s')$ can be absorbed into the value function. Specifically, if $V^*(s)$ and $Q^*(s,a)$ are the optimal value and Q-functions for the original MDP with reward $R$, then the optimal value and Q-functions for the shaped MDP with reward $R'$ are given by:
+\begin{align*}
+V^{*'}(s) &= V^*(s) + \Phi(s) \\
+Q^{*'}(s,a) &= Q^*(s,a) + \Phi(s)
+\end{align*}
+Since the $\Phi(s)$ term is added uniformly to all Q-values for a given state $s$, the action that maximizes $Q^{*'}(s,a)$ will be the same action that maximizes $Q^*(s,a)$. This preserves the optimal policy:
+\[
+\pi^{*'}(s) = \arg\max_{a \in \mathcal{A}} Q^{*'}(s,a) = \arg\max_{a \in \mathcal{A}} (Q^*(s,a) + \Phi(s)) = \arg\max_{a \in \mathcal{A}} Q^*(s,a) = \pi^*(s)
+\]
+This theoretical guarantee is a cornerstone of PBRS, distinguishing it from other heuristic shaping methods that might inadvertently alter the optimal policy.
 
+\subsection{Practical Implications and Design Considerations}
 
-\subsection{Dynamic and Adaptive Rewards}
+The policy invariance property of PBRS offers significant practical advantages:
+\begin{itemize}
+    \item \textbf{Accelerated Learning:} By providing immediate rewards for progress towards desirable states (e.g., states closer to a goal), PBRS can drastically reduce the sparsity of the reward signal, making exploration more efficient and accelerating convergence, especially in environments with delayed rewards.
+    \item \textbf{Reduced Exploration Risk:} Agents are less likely to get stuck in local optima or exhibit undesirable behaviors during early training phases, as the shaping guides them towards more promising regions of the state space.
+    \item \textbf{Expert Knowledge Integration:} The potential function $\Phi(s)$ can be designed using expert knowledge about the task. For instance, in a navigation task, $\Phi(s)$ could be inversely proportional to the distance to the goal, providing a positive shaping reward for moving closer to the target. In the V2G context, $\Phi(s)$ could reflect the desirability of states with high battery charge, low grid congestion, or high market prices.
+\end{itemize}
+\noindent
+Designing an effective potential function $\Phi(s)$ is key to successful PBRS. Common strategies include:
+\begin{itemize}
+    \item \textbf{Distance-based Potentials:} For tasks with a clear goal, $\Phi(s)$ can be defined based on the agent's proximity to the goal state (e.g., negative Manhattan distance or Euclidean distance).
+    \item \textbf{Subgoal-based Potentials:} In tasks requiring a sequence of steps or subgoals, $\Phi(s)$ can be constructed to provide positive potential for achieving intermediate objectives.
+    \item \textbf{Feature-based Potentials:} For complex state spaces, $\Phi(s)$ can be a linear or non-linear function of relevant state features, allowing for more nuanced guidance.
+\end{itemize}
+The choice of $\Phi(s)$ should reflect the designer's intuition about what constitutes "progress" or "desirable states" without explicitly dictating the optimal actions.
 
-In contrast to PBRS, which provides static reward bonuses, dynamic or adaptive reward functions can evolve throughout the training process. This approach proves particularly valuable for complex problems where the relative importance of different objectives may shift as agent competency develops. For instance, an agent might initially receive rewards simply for maintaining EV charge levels, but as training progresses, the reward function could adapt to incorporate penalties for grid overloads or incentives for V2G service provision. This enables agents to master different problem aspects sequentially rather than simultaneously.
+\section{Dynamic and Adaptive Rewards}
+\label{sec:dynamic_rewards}
 
-\subsection{Curriculum Learning}
+In contrast to PBRS, which typically employs a static potential function throughout training, dynamic or adaptive reward functions are designed to evolve over time. This approach is particularly valuable for complex problems where the relative importance of different objectives may shift as the agent's competency develops, or as the environment itself changes.
 
-While technically representing a training paradigm rather than a direct reward modification technique, Curriculum Learning (CL) maintains high relevance to reward engineering practices. CL involves training agents on task sequences that progressively increase in difficulty. Within the V2G context, agents might initially train in simplified scenarios featuring few EVs and stable pricing conditions. Upon mastering these fundamentals, they advance to more complex environments incorporating larger EV fleets, volatile pricing, and hard operational constraints. This structured learning approach prevents agents from becoming overwhelmed by full problem complexity from the outset, potentially leading to more robust and generalisable policies.
+\subsection{Motivation and Mechanisms}
+
+Dynamic reward functions offer several advantages:
+\begin{itemize}
+    \item \textbf{Addressing Evolving Objectives:} In multi-objective problems like V2G, an agent might initially struggle with basic tasks (e.g., maintaining EV charge). As it masters these, the reward function can adapt to emphasize more advanced objectives (e.g., optimizing V2G service provision while avoiding grid overloads).
+    \item \textbf{Mitigating Conflicting Goals:} Early in training, conflicting objectives can hinder learning. Dynamic rewards can prioritize certain objectives initially, gradually introducing others as the agent becomes more capable.
+    \item \textbf{Responding to Environmental Changes:} In non-stationary environments, an adaptive reward function can adjust its weighting of different components to reflect current conditions (e.g., higher penalty for grid overload during peak demand).
+\end{itemize}
+\noindent
+Mechanisms for implementing dynamic rewards include:
+\begin{itemize}
+    \item \textbf{Time-Varying Weights:} The weights assigned to different components of a composite reward function can be adjusted based on training epochs, agent performance metrics, or predefined schedules.
+    \item \textbf{Curiosity-Driven Rewards:} Intrinsic rewards, such as those based on novelty or prediction error, can be dynamically added or removed to encourage exploration in early stages and then faded out as the agent becomes proficient.
+    \item \textbf{Adaptive Scaling:} Reward magnitudes can be scaled dynamically to maintain appropriate learning signals as the agent's performance improves or as the range of possible rewards changes.
+    \item \textbf{Meta-Learning for Rewards:} More advanced techniques involve meta-learning algorithms that learn to generate or adapt reward functions based on observed agent behavior and task progress.
+\end{itemize}
+\noindent
+In the V2G context, an agent might initially receive a high reward for simply connecting to the grid and maintaining a minimum charge level. As training progresses, the reward function could dynamically incorporate larger penalties for grid instability events or higher incentives for profitable energy transactions, thereby guiding the agent towards more sophisticated and holistic V2G management strategies.
+
+\section{Curriculum Learning}
+\label{sec:curriculum_learning}
+\begin{flushright}
+"Can curriculum learning be considered as training the same model on different scenarios, starting with easier ones and gradually moving to more difficult ones?"
+\end{flushright}
+
+\noindent
+Yes, essentially, curriculum learning (CL) can be described as a strategy where the same model is trained on scenarios of increasing difficulty, starting from the easiest and progressing to the most difficult. This general idea, however, is implemented in different ways, as demonstrated by the two reference papers. The research by Pocius et al. focuses on a curriculum based on \textbf{task simplification}, whereas Freitag et al. propose a more specific and advanced approach based on \textbf{reward function simplification} \footcite{Curriculum_learning, Curriculum_learning_2}.
+
+\subsection{Specific Principles and Applications}
+
+The core principle of CL is to guide the agent's learning to prevent it from being overwhelmed by the full complexity of the final problem. The provided research offers concrete insights into how and why this approach works.
+\noindent
+\textbf{Pocius et al.} empirically compared curriculum learning, reward shaping, and visual hints in a navigation task within a Minecraft environment \footcite{Curriculum_learning_2}. Their curriculum involved training the agent first on a simpler task (navigating a single room) before moving to a more complex one (navigating through two rooms). Their key finding was that, for their specific task, \textbf{curriculum learning had the most significant impact on performance}, surpassing the effectiveness of reward shaping. This suggests that for certain problems, structuring the learning experience through progressively harder tasks is a more powerful strategy than finely tuning the immediate reward signal \footcite{Curriculum_learning_2}.
+\noindent
+On the other hand, \textbf{Freitag et al.} addressed the problem of complex reward functions with multiple and potentially conflicting terms, which often lead agents to get stuck in local optima (e.g., an agent learning to satisfy a constraint without completing the main objective) \footcite{Curriculum_learning}. To solve this, they proposed a \textbf{two-stage reward curriculum}:
+\begin{enumerate}
+    \item \textbf{Stage 1:} The agent is trained using only a subset of the reward function, termed the "base reward" ($r_b$), which encodes the primary task objective.
+    \item \textbf{Stage 2:} Once the agent has sufficiently learned the basic task, the curriculum switches to training on the full reward function, which also includes the constraint terms ($r_c$).
+\end{enumerate}
+One of their key innovations is a mechanism to \textbf{automatically switch from one stage to the next} by monitoring how well the actor's policy fits the critic's Q-function. They demonstrated that this approach is particularly effective when constraints have a high weight, as it prevents the agent from being "distracted" by the constraints before understanding the main goal, leading to more stable and higher-performing final policies \footcite{Curriculum_learning}.
+
+\subsection{Curriculum Learning in V2G}
+
+For the V2G challenge, the two-stage reward curriculum approach proposed by Freitag et al. is particularly suitable, given the multi-objective nature of the problem. A curriculum could be structured as follows:
+
+\begin{enumerate}
+    \item \textbf{Stage 1: Basic Charge Management.} The agent is trained with a simplified reward function (the "base reward," $r_b$) that solely rewards maintaining the charge levels of electric vehicles (EVs) above a minimum threshold. All other objectives, such as grid interaction or profit, are ignored.
+    \item \textbf{Stage 2: Full Optimization.} Once the agent has effectively learned to manage charging, it transitions to the full reward function. This includes the base reward plus the "constraint reward" terms ($r_c$), which introduce incentives for grid stability, cost minimization, and adherence to user preferences.
+\end{enumerate}
+This structured approach, as demonstrated by Freitag et al., prevents the agent from being overwhelmed by conflicting objectives from the start, promoting the development of more robust and generalizable V2G management policies \footcite{Curriculum_learning}.
