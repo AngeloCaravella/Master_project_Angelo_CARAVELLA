@@ -3,7 +3,7 @@
 \babel@toc {english}{}\relax 
 \contentsline {chapter}{List of Acronyms}{6}{section*.4}%
 \contentsline {chapter}{\numberline {1}Introduction}{8}{chapter.1}%
-\contentsline {subsection}{\numberline {1.0.1}Background and Relevance of Electric Vehicles and Vehicle-to-Grid}{8}{subsection.1.0.1}%
+\contentsline {subsection}{\numberline {1.0.1}Background and Relevance of Electric Vehicles and Vehicle-to-Grid}{9}{subsection.1.0.1}%
 \contentsline {subsection}{\numberline {1.0.2}Challenges in EV Integration into the Electricity Grid and the Role of Artificial Intelligence}{10}{subsection.1.0.2}%
 \contentsline {subsection}{\numberline {1.0.3}Objectives and Contributions of the Thesis}{11}{subsection.1.0.3}%
 \contentsline {subsection}{\numberline {1.0.4}Research Methodology}{12}{subsection.1.0.4}%
@@ -82,22 +82,21 @@
 \contentsline {section}{\numberline {3.2}Core Physical Models}{55}{section.3.2}%
 \contentsline {subsection}{\numberline {3.2.1}EV Model and Charging/Discharging Dynamics}{55}{subsection.3.2.1}%
 \contentsline {subsection}{\numberline {3.2.2}Battery Degradation Model}{55}{subsection.3.2.2}%
-\contentsline {subsection}{\numberline {3.2.3}EV Behavior and Grid Models}{56}{subsection.3.2.3}%
 \contentsline {section}{\numberline {3.3}A Unified Experimentation and Evaluation Workflow}{56}{section.3.3}%
-\contentsline {subsection}{\numberline {3.3.1}Orchestration via \texttt {run\_experiments.py}}{57}{subsection.3.3.1}%
+\contentsline {subsection}{\numberline {3.3.1}Orchestration via \texttt {run\_experiments.py}}{56}{subsection.3.3.1}%
 \contentsline {subsection}{\numberline {3.3.2}Dual-Mode Training: Specialists and Generalists}{57}{subsection.3.3.2}%
-\contentsline {subsection}{\numberline {3.3.3}Reproducible Benchmarking and Evaluation}{58}{subsection.3.3.3}%
+\contentsline {subsection}{\numberline {3.3.3}Reproducible Benchmarking and Evaluation}{57}{subsection.3.3.3}%
 \contentsline {subsection}{\numberline {3.3.4}Interactive Web-Based Dashboard}{58}{subsection.3.3.4}%
 \contentsline {subsubsection}{Simulation Orchestrator}{58}{section*.16}%
 \contentsline {subsubsection}{Results Visualizer}{58}{section*.17}%
-\contentsline {section}{\numberline {3.4}Evaluation Metrics}{59}{section.3.4}%
-\contentsline {section}{\numberline {3.5}Simulator Implementation Details}{60}{section.3.5}%
-\contentsline {subsubsection}{Vehicle Definition Modes}{60}{section*.18}%
+\contentsline {section}{\numberline {3.4}Evaluation Metrics}{58}{section.3.4}%
+\contentsline {section}{\numberline {3.5}Simulator Implementation Details}{59}{section.3.5}%
+\contentsline {subsubsection}{Vehicle Definition Modes}{59}{section*.18}%
 \contentsline {subsubsection}{Empirical Calibration of the Degradation Model}{60}{section*.19}%
 \contentsline {section}{\numberline {3.6}Reinforcement Learning Formulation}{61}{section.3.6}%
 \contentsline {subsection}{\numberline {3.6.1}State Space ($S$)}{61}{subsection.3.6.1}%
 \contentsline {subsection}{\numberline {3.6.2}Action Space ($A$)}{61}{subsection.3.6.2}%
-\contentsline {subsection}{\numberline {3.6.3}Reward Function}{62}{subsection.3.6.3}%
+\contentsline {subsection}{\numberline {3.6.3}Reward Function}{61}{subsection.3.6.3}%
 \contentsline {section}{\numberline {3.7}Reinforcement Learning Algorithms}{62}{section.3.7}%
 \contentsline {subsubsection}{Soft Actor-Critic (SAC)}{62}{section*.20}%
 \contentsline {paragraph}{Soft Actor-Critic (SAC)}{63}{figure.3.2}%
@@ -112,12 +111,12 @@
 \contentsline {subsubsection}{Adaptive User Satisfaction Penalty}{66}{section*.29}%
 \contentsline {subsubsection}{Adaptive Transformer Overload Penalty}{67}{section*.30}%
 \contentsline {subsubsection}{Rationale and Significance}{67}{section*.31}%
-\contentsline {section}{\numberline {3.8}Online MPC Formulation (PuLP Implementation)}{68}{section.3.8}%
+\contentsline {section}{\numberline {3.8}Online MPC Formulation (PuLP Implementation)}{67}{section.3.8}%
 \contentsline {paragraph}{Implementation Details}{68}{section*.32}%
 \contentsline {subsection}{\numberline {3.8.1}Mathematical Formulation}{68}{subsection.3.8.1}%
 \contentsline {subsubsection}{Objective Function: Net Operational Profit}{68}{section*.33}%
 \contentsline {subsubsection}{System Constraints}{68}{section*.34}%
-\contentsline {paragraph}{Energy Balance Dynamics.}{69}{section*.35}%
+\contentsline {paragraph}{Energy Balance Dynamics.}{68}{section*.35}%
 \contentsline {paragraph}{Power Limits and Mutual Exclusion.}{69}{section*.36}%
 \contentsline {paragraph}{State of Energy (SoE) Limits.}{69}{section*.37}%
 \contentsline {paragraph}{User Satisfaction (Hard Constraint).}{69}{section*.38}%
@@ -126,8 +125,12 @@
 \contentsline {section}{\numberline {3.9}Approximate Explicit MPC: A Machine Learning Approach}{70}{section.3.9}%
 \contentsline {paragraph}{Implementation Details}{70}{section*.41}%
 \contentsline {subsection}{\numberline {3.9.1}Methodology: From Oracle to Apprentice}{71}{subsection.3.9.1}%
-\contentsline {section}{\numberline {3.10}Lyapunov-based Adaptive Horizon MPC}{72}{section.3.10}%
+\contentsline {subsection}{\numberline {3.9.2}A More Principled Approximator: The Deep ReLU Network}{71}{subsection.3.9.2}%
 \contentsline {paragraph}{Implementation Details}{72}{section*.42}%
-\contentsline {subsection}{\numberline {3.10.1}Core Concept: Dynamic Horizon Adjustment}{72}{subsection.3.10.1}%
-\contentsline {subsection}{\numberline {3.10.2}Lyapunov Stability for V2G Control}{72}{subsection.3.10.2}%
-\contentsline {subsection}{\numberline {3.10.3}Horizon Shortening and Extension}{73}{subsection.3.10.3}%
+\contentsline {paragraph}{Theoretical Motivation}{72}{section*.43}%
+\contentsline {paragraph}{Methodology}{72}{section*.44}%
+\contentsline {section}{\numberline {3.10}Lyapunov-based Adaptive Horizon MPC}{73}{section.3.10}%
+\contentsline {paragraph}{Implementation Details}{73}{section*.45}%
+\contentsline {subsection}{\numberline {3.10.1}Core Concept: Dynamic Horizon Adjustment}{73}{subsection.3.10.1}%
+\contentsline {subsection}{\numberline {3.10.2}Lyapunov Stability for V2G Control}{73}{subsection.3.10.2}%
+\contentsline {subsection}{\numberline {3.10.3}Horizon Shortening and Extension}{74}{subsection.3.10.3}%

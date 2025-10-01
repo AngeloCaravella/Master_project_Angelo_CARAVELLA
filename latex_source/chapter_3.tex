@@ -29,7 +29,9 @@ The simulation process follows a reproducible three-phase structure: (1) \textbf
 
 \subsection{Software Implementation and Project Structure}
 \label{sec:software_implementation}
-While the conceptual architecture describes the simulator's components, the practical implementation is organized within a modular Python package named \texttt{ev2gym}. This structure promotes code reusability and a clear separation of concerns. The high-level experimentation scripts, such as \texttt{run\_experiments.py} and \texttt{train\_mpc\_approximator.py}, reside in the project's root directory and act as orchestrators, utilizing the core functionalities provided by the \texttt{ev2gym} package.
+While the conceptual architecture describes the simulator's components, the practical implementation is organized within a modular Python package named \texttt{ev2gym}. This structure promotes code reusability and a clear separation of concerns. The high-level experimentation scripts, such as \\ \noindent 
+
+\texttt{run\_experiments.py} and \texttt{train\_mpc\_approximator.py}, reside in the project's root directory and act as orchestrators, utilizing the core functionalities provided by the \texttt{ev2gym} package.
 
 The key subdirectories within the \texttt{ev2gym} package are:
 \begin{itemize}
@@ -63,13 +65,12 @@ To address the critical issue of battery health in V2G operations, the simulator
 
 The total capacity loss is the sum $Q_{lost} = d_{cal} + d_{cyc}$. This integrated model allows for the direct quantification of how different control strategies impact the battery's long-term State of Health (SoH), enabling the training of agents that balance profitability with battery preservation.
 
-A key feature of this framework is that the physical parameters for this model ($\epsilon_0, \epsilon_1, \epsilon_2, \zeta_0, \zeta_1, Q_{acc}$) are not fixed. They can be empirically calibrated from real-world experimental data using the provided \texttt{Fit_battery.py} script, as detailed in Section \ref{sec:sim_architecture}.
-
-\subsection{EV Behavior and Grid Models}
-To ensure realism, the simulation is driven by authentic, open-source datasets. EV arrival/departure patterns and energy requirements are modeled using probability distributions derived from a large real-world dataset from \textbf{ElaadNL}. Grid conditions are similarly grounded in reality, using inflexible load data from the \textbf{Pecan Street} project and solar generation profiles from the \textbf{Renewables.ninja} platform \footcite{orfanoudakis2024ev2gym}.
+A key feature of this framework is that the physical parameters for this model ($\epsilon_0, \epsilon_1, \epsilon_2, \zeta_0, \zeta_1, Q_{acc}$) are not fixed. They can be empirically calibrated from real-world experimental data using the provided \texttt{Fit\_battery.py} script, as detailed in Section \ref{sec:sim_architecture}.
 
 \section{A Unified Experimentation and Evaluation Workflow}
-A key contribution of this thesis is the development of a unified and powerful experimentation workflow, orchestrated by the main script \texttt{run\_experiments.py}. This script replaces the previous fragmented approach, providing a single, interactive interface to manage the entire lifecycle of training, benchmarking, and evaluation for V2G control agents. This workflow is designed to be both flexible for research and rigorous for evaluation, supporting the dual goals of developing specialized and generalized agents.
+A key contribution of this thesis is the development of a unified and powerful experimentation workflow, orchestrated by the main script \\
+\noindent
+\texttt{run\_experiments.py}. This script replaces the previous fragmented approach, providing a single, interactive interface to manage the entire lifecycle of training, benchmarking, and evaluation for V2G control agents. This workflow is designed to be both flexible for research and rigorous for evaluation, supporting the dual goals of developing specialized and generalized agents.
 
 \subsection{Orchestration via \texttt{run\_experiments.py}}
 The \texttt{run\_experiments.py} script acts as the central hub for all experimentation. It guides the user through an interactive command-line process, ensuring consistency and reproducibility. The key steps are:
@@ -127,7 +128,8 @@ To ensure a fair and comprehensive comparison, all algorithms are evaluated agai
     US_{\text{avg}} = \frac{1}{N_{\text{EVs}}} \sum_{k=1}^{N_{\text{EVs}}} \min \left(1, \frac{E_k(t_k^{\text{dep}})}{E_k^{\text{des}}} \right)
     \]
     
-    \item \textbf{Transformer Overload (kWh):} The total energy that exceeded the transformer's rated power limit. An ideal controller should achieve a value of 0.
+    \item \textbf{Transformer Overload (kWh):} The total energy that exceeded \\ \noindent 
+the transformer's rated power limit. An ideal controller should achieve a value of 0.
     \[
     O_{\text{tr}} = \sum_{t=0}^{T_{\text{sim}}} \sum_{j=1}^{N_T} \max(0, P_j^{\text{tr}}(t) - P_j^{\text{tr,max}}) \cdot \Delta t
     \]
@@ -145,7 +147,7 @@ During the analysis and implementation of new metrics, fundamental details about
 \subsubsection{Vehicle Definition Modes}
 The simulator operates in two distinct modes, controlled by the boolean flag \texttt{heterogeneous\_ev\_specs}:
 \begin{itemize}
-    \item \textbf{Heterogeneous Mode (\texttt{True}):} In this mode, the simulator ignores the default vehicle specifications in the \texttt{.yaml} file. Instead, it loads a list of vehicle profiles from an external JSON file, specified by the \texttt{ev\_specs\_file} parameter (e.g., \texttt{ev\_specs\_v2g\_enabled2024.json}). This allows for the creation of a realistic fleet with diverse battery capacities, charging powers, and efficiencies. For instance, the fleet may include a \textbf{Peugeot 208} with a 46.3 kWh battery and a 7.4 kW charge rate, alongside a \textbf{Volkswagen ID.4} with a 77 kWh battery and an 11 kW charge rate. A vehicle is randomly selected from this list for each new arrival event.
+    \item \textbf{Heterogeneous Mode (\texttt{True}):} In this mode, the simulator ignores the default vehicle specifications in the \texttt{.yaml} file. Instead, it loads a list of vehicle profiles from an external JSON file, specified by the \texttt{ev\_specs\_file} parameter\\ \noindent (e.g., \texttt{ev\_specs\_v2g\_enabled2024.json}). This allows for the creation of a realistic fleet with diverse battery capacities, charging powers, and efficiencies. For instance, the fleet may include a \textbf{Peugeot 208} with a 46.3 kWh battery and a 7.4 kW charge rate, alongside a \textbf{Volkswagen ID.4} with a 77 kWh battery and an 11 kW charge rate. A vehicle is randomly selected from this list for each new arrival event.
     \item \textbf{Homogeneous Mode (\texttt{False}):} In this mode, the external JSON file is ignored. All vehicles created in the simulation are identical, and their characteristics are defined exclusively by the \texttt{ev:} block within the \texttt{.yaml} configuration file. The \texttt{battery\_capacity} parameter in this block becomes the single source of truth for the entire fleet.
 \end{itemize}
 
@@ -164,7 +166,7 @@ This calibration workflow, integrated optionally into the main \texttt{run\_expe
 The control problem is formalized as a Markov Decision Process (MDP), defined by the tuple $(S, A, P, R, \gamma)$.
 
 \subsection{State Space ($S$)}
-The state $s_t \in S$ is a feature vector providing a snapshot of the environment at time $t$. A representative state, as defined in modules like \texttt{V2G\_profit\_max\_loads.py}, includes:
+The state $s_t \in S$ is a feature vector providing a snapshot of the environment at time $t$. A representative state, as defined in modules like \\ \noindent \texttt{V2G\_profit\_max\_loads.py}, includes:
 \[
  s_t = [t, P_{\text{total}}(t-1), \mathbf{c}(t, H), \mathbf{L}_1(t, H), \mathbf{PV}_1(t, H), \dots, \mathbf{s}^{\text{EV}}_1(t), \dots, \mathbf{s}^{\text{EV}}_N(t)]^T
 \]
@@ -266,7 +268,7 @@ DDPG is an off-policy algorithm that concurrently learns a deterministic policy 
 \end{itemize}
 
 \paragraph{Implementation Details}
-To integrate Prioritized Experience Replay (PER) with DDPG, a custom class, \texttt{CustomDDPG}, was developed in the \texttt{ev2gym/rl\_agent/custom\_algorithms.py} module. This class inherits from the standard \texttt{DDPG} agent provided by \textbf{Stable-Baselines3}. The core \texttt{train} method is overridden to replace the default uniform-sampling replay buffer with one that supports prioritized sampling. This involves calculating TD-errors for each transition, updating their priorities in the buffer, and using the resulting importance-sampling weights during the critic update, thereby focusing the learning process on the most informative experiences.
+To integrate Prioritized Experience Replay (PER) with DDPG, a custom class, \texttt{CustomDDPG}, was developed in the \\ \noindent \texttt{ev2gym/rl\_agent/custom\_algorithms.py} module. This class inherits from the standard \texttt{DDPG} agent provided by \textbf{Stable-Baselines3}. The core \texttt{train} method is overridden to replace the default uniform-sampling replay buffer with one that supports prioritized sampling. This involves calculating TD-errors for each transition, updating their priorities in the buffer, and using the resulting importance-sampling weights during the critic update, thereby focusing the learning process on the most informative experiences.
 
 \subsubsection{Truncated Quantile Critics (TQC)}
 TQC enhances the stability of SAC by modeling the entire distribution of returns instead of just its mean. This is achieved through quantile regression and a novel truncation mechanism to combat Q-value overestimation.
