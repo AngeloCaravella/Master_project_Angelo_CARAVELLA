@@ -5,7 +5,7 @@ The design of an effective reward function is arguably the most critical aspect 
 It serves as the primary communication channel through which designers convey desired behaviors and objectives to a learning agent. 
 A poorly designed reward function can lead to agents learning unintended, suboptimal, or even harmful behaviors,despite successfully maximizing their assigned objective.
 Consequently, reward engineering has emerged as a fundamental and increasingly sophisticated discipline within modern RL,
-proving indispensable for the successful application of algorithms in complex, real-world scenarios \cite{ibrahim2024comprehensive}.
+proving indispensable for the successful application of algorithms in complex, real-world scenarios \footcite{ibrahim2024comprehensive}.
 \noindent
 The Vehicle-to-Grid (V2G) challenge, with its inherent multi-objective nature—encompassing profit maximization, assurance of user satisfaction, preservation of battery health, and maintenance of grid stability—presents particularly stringent demands on reward function design.
 \noindent
@@ -21,7 +21,7 @@ The core idea behind PBRS is to supplement the original reward, $R(s, a, s')$, r
 \[
 R'(s, a, s') = R(s, a, s') + F(s, s')
 \]
-
+\noindent
 The crucial characteristic of PBRS lies in the specific construction of the shaping term. It is derived from the difference in value of an arbitrary potential function, $\Phi: \mathcal{S} \to \mathbb{R}$, evaluated at the successive states $s$ and $s'$:
 
 \[
@@ -31,7 +31,7 @@ where $\gamma \in [0, 1)$ is the discount factor of the Markov Decision Process 
 
 \subsection{Theoretical Foundation and Policy Invariance}
 
-The seminal work by Ng et al. \cite{ng1999policy} established the theoretical robustness of PBRS by proving a critical property: \textbf{policy invariance}. 
+The seminal work by Ng et al. \footcite{ng1999policy} established the theoretical robustness of PBRS by proving a critical property: \textbf{policy invariance}. 
 \\
 \noindent
 This property guarantees that adding a potential-based shaping reward to an MDP does not alter its set of optimal policies. 
