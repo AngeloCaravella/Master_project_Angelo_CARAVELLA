@@ -111,6 +111,29 @@ The core idea is to treat the slow but powerful online MPC as an "oracle" or exp
     This inference step is orders of magnitude faster than solving a MILP, enabling real-time control for large-scale systems.
 \end{enumerate}
 
+\subsection{A More Principled Approximator: The Deep ReLU Network}
+
+While the Random Forest provides a powerful and general-purpose approximation, Chapter 2 introduces a more theoretically grounded approach for this specific problem: using a deep neural network with Rectified Linear Unit (ReLU) activation functions. This method is not just an approximation but is theoretically capable of \textbf{exactly representing} the Piecewise Affine (PWA) nature of the explicit MPC control law. This work implements this advanced alternative.
+
+\paragraph{Implementation Details}
+This controller is implemented as the \texttt{ApproximateExplicitMPC\_NN} class. It utilizes a PyTorch-based neural network, whose architecture is defined in \texttt{MPCApproximatorNet}. The model is trained using the dedicated \texttt{train\_mpc\_approximator\_nn.py} script, which also parallelizes the data generation process for efficiency. The resulting trained model is saved to \texttt{mpc\_approximator\_nn.pth}.
+
+\paragraph{Theoretical Motivation}
+As detailed in Section \ref{sec:ev_and_scenario} of Chapter 2, the explicit solution to a linear MPC problem is a PWA function. The work by Karg et al. \footcite{karg2020efficient} demonstrated that a deep ReLU network can perfectly replicate such a function. This provides a significant advantage over general-purpose approximators:
+\begin{itemize}
+    \item \textbf{Representational Efficiency:} Deep ReLU networks can represent an exponentially large number of linear regions with only a linear increase in the number of parameters. This directly counters the "curse of dimensionality" that plagues traditional explicit MPC, allowing a compact model to represent a highly complex control law.
+    \item \textbf{Theoretical Soundness:} Using a model that matches the underlying mathematical structure of the solution is more principled and has the potential to yield a more accurate and robust controller.
+\end{itemize}
+
+\paragraph{Methodology}
+The training methodology mirrors that of the Random Forest version but is adapted for a neural network:
+\begin{enumerate}
+    \item \textbf{Oracle Data Generation:} The \texttt{train\_mpc\_approximator\_nn.py} script uses the fixed-horizon \texttt{OnlineMPC\_Solver} as an oracle to generate a large dataset of state-action pairs. This process is parallelized across multiple CPU cores to drastically reduce the time required.
+    \item \textbf{Offline Supervised Learning:} A Multi-Layer Perceptron (MLP) with hidden layers [256, 128, 64] and ReLU activations is trained on this dataset. The network learns to map the state vector $s_t$ to the optimal power values $a_t$ by minimizing the Mean Squared Error (MSE) loss function using the Adam optimizer.
+    \item \textbf{Fast Online Inference:} During simulation, the \texttt{ApproximateExplicitMPC\_NN} controller performs a single, rapid forward pass of the state vector through the trained network to obtain the control action, achieving the real-time performance required.
+\end{enumerate}
+This implementation provides a direct, practical realization of the advanced explicit MPC representation discussed in the state-of-the-art review, creating a powerful baseline for comparison.
+
 \section{Lyapunov-based Adaptive Horizon MPC}
 While the A-MPC offers a significant speed-up, it is an approximation and may not always match the performance of the fully-fledged online MPC. A second enhancement developed in this work is the \textbf{Lyapunov-based Adaptive Horizon MPC}, which aims to reduce the computational burden of the online MPC while retaining its optimality and stability guarantees. This method represents an essential improvement, creating an intelligent trade-off between computational cost and control performance.
 

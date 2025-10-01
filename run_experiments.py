@@ -20,7 +20,7 @@ from typing import List, Dict, Any, Tuple, Callable, Optional
 # --- Importazioni dalla libreria custom ev2gym ---
 from ev2gym.models.ev2gym_env import EV2Gym
 from ev2gym.baselines.heuristics import ChargeAsFastAsPossible, ChargeAsLateAsPossible, RoundRobin
-from ev2gym.baselines.pulp_mpc import OnlineMPC_Solver, ApproximateExplicitMPC
+from ev2gym.baselines.pulp_mpc import OnlineMPC_Solver, ApproximateExplicitMPC, ApproximateExplicitMPC_NN
 from ev2gym.rl_agent.custom_algorithms import CustomDDPG
 from ev2gym.utilities.per_buffer import PrioritizedReplayBuffer
 from ev2gym.rl_agent import reward as reward_module
@@ -283,13 +283,17 @@ def get_algorithms(max_cs: int, is_thesis_mode: bool) -> Dict[str, Tuple[Any, An
         }),
         "Approx_Explicit_MPC": (ApproximateExplicitMPC, None, {
             'control_horizon': 5,
-            'max_cs': max_cs  # <-- Passa il valore calcolato
+            'max_cs': max_cs
+        }),
+        "Approx_Explicit_MPC_NN": (ApproximateExplicitMPC_NN, None, {
+            'control_horizon': 5,
+            'max_cs': max_cs
         }),
         "SAC": (None, SAC, {}), "PPO": (None, PPO, {}), "A2C": (None, A2C, {}), "TD3": (None, TD3, {}), "DDPG": (None, DDPG, {}),
         "DDPG+PER": (None, CustomDDPG, {'replay_buffer_class': PrioritizedReplayBuffer}),
         "TQC": (None, TQC, {}), "TRPO": (None, TRPO, {}), "ARS": (None, ARS, {})
     }
-    THESIS_ALGORITHMS = {k: v for k, v in ALL_ALGORITHMS.items() if k in ["AFAP", "ALAP", "RR", "Online_MPC", "Online_MPC_Adaptive", "Approx_Explicit_MPC", "SAC", "DDPG+PER", "TQC"]}
+    THESIS_ALGORITHMS = {k: v for k, v in ALL_ALGORITHMS.items() if k in ["AFAP", "ALAP", "RR", "Online_MPC", "Online_MPC_Adaptive", "Approx_Explicit_MPC", "Approx_Explicit_MPC_NN", "SAC", "DDPG+PER", "TQC"]}
     return THESIS_ALGORITHMS if is_thesis_mode else ALL_ALGORITHMS
 
 

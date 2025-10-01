@@ -4,6 +4,9 @@ import pulp
 import numpy as np
 import joblib
 import os
+import torch
+import torch.nn as nn
+from pathlib import Path
 
 class OnlineMPC_Solver:
     """
@@ -205,6 +208,107 @@ class ApproximateExplicitMPC:
         state_vector = self._build_state_vector(env)
         
         predicted_powers = self.model.predict(state_vector)[0]
+        
+        action = np.zeros(env.cs)
+        for i in range(env.cs):
+            max_power = env.charging_stations[i].get_max_power()
+            if max_power > 0:
+                action[i] = predicted_powers[i] / max_power
+
+        return np.clip(action, -1, 1)
+
+# =====================================================================================
+# --- CLASSI PER MPC ESPLICITO APPROSSIMATO CON RETE NEURALE ---
+# =====================================================================================
+
+class MPCApproximatorNet(nn.Module):
+    """Definizione dell'architettura della rete neurale per l'approssimatore MPC."""
+    def __init__(self, input_size, output_size, hidden_layers=[256, 128, 64]):
+        super(MPCApproximatorNet, self).__init__()
+        layers = []
+        prev_size = input_size
+        for hidden_size in hidden_layers:
+            layers.append(nn.Linear(prev_size, hidden_size))
+            layers.append(nn.ReLU())
+            prev_size = hidden_size
+        layers.append(nn.Linear(prev_size, output_size))
+        self.model = nn.Sequential(*layers)
+
+    def forward(self, x):
+        return self.model(x)
+
+class ApproximateExplicitMPC_NN:
+    """
+    Implementa un controller MPC Esplicito Approssimato usando una Rete Neurale.
+    """
+    def __init__(self, env, model_path=None, control_horizon=5, max_cs=None, **kwargs):
+        print("Inizializzazione controller MPC Esplicito Approssimato (Rete Neurale)...")
+        
+        if model_path is None:
+            script_dir = Path(__file__).parent.resolve()
+            model_path = script_dir / 'mpc_approximator_nn.pth'
+
+        if not os.path.exists(model_path):
+            raise FileNotFoundError(f"Modello non trovato in '{model_path}'. "
+                                    "Esegui prima lo script 'train_mpc_approximator_nn.py' per generarlo.")
+        
+        if max_cs is None:
+            raise ValueError("Il parametro 'max_cs' deve essere fornito.")
+        self.max_cs = max_cs
+        self.H = control_horizon
+
+        # Determina la dimensione dell'input e dell'output
+        state_vector_size = self.max_cs * 2 + self.H * 2
+        output_size = self.max_cs
+
+        # Inizializza il modello e carica i pesi
+        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        self.model = MPCApproximatorNet(input_size=state_vector_size, output_size=output_size)
+        self.model.load_state_dict(torch.load(model_path, map_location=self.device))
+        self.model.to(self.device)
+        self.model.eval()  # Imposta il modello in modalità valutazione
+
+        print(f"Modello Rete Neurale caricato con successo da: {model_path} su device {self.device}")
+
+    def _build_state_vector(self, env):
+        current_step = env.current_step
+        horizon = min(self.H, env.simulation_length - current_step)
+        num_cs_in_env = env.cs
+        
+        ev_socs = np.zeros(self.max_cs)
+        ev_time_to_departure = np.zeros(self.max_cs)
+        
+        for i in range(num_cs_in_env):
+            ev = next((ev for ev in env.charging_stations[i].evs_connected if ev is not None), None)
+            if ev:
+                ev_socs[i] = ev.get_soc()
+                ev_time_to_departure[i] = max(0, ev.time_of_departure - current_step)
+
+        prices_charge = env.charge_prices[0, current_step : current_step + horizon]
+        prices_discharge = env.discharge_prices[0, current_step : current_step + horizon]
+        
+        padded_prices_ch = np.pad(prices_charge, (0, self.H - len(prices_charge)), 'edge')
+        padded_prices_dis = np.pad(prices_discharge, (0, self.H - len(prices_discharge)), 'edge')
+
+        state_vector = np.concatenate([
+            ev_socs,
+            ev_time_to_departure,
+            padded_prices_ch,
+            padded_prices_dis
+        ])
+        return state_vector
+
+    def get_action(self, env):
+        if env.current_step >= env.simulation_length - 1:
+            return np.zeros(env.cs)
+            
+        state_vector_np = self._build_state_vector(env)
+        state_tensor = torch.tensor(state_vector_np, dtype=torch.float32).to(self.device)
+        
+        with torch.no_grad():
+            predicted_powers_tensor = self.model(state_tensor)
+        
+        predicted_powers = predicted_powers_tensor.cpu().numpy()
         
         action = np.zeros(env.cs)
         for i in range(env.cs):
