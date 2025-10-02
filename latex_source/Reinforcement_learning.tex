@@ -2,8 +2,11 @@
 \label{sec:adaptive_reward}
 
 \paragraph{Implementation Details}
-This reward function, along with a suite of other reward strategies, is implemented in the \texttt{ev2gym/rl_agent/reward.py} module. The main experimentation script, \texttt{run_experiments.py}, allows the user to dynamically select which reward function to use for a given training run. The \texttt{FastProfitAdaptiveReward} function, specifically, uses \texttt{collections.deque} objects attached to the environment instance to efficiently maintain a sliding window of recent performance for satisfaction and overload events.
-
+This reward function, along with a suite of other reward strategies, is implemented in the
+\\
+\noindent
+ \texttt{ev2gym/rl_agent/reward.py} module. The main experimentation script, \texttt{run_experiments.py}, allows the user to dynamically select which reward function to use for a given training run. The \texttt{FastProfitAdaptiveReward} function, specifically, uses \texttt{collections.deque} objects attached to the environment instance to efficiently maintain a sliding window of recent performance for satisfaction and overload events.
+\noindent
 To effectively steer the learning agent towards a policy that is both highly profitable and reliable, we have designed and implemented a novel, history-based adaptive reward function, named \texttt{FastProfitAdaptiveReward}. This function departs from traditional static-weight penalties and instead introduces a dynamic feedback mechanism where the severity of penalties is directly influenced by the agent\'s recent performance. The core philosophy is to aggressively prioritize economic profit while using adaptive penalties as guardrails that become stricter only when the agent begins to consistently violate operational constraints.
 
 The total reward at each timestep $t$, $R_t$, is calculated as the net economic profit minus any active penalties for user dissatisfaction or transformer overload.
@@ -34,7 +37,7 @@ This creates a powerful feedback loop: a single, isolated failure in an otherwis
 
 \subsubsection{Adaptive Transformer Overload Penalty}
 Similarly, the transformer overload penalty, $P_t^{\text{tr}}$, adapts based on the recent frequency of overloads. The environment tracks how often an overload has occurred in the last 100 timesteps, yielding an overload frequency, $F_{hist}^{\text{tr}}$.
-
+\noindent
 This frequency is used to compute a linear \textit{overload severity multiplier}, $\lambda_t^{\text{tr}}$. The more frequently overloads have happened, the higher the penalty for a new one.
 \begin{equation}
     \lambda_t^{\text{tr}} = \lambda_{\text{base}}^{\text{tr}} \cdot F_{hist}^{\text{tr}}
@@ -47,5 +50,5 @@ This mechanism teaches the agent that while a rare, minor overload might be acce
 
 \subsubsection{Rationale and Significance}
 This history-based adaptive reward function represents a significant advancement over static or purely state-based approaches. By making the penalty weights a function of the system's recent performance history, we provide a more nuanced and stable learning signal. The agent is not punished excessively for isolated, exploratory actions that might lead to a minor constraint violation. Instead, it is strongly discouraged from developing policies that lead to chronic system failures.
-
+\noindent
 The intuition is to mimic a more realistic management objective: maintain high performance on average, and react strongly only when performance trends begin to degrade. This method is also computationally efficient, avoiding complex state-dependent calculations in favor of simple updates to historical data queues. Ultimately, this reward structure guides the agent to discover policies that are not only profitable but also robust and reliable over time, striking a more intelligent balance between economic ambition and operational safety.

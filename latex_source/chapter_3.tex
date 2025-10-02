@@ -29,8 +29,8 @@ The simulation process follows a reproducible three-phase structure: (1) \textbf
 
 \subsection{Software Implementation and Project Structure}
 \label{sec:software_implementation}
-While the conceptual architecture describes the simulator's components, the practical implementation is organized within a modular Python package named \texttt{ev2gym}. This structure promotes code reusability and a clear separation of concerns. The high-level experimentation scripts, such as \\ \noindent 
-
+While the conceptual architecture describes the simulator's components, the practical implementation is organized within a modular Python package named \texttt{ev2gym}. This structure promotes code reusability and a clear separation of concerns. The high-level experimentation scripts, such as \\
+ \noindent 
 \texttt{run\_experiments.py} and \texttt{train\_mpc\_approximator.py}, reside in the project's root directory and act as orchestrators, utilizing the core functionalities provided by the \texttt{ev2gym} package.
 
 The key subdirectories within the \texttt{ev2gym} package are:
@@ -50,7 +50,7 @@ The framework implements a realistic two-stage charging/discharging model that c
 
 \subsection{Battery Degradation Model}
 To address the critical issue of battery health in V2G operations, the simulator incorporates a semi-empirical battery degradation model. It quantifies capacity loss ($Q_{lost}$) as the sum of two primary aging mechanisms \footcite{orfanoudakis2024ev2gym}: calendar aging and cyclic aging.
-
+\noindent
 \begin{itemize}
     \item \textbf{Calendar Aging ($d_{cal}$):} Time-dependent capacity loss, influenced by the battery's average State of Charge (SoC) and temperature ($\Theta$). The formula is given by:
     \begin{equation}
@@ -62,9 +62,9 @@ To address the critical issue of battery health in V2G operations, the simulator
         d_{cyc} = (\zeta_0 + \zeta_1 \cdot |\overline{SoC}-0.5|) \cdot \frac{E_{exchanged}}{\sqrt{Q_{acc}}}
     \end{equation}
 \end{itemize}
-
+\noindent
 The total capacity loss is the sum $Q_{lost} = d_{cal} + d_{cyc}$. This integrated model allows for the direct quantification of how different control strategies impact the battery's long-term State of Health (SoH), enabling the training of agents that balance profitability with battery preservation.
-
+\noindent
 A key feature of this framework is that the physical parameters for this model ($\epsilon_0, \epsilon_1, \epsilon_2, \zeta_0, \zeta_1, Q_{acc}$) are not fixed. They can be empirically calibrated from real-world experimental data using the provided \texttt{Fit\_battery.py} script, as detailed in Section \ref{sec:sim_architecture}.
 
 \section{A Unified Experimentation and Evaluation Workflow}
@@ -153,13 +153,14 @@ The simulator operates in two distinct modes, controlled by the boolean flag \te
 
 \subsubsection{Empirical Calibration of the Degradation Model}
 A significant enhancement in this work is the move towards a more physically representative and flexible battery degradation model. While the underlying semi-empirical model for calendar and cyclic aging remains, the methodology for parameterizing it has been fundamentally improved, addressing previous inconsistencies.
-
+\noindent
 This is achieved through the \texttt{Fit\_battery.py} script, a new utility for empirical model calibration. The script implements the following workflow:
 \begin{enumerate}
     \item \textbf{Data Loading:} It loads time-series data from real-world battery aging experiments. The expected data includes measurements of capacity loss over time, along with contextual variables like state of charge (SoC), temperature, and energy throughput.
     \item \textbf{Model Fitting:} Using the \texttt{curve\_fit} function from the SciPy library, the script fits the parameters of the \texttt{Qlost\_model} (which combines calendar and cyclic aging) to the empirical data. This optimization process finds the physical constants (e.g., $\epsilon_0, \zeta_0$) that best explain the observed degradation.
     \item \textbf{Parameter Export:} The script outputs the calibrated parameters. These values can then be used directly in the simulator's configuration, ensuring that the degradation model for a specific EV fleet is grounded in experimental evidence for that battery type.
 \end{enumerate}
+\noindent
 This calibration workflow, integrated optionally into the main \texttt{run\_experiments.py} script, elevates the simulation's fidelity. It allows the framework to move beyond a single, fixed degradation model (previously calibrated for a 78 kWh battery) and enables the creation of high-fidelity digital twins for a wide variety of EV batteries, provided that the necessary experimental data is available.
 
 \section{Reinforcement Learning Formulation}
@@ -201,7 +202,7 @@ The reward function $R(t)$ encodes the objectives of the control agent. The fram
     \]
     The reward is the negative squared error from the power setpoint, incentivizing the agent to minimize this error at all times.
 \end{itemize}
-
+\noindent
 By using this enhanced framework, this thesis moves beyond single-scenario optimization to develop and validate an intelligent V2G control agent that is not only high-performing but also robust, adaptable, and ready for the complexities of real-world deployment.
 
 \section{Reinforcement Learning Algorithms}
