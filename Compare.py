@@ -95,8 +95,9 @@ def _process_single_config(file_path: str, file_name: str) -> Optional[Dict[str,
         COL_SOSTA_MINIMA: get_nested_val(ev_config, ['min_time_of_stay'], 'N/A'),
     }
 
-def plot_grid_summary_table(extracted_data: List[Dict[str, Any]]):
-    """Genera la tabella di sintesi dell'infrastruttura e della rete."""
+
+def plot_grid_summary_table(extracted_data: List[Dict[str, Any]], save_fig: bool = False) -> plt.Figure:
+    """Genera la tabella di sintesi dell'infrastruttura e della rete e restituisce la figura."""
     cols_to_show = [COL_FILE, COL_SCENARIO, COL_DURATA_SIM, COL_STAZIONI, COL_POT_RETE, COL_CAPACITA_NETTA, COL_DOMANDA_MAX, COL_STRESS_RETE, COL_TRAFFICO]
     cell_data = [[str(row[col]) for col in cols_to_show] for row in extracted_data]
     
@@ -119,12 +120,13 @@ def plot_grid_summary_table(extracted_data: List[Dict[str, Any]]):
                 except (ValueError, TypeError): pass
 
     fig.suptitle('Sintesi Infrastruttura e Rete', fontsize=22, y=0.98)
-    plt.savefig("Grid_Summary.png", dpi=200, bbox_inches='tight', pad_inches=0.7)
-    print("\nTabella 'Grid_Summary.png' salvata con successo.")
-    plt.close(fig)
+    if save_fig:
+        plt.savefig("Grid_Summary.png", dpi=200, bbox_inches='tight', pad_inches=0.7)
+        print("\nTabella 'Grid_Summary.png' salvata con successo.")
+    return fig
 
-def plot_ev_details_table(extracted_data: List[Dict[str, Any]]):
-    """Genera la tabella con i dettagli fisici ed economici degli EV."""
+def plot_ev_details_table(extracted_data: List[Dict[str, Any]], save_fig: bool = False) -> plt.Figure:
+    """Genera la tabella con i dettagli fisici ed economici degli EV e restituisce la figura."""
     cols_to_show = [COL_FILE, COL_V2G, COL_V2G_FACTOR, COL_EFFICIENCY, COL_EV_DIVERSI, COL_BATT_DEFAULT, COL_BATT_EMERGENZA, COL_BATT_DESIDERATA, COL_SOSTA_MINIMA]
     cell_data = [[str(row[col]) for col in cols_to_show] for row in extracted_data]
     
@@ -144,55 +146,35 @@ def plot_ev_details_table(extracted_data: List[Dict[str, Any]]):
                 cell.set_facecolor('#f39c12')
 
     fig.suptitle('Dettagli Fisici ed Economici EV', fontsize=22, y=0.98)
-    plt.savefig("EV_Details.png", dpi=200, bbox_inches='tight', pad_inches=0.7)
-    print("Tabella 'EV_Details.png' salvata con successo.")
-    plt.close(fig)
+    if save_fig:
+        plt.savefig("EV_Details.png", dpi=200, bbox_inches='tight', pad_inches=0.7)
+        print("Tabella 'EV_Details.png' salvata con successo.")
+    return fig
+
+def generate_summary_figures_for_streamlit(config_directory: str, file_list: List[str]) -> List[plt.Figure]:
+    """Funzione per Streamlit: orchestra l'analisi e restituisce le figure."""
+    # In file_list arrivano percorsi assoluti, estrai solo il nome del file per _process_single_config
+    file_names_only = [os.path.basename(p) for p in file_list]
     
-def create_legends():
-    """Crea le due immagini di legenda separate."""
-    # Legenda 1: Rete
-    fig1, ax1 = plt.subplots(figsize=(16, 9)); ax1.axis('off')
-    grid_text = (
-        'GUIDA ALLA LETTURA: SINTESI INFRASTRUTTURA E RETE\n\n'
-        '• Pot. Rete (kW): Limite fisico del trasformatore (capacità massima assoluta).\n'
-        '• Cap. Netta (kW): Potenza *realmente disponibile* per gli EV. Formula: `Pot. Rete - Carichi + Solare`.\n'
-        '• Dom. Max (kW): Domanda teorica se tutti gli EV caricassero alla massima potenza.\n\n'
-        '--- INDICATORE CHIAVE: STRESS RETE ---\n'
-        'Misura quanto la domanda potenziale di picco si avvicina (o supera) la capacità totale della rete.\n'
-        'Formula di calcolo:   Stress Rete = Domanda Max (kW) / Pot. Rete (kW)\n\n'
-        'Significato dei colori:\n'
-        '    ■ Verde (< 0.95): SICURO. La rete ha ampio margine.\n'
-        '    ■ Arancione (0.95-1.05): ATTENZIONE. Rete al limite. Controllo intelligente indispensabile.\n'
-        '    ■ Rosso (> 1.05): CRITICO. Rete sottodimensionata. Sovraccarico probabile.'
-    )
-    fig1.suptitle('Guida all\'Interpretazione: Rete', fontsize=22, y=0.95)
-    fig1.text(0.5, 0.5, grid_text, ha='center', va='center', fontsize=13.5, bbox={'facecolor': '#f8f9fa', 'edgecolor': 'gray', 'boxstyle': 'round,pad=1.5'})
-    plt.savefig("Legend_Grid.png", dpi=200, bbox_inches='tight', pad_inches=0.7)
-    print("Legenda 'Legend_Grid.png' salvata con successo.")
-    plt.close(fig1)
+    extracted_data = [
+        data for i, file_path in enumerate(file_list)
+        if (data := _process_single_config(file_path, file_names_only[i])) is not None
+    ]
+    
+    if not extracted_data:
+        return []
 
-    # Legenda 2: EV
-    fig2, ax2 = plt.subplots(figsize=(16, 9)); ax2.axis('off')
-    ev_text = (
-        'GUIDA ALLA LETTURA: DETTAGLI FISICI ED ECONOMICI EV\n\n'
-        '• Fattore Prezzo V2G: Rapporto tra prezzo di vendita (scarica) e acquisto (carica).\n'
-        '• Efficienza (C/D): Efficienza di Carica / Scarica. `1.0/1.0` indica nessuna perdita (irrealistico).\n'
-        '• EV Diversi: `SI` = scenario realistico con un mix di EV (batterie/potenze diverse).\n'
-        '• Batt. Def. (kWh): Capacità della batteria per gli EV di default (se non diversi).\n'
-        '• Cap. Emergenza (kWh): Riserva minima intoccabile della batteria per l\'utente.\n'
-        '• Cap. Desiderata (%): Obiettivo di ricarica che l\'EV deve raggiungere prima della partenza.\n'
-        '• Sosta Min. (min): Durata minima della sosta per ogni EV.\n\n'
-        '--- SIGNIFICATO DEI COLORI ---\n'
-        '    ■ Arancione: Evidenzia parametri fisicamente o economicamente irrealistici (es. efficienza 100%).'
-    )
-    fig2.suptitle('Guida all\'Interpretazione: Dettagli EV', fontsize=22, y=0.95)
-    fig2.text(0.5, 0.5, ev_text, ha='center', va='center', fontsize=13.5, bbox={'facecolor': '#f8f9fa', 'edgecolor': 'gray', 'boxstyle': 'round,pad=1.5'})
-    plt.savefig("Legend_EV_Details.png", dpi=200, bbox_inches='tight', pad_inches=0.7)
-    print("Legenda 'Legend_EV_Details.png' salvata con successo.")
-    plt.close(fig2)
+    figures = []
+    figures.append(plot_grid_summary_table(extracted_data, save_fig=False))
+    figures.append(plot_ev_details_table(extracted_data, save_fig=False))
+    
+    # Non chiudere le figure, Streamlit ne ha bisogno
+    # for fig in figures:
+    #     plt.close(fig)
+        
+    return figures
 
-
-def analyze_configs(config_directory: str, file_list: List[str]):
+def analyze_configs_and_save(config_directory: str, file_list: List[str]):
     """Funzione principale che orchestra l'analisi e la creazione delle immagini."""
     print("Avvio analisi dettagliata dei file di configurazione...")
     extracted_data = [
@@ -204,9 +186,11 @@ def analyze_configs(config_directory: str, file_list: List[str]):
         print("\nNessun dato valido estratto. Impossibile generare le immagini.")
         return
 
-    plot_grid_summary_table(extracted_data)
-    plot_ev_details_table(extracted_data)
-    create_legends()
+    # Chiudi le figure dopo averle salvate per liberare memoria
+    fig1 = plot_grid_summary_table(extracted_data, save_fig=True)
+    plt.close(fig1)
+    fig2 = plot_ev_details_table(extracted_data, save_fig=True)
+    plt.close(fig2)
     
     print("\nAnalisi completata con successo!")
 
@@ -222,4 +206,4 @@ if __name__ == "__main__":
     if not os.path.isdir(CONFIG_DIR):
         print(f"ERRORE: La directory '{CONFIG_DIR}' non è stata trovata.")
     else:
-        analyze_configs(CONFIG_DIR, FILES_TO_ANALYZE)
+        analyze_configs_and_save(CONFIG_DIR, FILES_TO_ANALYZE)

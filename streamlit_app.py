@@ -132,6 +132,30 @@ steps_for_training = 0
 if train_rl_models:
     steps_for_training = st.number_input("Per quanti passi di training?", min_value=1, value=100000)
 
+# --- NUOVA SEZIONE: ANALISI CONFIGURAZIONI ---
+with st.expander("Analisi Configurazioni Scenario (.yaml)"):
+    st.markdown("Visualizza tabelle riassuntive dei parametri per gli scenari selezionati.")
+    if st.button("Genera e Visualizza Tabelle Riassuntive"):
+        if not scenarios_to_test:
+            st.warning("Per favore, seleziona almeno uno scenario dalla lista qui sopra.")
+        else:
+            with st.spinner("Analisi dei file di configurazione in corso..."):
+                try:
+                    # Importa la funzione refactorizzata da Compare.py
+                    from Compare import generate_summary_figures_for_streamlit
+                    
+                    # Genera le figure
+                    summary_figures = generate_summary_figures_for_streamlit(config_path, scenarios_to_test)
+                    
+                    if not summary_figures:
+                        st.error("Impossibile generare le tabelle. Nessun dato valido estratto dai file.")
+                    else:
+                        st.success(f"Tabelle generate con successo per {len(scenarios_to_test)} scenari.")
+                        for fig in summary_figures:
+                            st.pyplot(fig)
+                except Exception as e:
+                    st.error(f"Si è verificato un errore durante la generazione delle tabelle: {e}")
+
 
 # --- Pulsante Esegui Simulazione ---
 if st.button("Esegui Simulazione"):
