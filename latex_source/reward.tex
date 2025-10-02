@@ -12,22 +12,24 @@ The Vehicle-to-Grid (V2G) challenge, with its inherent multi-objective nature,en
 This section investigates several advanced techniques for effectively guiding agent learning in such intricate environments.
 
 \subsection{Potential-Based Reward Shaping (PBRS)}
-\label{sec:pbrs}
+Potential-Based Reward Shaping (PBRS) stands as one of the most theoretically
+grounded and widely adopted methods for augmenting an environment's in-
+trinsic reward signal. The core idea behind PBRS is to supplement the original
+reward, $R(s, a, s')$, received by an agent for transitioning from state $s$ to state $s'$ via
+action $a$, with an additional shaping term, $F(s, a, s')$. The resulting shaped reward,
+$R'$, is defined as:
+\begin{equation}
+    R'(s, a, s') = R(s, a, s') + F(s, a, s')
+\end{equation}
 
-Potential-Based Reward Shaping (PBRS) stands as one of the most theoretically grounded and widely adopted methods for augmenting an environment's intrinsic reward signal. 
-\noindent
-The core idea behind PBRS is to supplement the original reward, $R(s, a, s')$, received by an agent for transitioning from state $s$ to state $s'$ via action $a$, with an additional shaping term, $F(s, s')$. The resulting shaped reward, $R'$, is defined as:
-
-\[
-R'(s, a, s') = R(s, a, s') + F(s, s')
-\]
-\noindent
-The crucial characteristic of PBRS lies in the specific construction of the shaping term. It is derived from the difference in value of an arbitrary potential function, $\Phi: \mathcal{S} \to \mathbb{R}$, evaluated at the successive states $s$ and $s'$:
-
-\[
-F(s, s') = \gamma \Phi(s') - \Phi(s)
-\]
-where $\gamma \in [0, 1)$ is the discount factor of the Markov Decision Process (MDP). The potential function $\Phi(s)$ assigns a scalar value to each state, intuitively representing how "good" or "desirable" that state is.
+The crucial characteristic of PBRS lies in the specific construction of the shaping
+term. To guarantee that the optimal policy remains unchanged (a property known as policy invariance), this shaping term must be defined as the difference in value of an arbitrary \textbf{potential function}, $\Phi: S \to \mathbb{R}$, evaluated at the successive states $s$ and $s'$:
+\begin{equation}
+    F(s, a, s') = \gamma\Phi(s') - \Phi(s)
+\end{equation}
+where $\gamma \in [0, 1)$ is the discount factor of the Markov Decision Process (MDP). The
+potential function $\Phi(s)$ assigns a scalar value to each state, intuitively representing
+how "good" or "desirable" that state is. Although $F$ is formally a function of $s, a, s'$, this specific potential-based form makes its value independent of the action $a$, which is the key insight for guaranteeing policy invariance.
 
 \subsection{Theoretical Foundation and Policy Invariance}
 

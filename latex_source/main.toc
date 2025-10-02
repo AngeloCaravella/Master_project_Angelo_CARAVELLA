@@ -34,9 +34,9 @@
 \contentsline {subsection}{\numberline {2.10.1}Potential-Based Reward Shaping (PBRS)}{28}{subsection.2.10.1}%
 \contentsline {subsection}{\numberline {2.10.2}Theoretical Foundation and Policy Invariance}{28}{subsection.2.10.2}%
 \contentsline {subsection}{\numberline {2.10.3}Practical Implications and Design Considerations}{29}{subsection.2.10.3}%
-\contentsline {section}{\numberline {2.11}Dynamic and Adaptive Rewards}{29}{section.2.11}%
+\contentsline {section}{\numberline {2.11}Dynamic and Adaptive Rewards}{30}{section.2.11}%
 \contentsline {subsection}{\numberline {2.11.1}Motivation and Mechanisms}{30}{subsection.2.11.1}%
-\contentsline {section}{\numberline {2.12}Curriculum Learning}{30}{section.2.12}%
+\contentsline {section}{\numberline {2.12}Curriculum Learning}{31}{section.2.12}%
 \contentsline {subsection}{\numberline {2.12.1}Specific Principles and Applications}{31}{subsection.2.12.1}%
 \contentsline {subsection}{\numberline {2.12.2}Curriculum Learning in V2G}{32}{subsection.2.12.2}%
 \contentsline {section}{\numberline {2.13}The Rise of Deep Reinforcement Learning for V2G Control}{32}{section.2.13}%
