@@ -69,7 +69,7 @@ In the field of Operations Research, a Mixed-Integer Linear Program (MILP) is a 
 \end{aligned}
 \end{equation}
 where $x$ represents the vector of integer variables and $y$ represents the vector of continuous variables. The vectors $c$ and $h$ contain the objective function coefficients, while $A$, $G$, and $b$ define the linear constraints of the system. The requirement for some variables to be integers ($x \in \mathbb{Z}^n$) is what makes MILPs fundamentally different from standard Linear Programs (LPs) and significantly more challenging to solve, forming a core part of the field of combinatorial optimization.
-
+\noindent
 Based on this definition, the mathematical structure of the optimization problem described above is a classic \textbf{Mixed-Integer Linear Program (MILP)}.
 This classification is justified as follows:
 \begin{itemize}
@@ -78,6 +78,50 @@ This classification is justified as follows:
     \item \textbf{Mixed-Integer Variables:} The formulation employs both continuous variables (e.g., $P^{\text{ch}}_{i,k}$, $E_{i,k}$) and discrete, binary integer variables ($z_{i,k}$). The binary variables are essential for modeling the logical decision to either charge or discharge at any given time step, but not both simultaneously.
 \end{itemize}
 The problem is not a Quadratic Program (QP) or Mixed-Integer Quadratic Program (MIQP) because the objective function does not contain any quadratic terms (e.g., minimizing the square of power). Similarly, it is not a Quadratically Constrained Quadratic Program (QCQP) as all constraints are linear. The \texttt{OnlineMPC\_Solver} is therefore designed to solve this specific MILP formulation at each control step.
+
+
+
+
+\section{Lyapunov-based Adaptive Horizon MPC}
+While the A-MPC offers a significant speed-up, it is an approximation and may not always match the performance of the fully-fledged online MPC. A second enhancement developed in this work is the \textbf{Lyapunov-based Adaptive Horizon MPC}, which aims to reduce the computational burden of the online MPC while retaining its optimality and stability guarantees. This method represents an essential improvement, creating an intelligent trade-off between computational cost and control performance.
+
+\paragraph{Implementation Details}
+This adaptive horizon mechanism is not a separate controller but rather an advanced operational mode of the \texttt{OnlineMPC\_Solver} class. Its logic is integrated directly within the solver's \texttt{get\_action} method and is activated by setting the \texttt{use\_adaptive\_horizon} flag to true during instantiation. When active, the solver performs the Lyapunov stability check after each optimization step and adjusts its internal horizon parameter, \texttt{current\_H}, accordingly for the next iteration.
+
+\subsection{Core Concept: Dynamic Horizon Adjustment}
+The key insight is that a long prediction horizon is not always necessary. When the system is in a stable state and far from its operational constraints, a shorter horizon is sufficient for making good decisions. Conversely, when the system is in a complex or critical state (e.g., an EV is close to its departure time but has a low SoC), a longer horizon is needed for careful planning.
+\noindent
+This adaptive controller dynamically adjusts its prediction horizon $H_t$ at each step based on the stability of the system, which is formally assessed using a Lyapunov function.
+
+\subsection{Lyapunov Stability for V2G Control}
+A Lyapunov function $V(x)$ is a scalar function that can be thought of as a measure of the system's "energy" or deviation from a desired equilibrium state. For the V2G system, we define the state as the vector of energy levels of all connected EVs, $E = [E_1, E_2, \dots, E_N]^T$. The desired state is the vector of desired energy levels at departure, $E^{\text{des}}$. The Lyapunov function is defined as the sum of the squared errors from this desired state:
+\begin{equation}
+    V(E) = \sum_{i \in \text{EVs}} (E_i - E_i^{\text{des}})^2
+\end{equation}
+For the system to be stable, the value of this function must decrease at each step, ensuring the system is always progressing towards its goal. This is known as the Lyapunov decrease condition:
+\begin{equation}
+    V(E_{t+1}) \le V(E_t) - \alpha V(E_t)
+\end{equation}
+where $E_{t+1}$ is the state at the next time step resulting from the current control action, and $\alpha$ is a small positive constant that sets the minimum required rate of convergence.
+
+\subsection{Horizon Shortening and Extension}
+The adaptive MPC algorithm uses this stability condition to govern its horizon length. At each time step $t$:
+\begin{enumerate}
+    \item The MPC solves the optimization problem using its current horizon, $H_t$.
+    \item It calculates the predicted next state $E_{t+1}$ based on the computed optimal action.
+    \item It checks if the Lyapunov decrease condition is satisfied.
+    \begin{itemize}
+        \item \textbf{If Stable:} The condition holds. The controller is performing well. We can afford to reduce the computational load for the next step by shortening the horizon:
+        \begin{equation}
+            H_{t+1} = \max(H_{\min}, H_t - 1)
+        \end{equation}
+        \item \textbf{If Not Stable:} The condition is violated. The system requires more careful planning. The horizon for the next step is extended to provide a longer view into the future:
+        \begin{equation}
+            H_{t+1} = \min(H_{\max}, H_t + 1)
+        \end{equation}
+    \end{itemize}
+\end{enumerate}
+This intelligent adjustment makes the online MPC more efficient and practical, reducing computation time during stable periods while retaining the ability to perform deep planning when necessary.
 
 
 \section{Approximate Explicit MPC: A Machine Learning Approach}
@@ -133,44 +177,3 @@ The training methodology mirrors that of the Random Forest version but is adapte
     \item \textbf{Fast Online Inference:} During simulation, the \texttt{ApproximateExplicitMPC\_NN} controller performs a single, rapid forward pass of the state vector through the trained network to obtain the control action, achieving the real-time performance required.
 \end{enumerate}
 This implementation provides a direct, practical realization of the advanced explicit MPC representation discussed in the state-of-the-art review, creating a powerful baseline for comparison.
-
-\section{Lyapunov-based Adaptive Horizon MPC}
-While the A-MPC offers a significant speed-up, it is an approximation and may not always match the performance of the fully-fledged online MPC. A second enhancement developed in this work is the \textbf{Lyapunov-based Adaptive Horizon MPC}, which aims to reduce the computational burden of the online MPC while retaining its optimality and stability guarantees. This method represents an essential improvement, creating an intelligent trade-off between computational cost and control performance.
-
-\paragraph{Implementation Details}
-This adaptive horizon mechanism is not a separate controller but rather an advanced operational mode of the \texttt{OnlineMPC\_Solver} class. Its logic is integrated directly within the solver's \texttt{get\_action} method and is activated by setting the \texttt{use\_adaptive\_horizon} flag to true during instantiation. When active, the solver performs the Lyapunov stability check after each optimization step and adjusts its internal horizon parameter, \texttt{current\_H}, accordingly for the next iteration.
-
-\subsection{Core Concept: Dynamic Horizon Adjustment}
-The key insight is that a long prediction horizon is not always necessary. When the system is in a stable state and far from its operational constraints, a shorter horizon is sufficient for making good decisions. Conversely, when the system is in a complex or critical state (e.g., an EV is close to its departure time but has a low SoC), a longer horizon is needed for careful planning.
-
-This adaptive controller dynamically adjusts its prediction horizon $H_t$ at each step based on the stability of the system, which is formally assessed using a Lyapunov function.
-
-\subsection{Lyapunov Stability for V2G Control}
-A Lyapunov function $V(x)$ is a scalar function that can be thought of as a measure of the system's "energy" or deviation from a desired equilibrium state. For the V2G system, we define the state as the vector of energy levels of all connected EVs, $E = [E_1, E_2, \dots, E_N]^T$. The desired state is the vector of desired energy levels at departure, $E^{\text{des}}$. The Lyapunov function is defined as the sum of the squared errors from this desired state:
-\begin{equation}
-    V(E) = \sum_{i \in \text{EVs}} (E_i - E_i^{\text{des}})^2
-\end{equation}
-For the system to be stable, the value of this function must decrease at each step, ensuring the system is always progressing towards its goal. This is known as the Lyapunov decrease condition:
-\begin{equation}
-    V(E_{t+1}) \le V(E_t) - \alpha V(E_t)
-\end{equation}
-where $E_{t+1}$ is the state at the next time step resulting from the current control action, and $\alpha$ is a small positive constant that sets the minimum required rate of convergence.
-
-\subsection{Horizon Shortening and Extension}
-The adaptive MPC algorithm uses this stability condition to govern its horizon length. At each time step $t$:
-\begin{enumerate}
-    \item The MPC solves the optimization problem using its current horizon, $H_t$.
-    \item It calculates the predicted next state $E_{t+1}$ based on the computed optimal action.
-    \item It checks if the Lyapunov decrease condition is satisfied.
-    \begin{itemize}
-        \item \textbf{If Stable:} The condition holds. The controller is performing well. We can afford to reduce the computational load for the next step by shortening the horizon:
-        \begin{equation}
-            H_{t+1} = \max(H_{\min}, H_t - 1)
-        \end{equation}
-        \item \textbf{If Not Stable:} The condition is violated. The system requires more careful planning. The horizon for the next step is extended to provide a longer view into the future:
-        \begin{equation}
-            H_{t+1} = \min(H_{\max}, H_t + 1)
-        \end{equation}
-    \end{itemize}
-\end{enumerate}
-This intelligent adjustment makes the online MPC more efficient and practical, reducing computation time during stable periods while retaining the ability to perform deep planning when necessary.

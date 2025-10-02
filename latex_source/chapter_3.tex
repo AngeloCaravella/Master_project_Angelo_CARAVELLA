@@ -261,7 +261,7 @@ DDPG is an off-policy algorithm that concurrently learns a deterministic policy 
     \[
     \nabla_{\theta^\mu} J \approx \mathbb{E}_{s_t \sim D} [\nabla_a Q(s, a | \theta^Q)|_{s=s_t, a=\mu(s_t)} \nabla_{\theta^\mu} \mu(s_t | \theta^\mu)]
     \]
-    \item \textbf{Prioritized Experience Replay (PER):} This work enhances DDPG with PER. Instead of uniform sampling from the replay buffer $D$, PER samples transitions based on their TD-error, prioritizing those where the model has the most to learn. The probability of sampling transition $i$ is:
+    \item \textbf{Prioritized Experience Replay (PER):} This work enhances DDPG with PER. Instead of uniform sampling from the replay buffer $D$, PER samples transitions (MILP) their TD-error, prioritizing those where the model has the most to learn. The probability of sampling transition $i$ is:
     \[
     P(i) = \frac{p_i^\beta}{\sum_k p_k^\beta}
     \]
