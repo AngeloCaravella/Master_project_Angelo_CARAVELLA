@@ -119,6 +119,15 @@ if selected_price_file_name == default_price_file_name:
 else:
     selected_price_file_abs_path = os.path.join(project_root, 'ev2gym', 'data', selected_price_file_name)
 
+# --- Selezione Tipo MPC ---
+mpc_type_options = {"linear": "MPC Lineare (PuLP)", "quadratic": "MPC Quadratico (CVXPY)"}
+selected_mpc_type = st.selectbox(
+    "Scegli il tipo di MPC Implicito:",
+    options=list(mpc_type_options.keys()),
+    format_func=lambda x: mpc_type_options[x],
+    index=0 # Default to linear
+)
+
 # --- Opzioni di Simulazione ---
 num_sims = st.number_input("Quante simulazioni di valutazione per scenario?", min_value=1, value=1)
 
@@ -180,6 +189,8 @@ if st.button("Esegui Simulazione"):
     
     if selected_price_file_abs_path:
         command.extend(["--price_file", selected_price_file_abs_path])
+
+    command.extend(["--mpc_type", selected_mpc_type])
     
     if train_rl_models:
         command.append("--train_rl_models")

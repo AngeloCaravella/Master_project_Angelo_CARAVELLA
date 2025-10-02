@@ -21,6 +21,7 @@ from typing import List, Dict, Any, Tuple, Callable, Optional
 from ev2gym.models.ev2gym_env import EV2Gym
 from ev2gym.baselines.heuristics import ChargeAsFastAsPossible, ChargeAsLateAsPossible, RoundRobin
 from ev2gym.baselines.pulp_mpc import OnlineMPC_Solver, ApproximateExplicitMPC, ApproximateExplicitMPC_NN
+from ev2gym.baselines.pulp_mpc_quadratic import OnlineMPC_Solver_Quadratic
 from ev2gym.rl_agent.custom_algorithms import CustomDDPG
 from ev2gym.utilities.per_buffer import PrioritizedReplayBuffer
 from ev2gym.rl_agent import reward as reward_module
@@ -273,14 +274,35 @@ def calculate_max_cs(config_path: str) -> int:
     return max_cs
 
 
-def get_algorithms(max_cs: int, is_thesis_mode: bool) -> Dict[str, Tuple[Any, Any, Dict]]:
+def get_algorithms(max_cs: int, is_thesis_mode: bool, mpc_type: str = 'linear') -> Dict[str, Tuple[Any, Any, Dict]]:
     """Definisce e restituisce gli algoritmi disponibili per l'esecuzione."""
-    ALL_ALGORITHMS = {
+    
+    # Definizione di base per tutti gli algoritmi non-MPC
+    base_algorithms = {
         "AFAP": (ChargeAsFastAsPossible, None, {}), "ALAP": (ChargeAsLateAsPossible, None, {}), "RR": (RoundRobin, None, {}),
-        "Online_MPC": (OnlineMPC_Solver, None, {'control_horizon': 5}),
-        "Online_MPC_Adaptive": (OnlineMPC_Solver, None, {
-            'use_adaptive_horizon': True, 'h_min': 2, 'h_max': 5, 'lyapunov_alpha': 0.1
-        }),
+        "SAC": (None, SAC, {}), "PPO": (None, PPO, {}), "A2C": (None, A2C, {}), "TD3": (None, TD3, {}), "DDPG": (None, DDPG, {}),
+        "DDPG+PER": (None, CustomDDPG, {'replay_buffer_class': PrioritizedReplayBuffer}),
+        "TQC": (None, TQC, {}), "TRPO": (None, TRPO, {}), "ARS": (None, ARS, {})
+    }
+
+    # Algoritmi MPC disponibili
+    mpc_algorithms = {
+        'linear': {
+            "Online_MPC": (OnlineMPC_Solver, None, {'control_horizon': 5}),
+            "Online_MPC_Adaptive": (OnlineMPC_Solver, None, {
+                'use_adaptive_horizon': True, 'h_min': 2, 'h_max': 5, 'lyapunov_alpha': 0.1
+            }),
+        },
+        'quadratic': {
+            "Online_MPC_Quadratic": (OnlineMPC_Solver_Quadratic, None, {'control_horizon': 5}),
+            "Online_MPC_Quadratic_Adaptive": (OnlineMPC_Solver_Quadratic, None, {
+                'use_adaptive_horizon': True, 'h_min': 2, 'h_max': 5, 'lyapunov_alpha': 0.1
+            }),
+        }
+    }
+
+    # Algoritmi di approssimazione (comuni a entrambi)
+    approx_mpc = {
         "Approx_Explicit_MPC": (ApproximateExplicitMPC, None, {
             'control_horizon': 5,
             'max_cs': max_cs
@@ -289,11 +311,14 @@ def get_algorithms(max_cs: int, is_thesis_mode: bool) -> Dict[str, Tuple[Any, An
             'control_horizon': 5,
             'max_cs': max_cs
         }),
-        "SAC": (None, SAC, {}), "PPO": (None, PPO, {}), "A2C": (None, A2C, {}), "TD3": (None, TD3, {}), "DDPG": (None, DDPG, {}),
-        "DDPG+PER": (None, CustomDDPG, {'replay_buffer_class': PrioritizedReplayBuffer}),
-        "TQC": (None, TQC, {}), "TRPO": (None, TRPO, {}), "ARS": (None, ARS, {})
     }
-    THESIS_ALGORITHMS = {k: v for k, v in ALL_ALGORITHMS.items() if k in ["AFAP", "ALAP", "RR", "Online_MPC", "Online_MPC_Adaptive", "Approx_Explicit_MPC", "Approx_Explicit_MPC_NN", "SAC", "DDPG+PER", "TQC"]}
+
+    # Unisci gli algoritmi
+    ALL_ALGORITHMS = {**base_algorithms, **mpc_algorithms[mpc_type], **approx_mpc}
+
+    THESIS_ALGORITHMS_BASE = ["AFAP", "ALAP", "RR", "SAC", "DDPG+PER", "TQC"]
+    THESIS_ALGORITHMS = {k: v for k, v in ALL_ALGORITHMS.items() if k in THESIS_ALGORITHMS_BASE or k.startswith('Online_MPC') or k.startswith('Approx')}
+
     return THESIS_ALGORITHMS if is_thesis_mode else ALL_ALGORITHMS
 
 
@@ -404,7 +429,7 @@ def main(args):
     MAX_CS = calculate_max_cs(config_path_for_cs)
     print(f"\nRilevato un massimo di {MAX_CS} stazioni di ricarica tra tutti gli scenari.")
 
-    algorithms_to_run = get_algorithms(MAX_CS, is_thesis_mode)
+    algorithms_to_run = get_algorithms(MAX_CS, is_thesis_mode, args.mpc_type)
 
     config_path = "ev2gym/example_config_files/"
     # scenarios_to_test = get_scenarios_to_test(config_path) # Sostituito da args.scenarios
@@ -462,6 +487,7 @@ if __name__ == "__main__":
     parser.add_argument('--train_rl_models', action='store_true', help="Addestra i modelli RL.")
     parser.add_argument('--steps_for_training', type=int, default=100000, help="Numero di passi per l'addestramento dei modelli RL.")
     parser.add_argument('--num_sims', type=int, default=1, help="Numero di simulazioni di valutazione per scenario.")
+    parser.add_argument('--mpc_type', type=str, default='linear', choices=['linear', 'quadratic'], help="Tipo di solver MPC da usare: 'linear' (default) o 'quadratic'.")
 
     args = parser.parse_args()
     main(args)
