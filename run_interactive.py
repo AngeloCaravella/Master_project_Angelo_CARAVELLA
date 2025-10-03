@@ -87,14 +87,45 @@ def main():
     # --- Train RL Models ---
     train_rl_models = get_interactive_input("Vuoi addestrare i modelli RL? (s/n)", "n").lower() == 's'
     steps_for_training = 0
+    training_mode = 'single' # Default
+    curriculum_steps_per_level = 10000 # Default
+
     if train_rl_models:
-        steps_for_training = int(get_interactive_input("Per quanti passi di training?", "100000"))
+        mode_choice = get_interactive_input("Scegli la modalità di addestramento: '1' per Scenario Singolo, '2' per Multi-Scenario (Casuale), '3' per Curriculum Learning", "1")
+        
+        if mode_choice == '1':
+            training_mode = 'single'
+            scenarios_to_test = [select_from_list(available_scenarios, "Seleziona lo scenario per l'addestramento:")]
+            is_multi_scenario = False # For single scenario
+        elif mode_choice == '2':
+            training_mode = 'random'
+            scenarios_to_test = select_from_list(available_scenarios, "Seleziona gli scenari per l'addestramento multi-scenario:", multiple=True)
+            is_multi_scenario = True # For random multi-scenario
+        elif mode_choice == '3':
+            training_mode = 'curriculum'
+            print("\n--- Configurazione Curriculum Learning ---")
+            print("Scenari disponibili:")
+            for i, s in enumerate(available_scenarios):
+                print(f"{i+1}. {os.path.basename(s).replace('.yaml', '')}")
+            
+            order_input = input("Specifica l'ordine degli scenari (es. '1 3 2' per usare il primo, poi il terzo, poi il secondo): ")
+            order = [int(i)-1 for i in order_input.split()]
+            scenarios_to_test = [available_scenarios[i] for i in order]
+            
+            print("\nCurriculum definito con il seguente ordine:")
+            for i, s in enumerate(scenarios_to_test):
+                print(f"{i+1}. {os.path.basename(s)}")
+            
+            curriculum_steps_per_level = int(get_interactive_input("Quanti passi di training per ogni livello del curriculum?", "10000"))
+            is_multi_scenario = True # Curriculum is always multi-scenario in nature
+
+        steps_for_training = int(get_interactive_input("Per quanti passi di training totali?", "100000"))
 
     # --- Number of Simulations ---
     num_sims = int(get_interactive_input("Quante simulazioni di valutazione per scenario?", "1"))
 
     # --- Run Simulation ---
-    is_multi_scenario = len(scenarios_to_test) > 1
+    # is_multi_scenario is now set based on training_mode
     scenario_name_for_path = 'multi_scenario' if is_multi_scenario else os.path.basename(scenarios_to_test[0]).replace(".yaml", "")
     model_dir = f'./saved_models/{scenario_name_for_path}/'
     os.makedirs(model_dir, exist_ok=True)
@@ -107,7 +138,9 @@ def main():
             is_multi_scenario=is_multi_scenario,
             model_dir=model_dir,
             selected_price_file_abs_path=selected_price_file_abs_path,
-            steps_for_training=steps_for_training
+            steps_for_training=steps_for_training,
+            training_mode=training_mode,
+            curriculum_steps_per_level=curriculum_steps_per_level
         )
 
     run_benchmark(

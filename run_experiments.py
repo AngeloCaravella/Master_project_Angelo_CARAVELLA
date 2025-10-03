@@ -98,6 +98,74 @@ class MultiScenarioEnv(gym.Env):
     def close(self):
         if self.current_env: self.current_env.close()
 
+class CurriculumEnv(gym.Env):
+    def __init__(self, config_files, reward_function, state_function, steps_per_level):
+        super(CurriculumEnv, self).__init__()
+        self.config_files = config_files
+        self.reward_function = reward_function
+        self.state_function = state_function
+        self.steps_per_level = steps_per_level
+        self.current_level = 0
+        self.steps_at_current_level = 0
+        self.current_env = None
+        
+        # Calculate max_obs_shape and max_action_shape
+        max_obs_shape, max_action_shape = 0, 0
+        for config in self.config_files:
+            temp_env = EV2Gym(config_file=config, reward_function=reward_function, state_function=state_function)
+            max_obs_shape = max(max_obs_shape, temp_env.observation_space.shape[0])
+            max_action_shape = max(max_action_shape, temp_env.action_space.shape[0])
+            temp_env.close()
+        self.max_obs_shape = (max_obs_shape,)
+        self.max_action_shape = (max_action_shape,)
+        self.action_space = gym.spaces.Box(low=-1.0, high=1.0, shape=self.max_action_shape, dtype=np.float64)
+        self.observation_space = gym.spaces.Box(low=-np.inf, high=np.inf, shape=self.max_obs_shape, dtype=np.float64)
+
+    def _pad_observation(self, obs):
+        padded_obs = np.zeros(self.max_obs_shape, dtype=np.float64)
+        padded_obs[:obs.shape[0]] = obs
+        return padded_obs
+
+    def _create_env_for_level(self, level):
+        if self.current_env:
+            self.current_env.close()
+        config_file = self.config_files[level]
+        self.current_env = EV2Gym(config_file=config_file, generate_rnd_game=True, reward_function=self.reward_function, state_function=self.state_function)
+        return self.current_env
+
+    def reset(self, *, seed=None, options=None):
+        if self.current_env is None:
+            self._create_env_for_level(self.current_level)
+        
+        obs, info = self.current_env.reset(seed=seed, options=options)
+        return self._pad_observation(obs), info
+
+    def step(self, action):
+        if self.current_env is None:
+            raise RuntimeError("reset() must be called before step().")
+        
+        action_size_needed = self.current_env.action_space.shape[0]
+        sliced_action = action[:action_size_needed]
+        obs, reward, terminated, truncated, info = self.current_env.step(sliced_action)
+
+        self.steps_at_current_level += 1
+        if self.steps_at_current_level >= self.steps_per_level:
+            if self.current_level < len(self.config_files) - 1:
+                self.current_level += 1
+                print(f"\n--- Curriculum Learning: Passaggio al livello {self.current_level + 1}/{len(self.config_files)} ---")
+                print(f"--- Caricamento scenario: {os.path.basename(self.config_files[self.current_level])} ---")
+                self._create_env_for_level(self.current_level)
+                self.steps_at_current_level = 0
+            else:
+                print("\n--- Curriculum Learning: Completato l'ultimo livello del curriculum ---")
+                terminated = True # Terminate if curriculum is finished
+
+        return self._pad_observation(obs), reward, terminated, truncated, info
+
+    def close(self):
+        if self.current_env:
+            self.current_env.close()
+
 class ProgressCallback(BaseCallback):
     def __init__(self, total_timesteps: int, check_freq: int = 1000, verbose: int = 1):
         super(ProgressCallback, self).__init__(verbose)
@@ -372,7 +440,7 @@ def get_selected_price_file() -> Optional[str]:
     return selected_price_file_abs_path
 
 
-def train_rl_models_if_requested(scenarios_to_test: List[str], selected_reward_func: Callable, algorithms_to_run: Dict, is_multi_scenario: bool, model_dir: str, selected_price_file_abs_path: Optional[str], steps_for_training: int) -> None:
+def train_rl_models_if_requested(scenarios_to_test: List[str], selected_reward_func: Callable, algorithms_to_run: Dict, is_multi_scenario: bool, model_dir: str, selected_price_file_abs_path: Optional[str], steps_for_training: int, training_mode: str = 'single', curriculum_steps_per_level: int = 10000) -> None:
     """Addestra i modelli RL se richiesto."""
     rl_models_to_run = {k: v for k, v in algorithms_to_run.items() if v[1] is not None}
     mode_str = "Multi-Scenario" if is_multi_scenario else "Single-Domain"
