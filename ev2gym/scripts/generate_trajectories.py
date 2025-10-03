@@ -29,7 +29,9 @@ if __name__ == "__main__":
                             reward_function=reward_function)
     
     n_trajectories = args.n_trajectories
-    config = yaml.load(open(args.config_file, 'r'), Loader=yaml.FullLoader)
+    print(f"[DEBUG] Caricamento file di configurazione: {args.config_file}")
+    with open(args.config_file, 'r', encoding='utf-8') as f:
+        config = yaml.load(f, Loader=yaml.FullLoader)
     number_of_charging_stations = config["number_of_charging_stations"]
     n_transformers = config["number_of_transformers"]
     steps = config["simulation_length"]

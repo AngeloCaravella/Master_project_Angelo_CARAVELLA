@@ -99,19 +99,17 @@ class MultiScenarioEnv(gym.Env):
         if self.current_env: self.current_env.close()
 
 class ProgressCallback(BaseCallback):
-    def __init__(self, total_timesteps: int, check_freq: int = 100, verbose: int = 1):
+    def __init__(self, total_timesteps: int, check_freq: int = 1000, verbose: int = 1):
         super(ProgressCallback, self).__init__(verbose)
         self.total_timesteps, self.check_freq = total_timesteps, check_freq
-        self.episode_count, self.start_time = 0, time.time()
+        self.start_time = time.time()
 
     def _on_step(self) -> bool:
-        if 'dones' in self.locals and any(self.locals['dones']):
-            self.episode_count += 1
-            if self.episode_count % self.check_freq == 0:
-                progress = self.num_timesteps / self.total_timesteps
-                elapsed_time = time.time() - self.start_time
-                eta = elapsed_time * (1 - progress) / progress if progress > 0 else 0
-                print(f"Episodio: {self.episode_count} | Timesteps: {self.num_timesteps}/{self.total_timesteps}({progress:.2%}) | ETA: {time.strftime('%H:%M:%S', time.gmtime(eta))}")
+        if self.num_timesteps % self.check_freq == 0:
+            progress = self.num_timesteps / self.total_timesteps
+            elapsed_time = time.time() - self.start_time
+            eta = elapsed_time * (1 - progress) / progress if progress > 0 else 0
+            print(f"Timesteps: {self.num_timesteps}/{self.total_timesteps} ({progress:.2%}) | ETA: {time.strftime('%H:%M:%S', time.gmtime(eta))}", flush=True)
         return True
 
 # =====================================================================================
@@ -265,7 +263,7 @@ def calculate_max_cs(config_path: str) -> int:
         return 10  # Un valore di fallback
     else:
         for scenario_file in all_scenarios_for_cs:
-            with open(scenario_file, 'r') as f:
+            with open(scenario_file, 'r', encoding='utf-8') as f:
                 config = yaml.safe_load(f)
                 if 'number_of_charging_stations' in config:
                     max_cs = max(max_cs, config['number_of_charging_stations'])

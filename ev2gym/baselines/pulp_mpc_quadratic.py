@@ -89,9 +89,8 @@ class OnlineMPC_Solver_Quadratic:
             eta_dis = data['eta_dis']
             
             # Limiti di potenza e mutua esclusione (Big-M)
-            M = ev.max_ac_charge_power + abs(ev.max_discharge_power) # M grande
-            constraints += [P_ch[cs_id, :] <= ev.max_ac_charge_power]
-            constraints += [P_dis[cs_id, :] <= abs(ev.max_discharge_power)]
+            constraints += [P_ch[cs_id, :] <= ev.max_ac_charge_power * is_charging[cs_id, :]]
+            constraints += [P_dis[cs_id, :] <= abs(ev.max_discharge_power) * (1 - is_charging[cs_id, :])]
             
             # Dinamica della batteria
             for t in range(horizon):
@@ -122,7 +121,7 @@ class OnlineMPC_Solver_Quadratic:
         problem = cp.Problem(objective, constraints)
         
         try:
-            problem.solve(solver=cp.ECOS_BB, mi_max_iters=150, mi_abs_eps=1e-3)
+            problem.solve(solver=cp.SCIP)
         except cp.error.SolverError:
             print("Solver ECOS_BB non disponibile o fallito. Prova a installare un solver MIQP come SCIP (`pip install pyscipopt`) o usa Gurobi/MOSEK.")
             return np.zeros(num_cs)

@@ -8,7 +8,7 @@ import datetime
 
 #read ev_specs json file
 import json
-with open('ev_specs.json') as f:
+with open('ev_specs.json', encoding='utf-8') as f:
     data = json.load(f)
     
 print(data.keys())

@@ -30,7 +30,7 @@ def load_ev_spawn_scenarios(env) -> None:
             ev_specs_file = pkg_resources.resource_filename(
                 'ev2gym', 'data/ev_specs.json')
         
-        with open(ev_specs_file) as f:
+        with open(ev_specs_file, encoding='utf-8') as f:
             env.ev_specs = json.load(f)
 
         registrations = np.zeros(len(env.ev_specs.keys()))
@@ -67,23 +67,23 @@ def load_ev_spawn_scenarios(env) -> None:
     df_time_of_stay_vs_arrival_file = pkg_resources.resource_filename(
         'ev2gym', 'data/mean-session-length-per.csv')
 
-    env.df_arrival_week = pd.read_csv(df_arrival_week_file)  # weekdays
-    env.df_arrival_weekend = pd.read_csv(df_arrival_weekend_file)  # weekends
+    env.df_arrival_week = pd.read_csv(df_arrival_week_file, encoding='utf-8')  # weekdays
+    env.df_arrival_weekend = pd.read_csv(df_arrival_weekend_file, encoding='utf-8')  # weekends
     env.df_connection_time = pd.read_csv(
-        df_connection_time_file)  # connection time
-    env.df_energy_demand = pd.read_csv(df_energy_demand_file)  # energy demand
+        df_connection_time_file, encoding='utf-8')  # connection time
+    env.df_energy_demand = pd.read_csv(df_energy_demand_file, encoding='utf-8')  # energy demand
     env.time_of_connection_vs_hour = np.load(
         time_of_connection_vs_hour_file)  # time of connection vs hour
 
     env.df_req_energy = pd.read_csv(
-        df_req_energy_file)  # energy demand per arrival
+        df_req_energy_file, encoding='utf-8')  # energy demand per arrival
     # replace column work with workplace
     env.df_req_energy = env.df_req_energy.rename(columns={'work': 'workplace',
                                                           'home': 'private'})
     env.df_req_energy = env.df_req_energy.fillna(0)
 
     env.df_time_of_stay_vs_arrival = pd.read_csv(
-        df_time_of_stay_vs_arrival_file)  # time of stay vs arrival
+        df_time_of_stay_vs_arrival_file, encoding='utf-8')  # time of stay vs arrival
     env.df_time_of_stay_vs_arrival = env.df_time_of_stay_vs_arrival.fillna(0)
     env.df_time_of_stay_vs_arrival = env.df_time_of_stay_vs_arrival.rename(columns={'work': 'workplace',
                                                                                     'home': 'private'})
@@ -109,7 +109,7 @@ def generate_residential_inflexible_loads(env) -> np.ndarray:
     # Load the data
     data_path = pkg_resources.resource_filename(
         'ev2gym', 'data/residential_loads.csv')
-    data = pd.read_csv(data_path, header=None)
+    data = pd.read_csv(data_path, header=None, encoding='utf-8')
 
     desired_timescale = env.timescale
     simulation_length = env.simulation_length
@@ -166,7 +166,7 @@ def generate_pv_generation(env) -> np.ndarray:
     # Load the data
     data_path = pkg_resources.resource_filename(
         'ev2gym', 'data/pv_netherlands.csv')
-    data = pd.read_csv(data_path, sep=',', header=0)
+    data = pd.read_csv(data_path, sep=',', header=0, encoding='utf-8')
     data.drop(['time', 'local_time'], inplace=True, axis=1)
 
     desired_timescale = env.timescale
@@ -400,10 +400,10 @@ def load_electricity_prices(env, price_data_file: str = None) -> Tuple[np.ndarra
             file_path = pkg_resources.resource_filename(
                 'ev2gym', 'data/Netherlands_day-ahead-2015-2024.csv')
         
-        env.price_data = pd.read_csv(file_path, sep=',', header=0)
+        env.price_data = pd.read_csv(file_path, sep=',', header=0, encoding='utf-8')
         drop_columns = ['Country', 'Datetime (Local)']        
 
-        env.price_data = pd.read_csv(file_path, sep=',', header=0)
+        env.price_data = pd.read_csv(file_path, sep=',', header=0, encoding='utf-8')
 
         # Determine price column and columns to drop based on file name
         if "Netherlands_day-ahead-2015-2024.csv" in file_path:

@@ -59,7 +59,9 @@ class EV2Gym(gym.Env):
         if config is not None:
             self.config = config
         elif config_file is not None:
-            self.config = yaml.load(open(config_file, 'r'), Loader=yaml.FullLoader)
+            print(f"[DEBUG] Caricamento file di configurazione: {config_file}")
+            with open(config_file, 'r', encoding='utf-8') as f:
+                self.config = yaml.load(f, Loader=yaml.FullLoader)
         else:
             raise ValueError("EV2Gym environment requires a configuration. Please provide 'config' or 'config_file'.")
 
@@ -173,7 +175,7 @@ class EV2Gym(gym.Env):
 
         # Read the config.charging_network_topology json file and read the topology
         try:
-            with open(self.config['charging_network_topology']) as json_file:
+            with open(self.config['charging_network_topology'], encoding='utf-8') as json_file:
                 self.charging_network_topology = json.load(json_file)
 
         except FileNotFoundError:
