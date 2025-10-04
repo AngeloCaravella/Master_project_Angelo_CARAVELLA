@@ -55,82 +55,91 @@
 \contentsline {subsection}{\numberline {2.14.3}Gradient-Free Methods: An Alternative Path}{39}{subsection.2.14.3}%
 \contentsline {subsubsection}{Augmented Random Search (ARS)}{39}{section*.13}%
 \contentsline {section}{\numberline {2.15}The Model-Based Benchmark: Model Predictive Control (MPC)}{39}{section.2.15}%
-\contentsline {section}{\numberline {2.16}Model Predictive Control Formulation}{40}{section.2.16}%
-\contentsline {subsection}{\numberline {2.16.1}The Finite Time Optimal Control Problem}{40}{subsection.2.16.1}%
-\contentsline {subsection}{\numberline {2.16.2}The Receding Horizon Policy}{41}{subsection.2.16.2}%
-\contentsline {subsection}{\numberline {2.16.3}Implicit MPC: Online Optimization}{41}{subsection.2.16.3}%
-\contentsline {section}{\numberline {2.17}Improvement of the Standard Fixed-Horizon MPC Formulation}{42}{section.2.17}%
-\contentsline {subsection}{\numberline {2.17.1}Limitation of the Fixed-Horizon Approach}{43}{subsection.2.17.1}%
-\contentsline {section}{\numberline {2.18}Improving the Formulation with Adaptive Horizon MPC (AHMPC)}{43}{section.2.18}%
-\contentsline {subsection}{\numberline {2.18.1}The Ideal (but Impractical) AHMPC Scheme}{43}{subsection.2.18.1}%
-\contentsline {subsection}{\numberline {2.18.2}The Practical AHMPC Algorithm}{43}{subsection.2.18.2}%
-\contentsline {subsection}{\numberline {2.18.3}Advantages of the AHMPC Formulation}{44}{subsection.2.18.3}%
-\contentsline {section}{\numberline {2.19}Further Enhancements via Learning-Based Approaches}{44}{section.2.19}%
-\contentsline {section}{\numberline {2.20}Explicit MPC: Offline Pre-computation}{45}{section.2.20}%
-\contentsline {subsection}{\numberline {2.20.1}Deep Learning for an Efficient Explicit MPC Representation}{46}{subsection.2.20.1}%
-\contentsline {subsubsection}{Training via Implicit MPC Data Generation}{46}{section*.14}%
-\contentsline {subsubsection}{Exact PWA Representation with Deep ReLU Networks}{47}{section*.15}%
-\contentsline {section}{\numberline {2.21}A Comparative Perspective on Control Methodologies}{48}{section.2.21}%
-\contentsline {section}{\numberline {2.22}A Primer on Lithium-Ion Battery Chemistries and Degradation}{49}{section.2.22}%
-\contentsline {subsection}{\numberline {2.22.1}Fundamental Concepts and Degradation Mechanisms}{49}{subsection.2.22.1}%
-\contentsline {subsection}{\numberline {2.22.2}Key Automotive Chemistries}{50}{subsection.2.22.2}%
-\contentsline {subsection}{\numberline {2.22.3}Voltage Profiles and the Challenge of SoC Estimation}{51}{subsection.2.22.3}%
-\contentsline {subsection}{\numberline {2.22.4}Comparative Analysis and Safety Considerations}{52}{subsection.2.22.4}%
-\contentsline {chapter}{\numberline {3}An Enhanced V2G Simulation Framework for Robust Control}{53}{chapter.3}%
-\contentsline {section}{\numberline {3.1}Core Simulator Architecture}{53}{section.3.1}%
-\contentsline {subsection}{\numberline {3.1.1}Software Implementation and Project Structure}{54}{subsection.3.1.1}%
-\contentsline {section}{\numberline {3.2}Core Physical Models}{55}{section.3.2}%
-\contentsline {subsection}{\numberline {3.2.1}EV Model and Charging/Discharging Dynamics}{55}{subsection.3.2.1}%
-\contentsline {subsection}{\numberline {3.2.2}Battery Degradation Model}{55}{subsection.3.2.2}%
-\contentsline {section}{\numberline {3.3}A Unified Experimentation and Evaluation Workflow}{56}{section.3.3}%
-\contentsline {subsection}{\numberline {3.3.1}Orchestration via \texttt {run\_experiments.py}}{56}{subsection.3.3.1}%
-\contentsline {subsection}{\numberline {3.3.2}Dual-Mode Training: Specialists and Generalists}{57}{subsection.3.3.2}%
-\contentsline {subsection}{\numberline {3.3.3}Reproducible Benchmarking and Evaluation}{57}{subsection.3.3.3}%
-\contentsline {subsection}{\numberline {3.3.4}Interactive Web-Based Dashboard}{58}{subsection.3.3.4}%
-\contentsline {subsubsection}{Simulation Orchestrator}{58}{section*.16}%
-\contentsline {subsubsection}{Results Visualizer}{58}{section*.17}%
-\contentsline {section}{\numberline {3.4}Evaluation Metrics}{58}{section.3.4}%
-\contentsline {section}{\numberline {3.5}Simulator Implementation Details}{59}{section.3.5}%
-\contentsline {subsubsection}{Vehicle Definition Modes}{59}{section*.18}%
-\contentsline {subsubsection}{Empirical Calibration of the Degradation Model}{60}{section*.19}%
-\contentsline {section}{\numberline {3.6}Reinforcement Learning Formulation}{61}{section.3.6}%
-\contentsline {subsection}{\numberline {3.6.1}State Space ($S$)}{61}{subsection.3.6.1}%
-\contentsline {subsection}{\numberline {3.6.2}Action Space ($A$)}{61}{subsection.3.6.2}%
-\contentsline {subsection}{\numberline {3.6.3}Reward Function}{61}{subsection.3.6.3}%
-\contentsline {section}{\numberline {3.7}Reinforcement Learning Algorithms}{62}{section.3.7}%
-\contentsline {subsubsection}{Soft Actor-Critic (SAC)}{62}{section*.20}%
-\contentsline {paragraph}{Soft Actor-Critic (SAC)}{63}{figure.3.2}%
-\contentsline {paragraph}{Implementation Details}{63}{section*.22}%
-\contentsline {subsubsection}{Deep Deterministic Policy Gradient + PER (DDPG+PER)}{64}{section*.23}%
-\contentsline {paragraph}{Implementation Details}{65}{section*.24}%
-\contentsline {subsubsection}{Truncated Quantile Critics (TQC)}{65}{section*.25}%
-\contentsline {paragraph}{Implementation Details}{66}{section*.26}%
-\contentsline {subsection}{\numberline {3.7.1}A History-Based Adaptive Reward for Profit Maximization}{66}{subsection.3.7.1}%
-\contentsline {paragraph}{Implementation Details}{66}{section*.27}%
-\contentsline {subsubsection}{Economic Profit}{66}{section*.28}%
-\contentsline {subsubsection}{Adaptive User Satisfaction Penalty}{66}{section*.29}%
-\contentsline {subsubsection}{Adaptive Transformer Overload Penalty}{67}{section*.30}%
-\contentsline {subsubsection}{Rationale and Significance}{67}{section*.31}%
-\contentsline {section}{\numberline {3.8}Online MPC Formulation (PuLP Implementation)}{67}{section.3.8}%
-\contentsline {paragraph}{Implementation Details}{68}{section*.32}%
-\contentsline {subsection}{\numberline {3.8.1}Mathematical Formulation}{68}{subsection.3.8.1}%
-\contentsline {subsubsection}{Objective Function: Net Operational Profit}{68}{section*.33}%
-\contentsline {subsubsection}{System Constraints}{68}{section*.34}%
-\contentsline {paragraph}{Energy Balance Dynamics.}{68}{section*.35}%
-\contentsline {paragraph}{Power Limits and Mutual Exclusion.}{69}{section*.36}%
-\contentsline {paragraph}{State of Energy (SoE) Limits.}{69}{section*.37}%
-\contentsline {paragraph}{User Satisfaction (Hard Constraint).}{69}{section*.38}%
-\contentsline {paragraph}{Transformer Power Limit.}{69}{section*.39}%
-\contentsline {subsubsection}{Problem Classification}{69}{section*.40}%
-\contentsline {section}{\numberline {3.9}Lyapunov-based Adaptive Horizon MPC}{70}{section.3.9}%
-\contentsline {paragraph}{Implementation Details}{70}{section*.41}%
-\contentsline {subsection}{\numberline {3.9.1}Core Concept: Dynamic Horizon Adjustment}{70}{subsection.3.9.1}%
-\contentsline {subsection}{\numberline {3.9.2}Lyapunov Stability for V2G Control}{71}{subsection.3.9.2}%
-\contentsline {subsection}{\numberline {3.9.3}Horizon Shortening and Extension}{71}{subsection.3.9.3}%
-\contentsline {section}{\numberline {3.10}Approximate Explicit MPC: A Machine Learning Approach}{72}{section.3.10}%
-\contentsline {paragraph}{Implementation Details}{72}{section*.42}%
-\contentsline {subsection}{\numberline {3.10.1}Methodology: From Oracle to Apprentice}{72}{subsection.3.10.1}%
-\contentsline {subsection}{\numberline {3.10.2}A More Principled Approximator: The Deep ReLU Network}{73}{subsection.3.10.2}%
-\contentsline {paragraph}{Implementation Details}{73}{section*.43}%
-\contentsline {paragraph}{Theoretical Motivation}{73}{section*.44}%
-\contentsline {paragraph}{Methodology}{74}{section*.45}%
+\contentsline {section}{\numberline {2.16}MPC: Terminologies}{40}{section.2.16}%
+\contentsline {section}{\numberline {2.17}Model Predictive Control Formulation}{41}{section.2.17}%
+\contentsline {subsection}{\numberline {2.17.1}The Finite-Time Optimal Control Problem}{41}{subsection.2.17.1}%
+\contentsline {subsection}{\numberline {2.17.2}The Receding Horizon Policy}{42}{subsection.2.17.2}%
+\contentsline {subsection}{\numberline {2.17.3}Summary of the MPC Workflow}{42}{subsection.2.17.3}%
+\contentsline {section}{\numberline {2.18}Preliminaries :General optimization problem}{42}{section.2.18}%
+\contentsline {subsection}{\numberline {2.18.1}General optimization problem}{43}{subsection.2.18.1}%
+\contentsline {subsection}{\numberline {2.18.2}Convex optimization problem}{43}{subsection.2.18.2}%
+\contentsline {subsection}{\numberline {2.18.3}Convex optimization problem}{44}{subsection.2.18.3}%
+\contentsline {subsection}{\numberline {2.18.4}Convex optimization problem: Examples}{44}{subsection.2.18.4}%
+\contentsline {subsection}{\numberline {2.18.5}Numerical optimization}{44}{subsection.2.18.5}%
+\contentsline {subsection}{\numberline {2.18.6}MPC: Classifications}{45}{subsection.2.18.6}%
+\contentsline {subsection}{\numberline {2.18.7}Implicit MPC: Online Optimization}{45}{subsection.2.18.7}%
+\contentsline {section}{\numberline {2.19}Improvement of the Standard Fixed-Horizon MPC Formulation}{46}{section.2.19}%
+\contentsline {subsection}{\numberline {2.19.1}Limitation of the Fixed-Horizon Approach}{47}{subsection.2.19.1}%
+\contentsline {section}{\numberline {2.20}Improving the Formulation with Adaptive Horizon MPC (AHMPC)}{47}{section.2.20}%
+\contentsline {subsection}{\numberline {2.20.1}The Ideal (but Impractical) AHMPC Scheme}{47}{subsection.2.20.1}%
+\contentsline {subsection}{\numberline {2.20.2}The Practical AHMPC Algorithm}{47}{subsection.2.20.2}%
+\contentsline {subsection}{\numberline {2.20.3}Advantages of the AHMPC Formulation}{48}{subsection.2.20.3}%
+\contentsline {section}{\numberline {2.21}Further Enhancements via Learning-Based Approaches}{48}{section.2.21}%
+\contentsline {section}{\numberline {2.22}Explicit MPC: Offline Pre-computation}{49}{section.2.22}%
+\contentsline {subsection}{\numberline {2.22.1}Deep Learning for an Efficient Explicit MPC Representation}{50}{subsection.2.22.1}%
+\contentsline {subsubsection}{Training via Implicit MPC Data Generation}{50}{section*.14}%
+\contentsline {subsubsection}{Exact PWA Representation with Deep ReLU Networks}{51}{section*.15}%
+\contentsline {section}{\numberline {2.23}A Comparative Perspective on Control Methodologies}{52}{section.2.23}%
+\contentsline {section}{\numberline {2.24}A Primer on Lithium-Ion Battery Chemistries and Degradation}{53}{section.2.24}%
+\contentsline {subsection}{\numberline {2.24.1}Fundamental Concepts and Degradation Mechanisms}{53}{subsection.2.24.1}%
+\contentsline {subsection}{\numberline {2.24.2}Key Automotive Chemistries}{54}{subsection.2.24.2}%
+\contentsline {subsection}{\numberline {2.24.3}Voltage Profiles and the Challenge of SoC Estimation}{55}{subsection.2.24.3}%
+\contentsline {subsection}{\numberline {2.24.4}Comparative Analysis and Safety Considerations}{56}{subsection.2.24.4}%
+\contentsline {chapter}{\numberline {3}An Enhanced V2G Simulation Framework for Robust Control}{57}{chapter.3}%
+\contentsline {section}{\numberline {3.1}Core Simulator Architecture}{57}{section.3.1}%
+\contentsline {subsection}{\numberline {3.1.1}Software Implementation and Project Structure}{58}{subsection.3.1.1}%
+\contentsline {section}{\numberline {3.2}Core Physical Models}{59}{section.3.2}%
+\contentsline {subsection}{\numberline {3.2.1}EV Model and Charging/Discharging Dynamics}{59}{subsection.3.2.1}%
+\contentsline {subsection}{\numberline {3.2.2}Battery Degradation Model}{59}{subsection.3.2.2}%
+\contentsline {section}{\numberline {3.3}A Unified Experimentation and Evaluation Workflow}{60}{section.3.3}%
+\contentsline {subsection}{\numberline {3.3.1}Orchestration via \texttt {run\_experiments.py}}{60}{subsection.3.3.1}%
+\contentsline {subsection}{\numberline {3.3.2}Dual-Mode Training: Specialists and Generalists}{61}{subsection.3.3.2}%
+\contentsline {subsection}{\numberline {3.3.3}Reproducible Benchmarking and Evaluation}{61}{subsection.3.3.3}%
+\contentsline {subsection}{\numberline {3.3.4}Interactive Web-Based Dashboard}{62}{subsection.3.3.4}%
+\contentsline {subsubsection}{Simulation Orchestrator}{62}{section*.16}%
+\contentsline {subsubsection}{Results Visualizer}{62}{section*.17}%
+\contentsline {section}{\numberline {3.4}Evaluation Metrics}{62}{section.3.4}%
+\contentsline {section}{\numberline {3.5}Simulator Implementation Details}{63}{section.3.5}%
+\contentsline {subsubsection}{Vehicle Definition Modes}{63}{section*.18}%
+\contentsline {subsubsection}{Empirical Calibration of the Degradation Model}{64}{section*.19}%
+\contentsline {section}{\numberline {3.6}Reinforcement Learning Formulation}{65}{section.3.6}%
+\contentsline {subsection}{\numberline {3.6.1}State Space ($S$)}{65}{subsection.3.6.1}%
+\contentsline {subsection}{\numberline {3.6.2}Action Space ($A$)}{65}{subsection.3.6.2}%
+\contentsline {subsection}{\numberline {3.6.3}Reward Function}{65}{subsection.3.6.3}%
+\contentsline {section}{\numberline {3.7}Reinforcement Learning Algorithms}{66}{section.3.7}%
+\contentsline {subsubsection}{Soft Actor-Critic (SAC)}{66}{section*.20}%
+\contentsline {paragraph}{Soft Actor-Critic (SAC)}{67}{figure.3.2}%
+\contentsline {paragraph}{Implementation Details}{67}{section*.22}%
+\contentsline {subsubsection}{Deep Deterministic Policy Gradient + PER (DDPG+PER)}{68}{section*.23}%
+\contentsline {paragraph}{Implementation Details}{69}{section*.24}%
+\contentsline {subsubsection}{Truncated Quantile Critics (TQC)}{69}{section*.25}%
+\contentsline {paragraph}{Implementation Details}{70}{section*.26}%
+\contentsline {subsection}{\numberline {3.7.1}A History-Based Adaptive Reward for Profit Maximization}{70}{subsection.3.7.1}%
+\contentsline {paragraph}{Implementation Details}{70}{section*.27}%
+\contentsline {subsubsection}{Economic Profit}{70}{section*.28}%
+\contentsline {subsubsection}{Adaptive User Satisfaction Penalty}{70}{section*.29}%
+\contentsline {subsubsection}{Adaptive Transformer Overload Penalty}{71}{section*.30}%
+\contentsline {subsubsection}{Rationale and Significance}{71}{section*.31}%
+\contentsline {section}{\numberline {3.8}Online MPC Formulation (PuLP Implementation)}{71}{section.3.8}%
+\contentsline {paragraph}{Implementation Details}{72}{section*.32}%
+\contentsline {subsection}{\numberline {3.8.1}Mathematical Formulation}{72}{subsection.3.8.1}%
+\contentsline {subsubsection}{Objective Function: Net Operational Profit}{72}{section*.33}%
+\contentsline {subsubsection}{System Constraints}{72}{section*.34}%
+\contentsline {paragraph}{Energy Balance Dynamics.}{72}{section*.35}%
+\contentsline {paragraph}{Power Limits and Mutual Exclusion.}{73}{section*.36}%
+\contentsline {paragraph}{State of Energy (SoE) Limits.}{73}{section*.37}%
+\contentsline {paragraph}{User Satisfaction (Hard Constraint).}{73}{section*.38}%
+\contentsline {paragraph}{Transformer Power Limit.}{73}{section*.39}%
+\contentsline {subsubsection}{Problem Classification}{73}{section*.40}%
+\contentsline {section}{\numberline {3.9}Lyapunov-based Adaptive Horizon MPC}{74}{section.3.9}%
+\contentsline {paragraph}{Implementation Details}{74}{section*.41}%
+\contentsline {subsection}{\numberline {3.9.1}Core Concept: Dynamic Horizon Adjustment}{74}{subsection.3.9.1}%
+\contentsline {subsection}{\numberline {3.9.2}Lyapunov Stability for V2G Control}{75}{subsection.3.9.2}%
+\contentsline {subsection}{\numberline {3.9.3}Horizon Shortening and Extension}{75}{subsection.3.9.3}%
+\contentsline {section}{\numberline {3.10}Approximate Explicit MPC: A Machine Learning Approach}{76}{section.3.10}%
+\contentsline {paragraph}{Implementation Details}{76}{section*.42}%
+\contentsline {subsection}{\numberline {3.10.1}Methodology: From Oracle to Apprentice}{76}{subsection.3.10.1}%
+\contentsline {subsection}{\numberline {3.10.2}A More Principled Approximator: The Deep ReLU Network}{77}{subsection.3.10.2}%
+\contentsline {paragraph}{Implementation Details}{77}{section*.43}%
+\contentsline {paragraph}{Theoretical Motivation}{77}{section*.44}%
+\contentsline {paragraph}{Methodology}{78}{section*.45}%

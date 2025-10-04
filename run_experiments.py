@@ -533,7 +533,8 @@ def main(args):
             is_multi_scenario=is_multi_scenario,
             model_dir=model_dir,
             selected_price_file_abs_path=selected_price_file_abs_path,
-            steps_for_training=args.steps_for_training
+            steps_for_training=args.steps_for_training,
+            training_mode=args.training_mode
         )
 
     num_sims = args.num_sims
@@ -548,10 +549,11 @@ if __name__ == "__main__":
     parser.add_argument('--run_fit_battery', action='store_true', help="Esegui Fit_battery.py per calibrare il modello di degradazione.")
     parser.add_argument('--plot_mode', type=str, default='thesis', choices=['thesis', 'complete'], help="Modalità grafici: 'thesis' (default) o 'complete'.")
     parser.add_argument('--scenarios', nargs='+', default=['all'], help="Lista di nomi di scenari da testare (es. 'BusinessPST PublicPST') o 'all' (default).")
-    parser.add_argument('--reward_func', type=str, default='SquaredTrackingErrorReward', help="Nome della funzione di reward da usare (default: SquaredTrackingErrorReward).")
-    parser.add_argument('--price_file', type=str, default='default', help="Percorso assoluto del file CSV per i prezzi dell'energia o 'default'.")
+    parser.add_argument('--reward_func', type=str, default='FastProfitAdaptiveReward', help="Nome della funzione di reward da usare (default: FastProfitAdaptiveReward).")
+    parser.add_argument('--price_file', type=str, default='distribution-of-arrival-weekend.csv', help="Percorso assoluto del file CSV per i prezzi dell'energia o 'default'.")
     parser.add_argument('--train_rl_models', action='store_true', help="Addestra i modelli RL.")
     parser.add_argument('--steps_for_training', type=int, default=100000, help="Numero di passi per l'addestramento dei modelli RL.")
+    parser.add_argument('--training_mode', type=str, default='multi-scenario', choices=['single', 'multi-scenario', 'curriculum'], help="Modalità di addestramento: 'single' (default), 'multi-scenario' o 'curriculum'.")
     parser.add_argument('--num_sims', type=int, default=1, help="Numero di simulazioni di valutazione per scenario.")
     parser.add_argument('--mpc_type', type=str, default='linear', choices=['linear', 'quadratic'], help="Tipo di solver MPC da usare: 'linear' (default) o 'quadratic'.")
 
