@@ -3,6 +3,7 @@
 import os
 import yaml
 import numpy as np
+import pandas as pd
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
@@ -34,6 +35,7 @@ from ev2gym.rl_agent.state import V2G_profit_max_loads
 from stable_baselines3 import SAC, PPO, A2C, TD3, DDPG
 from sb3_contrib import TQC, TRPO, ARS
 from stable_baselines3.common.callbacks import BaseCallback
+from stable_baselines3.common.monitor import Monitor
 from matplotlib.patches import Patch
 from stable_baselines3.common.vec_env import DummyVecEnv
 
@@ -234,6 +236,53 @@ class ProgressCallback(BaseCallback):
             print(f"Timesteps: {self.num_timesteps}/{self.total_timesteps} ({progress:.2%}) | ETA: {time.strftime('%H:%M:%S', time.gmtime(eta))}", flush=True)
         return True
 
+class TrainingPlotCallback(BaseCallback):
+    def __init__(self, model_name: str, save_plot: bool = True, verbose: int = 0):
+        super(TrainingPlotCallback, self).__init__(verbose)
+        self.model_name = model_name
+        self.save_plot = save_plot
+        self.rewards = []
+        self.steps = []
+
+    def _on_step(self) -> bool:
+        # self.locals['infos'] è una lista di dizionari, uno per ogni ambiente.
+        # Per DummyVecEnv, c'è un solo ambiente.
+        if 'episode' in self.locals['infos'][0]:
+            ep_reward = self.locals['infos'][0]['episode']['r']
+            self.rewards.append(ep_reward)
+            self.steps.append(self.num_timesteps)
+        return True
+
+    def _on_training_end(self) -> None:
+        if self.save_plot:
+            print(f"Plotting training results for {self.model_name}...")
+            
+            if not self.steps:
+                print("No episode rewards were logged. Cannot create a plot.")
+                return
+
+            # Crea una media mobile delle ricompense per smussare il grafico
+            rewards_df = pd.DataFrame({'steps': self.steps, 'rewards': self.rewards})
+            rolling_avg = rewards_df.rewards.rolling(window=max(1, len(self.rewards) // 10)).mean()
+
+            plt.figure(figsize=(10, 5))
+            plt.plot(rewards_df.steps, rewards_df.rewards, 'b.', alpha=0.2, label='Episode Reward')
+            plt.plot(rewards_df.steps, rolling_avg, 'r-', linewidth=2, label='Rolling Average')
+            plt.xlabel("Timesteps")
+            plt.ylabel("Average Reward")
+            plt.title(f"Training Progress for {self.model_name}")
+            plt.grid(True)
+            plt.legend()
+            
+            plot_dir = "training_plots"
+            os.makedirs(plot_dir, exist_ok=True)
+            
+            timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+            filename = f"{self.model_name}_{timestamp}.png"
+            plt.savefig(os.path.join(plot_dir, filename))
+            plt.close()
+            print(f"Training plot saved to {os.path.join(plot_dir, filename)}")
+
 # =====================================================================================
 # --- FUNZIONI DI PLOTTING (UNIFICATE) ---
 # =====================================================================================
@@ -420,7 +469,7 @@ def get_algorithms(max_cs: int, is_thesis_mode: bool, mpc_type: str = 'linear') 
         'linear': {
             "Online_MPC": (OnlineMPC_Solver, None, {'control_horizon': 5}),
             "Online_MPC_Adaptive": (OnlineMPC_Solver, None, {
-                'use_adaptive_horizon': True, 'h_min': 5, 'h_max': 10, 'lyapunov_alpha': 0.5
+                'use_adaptive_horizon': True, 'h_min': 2, 'h_max': 5, 'lyapunov_alpha': 0.5
             }),
         },
         'quadratic': {
@@ -517,24 +566,75 @@ def train_rl_models_if_requested(scenarios_to_test: List[str], selected_reward_f
         if train_env_id in registry: del registry[train_env_id]
         gym.register(id=train_env_id, entry_point='ev2gym.models.ev2gym_env:EV2Gym', kwargs={'config_file': scenarios_to_test[0], 'generate_rnd_game': True, 'reward_function': selected_reward_func, 'state_function': V2G_profit_max_loads, 'price_data_file': selected_price_file_abs_path})
         train_env = gym.make(train_env_id)
+        train_env = Monitor(train_env)
+    elif training_mode == 'sensitivity_analysis':
+        print("--- Avvio Analisi di Sensitività per le modalità di addestramento ---")
+        scenarios_to_analyze = ['random', 'shuffled', 'curriculum']
+        all_results = defaultdict(dict)
+
+        for name, (_, rl_class, kwargs) in rl_models_to_run.items():
+            print(f"\n--- Analisi per l'algoritmo: {name} ---")
+            plt.figure(figsize=(12, 7))
+
+            for scenario_mode in scenarios_to_analyze:
+                print(f"  - Addestramento in modalità: {scenario_mode}...")
+                
+                if scenario_mode == 'random':
+                    env_lambda = lambda: Monitor(MultiScenarioEnv(scenarios_to_test, selected_reward_func, V2G_profit_max_loads))
+                elif scenario_mode == 'curriculum':
+                    env_lambda = lambda: Monitor(CurriculumEnv(scenarios_to_test, selected_reward_func, V2G_profit_max_loads, curriculum_steps_per_level))
+                elif scenario_mode == 'shuffled':
+                    env_lambda = lambda: Monitor(ShuffledMultiScenarioEnv(scenarios_to_test, selected_reward_func, V2G_profit_max_loads))
+
+                train_env = DummyVecEnv([env_lambda])
+
+                model = rl_class("MlpPolicy", train_env, verbose=0, device=("cuda" if torch.cuda.is_available() else "cpu"), **kwargs)
+                
+                plot_callback = TrainingPlotCallback(model_name=f"{name}_{scenario_mode}", save_plot=False)
+                progress_callback = ProgressCallback(total_timesteps=steps_for_training)
+
+                model.learn(total_timesteps=steps_for_training, callback=[progress_callback, plot_callback])
+                
+                all_results[name][scenario_mode] = (plot_callback.steps, plot_callback.rewards)
+                
+                plt.plot(plot_callback.steps, plot_callback.rewards, label=f"Modalità: {scenario_mode}")
+                train_env.close()
+
+            plt.xlabel("Timesteps")
+            plt.ylabel("Average Reward")
+            plt.title(f"Analisi di Sensitività per {name}")
+            plt.legend()
+            plt.grid(True)
+            
+            plot_dir = "sensitivity_analysis_plots"
+            os.makedirs(plot_dir, exist_ok=True)
+            
+            timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+            filename = f"sensitivity_{name}_{timestamp}.png"
+            plt.savefig(os.path.join(plot_dir, filename))
+            plt.close()
+            print(f"Grafico di analisi di sensitività per {name} salvato in {os.path.join(plot_dir, filename)}")
+
     else: # Multi-scenario modes
         if training_mode == 'random':
-            env_lambda = lambda: MultiScenarioEnv(scenarios_to_test, selected_reward_func, V2G_profit_max_loads)
+            env_lambda = lambda: Monitor(MultiScenarioEnv(scenarios_to_test, selected_reward_func, V2G_profit_max_loads))
         elif training_mode == 'curriculum':
-            env_lambda = lambda: CurriculumEnv(scenarios_to_test, selected_reward_func, V2G_profit_max_loads, curriculum_steps_per_level)
+            env_lambda = lambda: Monitor(CurriculumEnv(scenarios_to_test, selected_reward_func, V2G_profit_max_loads, curriculum_steps_per_level))
         elif training_mode == 'shuffled':
-            env_lambda = lambda: ShuffledMultiScenarioEnv(scenarios_to_test, selected_reward_func, V2G_profit_max_loads)
+            env_lambda = lambda: Monitor(ShuffledMultiScenarioEnv(scenarios_to_test, selected_reward_func, V2G_profit_max_loads))
         else:
             # Fallback to random mode if training_mode is unknown
             print(f"ATTENZIONE: Modalità di training '{training_mode}' non riconosciuta. Verrà usata la modalità 'random' di default.")
-            env_lambda = lambda: MultiScenarioEnv(scenarios_to_test, selected_reward_func, V2G_profit_max_loads)
+            env_lambda = lambda: Monitor(MultiScenarioEnv(scenarios_to_test, selected_reward_func, V2G_profit_max_loads))
         
         train_env = DummyVecEnv([env_lambda])
 
     for name, (_, rl_class, kwargs) in rl_models_to_run.items():
         print(f"--- Addestramento {name} in modalità {mode_str} ---")
         model = rl_class("MlpPolicy", train_env, verbose=0, device=("cuda" if torch.cuda.is_available() else "cpu"), **kwargs)
-        model.learn(total_timesteps=steps_for_training, callback=ProgressCallback(total_timesteps=steps_for_training))
+        progress_callback = ProgressCallback(total_timesteps=steps_for_training)
+        plot_callback = TrainingPlotCallback(model_name=name)
+        model.learn(total_timesteps=steps_for_training, callback=[progress_callback, plot_callback])
         model.save(os.path.join(model_dir, f'{name.lower().replace("+", "_")}_model.zip'))
 
     if is_multi_scenario:
@@ -640,7 +740,7 @@ if __name__ == "__main__":
     parser.add_argument('--price_file', type=str, default='distribution-of-arrival-weekend.csv', help="Percorso assoluto del file CSV per i prezzi dell'energia o 'default'.")
     parser.add_argument('--train_rl_models', action='store_true', help="Addestra i modelli RL.")
     parser.add_argument('--steps_for_training', type=int, default=100000, help="Numero di passi per l'addestramento dei modelli RL.")
-    parser.add_argument('--training_mode', type=str, default='multi-scenario', choices=['single', 'multi-scenario', 'curriculum'], help="Modalità di addestramento: 'single' (default), 'multi-scenario' o 'curriculum'.")
+    parser.add_argument('--training_mode', type=str, default='multi-scenario', choices=['single', 'multi-scenario', 'curriculum', 'sensitivity_analysis'], help="Modalità di addestramento: 'single' (default), 'multi-scenario' o 'curriculum'.")
     parser.add_argument('--num_sims', type=int, default=1, help="Numero di simulazioni di valutazione per scenario.")
     parser.add_argument('--mpc_type', type=str, default='linear', choices=['linear', 'quadratic'], help="Tipo di solver MPC da usare: 'linear' (default) o 'quadratic'.")
 
