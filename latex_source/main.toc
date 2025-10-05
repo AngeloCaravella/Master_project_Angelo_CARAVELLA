@@ -129,40 +129,39 @@
 \contentsline {subsection}{\numberline {3.7.3}Reward Function}{70}{subsection.3.7.3}%
 \contentsline {section}{\numberline {3.8}Reinforcement Learning Algorithms}{71}{section.3.8}%
 \contentsline {subsubsection}{Soft Actor-Critic (SAC)}{71}{section*.36}%
-\contentsline {paragraph}{Soft Actor-Critic (SAC)}{72}{figure.3.2}%
-\contentsline {paragraph}{Implementation Details}{72}{section*.38}%
-\contentsline {subsubsection}{Deep Deterministic Policy Gradient + PER (DDPG+PER)}{73}{section*.39}%
-\contentsline {paragraph}{Implementation Details}{74}{section*.40}%
-\contentsline {subsubsection}{Truncated Quantile Critics (TQC)}{74}{section*.41}%
-\contentsline {paragraph}{Implementation Details}{75}{section*.42}%
-\contentsline {subsection}{\numberline {3.8.1}A History-Based Adaptive Reward for Profit Maximization}{75}{subsection.3.8.1}%
-\contentsline {paragraph}{Implementation Details}{75}{section*.43}%
-\contentsline {subsubsection}{Economic Profit}{75}{section*.44}%
-\contentsline {subsubsection}{Adaptive User Satisfaction Penalty}{75}{section*.45}%
-\contentsline {subsubsection}{Adaptive Transformer Overload Penalty}{76}{section*.46}%
-\contentsline {subsubsection}{Rationale and Significance}{76}{section*.47}%
-\contentsline {section}{\numberline {3.9}Online MPC Formulation (PuLP Implementation)}{76}{section.3.9}%
-\contentsline {paragraph}{Implementation Details}{77}{section*.48}%
-\contentsline {subsection}{\numberline {3.9.1}Mathematical Formulation}{77}{subsection.3.9.1}%
-\contentsline {subsubsection}{Objective Function: Net Operational Profit}{77}{section*.49}%
-\contentsline {subsubsection}{System Constraints}{77}{section*.50}%
-\contentsline {paragraph}{Energy Balance Dynamics.}{78}{section*.51}%
-\contentsline {paragraph}{Power Limits and Mutual Exclusion.}{78}{section*.52}%
-\contentsline {paragraph}{State of Energy (SoE) Limits.}{78}{section*.53}%
-\contentsline {paragraph}{User Satisfaction (Hard Constraint).}{78}{section*.54}%
-\contentsline {paragraph}{Transformer Power Limit.}{78}{section*.55}%
-\contentsline {subsubsection}{Problem Classification}{78}{section*.56}%
-\contentsline {section}{\numberline {3.10}Quadratic MPC Formulation (CVXPY Implementation)}{79}{section.3.10}%
-\contentsline {paragraph}{Implementation Details}{80}{section*.57}%
-\contentsline {subsection}{\numberline {3.10.1}Mathematical Formulation}{80}{subsection.3.10.1}%
-\contentsline {subsubsection}{Objective Function: Penalized Net Profit}{80}{section*.58}%
-\contentsline {subsubsection}{Problem Classification}{80}{section*.59}%
-\contentsline {section}{\numberline {3.11}Lyapunov-based Adaptive Horizon MPC}{81}{section.3.11}%
-\contentsline {subsection}{\numberline {3.11.1}Core Concept and Practical Implementation}{81}{subsection.3.11.1}%
-\contentsline {section}{\numberline {3.12}Approximate Explicit MPC: A Machine Learning Approach}{83}{section.3.12}%
-\contentsline {paragraph}{Implementation Details}{83}{section*.60}%
-\contentsline {subsection}{\numberline {3.12.1}Methodology: From Oracle to Apprentice}{83}{subsection.3.12.1}%
-\contentsline {subsection}{\numberline {3.12.2}A More Principled Approximator: The Deep ReLU Network}{84}{subsection.3.12.2}%
-\contentsline {paragraph}{Implementation Details}{84}{section*.61}%
-\contentsline {paragraph}{Theoretical Motivation}{85}{section*.62}%
-\contentsline {paragraph}{Methodology}{85}{section*.63}%
+\contentsline {paragraph}{Implementation Details}{72}{section*.37}%
+\contentsline {subsubsection}{Deep Deterministic Policy Gradient + PER (DDPG+PER)}{73}{section*.38}%
+\contentsline {paragraph}{Implementation Details}{75}{section*.39}%
+\contentsline {subsubsection}{Truncated Quantile Critics (TQC)}{75}{section*.40}%
+\contentsline {paragraph}{Implementation Details}{76}{section*.41}%
+\contentsline {subsection}{\numberline {3.8.1}A History-Based Adaptive Reward for Profit Maximization}{76}{subsection.3.8.1}%
+\contentsline {paragraph}{Implementation Details}{76}{section*.42}%
+\contentsline {subsubsection}{Economic Profit}{76}{section*.43}%
+\contentsline {subsubsection}{Adaptive User Satisfaction Penalty}{77}{section*.44}%
+\contentsline {subsubsection}{Adaptive Transformer Overload Penalty}{77}{section*.45}%
+\contentsline {subsubsection}{Rationale and Significance}{78}{section*.46}%
+\contentsline {section}{\numberline {3.9}Online MPC Formulation (PuLP Implementation)}{78}{section.3.9}%
+\contentsline {paragraph}{Implementation Details}{78}{section*.47}%
+\contentsline {subsection}{\numberline {3.9.1}Mathematical Formulation}{78}{subsection.3.9.1}%
+\contentsline {subsubsection}{Objective Function: Net Operational Profit}{79}{section*.48}%
+\contentsline {subsubsection}{System Constraints}{79}{section*.49}%
+\contentsline {paragraph}{Energy Balance Dynamics.}{79}{section*.50}%
+\contentsline {paragraph}{Power Limits and Mutual Exclusion.}{80}{section*.51}%
+\contentsline {paragraph}{State of Energy (SoE) Limits.}{80}{section*.52}%
+\contentsline {paragraph}{User Satisfaction (Hard Constraint).}{80}{section*.53}%
+\contentsline {paragraph}{Transformer Power Limit.}{80}{section*.54}%
+\contentsline {subsubsection}{Problem Classification}{80}{section*.55}%
+\contentsline {section}{\numberline {3.10}Quadratic MPC Formulation (CVXPY Implementation)}{81}{section.3.10}%
+\contentsline {paragraph}{Implementation Details}{81}{section*.56}%
+\contentsline {subsection}{\numberline {3.10.1}Mathematical Formulation}{81}{subsection.3.10.1}%
+\contentsline {subsubsection}{Objective Function: Penalized Net Profit}{82}{section*.57}%
+\contentsline {subsubsection}{Problem Classification}{82}{section*.58}%
+\contentsline {section}{\numberline {3.11}Lyapunov-based Adaptive Horizon MPC}{83}{section.3.11}%
+\contentsline {subsection}{\numberline {3.11.1}Core Concept and Practical Implementation}{83}{subsection.3.11.1}%
+\contentsline {section}{\numberline {3.12}Approximate Explicit MPC: A Machine Learning Approach}{84}{section.3.12}%
+\contentsline {paragraph}{Implementation Details}{85}{section*.59}%
+\contentsline {subsection}{\numberline {3.12.1}Methodology: From Oracle to Apprentice}{85}{subsection.3.12.1}%
+\contentsline {subsection}{\numberline {3.12.2}A More Principled Approximator: The Deep ReLU Network}{86}{subsection.3.12.2}%
+\contentsline {paragraph}{Implementation Details}{86}{section*.60}%
+\contentsline {paragraph}{Theoretical Motivation}{86}{section*.61}%
+\contentsline {paragraph}{Methodology}{87}{section*.62}%
