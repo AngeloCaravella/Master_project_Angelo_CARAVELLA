@@ -3,6 +3,8 @@
 import os
 import yaml
 import numpy as np
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import datetime
 import gymnasium as gym
@@ -10,6 +12,7 @@ from gymnasium.envs.registration import registry
 import time
 import torch
 import traceback
+import json
 import inspect
 import random
 import subprocess
@@ -166,6 +169,57 @@ class CurriculumEnv(gym.Env):
         if self.current_env:
             self.current_env.close()
 
+class ShuffledMultiScenarioEnv(gym.Env):
+    def __init__(self, config_files, reward_function, state_function):
+        super(ShuffledMultiScenarioEnv, self).__init__()
+        self.config_files = config_files
+        self.reward_function = reward_function
+        self.state_function = state_function
+        self.current_env = None
+        
+        max_obs_shape, max_action_shape = 0, 0
+        for config in self.config_files:
+            temp_env = EV2Gym(config_file=config, reward_function=reward_function, state_function=state_function)
+            max_obs_shape = max(max_obs_shape, temp_env.observation_space.shape[0])
+            max_action_shape = max(max_action_shape, temp_env.action_space.shape[0])
+            temp_env.close()
+        self.max_obs_shape = (max_obs_shape,)
+        self.max_action_shape = (max_action_shape,)
+        self.action_space = gym.spaces.Box(low=-1.0, high=1.0, shape=self.max_action_shape, dtype=np.float64)
+        self.observation_space = gym.spaces.Box(low=-np.inf, high=np.inf, shape=self.max_obs_shape, dtype=np.float64)
+
+        self.shuffled_scenarios = self.config_files.copy()
+        random.shuffle(self.shuffled_scenarios)
+        print(f"\n--- Avvio Epoca 1 con {len(self.shuffled_scenarios)} scenari in ordine casuale. ---\n")
+
+    def _pad_observation(self, obs):
+        padded_obs = np.zeros(self.max_obs_shape, dtype=np.float64)
+        padded_obs[:obs.shape[0]] = obs
+        return padded_obs
+
+    def reset(self, *, seed=None, options=None):
+        if not self.shuffled_scenarios:
+            print("\n--- Epoca completata. Rimescolo gli scenari per la nuova epoca. ---\n")
+            self.shuffled_scenarios = self.config_files.copy()
+            random.shuffle(self.shuffled_scenarios)
+        
+        selected_config = self.shuffled_scenarios.pop(0)
+
+        if self.current_env: self.current_env.close()
+        self.current_env = EV2Gym(config_file=selected_config, generate_rnd_game=True, reward_function=self.reward_function, state_function=self.state_function)
+        obs, info = self.current_env.reset(seed=seed, options=options)
+        return self._pad_observation(obs), info
+
+    def step(self, action):
+        if self.current_env is None: raise RuntimeError("reset() must be called before step().")
+        action_size_needed = self.current_env.action_space.shape[0]
+        sliced_action = action[:action_size_needed]
+        obs, reward, terminated, truncated, info = self.current_env.step(sliced_action)
+        return self._pad_observation(obs), reward, terminated, truncated, info
+
+    def close(self):
+        if self.current_env: self.current_env.close()
+
 class ProgressCallback(BaseCallback):
     def __init__(self, total_timesteps: int, check_freq: int = 1000, verbose: int = 1):
         super(ProgressCallback, self).__init__(verbose)
@@ -252,9 +306,19 @@ def run_benchmark(config_files, reward_func, algorithms_to_run, num_simulations,
 
     max_obs_shape, max_action_shape = (0,), (0,)
     if is_multi_scenario:
-        temp_env = MultiScenarioEnv(config_files, reward_func, V2G_profit_max_loads)
-        max_obs_shape, max_action_shape = temp_env.observation_space.shape, temp_env.action_space.shape
-        temp_env.close()
+        metadata_path = os.path.join(model_dir, 'model_metadata.json')
+        if os.path.exists(metadata_path):
+            with open(metadata_path, 'r') as f:
+                metadata = json.load(f)
+            max_obs_shape = tuple(metadata["observation_space_shape"])
+            max_action_shape = tuple(metadata["action_space_shape"])
+            print(f"Wrapper shapes caricate dai metadati: OBS={max_obs_shape}, ACT={max_action_shape}")
+        else:
+            # Fallback for older models without metadata
+            print("ATTENZIONE: file 'model_metadata.json' non trovato. Calcolo delle dimensioni del wrapper dagli scenari di benchmark.")
+            temp_env = MultiScenarioEnv(config_files, reward_func, V2G_profit_max_loads)
+            max_obs_shape, max_action_shape = temp_env.observation_space.shape, temp_env.action_space.shape
+            temp_env.close()
 
     for config_file in config_files:
         scenario_name = os.path.basename(config_file).replace(".yaml", "")
@@ -356,7 +420,7 @@ def get_algorithms(max_cs: int, is_thesis_mode: bool, mpc_type: str = 'linear') 
         'linear': {
             "Online_MPC": (OnlineMPC_Solver, None, {'control_horizon': 5}),
             "Online_MPC_Adaptive": (OnlineMPC_Solver, None, {
-                'use_adaptive_horizon': True, 'h_min': 2, 'h_max': 5, 'lyapunov_alpha': 0.1
+                'use_adaptive_horizon': True, 'h_min': 5, 'h_max': 10, 'lyapunov_alpha': 0.5
             }),
         },
         'quadratic': {
@@ -449,18 +513,41 @@ def train_rl_models_if_requested(scenarios_to_test: List[str], selected_reward_f
     scenario_name_for_path = 'multi_scenario' if is_multi_scenario else os.path.basename(scenarios_to_test[0]).replace(".yaml", "")
     
     train_env_id = f'ev-train-{scenario_name_for_path}'
-    if is_multi_scenario:
-        train_env = DummyVecEnv([lambda: MultiScenarioEnv(scenarios_to_test, selected_reward_func, V2G_profit_max_loads)])
-    else:
+    if training_mode == 'single':
         if train_env_id in registry: del registry[train_env_id]
         gym.register(id=train_env_id, entry_point='ev2gym.models.ev2gym_env:EV2Gym', kwargs={'config_file': scenarios_to_test[0], 'generate_rnd_game': True, 'reward_function': selected_reward_func, 'state_function': V2G_profit_max_loads, 'price_data_file': selected_price_file_abs_path})
         train_env = gym.make(train_env_id)
+    else: # Multi-scenario modes
+        if training_mode == 'random':
+            env_lambda = lambda: MultiScenarioEnv(scenarios_to_test, selected_reward_func, V2G_profit_max_loads)
+        elif training_mode == 'curriculum':
+            env_lambda = lambda: CurriculumEnv(scenarios_to_test, selected_reward_func, V2G_profit_max_loads, curriculum_steps_per_level)
+        elif training_mode == 'shuffled':
+            env_lambda = lambda: ShuffledMultiScenarioEnv(scenarios_to_test, selected_reward_func, V2G_profit_max_loads)
+        else:
+            # Fallback to random mode if training_mode is unknown
+            print(f"ATTENZIONE: Modalità di training '{training_mode}' non riconosciuta. Verrà usata la modalità 'random' di default.")
+            env_lambda = lambda: MultiScenarioEnv(scenarios_to_test, selected_reward_func, V2G_profit_max_loads)
+        
+        train_env = DummyVecEnv([env_lambda])
 
     for name, (_, rl_class, kwargs) in rl_models_to_run.items():
         print(f"--- Addestramento {name} in modalità {mode_str} ---")
         model = rl_class("MlpPolicy", train_env, verbose=0, device=("cuda" if torch.cuda.is_available() else "cpu"), **kwargs)
         model.learn(total_timesteps=steps_for_training, callback=ProgressCallback(total_timesteps=steps_for_training))
         model.save(os.path.join(model_dir, f'{name.lower().replace("+", "_")}_model.zip'))
+
+    if is_multi_scenario:
+        obs_shape = train_env.observation_space.shape
+        act_shape = train_env.action_space.shape
+        metadata = {
+            "observation_space_shape": list(obs_shape),
+            "action_space_shape": list(act_shape)
+        }
+        with open(os.path.join(model_dir, 'model_metadata.json'), 'w') as f:
+            json.dump(metadata, f, indent=4)
+        print(f"Metadati del modello salvati in {os.path.join(model_dir, 'model_metadata.json')}")
+
     train_env.close()
 
 

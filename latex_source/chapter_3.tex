@@ -67,6 +67,9 @@ The total capacity loss is the sum $Q_{lost} = d_{cal} + d_{cyc}$. This integrat
 \noindent
 A key feature of this framework is that the physical parameters for this model ($\epsilon_0, \epsilon_1, \epsilon_2, \zeta_0, \zeta_1, Q_{acc}$) are not fixed. They can be empirically calibrated from real-world experimental data using the provided \texttt{Fit\_battery.py} script, as detailed in Section \ref{sec:sim_architecture}.
 
+
+
+
 \section{A Unified Experimentation and Evaluation Workflow}
 A key contribution of this thesis is the development of a unified and powerful experimentation workflow, orchestrated by the main script \\
 \noindent
@@ -162,6 +165,127 @@ This is achieved through the \texttt{Fit\_battery.py} script, a new utility for 
 \end{enumerate}
 \noindent
 This calibration workflow, integrated optionally into the main \texttt{run\_experiments.py} script, elevates the simulation's fidelity. It allows the framework to move beyond a single, fixed degradation model (previously calibrated for a 78 kWh battery) and enables the creation of high-fidelity digital twins for a wide variety of EV batteries, provided that the necessary experimental data is available.
+
+
+\section{Simulation Framework Components}
+The simulation environment is constructed from a set of modular classes, each representing a key physical or logical component of the EV charging ecosystem. This section details the implementation and mathematical underpinnings of each component.
+
+\subsection{Electric Vehicle Model (\texttt{ev.py})}
+The \texttt{EV} class is the most fundamental component, encapsulating the state, physical constraints, and charging behavior of a single electric vehicle. It serves as the primary dynamic element within the simulation.
+
+\subsubsection{State and Attribute Representation}
+Each EV instance is defined by a set of static and dynamic attributes that govern its behavior throughout its connection period.
+\noindent
+\begin{itemize}
+    \item \textbf{Static Attributes:} These are defined upon the EV's arrival and remain constant. They include the maximum battery capacity ($E^{\text{max}}_i$), a minimum operational capacity ($E^{\text{min}}_i$), maximum AC charging power ($P^{\text{ch,max}}_i$), maximum discharging power ($P^{\text{dis,max}}_i$), charging efficiency ($\eta_{\text{ch}}$), discharging efficiency ($\eta_{\text{dis}}$), arrival time ($t^{\text{arr}}_i$), and departure time ($t^{\text{dep}}_i$).
+    \item \textbf{Dynamic State Variables:} The core state variable is the current energy stored in the battery, denoted as $E_{i,t}$ at time step $t$. This state is updated at every simulation step.
+    \item \textbf{Goal-Oriented Attributes:} The EV's objective is defined by its desired energy at departure, $E^{\text{des}}_i$. This is used to calculate user satisfaction.
+\end{itemize}
+
+\subsubsection{Charging and Discharging Dynamics}
+The model implements a sophisticated two-stage charging process to accurately reflect the behavior of lithium-ion batteries, particularly the transition from the constant current (CC) to the constant voltage (CV) phase.
+
+\paragraph{Two-Stage Charging Model (\texttt{\_charge} method).}
+The charging rate is not constant up to full capacity. The model captures the characteristic tapering of current as the battery approaches its maximum charge.
+\begin{enumerate}
+    \item \textbf{Constant Current (CC) Phase:} When the State of Charge ($SoC_{i,t}$) is below a transition threshold, $SoC^{\text{trans}}$, the battery charges at a constant power. The rate of change of energy is limited by both the pilot signal from the charger, $P^{\text{pilot}}_{i,t}$, and the EV's own maximum charging power, $P^{\text{ch,max}}_i$. The effective charging power is $P^{\text{ch}}_{i,t} = \min(P^{\text{pilot}}_{i,t}, P^{\text{ch,max}}_i)$. The energy evolution is:
+    \begin{equation}
+        E_{i,t} = E_{i,t-1} + \eta_{\text{ch}} \cdot P^{\text{ch}}_{i,t} \cdot \frac{\Delta t}{60}
+    \end{equation}
+    where $\Delta t$ is the timescale in minutes.
+    
+    \item \textbf{Constant Voltage (CV) Phase:} Once $SoC_{i,t}$ exceeds $SoC^{\text{trans}}$, the charging power begins to decrease, even if the pilot signal remains high. The implementation in the \texttt{\_charge} method approximates this tapering effect using an exponential decay function. The model calculates a new transition SoC based on the pilot signal and then computes the new SoC using a formula that ensures a smooth, decaying charge rate as the SoC approaches 100\%. This prevents unrealistic assumptions of constant maximum power charging until the battery is full.
+\end{enumerate}
+
+\paragraph{Discharging Model (\texttt{\_discharge} method).}
+Discharging is modeled as a linear process, constrained by the EV's maximum discharge power and the battery's minimum energy level. The energy delivered to the grid, $P^{\text{dis}}_{i,t}$, results in a larger energy withdrawal from the battery due to inefficiency:
+\begin{equation}
+    E_{i,t} = E_{i,t-1} + \frac{P^{\text{dis}}_{i,t}}{\eta_{\text{dis}}} \cdot \frac{\Delta t}{60}
+\end{equation}
+where $P^{\text{dis}}_{i,t}$ is negative by convention. The operation is constrained such that $E_{i,t} \ge E^{\text{min}}_i$.
+
+\subsubsection{User Satisfaction Metric}
+Upon departure at time $t^{\text{dep}}_i$, the performance of the charging service is quantified by a user satisfaction metric, $S_i$. This is defined as the ratio of the final energy level to the desired energy level, capped at 100\%.
+\begin{equation}
+    S_i = \min\left(1, \frac{E_{i, t^{\text{dep}}_i}}{E^{\text{des}}_i}\right)
+\end{equation}
+This metric provides a crucial feedback signal for control algorithms, penalizing strategies that fail to meet user requirements.
+
+\subsection{Charging Station Model (\texttt{ev\_charger.py})}
+The \texttt{EV\_Charger} class acts as an intermediary between the grid infrastructure and the individual EVs. It manages a collection of charging ports and enforces its own set of physical and operational constraints.
+
+\subsubsection{Role and Attributes}
+A charging station (CS) is defined by its number of ports ($N_{\text{ports}}$), its maximum aggregate charging and discharging currents ($I^{\text{max,ch}}_{\text{CS}}$, $I^{\text{max,dis}}_{\text{CS}}$), its operating voltage ($V$), and the number of phases. It serves as a local aggregation point for power and energy.
+
+\subsubsection{Operational Logic (\texttt{step} method)}
+At each simulation step, the \texttt{step} method executes the core logic of the charging station:
+\begin{enumerate}
+    \item \textbf{Action Translation:} It receives a normalized action vector $a_t \in [-1, 1]^{N_{\text{ports}}}$. For each port $j$, it translates the normalized action $a_{j,t}$ into a physical pilot current signal, $I^{\text{pilot}}_{j,t}$.
+    \begin{align}
+        I^{\text{pilot}}_{j,t} = 
+        \begin{cases} 
+            a_{j,t} \cdot I^{\text{max,ch}}_{\text{CS}} & \text{if } a_{j,t} > 0 \\
+            a_{j,t} \cdot |I^{\text{max,dis}}_{\text{CS}}| & \text{if } a_{j,t} < 0 \\
+            0 & \text{if } a_{j,t} = 0
+        \end{cases}
+    \end{align}
+    \item \textbf{EV Interaction:} It passes this pilot current to the \texttt{step} method of the corresponding connected \texttt{EV} instance, which then calculates its actual power exchange based on its internal two-stage model.
+    \item \textbf{Power Aggregation:} It aggregates the actual power, $P_{j,t}$, from all its ports to determine its total power exchange with the grid at that time step.
+    \begin{equation}
+        P_{\text{CS},t} = \sum_{j=1}^{N_{\text{ports}}} P_{j,t}
+    \end{equation}
+    \item \textbf{Economic Calculation:} It calculates the net profit for the time step based on the aggregated energy and real-time electricity prices ($c^{\text{buy}}_t, c^{\text{sell}}_t$).
+    \item \textbf{Departure Management:} It checks for departing EVs, collects their final user satisfaction scores, and frees up the corresponding ports.
+\end{enumerate}
+
+\subsection{Transformer Model (\texttt{transformer.py})}
+The \texttt{Transformer} class represents a critical piece of grid infrastructure, modeling the point of common coupling for a group of charging stations and other local loads. Its primary function is to enforce an aggregate power limit.
+
+\subsubsection{Model Components}
+Each transformer is characterized by its maximum power capacity, $P^{\text{max}}_{\text{TR}}$. It also manages two external time-series data streams:
+\begin{itemize}
+    \item \textbf{Inflexible Load ($P^{\text{inflex}}_{t}$):} Represents the background power consumption from other sources (e.g., buildings) connected to the same transformer.
+    \item \textbf{Solar Power ($P^{\text{PV}}_{t}$):} Represents local photovoltaic generation, which acts as a negative load.
+\end{itemize}
+
+\subsubsection{Core Functionality}
+The transformer's logic is centered around monitoring its total load and checking for capacity violations.
+\noindent
+\paragraph{Load Aggregation.} At each time step $t$, the total power flowing through the transformer, $P_{\text{TR},t}$, is the algebraic sum of the inflexible load, the solar generation, and the sum of the power from all charging stations connected to it.
+\begin{equation}
+    P_{\text{TR},t} = P^{\text{inflex}}_{t} + P^{\text{PV}}_{t} + \sum_{i \in \text{CSs connected to TR}} P_{\text{CS},i,t}
+\end{equation}
+\paragraph{Overload Detection.} The critical function is \texttt{is\_overloaded}, which returns true if the absolute total power exceeds the transformer's rating. This condition serves as a primary constraint for the control problem.
+\begin{equation}
+    \text{Overload} \iff |P_{\text{TR},t}| > P^{\text{max}}_{\text{TR}}
+\end{equation}
+\paragraph{Forecasting with Uncertainty.} The model includes methods (\texttt{generate\_...\_forecast}) to simulate imperfect knowledge of future loads and generation. It creates forecasts by taking the true profiles and adding zero-mean Gaussian noise, where the standard deviation is a configurable percentage of the true value. This allows for the development of robust control strategies that can handle prediction errors.
+
+
+\subsection{Main Gym Environment (\texttt{ev2gym\_env.py})}
+The \texttt{EV2Gym} class is the central orchestrator of the entire simulation. It integrates all the aforementioned physical models into a cohesive whole and exposes it through the standardized \texttt{gymnasium.Env} interface, making it compatible with a wide range of reinforcement learning algorithms.
+
+\subsubsection{Environment Structure and Main Loop}
+The class manages the high-level simulation flow.
+\noindent
+\paragraph{Initialization (\texttt{\_\_init\_\_}).} Upon creation, the environment reads a configuration file to instantiate all the necessary components: it creates the specified number of \texttt{Transformer} and \texttt{EV\_Charger} objects, loads the EV arrival scenarios, and sets up electricity price profiles.
+\noindent
+\paragraph{Simulation Step (\texttt{step(actions)}).} This method drives the simulation forward by one time step ($\Delta t$). The sequence of operations is as follows:
+\begin{enumerate}
+    \item It receives a single, flat action vector containing the control signals for every charging port in the entire system.
+    \item It slices this vector and passes the appropriate actions to each \texttt{EV\_Charger}'s \texttt{step} method.
+    \item This triggers the \texttt{step} methods of all connected \texttt{EV}s, updating their internal states ($E_{i,t}$).
+    \item It aggregates the resulting power at each \texttt{Transformer} and checks for overload conditions.
+    \item It processes the EV queue, spawning new EVs that are scheduled to arrive at the next time step.
+    \item It computes a scalar reward signal using a user-defined reward function.
+    \item It constructs the next state observation using a user-defined state representation function.
+    \item It checks for termination conditions (e.g., simulation end, constraint violation).
+    \item It returns the standard `(observation, reward, terminated, truncated, info)` tuple.
+\end{enumerate}
+\paragraph{Reset (\texttt{reset}).} This method re-initializes the entire environment to a starting state, allowing for the start of a new simulation episode, which could represent a new day or a different random scenario.
+
+
+
 
 \section{Reinforcement Learning Formulation}
 The control problem is formalized as a Markov Decision Process (MDP), defined by the tuple $(S, A, P, R, \gamma)$.

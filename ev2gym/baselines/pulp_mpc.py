@@ -10,15 +10,15 @@ from pathlib import Path
 
 class OnlineMPC_Solver:
     """
-    Risolve il problema di Model Predictive Control (MPC) ONLINE ad ogni step.
-    Questa classe implementa una formulazione implicita (iterativa) del problema
-    di ottimizzazione, che viene costruito e risolto tramite un solver MILP (PuLP)
-    ad ogni chiamata di `get_action`.
-    Supporta un orizzonte adattivo basato su Lyapunov.
+    Risolve il problema di Model Predictive Control (MPC) ONLINE.
+    Questa versione supporta un orizzonte di controllo (Nc) > 1,
+    memorizzando un piano di azioni ed eseguendo l'ottimizzazione solo
+    quando il piano è terminato.
     """
-    def __init__(self, env, control_horizon=5, costo_degrado_kwh=0.02,
-                 prezzo_ricarica_utente_kwh=0.5, mpc_desired_soc_factor=0.95,
-                 use_adaptive_horizon=False, h_min=2, h_max=5, lyapunov_alpha=0.1, **kwargs):
+    def __init__(self, env, prediction_horizon=5, control_horizon='half', 
+                 costo_degrado_kwh=0.02, prezzo_ricarica_utente_kwh=0.5, 
+                 mpc_desired_soc_factor=0.95, use_adaptive_horizon=False, 
+                 h_min=2, h_max=5, lyapunov_alpha=0.1, **kwargs):
         
         self.env = env
         self.costo_degrado_kwh = costo_degrado_kwh
@@ -30,25 +30,47 @@ class OnlineMPC_Solver:
             self.h_min = h_min
             self.h_max = h_max
             self.lyapunov_alpha = lyapunov_alpha
-            self.current_H = self.h_max
+            self.current_H = self.h_max # Prediction Horizon (Np)
             print(f"MPC Adattivo attivato. H_min={h_min}, H_max={h_max}, current_H={self.current_H}")
         else:
-            self.H = control_horizon
+            self.H = prediction_horizon # Prediction Horizon (Np)
+
+        # Imposta l'orizzonte di controllo (Nc)
+        effective_prediction_horizon = self.current_H if self.use_adaptive_horizon else self.H
+        if control_horizon == 'half':
+            self.Nc = max(1, effective_prediction_horizon // 2)
+        else:
+            self.Nc = int(control_horizon)
+        
+        print(f"MPC configurato con Orizzonte di Predizione (Np)={effective_prediction_horizon} e Orizzonte di Controllo (Nc)={self.Nc}")
+
+        # Cache per il piano di azioni
+        self.action_plan = []
+        self.plan_step = 0
 
     def get_action(self, env):
+        # Se abbiamo un piano valido, esegui lo step successivo
+        if self.plan_step < len(self.action_plan):
+            action_to_take = self.action_plan[self.plan_step]
+            self.plan_step += 1
+            return action_to_take
+
+        # Se siamo qui, il piano è terminato. Ricalcoliamo.
+        self.action_plan = []
+        self.plan_step = 0
+
         current_step = env.current_step
         sim_length = env.simulation_length
         num_cs = env.cs
         timescale_h = env.timescale / 60.0
         transformer_limit = env.config['transformer']['max_power']
 
-        # --- Logica Orizzonte Adattivo ---
         if self.use_adaptive_horizon:
-            horizon = min(self.current_H, sim_length - current_step)
+            prediction_horizon = min(self.current_H, sim_length - current_step)
         else:
-            horizon = min(self.H, sim_length - current_step)
+            prediction_horizon = min(self.H, sim_length - current_step)
         
-        if horizon <= 0: return np.zeros(num_cs)
+        if prediction_horizon <= 0: return np.zeros(num_cs)
 
         E_initial, active_evs = np.zeros(num_cs), {}
         for i in range(num_cs):
@@ -63,25 +85,25 @@ class OnlineMPC_Solver:
 
         prob = pulp.LpProblem(f"Online_MPC_ProfitMax_{current_step}", pulp.LpMaximize)
 
-        indices = [(i, j) for i in range(num_cs) for j in range(horizon)]
+        indices = [(i, j) for i in range(num_cs) for j in range(prediction_horizon)]
         P_ch = pulp.LpVariable.dicts("ChargePower", indices, lowBound=0)
         P_dis = pulp.LpVariable.dicts("DischargePower", indices, lowBound=0)
         is_charging = pulp.LpVariable.dicts("IsCharging", indices, cat='Binary')
         E = pulp.LpVariable.dicts("Energy", indices, lowBound=0)
 
-        prices_charge = env.charge_prices[0, current_step : current_step + horizon]
-        prices_discharge = env.discharge_prices[0, current_step : current_step + horizon]
+        prices_charge = env.charge_prices[0, current_step : current_step + prediction_horizon]
+        prices_discharge = env.discharge_prices[0, current_step : current_step + prediction_horizon]
         
         objective = pulp.lpSum(
             ((self.prezzo_ricarica_utente_kwh - prices_charge[t] - self.costo_degrado_kwh) * P_ch[i, t] +
              (prices_discharge[t] - self.costo_degrado_kwh) * P_dis[i, t]) * timescale_h
-            for i in range(num_cs) for t in range(horizon)
+            for i in range(num_cs) for t in range(prediction_horizon)
         )
         prob.setObjective(objective)
 
         for cs_id, data in active_evs.items():
             ev, eta_ch, eta_dis = data['ev'], data['eta_ch'], data['eta_dis']
-            for t in range(horizon):
+            for t in range(prediction_horizon):
                 prob += P_ch[cs_id, t] <= ev.max_ac_charge_power * is_charging[cs_id, t]
                 prob += P_dis[cs_id, t] <= abs(ev.max_discharge_power) * (1 - is_charging[cs_id, t])
                 
@@ -94,22 +116,21 @@ class OnlineMPC_Solver:
                 prob += E[cs_id, t] <= ev.battery_capacity
 
             departure_step_in_horizon = ev.time_of_departure - current_step - 1
-            if 0 <= departure_step_in_horizon < horizon:
+            if 0 <= departure_step_in_horizon < prediction_horizon:
                 prob += E[cs_id, departure_step_in_horizon] >= ev.desired_capacity * self.mpc_desired_soc_factor
 
         for i in range(num_cs):
             if i not in active_evs:
-                for t in range(horizon):
+                for t in range(prediction_horizon):
                     prob += P_ch[i, t] == 0
                     prob += P_dis[i, t] == 0
 
-        for t in range(horizon):
+        for t in range(prediction_horizon):
             prob += pulp.lpSum(P_ch[i, t] - P_dis[i, t] for i in range(num_cs)) <= transformer_limit
 
         prob.solve(pulp.PULP_CBC_CMD(msg=0))
 
         if pulp.LpStatus[prob.status] == 'Optimal':
-            # --- Logica Lyapunov per Orizzonte Adattivo ---
             if self.use_adaptive_horizon and active_evs:
                 V_current = sum((E_initial[i] - data['ev'].desired_capacity)**2 for i, data in active_evs.items())
                 
@@ -121,28 +142,32 @@ class OnlineMPC_Solver:
                 
                 V_next = sum((E_next[i] - data['ev'].desired_capacity)**2 for i, data in active_evs.items())
 
-                # Condizione di stabilità di Lyapunov
                 if V_next <= V_current - self.lyapunov_alpha * V_current:
-                    new_H = max(self.h_min, self.current_H - 1)
-                    if new_H != self.current_H:
-                        self.current_H = new_H
-                        # print(f"Step {current_step}: Stabilità OK. Orizzonte accorciato a {self.current_H}")
+                    self.current_H = max(self.h_min, self.current_H - 1)
                 else:
-                    new_H = min(self.h_max, self.current_H + 1)
-                    if new_H != self.current_H:
-                        self.current_H = new_H
-                        # print(f"Step {current_step}: Stabilità non garantita. Orizzonte esteso a {self.current_H}")
+                    self.current_H = min(self.h_max, self.current_H + 1)
 
-            action = np.zeros(num_cs)
-            for i in range(num_cs):
-                charge = pulp.value(P_ch[i, 0])
-                discharge = pulp.value(P_dis[i, 0])
-                net_power = (charge or 0) - (discharge or 0)
-                max_power = env.charging_stations[i].get_max_power()
-                if max_power > 0: action[i] = net_power / max_power
-            return np.clip(action, -1, 1)
+            # Extract the first Nc actions to form the plan
+            new_plan = []
+            effective_Nc = min(self.Nc, prediction_horizon)
+            for t in range(effective_Nc):
+                action_t = np.zeros(num_cs)
+                for i in range(num_cs):
+                    charge = pulp.value(P_ch[i, t])
+                    discharge = pulp.value(P_dis[i, t])
+                    net_power = (charge or 0) - (discharge or 0)
+                    max_power = env.charging_stations[i].get_max_power()
+                    if max_power > 0: action_t[i] = net_power / max_power
+                new_plan.append(np.clip(action_t, -1, 1))
+            
+            self.action_plan = new_plan
+            
+            if self.action_plan:
+                self.plan_step = 1
+                return self.action_plan[0]
+            else:
+                return np.zeros(num_cs)
         else:
-            # Se l'ottimizzazione fallisce, estendi l'orizzonte per il prossimo step
             if self.use_adaptive_horizon:
                 self.current_H = min(self.h_max, self.current_H + 1)
             return np.zeros(num_cs)

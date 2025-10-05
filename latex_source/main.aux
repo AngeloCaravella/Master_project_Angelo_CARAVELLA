@@ -366,58 +366,81 @@
 \newlabel{sec:sim_architecture}{{3.5}{63}{Simulator Implementation Details}{section.3.5}{}}
 \@writefile{toc}{\contentsline {subsubsection}{Vehicle Definition Modes}{63}{section*.18}\protected@file@percent }
 \@writefile{toc}{\contentsline {subsubsection}{Empirical Calibration of the Degradation Model}{64}{section*.19}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {3.6}Reinforcement Learning Formulation}{65}{section.3.6}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.6.1}State Space ($S$)}{65}{subsection.3.6.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.6.2}Action Space ($A$)}{65}{subsection.3.6.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.6.3}Reward Function}{65}{subsection.3.6.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {3.6}Simulation Framework Components}{65}{section.3.6}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.6.1}Electric Vehicle Model (\texttt  {ev.py})}{65}{subsection.3.6.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{State and Attribute Representation}{65}{section*.20}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{Charging and Discharging Dynamics}{65}{section*.21}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Two-Stage Charging Model (\texttt  {\_charge} method).}{65}{section*.22}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Discharging Model (\texttt  {\_discharge} method).}{66}{section*.23}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{User Satisfaction Metric}{66}{section*.24}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.6.2}Charging Station Model (\texttt  {ev\_charger.py})}{66}{subsection.3.6.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{Role and Attributes}{67}{section*.25}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{Operational Logic (\texttt  {step} method)}{67}{section*.26}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.6.3}Transformer Model (\texttt  {transformer.py})}{67}{subsection.3.6.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{Model Components}{68}{section*.27}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{Core Functionality}{68}{section*.28}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Load Aggregation.}{68}{section*.29}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Overload Detection.}{68}{section*.30}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Forecasting with Uncertainty.}{68}{section*.31}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.6.4}Main Gym Environment (\texttt  {ev2gym\_env.py})}{68}{subsection.3.6.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{Environment Structure and Main Loop}{68}{section*.32}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Initialization (\texttt  {\_\_init\_\_}).}{69}{section*.33}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Simulation Step (\texttt  {step(actions)}).}{69}{section*.34}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Reset (\texttt  {reset}).}{69}{section*.35}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {3.7}Reinforcement Learning Formulation}{69}{section.3.7}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.7.1}State Space ($S$)}{70}{subsection.3.7.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.7.2}Action Space ($A$)}{70}{subsection.3.7.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.7.3}Reward Function}{70}{subsection.3.7.3}\protected@file@percent }
 \abx@aux@cite{0}{Qiu2023}
 \abx@aux@segm{0}{0}{Qiu2023}
-\@writefile{toc}{\contentsline {section}{\numberline {3.7}Reinforcement Learning Algorithms}{66}{section.3.7}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{Soft Actor-Critic (SAC)}{66}{section*.20}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {3.2}{\ignorespaces SAC Structure Image from \blx@tocontentsinit {0}\footcite {Qiu2023}}}{67}{figure.3.2}\protected@file@percent }
-\newlabel{fig:SAC}{{3.7}{67}{Soft Actor-Critic (SAC)}{figure.3.2}{}}
-\@writefile{toc}{\contentsline {paragraph}{Soft Actor-Critic (SAC)}{67}{figure.3.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{Implementation Details}{67}{section*.22}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {3.8}Reinforcement Learning Algorithms}{71}{section.3.8}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{Soft Actor-Critic (SAC)}{71}{section*.36}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {3.2}{\ignorespaces SAC Structure Image from \blx@tocontentsinit {0}\footcite {Qiu2023}}}{72}{figure.3.2}\protected@file@percent }
+\newlabel{fig:SAC}{{3.8}{72}{Soft Actor-Critic (SAC)}{figure.3.2}{}}
+\@writefile{toc}{\contentsline {paragraph}{Soft Actor-Critic (SAC)}{72}{figure.3.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Implementation Details}{72}{section*.38}\protected@file@percent }
 \abx@aux@cite{0}{Qiu2023}
 \abx@aux@segm{0}{0}{Qiu2023}
-\@writefile{toc}{\contentsline {subsubsection}{Deep Deterministic Policy Gradient + PER (DDPG+PER)}{68}{section*.23}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {3.3}{\ignorespaces DDPG Structure (Image from \blx@tocontentsinit {0}\footcite {Qiu2023}}}{68}{figure.3.3}\protected@file@percent }
-\newlabel{fig:DDPG}{{3.3}{68}{DDPG Structure (Image from \footcite {Qiu2023}}{figure.3.3}{}}
-\@writefile{toc}{\contentsline {paragraph}{Implementation Details}{69}{section*.24}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{Truncated Quantile Critics (TQC)}{69}{section*.25}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{Implementation Details}{70}{section*.26}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.7.1}A History-Based Adaptive Reward for Profit Maximization}{70}{subsection.3.7.1}\protected@file@percent }
-\newlabel{sec:adaptive_reward}{{3.7.1}{70}{A History-Based Adaptive Reward for Profit Maximization}{subsection.3.7.1}{}}
-\@writefile{toc}{\contentsline {paragraph}{Implementation Details}{70}{section*.27}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{Economic Profit}{70}{section*.28}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{Adaptive User Satisfaction Penalty}{70}{section*.29}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{Adaptive Transformer Overload Penalty}{71}{section*.30}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{Rationale and Significance}{71}{section*.31}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {3.8}Online MPC Formulation (PuLP Implementation)}{71}{section.3.8}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{Implementation Details}{72}{section*.32}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.8.1}Mathematical Formulation}{72}{subsection.3.8.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{Objective Function: Net Operational Profit}{72}{section*.33}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{System Constraints}{72}{section*.34}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{Energy Balance Dynamics.}{72}{section*.35}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{Power Limits and Mutual Exclusion.}{73}{section*.36}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{State of Energy (SoE) Limits.}{73}{section*.37}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{User Satisfaction (Hard Constraint).}{73}{section*.38}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{Transformer Power Limit.}{73}{section*.39}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{Problem Classification}{73}{section*.40}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {3.9}Lyapunov-based Adaptive Horizon MPC}{74}{section.3.9}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{Implementation Details}{74}{section*.41}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.9.1}Core Concept: Dynamic Horizon Adjustment}{74}{subsection.3.9.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.9.2}Lyapunov Stability for V2G Control}{75}{subsection.3.9.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.9.3}Horizon Shortening and Extension}{75}{subsection.3.9.3}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {3.10}Approximate Explicit MPC: A Machine Learning Approach}{76}{section.3.10}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{Implementation Details}{76}{section*.42}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.10.1}Methodology: From Oracle to Apprentice}{76}{subsection.3.10.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{Deep Deterministic Policy Gradient + PER (DDPG+PER)}{73}{section*.39}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {3.3}{\ignorespaces DDPG Structure (Image from \blx@tocontentsinit {0}\footcite {Qiu2023}}}{73}{figure.3.3}\protected@file@percent }
+\newlabel{fig:DDPG}{{3.3}{73}{DDPG Structure (Image from \footcite {Qiu2023}}{figure.3.3}{}}
+\@writefile{toc}{\contentsline {paragraph}{Implementation Details}{74}{section*.40}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{Truncated Quantile Critics (TQC)}{74}{section*.41}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Implementation Details}{75}{section*.42}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.8.1}A History-Based Adaptive Reward for Profit Maximization}{75}{subsection.3.8.1}\protected@file@percent }
+\newlabel{sec:adaptive_reward}{{3.8.1}{75}{A History-Based Adaptive Reward for Profit Maximization}{subsection.3.8.1}{}}
+\@writefile{toc}{\contentsline {paragraph}{Implementation Details}{75}{section*.43}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{Economic Profit}{75}{section*.44}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{Adaptive User Satisfaction Penalty}{75}{section*.45}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{Adaptive Transformer Overload Penalty}{76}{section*.46}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{Rationale and Significance}{76}{section*.47}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {3.9}Online MPC Formulation (PuLP Implementation)}{76}{section.3.9}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Implementation Details}{77}{section*.48}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.9.1}Mathematical Formulation}{77}{subsection.3.9.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{Objective Function: Net Operational Profit}{77}{section*.49}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{System Constraints}{77}{section*.50}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Energy Balance Dynamics.}{78}{section*.51}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Power Limits and Mutual Exclusion.}{78}{section*.52}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{State of Energy (SoE) Limits.}{78}{section*.53}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{User Satisfaction (Hard Constraint).}{78}{section*.54}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Transformer Power Limit.}{78}{section*.55}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{Problem Classification}{78}{section*.56}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {3.10}Quadratic MPC Formulation (CVXPY Implementation)}{79}{section.3.10}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Implementation Details}{80}{section*.57}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.10.1}Mathematical Formulation}{80}{subsection.3.10.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{Objective Function: Penalized Net Profit}{80}{section*.58}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{Problem Classification}{80}{section*.59}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {3.11}Lyapunov-based Adaptive Horizon MPC}{81}{section.3.11}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.11.1}Core Concept and Practical Implementation}{81}{subsection.3.11.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {3.12}Approximate Explicit MPC: A Machine Learning Approach}{83}{section.3.12}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Implementation Details}{83}{section*.60}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.12.1}Methodology: From Oracle to Apprentice}{83}{subsection.3.12.1}\protected@file@percent }
 \abx@aux@cite{0}{karg2020efficient}
 \abx@aux@segm{0}{0}{karg2020efficient}
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.10.2}A More Principled Approximator: The Deep ReLU Network}{77}{subsection.3.10.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{Implementation Details}{77}{section*.43}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{Theoretical Motivation}{77}{section*.44}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{Methodology}{78}{section*.45}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.12.2}A More Principled Approximator: The Deep ReLU Network}{84}{subsection.3.12.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Implementation Details}{84}{section*.61}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Theoretical Motivation}{85}{section*.62}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Methodology}{85}{section*.63}\protected@file@percent }
 \abx@aux@lbx@loadrequest{italian}
 \abx@aux@lbx@loadrequest{italian}
 \abx@aux@read@bbl@mdfivesum{822A1620C33F57B47AB6B392F78CCB2F}
@@ -475,4 +498,4 @@
 \abx@aux@defaultrefcontext{0}{Xie2025}{nty/global//global/global/global}
 \abx@aux@defaultrefcontext{0}{NaXu}{nty/global//global/global/global}
 \abx@aux@defaultrefcontext{0}{Zhang2023}{nty/global//global/global/global}
-\gdef \@abspage@last{84}
+\gdef \@abspage@last{91}
