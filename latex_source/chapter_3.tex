@@ -30,6 +30,92 @@ The architecture consists of several interacting components:
 
 The simulation process follows a reproducible three-phase structure: (1) \textbf{Initialization} from a comprehensive YAML configuration file, (2) a discrete-time \textbf{Simulation Loop} where the agent interacts with the environment, and (3) a final \textbf{Evaluation and Visualization} phase that generates standardized performance metrics.
 
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{A Unified Experimentation and Evaluation Workflow}
+
+A key contribution of this thesis is the development of a unified and powerful experimentation workflow, orchestrated primarily by the \texttt{run\_experiments.py} script (with an interactive interface provided by \texttt{run\_interactive.py}). This approach replaces the previous fragmentation, offering a single platform to manage the entire lifecycle of training, benchmarking, and evaluation for V2G control agents. The workflow is designed to be both flexible for research and rigorous for evaluation, supporting the goal of developing both specialized and generalized agents.
+
+\subsection{Orchestration and Execution Interfaces}
+
+The \texttt{run\_experiments.py} script serves as the central hub for all experimentation. To ensure flexibility and reproducibility, the project offers two execution modes:
+
+\begin{enumerate}
+    \item \textbf{Interactive Mode (\texttt{run\_interactive.py}):} Provides a guided, step-by-step command-line interface, ideal for initial configuration, testing, and running single experiments. The user responds to successive prompts to select scenarios, algorithms, and training parameters.
+    \item \textbf{Scripted/Batch Mode (\texttt{run\_experiments.py}):} Utilizes the \texttt{argparse} module to accept all configuration parameters (e.g., \texttt{--scenarios}, \texttt{--reward\_func}, \texttt{--training\_mode}) directly as command-line arguments. This mode is essential for automation, reproducibility, and running large batches of experiments on servers or high-performance computing systems.
+\end{enumerate}
+
+The key steps in the workflow include:
+
+\begin{itemize}
+    \item \textbf{Algorithm Selection:} The script dynamically defines the algorithms to be executed, which can include Deep Reinforcement Learning agents (e.g., SAC, DDPG+PER, TQC), classical optimization methods (Model Predictive Control), and heuristics (e.g., AFAP, ALAP).
+    \item \textbf{Scenario and Reward Selection:} The user selects one or more \texttt{.yaml} configuration files and the desired reward function from the \texttt{reward.py} module.
+    \item \textbf{Battery Calibration:} The option to run \texttt{Fit\_battery.py} is provided to calibrate the parameters of the battery degradation model, ensuring that simulations use the most up-to-date data.
+\end{itemize}
+
+\subsection{Dual-Mode Training: Specialists and Generalists}
+
+The new workflow seamlessly manages the training of both "specialist" agents (optimized for a single scenario) and "generalist" agents (robust across multiple scenarios). The behavior is determined by the number of selected scenarios:
+
+\begin{itemize}
+    \item \textbf{Single-Domain Specialization:} If only one scenario is selected, the RL agent is trained exclusively on that \texttt{EV2Gym} environment.
+    \item \textbf{Multi-Scenario Generalization:} If multiple scenarios are selected, the script automatically utilizes the custom \texttt{MultiScenarioEnv} wrapper. This Gymnasium environment:
+    \begin{itemize}
+        \item \textbf{Random Selection:} At the start of each training episode, it randomly selects a configuration file and initializes a new \texttt{EV2Gym} environment.
+        \item \textbf{Handling Heterogeneous Spaces:} To allow a single neural network to control environments with a varying number of charging stations (and thus different observation and action space sizes), the maximum size (\texttt{MAX\_CS}) across all scenarios is calculated. The returned observation is \textbf{padded} with zeros up to the maximum size (\texttt{max\_obs\_shape}), and the network's action is \textbf{sliced} to the actual size required by the current environment (\texttt{current\_env.action\_space.shape}). This mechanism, supported by the \texttt{CompatibilityWrapper} during evaluation, is crucial for training generalist agents.
+    \end{itemize}
+\end{itemize}
+
+\subsubsection{Advanced Multi-Scenario Training Strategies}
+
+In addition to random selection, the workflow supports advanced strategies to enhance generalization:
+
+\begin{itemize}
+    \item \textbf{Curriculum Learning (\texttt{CurriculumEnv}):} The agent is trained in a predefined sequence of scenarios. The environment progresses to the next curriculum level only after the agent has completed a fixed number of training steps (\texttt{steps\_per\_level}) in the current level. This allows for starting with simpler scenarios and progressing toward complexity.
+    \item \textbf{Shuffled Multi-Scenario (\texttt{ShuffledMultiScenarioEnv}):} At the beginning of each "epoch," the list of scenarios is randomly shuffled. The agent runs one full episode on each scenario in this random order before the list is reshuffled for the next epoch. This ensures the agent sees all scenarios in a non-repetitive order within a complete cycle.
+\end{itemize}
+
+\subsection{MPC Integration and Approximation}
+
+The workflow integrates both classical MPC and its approximations:
+
+\begin{itemize}
+    \item \textbf{Linear and Quadratic MPC:} The \texttt{run\_experiments.py} script allows choosing between an MPC based on a linear optimization model (\texttt{OnlineMPC\_Solver}) or a quadratic one (\texttt{OnlineMPC\_Solver\_Quadratic}), depending on the desired complexity of the objective function.
+    \item \textbf{Approximate Explicit MPC:} The scripts \texttt{train\_mpc\_approximator.py} and \texttt{train\_mpc\_approximator\_nn.py} are dedicated to creating an \textbf{Approximate Explicit MPC}. This process:
+    \begin{enumerate}
+        \item Generates a dataset of samples (state, optimal action) by solving the MPC problem (the oracle) across a large number of random states in different scenarios.
+        \item Trains a Machine Learning model (Random Forest in \texttt{train\_mpc\_approximator.py} or a Neural Network in \texttt{train\_mpc\_approximator\_nn.py}) to map the state to the optimal action.
+    \end{enumerate}
+    This approach drastically reduces runtime computation, transforming a complex optimization problem into a simple model inference, making MPC suitable for real-time control and providing a high-speed performance baseline.
+\end{itemize}
+
+\subsection{Rigorous and Reproducible Benchmarking}
+
+The \texttt{run\_benchmark} function in \texttt{run\_experiments.py} is designed to ensure fair and rigorous evaluation:
+
+\begin{itemize}
+    \item \textbf{Replay Mechanism:} To compare algorithms under identical conditions, the benchmark first runs a "replay" simulation with a null action, saving the entire sequence of stochastic events (EV arrivals, prices, etc.) to a \texttt{.pkl} file. Subsequently, each algorithm is evaluated by loading and reproducing \textit{exactly} the same event sequence. This eliminates stochastic variability between runs, making the comparison between algorithms highly reliable.
+    \item \textbf{Performance Metrics:} Results are aggregated over multiple simulations (\texttt{num\_simulations}) and include key metrics such as:
+    \begin{itemize}
+        \item Total Profit (€)
+        \item Average User Satisfaction (\%)
+        \item Peak Transformer Loading (\%)
+        \item Total Battery Degradation (\%), with detail on cyclic loss and calendar loss.
+    \end{itemize}
+    \item \textbf{Automatic Visualization:} Plotting functions (\texttt{plot\_performance\_metrics}, \texttt{plot\_degradation\_details}) automatically generate bar charts for the key metrics, grouping algorithms by category (heuristics, MPC, RL On-Policy, RL Off-Policy) for clear visual analysis.
+\end{itemize}
+%%%%%%%%%%%%%%%%%%%%%
+
+
+
+
+
+
+
+
+
+
 \subsection{Software Implementation and Project Structure}
 \label{sec:software_implementation}
 The practical implementation is organized within a modular Python package named \texttt{ev2gym}. This structure promotes code reusability and separation of concerns. High-level experimentation scripts, such as \texttt{run\_experiments.py} and \texttt{train\_mpc\_approximator.py}, reside in the project's root directory and orchestrate experiments by utilizing the core functionalities provided by the \texttt{ev2gym} package.
@@ -72,27 +158,7 @@ The total capacity loss is the sum $Q_{lost} = d_{cal} + d_{cyc}$. This integrat
 \noindent
 A key feature of this framework is that the physical parameters for this model ($\epsilon_0, \epsilon_1, \epsilon_2, \zeta_0, \zeta_1, Q_{acc}$) are not fixed. They can be empirically calibrated from real-world experimental data using the provided \texttt{Fit\_battery.py} script, as detailed in Section \ref{sec:sim_architecture}.
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{A Unified Experimentation and Evaluation Workflow}
-A key contribution of this thesis is the development of a unified and powerful experimentation workflow, orchestrated by the main script \\
-\noindent
-\texttt{run\_experiments.py}. This script replaces the previous fragmented approach, providing a single, interactive interface to manage the entire lifecycle of training, benchmarking, and evaluation for V2G control agents. This workflow is designed to be both flexible for research and rigorous for evaluation, supporting the dual goals of developing specialized and generalized agents.
 
-\subsection{Orchestration via \texttt{run\_experiments.py}}
-The \texttt{run\_experiments.py} script acts as the central hub for all experimentation. It guides the user through an interactive command-line process, ensuring consistency and reproducibility. The key steps are:
-\begin{enumerate}
-    \item \textbf{Algorithm Selection:} The user can select from a predefined list of algorithms to benchmark. This includes Deep Reinforcement Learning agents (e.g., SAC, DDPG+PER, TQC), classical optimization methods (Model Predictive Control), and rule-based heuristics (e.g., Charge As Fast As Possible).
-    \item \textbf{Scenario Selection:} The script automatically detects all available \texttt{.yaml} configuration files, allowing the user to choose one or more scenarios for the experiment. This choice determines the mode of operation (single-domain vs. multi-scenario).
-    \item \textbf{Reward Function Selection:} The framework's flexibility is enhanced by allowing the user to dynamically select the reward function for the RL agents from the \texttt{reward.py} module.
-    \item \textbf{Training and Benchmarking:} Based on the user's selections, the script proceeds to the optional training phase and then to a comprehensive benchmark, saving all results in a timestamped directory.
-\end{enumerate}
-
-\subsection{Dual-Mode Training: Specialists and Generalists}
-The new workflow elegantly unifies the training of both "specialist" and "generalist" agents, a concept previously handled by separate scripts. The behavior is determined implicitly by the number of selected scenarios:
-\begin{itemize}
-    \item \textbf{Single-Domain Specialization:} If the user selects a single scenario, the script trains an RL agent exclusively on that environment. This produces a specialist agent, optimized to extract maximum performance from a specific, known set of conditions (e.g., a particular charging station topology and price profile).
-    \item \textbf{Multi-Scenario Generalization:} If multiple scenarios are selected, the script automatically utilizes the \texttt{MultiScenarioEnv} wrapper. This custom Gymnasium environment dynamically switches between the different selected configurations at the start of each training episode. This process forces the agent to learn a robust and generalizable policy that performs well across a wide range of conditions, preventing overfitting to any single scenario. To handle the technical challenge of varying observation and action space sizes across scenarios, a \texttt{CompatibilityWrapper} is used to pad and slice the state-action vectors, enabling a single neural network policy to control heterogeneous environments.
-\end{itemize}
 
 \subsection{Reproducible Benchmarking and Evaluation}
 To ensure a fair and scientifically valid comparison, the \texttt{run\_benchmark} function implements a rigorous evaluation protocol. For each scenario, it first generates a "replay" file containing the exact sequence of stochastic events (e.g., EV arrivals, energy demands). This exact same sequence is then used to evaluate every algorithm, eliminating randomness as a factor in performance differences. The script runs multiple simulations for statistical robustness, aggregates the mean results, and automatically generates a suite of comparative plots, including overall performance metrics and detailed battery degradation analyses.

@@ -87,81 +87,84 @@
 \contentsline {subsection}{\numberline {2.24.4}Comparative Analysis and Safety Considerations}{56}{subsection.2.24.4}%
 \contentsline {chapter}{\numberline {3}An Enhanced V2G Simulation Framework for Robust Control}{57}{chapter.3}%
 \contentsline {section}{\numberline {3.1}Core Simulator Architecture}{57}{section.3.1}%
-\contentsline {subsection}{\numberline {3.1.1}Software Implementation and Project Structure}{58}{subsection.3.1.1}%
-\contentsline {section}{\numberline {3.2}Core Physical Models}{59}{section.3.2}%
-\contentsline {subsection}{\numberline {3.2.1}EV Model and Charging/Discharging Dynamics}{59}{subsection.3.2.1}%
-\contentsline {subsection}{\numberline {3.2.2}Battery Degradation Model}{59}{subsection.3.2.2}%
-\contentsline {section}{\numberline {3.3}A Unified Experimentation and Evaluation Workflow}{60}{section.3.3}%
-\contentsline {subsection}{\numberline {3.3.1}Orchestration via \texttt {run\_experiments.py}}{60}{subsection.3.3.1}%
-\contentsline {subsection}{\numberline {3.3.2}Dual-Mode Training: Specialists and Generalists}{61}{subsection.3.3.2}%
-\contentsline {subsection}{\numberline {3.3.3}Reproducible Benchmarking and Evaluation}{61}{subsection.3.3.3}%
-\contentsline {subsection}{\numberline {3.3.4}Interactive Web-Based Dashboard}{62}{subsection.3.3.4}%
-\contentsline {subsubsection}{Simulation Orchestrator}{62}{section*.16}%
-\contentsline {subsubsection}{Results Visualizer}{62}{section*.17}%
-\contentsline {section}{\numberline {3.4}Evaluation Metrics}{62}{section.3.4}%
-\contentsline {section}{\numberline {3.5}Simulator Implementation Details}{63}{section.3.5}%
-\contentsline {subsubsection}{Vehicle Definition Modes}{63}{section*.18}%
-\contentsline {subsubsection}{Empirical Calibration of the Degradation Model}{64}{section*.19}%
-\contentsline {section}{\numberline {3.6}Simulation Framework Components}{65}{section.3.6}%
-\contentsline {subsection}{\numberline {3.6.1}Electric Vehicle Model (\texttt {ev.py})}{65}{subsection.3.6.1}%
-\contentsline {subsubsection}{State and Attribute Representation}{65}{section*.20}%
-\contentsline {subsubsection}{Charging and Discharging Dynamics}{65}{section*.21}%
-\contentsline {paragraph}{Two-Stage Charging Model (\texttt {\_charge} method).}{65}{section*.22}%
-\contentsline {paragraph}{Discharging Model (\texttt {\_discharge} method).}{66}{section*.23}%
-\contentsline {subsubsection}{User Satisfaction Metric}{66}{section*.24}%
-\contentsline {subsection}{\numberline {3.6.2}Charging Station Model (\texttt {ev\_charger.py})}{66}{subsection.3.6.2}%
-\contentsline {subsubsection}{Role and Attributes}{67}{section*.25}%
-\contentsline {subsubsection}{Operational Logic (\texttt {step} method)}{67}{section*.26}%
-\contentsline {subsection}{\numberline {3.6.3}Transformer Model (\texttt {transformer.py})}{67}{subsection.3.6.3}%
-\contentsline {subsubsection}{Model Components}{68}{section*.27}%
-\contentsline {subsubsection}{Core Functionality}{68}{section*.28}%
-\contentsline {paragraph}{Load Aggregation.}{68}{section*.29}%
-\contentsline {paragraph}{Overload Detection.}{68}{section*.30}%
-\contentsline {paragraph}{Forecasting with Uncertainty.}{68}{section*.31}%
-\contentsline {subsection}{\numberline {3.6.4}Main Gym Environment (\texttt {ev2gym\_env.py})}{68}{subsection.3.6.4}%
-\contentsline {subsubsection}{Environment Structure and Main Loop}{68}{section*.32}%
-\contentsline {paragraph}{Initialization (\texttt {\_\_init\_\_}).}{69}{section*.33}%
-\contentsline {paragraph}{Simulation Step (\texttt {step(actions)}).}{69}{section*.34}%
-\contentsline {paragraph}{Reset (\texttt {reset}).}{69}{section*.35}%
-\contentsline {section}{\numberline {3.7}Reinforcement Learning Formulation}{69}{section.3.7}%
-\contentsline {subsection}{\numberline {3.7.1}State Space ($S$)}{70}{subsection.3.7.1}%
-\contentsline {subsection}{\numberline {3.7.2}Action Space ($A$)}{70}{subsection.3.7.2}%
-\contentsline {subsection}{\numberline {3.7.3}Reward Function}{70}{subsection.3.7.3}%
-\contentsline {section}{\numberline {3.8}Reinforcement Learning Algorithms}{71}{section.3.8}%
-\contentsline {subsubsection}{Soft Actor-Critic (SAC)}{71}{section*.36}%
-\contentsline {paragraph}{Implementation Details}{72}{section*.37}%
-\contentsline {subsubsection}{Deep Deterministic Policy Gradient + PER (DDPG+PER)}{73}{section*.38}%
-\contentsline {paragraph}{Implementation Details}{75}{section*.39}%
-\contentsline {subsubsection}{Truncated Quantile Critics (TQC)}{75}{section*.40}%
-\contentsline {paragraph}{Implementation Details}{76}{section*.41}%
-\contentsline {subsection}{\numberline {3.8.1}A History-Based Adaptive Reward for Profit Maximization}{76}{subsection.3.8.1}%
-\contentsline {paragraph}{Implementation Details}{76}{section*.42}%
-\contentsline {subsubsection}{Economic Profit}{76}{section*.43}%
-\contentsline {subsubsection}{Adaptive User Satisfaction Penalty}{77}{section*.44}%
-\contentsline {subsubsection}{Adaptive Transformer Overload Penalty}{77}{section*.45}%
-\contentsline {subsubsection}{Rationale and Significance}{78}{section*.46}%
-\contentsline {section}{\numberline {3.9}Online MPC Formulation (PuLP Implementation)}{78}{section.3.9}%
-\contentsline {paragraph}{Implementation Details}{78}{section*.47}%
-\contentsline {subsection}{\numberline {3.9.1}Mathematical Formulation}{78}{subsection.3.9.1}%
-\contentsline {subsubsection}{Objective Function: Net Operational Profit}{79}{section*.48}%
-\contentsline {subsubsection}{System Constraints}{79}{section*.49}%
-\contentsline {paragraph}{Energy Balance Dynamics.}{79}{section*.50}%
-\contentsline {paragraph}{Power Limits and Mutual Exclusion.}{80}{section*.51}%
-\contentsline {paragraph}{State of Energy (SoE) Limits.}{80}{section*.52}%
-\contentsline {paragraph}{User Satisfaction (Hard Constraint).}{80}{section*.53}%
-\contentsline {paragraph}{Transformer Power Limit.}{80}{section*.54}%
-\contentsline {subsubsection}{Problem Classification}{80}{section*.55}%
-\contentsline {section}{\numberline {3.10}Quadratic MPC Formulation (CVXPY Implementation)}{81}{section.3.10}%
-\contentsline {paragraph}{Implementation Details}{81}{section*.56}%
-\contentsline {subsection}{\numberline {3.10.1}Mathematical Formulation}{81}{subsection.3.10.1}%
-\contentsline {subsubsection}{Objective Function: Penalized Net Profit}{82}{section*.57}%
-\contentsline {subsubsection}{Problem Classification}{82}{section*.58}%
-\contentsline {section}{\numberline {3.11}Lyapunov-based Adaptive Horizon MPC}{83}{section.3.11}%
-\contentsline {subsection}{\numberline {3.11.1}Core Concept and Practical Implementation}{83}{subsection.3.11.1}%
-\contentsline {section}{\numberline {3.12}Approximate Explicit MPC: A Machine Learning Approach}{84}{section.3.12}%
-\contentsline {paragraph}{Implementation Details}{85}{section*.59}%
-\contentsline {subsection}{\numberline {3.12.1}Methodology: From Oracle to Apprentice}{85}{subsection.3.12.1}%
-\contentsline {subsection}{\numberline {3.12.2}A More Principled Approximator: The Deep ReLU Network}{86}{subsection.3.12.2}%
+\contentsline {section}{\numberline {3.2}A Unified Experimentation and Evaluation Workflow}{59}{section.3.2}%
+\contentsline {subsection}{\numberline {3.2.1}Orchestration and Execution Interfaces}{59}{subsection.3.2.1}%
+\contentsline {subsection}{\numberline {3.2.2}Dual-Mode Training: Specialists and Generalists}{59}{subsection.3.2.2}%
+\contentsline {subsubsection}{Advanced Multi-Scenario Training Strategies}{60}{section*.16}%
+\contentsline {subsection}{\numberline {3.2.3}MPC Integration and Approximation}{60}{subsection.3.2.3}%
+\contentsline {subsection}{\numberline {3.2.4}Rigorous and Reproducible Benchmarking}{61}{subsection.3.2.4}%
+\contentsline {subsection}{\numberline {3.2.5}Software Implementation and Project Structure}{61}{subsection.3.2.5}%
+\contentsline {section}{\numberline {3.3}Core Physical Models}{62}{section.3.3}%
+\contentsline {subsection}{\numberline {3.3.1}EV Model and Charging/Discharging Dynamics}{62}{subsection.3.3.1}%
+\contentsline {subsection}{\numberline {3.3.2}Battery Degradation Model}{62}{subsection.3.3.2}%
+\contentsline {subsection}{\numberline {3.3.3}Reproducible Benchmarking and Evaluation}{63}{subsection.3.3.3}%
+\contentsline {subsection}{\numberline {3.3.4}Interactive Web-Based Dashboard}{63}{subsection.3.3.4}%
+\contentsline {subsubsection}{Simulation Orchestrator}{63}{section*.17}%
+\contentsline {subsubsection}{Results Visualizer}{64}{section*.18}%
+\contentsline {section}{\numberline {3.4}Evaluation Metrics}{64}{section.3.4}%
+\contentsline {section}{\numberline {3.5}Simulator Implementation Details}{65}{section.3.5}%
+\contentsline {subsubsection}{Vehicle Definition Modes}{65}{section*.19}%
+\contentsline {subsubsection}{Empirical Calibration of the Degradation Model}{65}{section*.20}%
+\contentsline {section}{\numberline {3.6}Simulation Framework Components}{66}{section.3.6}%
+\contentsline {subsection}{\numberline {3.6.1}Electric Vehicle Model (\texttt {ev.py})}{66}{subsection.3.6.1}%
+\contentsline {subsubsection}{State and Attribute Representation}{66}{section*.21}%
+\contentsline {subsubsection}{Charging and Discharging Dynamics}{67}{section*.22}%
+\contentsline {paragraph}{Two-Stage Charging Model (\texttt {\_charge} method).}{67}{section*.23}%
+\contentsline {paragraph}{Discharging Model (\texttt {\_discharge} method).}{67}{section*.24}%
+\contentsline {subsubsection}{User Satisfaction Metric}{68}{section*.25}%
+\contentsline {subsection}{\numberline {3.6.2}Charging Station Model (\texttt {ev\_charger.py})}{68}{subsection.3.6.2}%
+\contentsline {subsubsection}{Role and Attributes}{68}{section*.26}%
+\contentsline {subsubsection}{Operational Logic (\texttt {step} method)}{68}{section*.27}%
+\contentsline {subsection}{\numberline {3.6.3}Transformer Model (\texttt {transformer.py})}{69}{subsection.3.6.3}%
+\contentsline {subsubsection}{Model Components}{69}{section*.28}%
+\contentsline {subsubsection}{Core Functionality}{69}{section*.29}%
+\contentsline {paragraph}{Load Aggregation.}{69}{section*.30}%
+\contentsline {paragraph}{Overload Detection.}{69}{section*.31}%
+\contentsline {paragraph}{Forecasting with Uncertainty.}{70}{section*.32}%
+\contentsline {subsection}{\numberline {3.6.4}Main Gym Environment (\texttt {ev2gym\_env.py})}{70}{subsection.3.6.4}%
+\contentsline {subsubsection}{Environment Structure and Main Loop}{70}{section*.33}%
+\contentsline {paragraph}{Initialization (\texttt {\_\_init\_\_}).}{70}{section*.34}%
+\contentsline {paragraph}{Simulation Step (\texttt {step(actions)}).}{70}{section*.35}%
+\contentsline {paragraph}{Reset (\texttt {reset}).}{71}{section*.36}%
+\contentsline {section}{\numberline {3.7}Reinforcement Learning Formulation}{71}{section.3.7}%
+\contentsline {subsection}{\numberline {3.7.1}State Space ($S$)}{71}{subsection.3.7.1}%
+\contentsline {subsection}{\numberline {3.7.2}Action Space ($A$)}{71}{subsection.3.7.2}%
+\contentsline {subsection}{\numberline {3.7.3}Reward Function}{71}{subsection.3.7.3}%
+\contentsline {section}{\numberline {3.8}Reinforcement Learning Algorithms}{72}{section.3.8}%
+\contentsline {subsubsection}{Soft Actor-Critic (SAC)}{72}{section*.37}%
+\contentsline {paragraph}{Implementation Details}{73}{section*.38}%
+\contentsline {subsubsection}{Deep Deterministic Policy Gradient + PER (DDPG+PER)}{74}{section*.39}%
+\contentsline {paragraph}{Implementation Details}{76}{section*.40}%
+\contentsline {subsubsection}{Truncated Quantile Critics (TQC)}{76}{section*.41}%
+\contentsline {paragraph}{Implementation Details}{77}{section*.42}%
+\contentsline {subsection}{\numberline {3.8.1}A History-Based Adaptive Reward for Profit Maximization}{77}{subsection.3.8.1}%
+\contentsline {paragraph}{Implementation Details}{77}{section*.43}%
+\contentsline {subsubsection}{Economic Profit}{77}{section*.44}%
+\contentsline {subsubsection}{Adaptive User Satisfaction Penalty}{78}{section*.45}%
+\contentsline {subsubsection}{Adaptive Transformer Overload Penalty}{78}{section*.46}%
+\contentsline {subsubsection}{Rationale and Significance}{79}{section*.47}%
+\contentsline {section}{\numberline {3.9}Online MPC Formulation (PuLP Implementation)}{79}{section.3.9}%
+\contentsline {paragraph}{Implementation Details}{79}{section*.48}%
+\contentsline {subsection}{\numberline {3.9.1}Mathematical Formulation}{79}{subsection.3.9.1}%
+\contentsline {subsubsection}{Objective Function: Net Operational Profit}{80}{section*.49}%
+\contentsline {subsubsection}{System Constraints}{80}{section*.50}%
+\contentsline {paragraph}{Energy Balance Dynamics.}{80}{section*.51}%
+\contentsline {paragraph}{Power Limits and Mutual Exclusion.}{81}{section*.52}%
+\contentsline {paragraph}{State of Energy (SoE) Limits.}{81}{section*.53}%
+\contentsline {paragraph}{User Satisfaction (Hard Constraint).}{81}{section*.54}%
+\contentsline {paragraph}{Transformer Power Limit.}{81}{section*.55}%
+\contentsline {subsubsection}{Problem Classification}{81}{section*.56}%
+\contentsline {section}{\numberline {3.10}Quadratic MPC Formulation (CVXPY Implementation)}{82}{section.3.10}%
+\contentsline {paragraph}{Implementation Details}{82}{section*.57}%
+\contentsline {subsection}{\numberline {3.10.1}Mathematical Formulation}{82}{subsection.3.10.1}%
+\contentsline {subsubsection}{Objective Function: Penalized Net Profit}{83}{section*.58}%
+\contentsline {subsubsection}{Problem Classification}{83}{section*.59}%
+\contentsline {section}{\numberline {3.11}Lyapunov-based Adaptive Horizon MPC}{84}{section.3.11}%
+\contentsline {subsection}{\numberline {3.11.1}Core Concept and Practical Implementation}{84}{subsection.3.11.1}%
+\contentsline {section}{\numberline {3.12}Approximate Explicit MPC: A Machine Learning Approach}{85}{section.3.12}%
 \contentsline {paragraph}{Implementation Details}{86}{section*.60}%
-\contentsline {paragraph}{Theoretical Motivation}{86}{section*.61}%
-\contentsline {paragraph}{Methodology}{87}{section*.62}%
+\contentsline {subsection}{\numberline {3.12.1}Methodology: From Oracle to Apprentice}{86}{subsection.3.12.1}%
+\contentsline {subsection}{\numberline {3.12.2}A More Principled Approximator: The Deep ReLU Network}{87}{subsection.3.12.2}%
+\contentsline {paragraph}{Implementation Details}{87}{section*.61}%
+\contentsline {paragraph}{Theoretical Motivation}{87}{section*.62}%
+\contentsline {paragraph}{Methodology}{88}{section*.63}%
