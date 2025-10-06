@@ -18,8 +18,49 @@ The objective function is:
 J(\pi) = \sum_{t=0}^{T} \mathbb{E}_{(s_t, a_t) \sim \rho_\pi} \left[ r(s_t, a_t) + \alpha \mathcal{H}(\pi(\cdot|s_t)) \right]
 \]
 \noindent
-where $\mathcal{H}$ is the entropy of the policy $\pi$, defined as $\mathcal{H}(\pi(\cdot|s_t)) = -\mathbb{E}_{a_t \sim \pi}[\log \pi(a_t|s_t)]$, and $\alpha$ is the temperature parameter, which controls the trade-off between reward exploitation and entropy-driven exploration. A higher $\alpha$ encourages more stochastic behavior, while a lower $\alpha$ biases the policy toward deterministic, reward-maximizing actions.
+where $\mathcal{H}$ is the entropy of the policy $\pi$, defined as $\mathcal{H}(\pi(\cdot|s_t)) = -\mathbb{E}_{a_t \sim \pi}[\log \pi(a_t|s_t)]$, and $\alpha$ is the temperature parameter, which controls the trade-off between reward exploitation and entropy-driven exploration. A higher $\alpha$ encourages more stochastic behavior, while a lower $\alpha$ biases the policy toward deterministic, reward-maximizing actions. The complete training procedure is outlined in Algorithm \ref{alg:sac}.
 \noindent
+
+\begin{algorithm}[H]
+\caption{Soft Actor-Critic (SAC)}
+\label{alg:sac}
+\begin{algorithmic}[1]
+\State Initialize critic networks $Q_{\theta_1}, Q_{\theta_2}$ and actor network $\pi_\phi$ with random parameters.
+\State Initialize target networks $\bar{\theta}_1 \leftarrow \theta_1$, $\bar{\theta}_2 \leftarrow \theta_2$.
+\State Initialize replay buffer $D$.
+\State Initialize temperature parameter $\alpha$.
+
+\For{each timestep $t=1, \dots, T$}
+    \State Select action with exploration: $a_t \sim \pi_\phi(\cdot|s_t)$.
+    \State Execute action $a_t$ and observe reward $r_t$ and next state $s_{t+1}$.
+    \State Store transition $(s_t, a_t, r_t, s_{t+1})$ in replay buffer $D$.
+    
+    \If{$t$ is a multiple of update frequency}
+        \State Sample a minibatch of $N$ transitions $\{(s_j, a_j, r_j, s_{j+1})\}_{j=1}^N$ from $D$.
+        
+        \State \Comment{Compute the target for the Q-functions}
+        \State With next actions $\tilde{a}_{j+1} \sim \pi_\phi(\cdot|s_{j+1})$:
+        \State $y_j \leftarrow r_j + \gamma \left( \min_{i=1,2} Q_{\bar{\theta}_i}(s_{j+1}, \tilde{a}_{j+1}) - \alpha \log \pi_\phi(\tilde{a}_{j+1}|s_{j+1}) \right)$
+        
+        \State \Comment{Update the critic networks}
+        \State Update critic parameters $\theta_i$ by one step of gradient descent on:
+        \State $L(\theta_i) = \frac{1}{N} \sum_{j=1}^N \left( Q_{\theta_i}(s_j, a_j) - y_j \right)^2$ for $i=1,2$.
+        
+        \State \Comment{Update the actor network}
+        \State With new actions $\tilde{a}_j \sim \pi_\phi(\cdot|s_j)$:
+        \State Update policy parameters $\phi$ by one step of gradient ascent on:
+        \State $J(\phi) = \frac{1}{N} \sum_{j=1}^N \left( \min_{i=1,2} Q_{\theta_i}(s_j, \tilde{a}_j) - \alpha \log \pi_\phi(\tilde{a}_j|s_j) \right)$.
+        
+        \State \Comment{Update the temperature parameter (optional)}
+        \State Update $\alpha$ by one step of gradient descent on:
+        \State $J(\alpha) = \frac{1}{N} \sum_{j=1}^N \left( -\alpha (\log \pi_\phi(\tilde{a}_j|s_j) + \bar{\mathcal{H}}) \right)$, where $\bar{\mathcal{H}}$ is a target entropy.
+        
+        \State \Comment{Update the target networks}
+        \State $\bar{\theta}_i \leftarrow \tau \theta_i + (1-\tau)\bar{\theta}_i$ for $i=1,2$.
+    \EndIf
+\EndFor
+\end{algorithmic}
+\end{algorithm}
 
 \paragraph{Implementation Details}
 The implementation of SAC is built upon the robust, industry-standard \textbf{Stable-Baselines3} library, which provides a highly optimized and well-tested version of the algorithm. The standard \texttt{SAC} class from this library is used directly, leveraging its PyTorch-based backend for efficient training and inference.
@@ -39,7 +80,7 @@ To mitigate the positive bias inherent in Q-learning, SAC employs two independen
 \noindent
 
 \subsubsection{Deep Deterministic Policy Gradient + PER (DDPG+PER)}
-DDPG is an off-policy algorithm that concurrently learns a deterministic policy $\mu(s | \theta^\mu)$ and a Q-function $Q(s, a | \theta^Q)$. It extends the Deterministic Policy Gradient (DPG) theorem to deep neural networks, enabling continuous control in high-dimensional state spaces. Unlike stochastic policy methods, DDPG directly outputs a single action for each state, which can be advantageous in environments where deterministic behavior is preferred or when the action space is high-dimensional.
+DDPG is an off-policy algorithm that concurrently learns a deterministic policy $\mu(s | \theta^\mu)$ and a Q-function $Q(s, a | \theta^Q)$. It extends the Deterministic Policy Gradient (DPG) theorem to deep neural networks, enabling continuous control in high-dimensional state spaces. Unlike stochastic policy methods, DDPG directly outputs a single action for each state, which can be advantageous in environments where deterministic behavior is preferred or when the action space is high-dimensional. The full procedure, enhanced with PER, is detailed in Algorithm \ref{alg:ddpg_per}.
 \noindent
 
 \begin{figure}[H]
@@ -48,6 +89,43 @@ DDPG is an off-policy algorithm that concurrently learns a deterministic policy 
     \caption{DDPG actor-critic architecture. The actor network produces a deterministic action, which is evaluated by the Q-network (critic). Both networks maintain slowly-updating target networks ($\mu'$ and $Q'$) for stable Bellman updates. During training, exploration noise is added to the actor's output. Image from \footcite{Qiu2023}.}
     \label{fig:DDPG}
 \end{figure}
+
+\begin{algorithm}[H]
+\caption{DDPG with Prioritized Experience Replay (PER)}
+\label{alg:ddpg_per}
+\begin{algorithmic}[1]
+\State Initialize critic network $Q(s, a | \theta^Q)$ and actor network $\mu(s | \theta^\mu)$ with random parameters.
+\State Initialize target networks $Q' \leftarrow Q$, $\mu' \leftarrow \mu$.
+\State Initialize Prioritized Replay Buffer $D$ with parameters $\alpha, \beta$.
+\For{each episode}
+    \State Initialize a random process $\mathcal{N}$ for action exploration.
+    \State Receive initial state $s_1$.
+    \For{each timestep $t=1, \dots, T$}
+        \State Select action: $a_t = \mu(s_t | \theta^\mu) + \mathcal{N}_t$.
+        \State Execute action $a_t$ and observe reward $r_t$ and next state $s_{t+1}$.
+        \State Store transition $(s_t, a_t, r_t, s_{t+1})$ in $D$ with maximal priority.
+        
+        \State \Comment{Sample from buffer and update}
+        \State Sample minibatch of $N$ transitions $\{(s_j, a_j, r_j, s_{j+1})\}_{j=1}^N$ from $D$ with probabilities $P(j) = \frac{p_j^\alpha}{\sum_k p_k^\alpha}$.
+        \State Compute importance-sampling (IS) weights $w_j = (N \cdot P(j))^{-\beta}$.
+        
+        \State \Comment{Update the critic network}
+        \State Compute targets: $y_j = r_j + \gamma Q'(s_{j+1}, \mu'(s_{j+1}|\theta^{\mu'})|\theta^{Q'})$.
+        \State Compute TD-errors: $\delta_j = y_j - Q(s_j, a_j | \theta^Q)$.
+        \State Update critic by minimizing the weighted loss: $L(\theta^Q) = \frac{1}{N} \sum_{j=1}^N w_j \cdot \delta_j^2$.
+        \State Update transition priorities in $D$: $p_j \leftarrow |\delta_j|$.
+        
+        \State \Comment{Update the actor network}
+        \State Update actor using the sampled policy gradient:
+        \State $\nabla_{\theta^\mu} J \approx \frac{1}{N} \sum_{j=1}^N \nabla_a Q(s, a | \theta^Q)|_{s=s_j, a=\mu(s_j)} \nabla_{\theta^\mu} \mu(s_j | \theta^\mu)$.
+        
+        \State \Comment{Update the target networks}
+        \State $\theta^{Q'} \leftarrow \tau \theta^Q + (1-\tau)\theta^{Q'}$.
+        \State $\theta^{\mu'} \leftarrow \tau \theta^\mu + (1-\tau)\theta^{\mu'}$.
+    \EndFor
+\EndFor
+\end{algorithmic}
+\end{algorithm}
 
 \begin{itemize}
     \item \textbf{Critic Update:} The critic is updated by minimizing the mean-squared Bellman error, analogous to Q-learning. Target networks ($Q'$ and $\mu'$) are used to stabilize training by providing consistent targets during the temporal difference update.
@@ -90,8 +168,48 @@ To integrate Prioritized Experience Replay (PER) with DDPG, a custom class, \tex
 \noindent
 
 \subsubsection{Truncated Quantile Critics (TQC)}
-TQC represents a significant advancement over standard SAC by modeling the entire distribution of returns rather than just its expected value. This distributional perspective, combined with a novel truncation mechanism, provides superior protection against Q-value overestimation—a persistent pathology in off-policy RL that can lead to catastrophic policy degradation.
+TQC represents a significant advancement over standard SAC by modeling the entire distribution of returns rather than just its expected value. This distributional perspective, combined with a novel truncation mechanism, provides superior protection against Q-value overestimation—a persistent pathology in off-policy RL that can lead to catastrophic policy degradation. The algorithm's logic is summarized in Algorithm \ref{alg:tqc}.
 \noindent
+
+\begin{algorithm}[H]
+\caption{Truncated Quantile Critics (TQC)}
+\label{alg:tqc}
+\begin{algorithmic}[1]
+\State Initialize critic ensemble $\{Q_{\theta_i}\}_{i=1}^N$ and actor $\pi_\phi$ with random parameters.
+\State Initialize target networks $\{\bar{\theta}_i \leftarrow \theta_i\}_{i=1}^N$ and $\bar{\phi} \leftarrow \phi$.
+\State Initialize replay buffer $D$.
+\State Set number of quantiles $N$ and number of quantiles to drop $k$.
+\State Define quantile fractions $\tau_i = \frac{i-0.5}{N}$ for $i=1, \dots, N$.
+
+\For{each timestep $t=1, \dots, T$}
+    \State Select action with exploration: $a_t \sim \pi_\phi(\cdot|s_t)$.
+    \State Execute action $a_t$ and observe reward $r_t$ and next state $s_{t+1}$.
+    \State Store transition $(s_t, a_t, r_t, s_{t+1})$ in replay buffer $D$.
+    
+    \If{$t$ is a multiple of update frequency}
+        \State Sample a minibatch of $M$ transitions $\{(s_j, a_j, r_j, s_{j+1})\}_{j=1}^M$ from $D$.
+        
+        \State \Comment{Compute the distributional target}
+        \State Sample next actions from target policy: $\tilde{a}_{j+1} \sim \pi_{\bar{\phi}}(\cdot|s_{j+1})$.
+        \State Get next-state quantile estimates from target critics: $\{Q_{\bar{\theta}_l}(s_{j+1}, \tilde{a}_{j+1})\}_{l=1}^N$.
+        \State Sort the estimates and drop the top $k$: $\{Q_{\text{sorted}}\}_{l=1}^{N-k}$.
+        \State Form the target quantiles: $y_{j,l} = r_j + \gamma Q_{\text{sorted}, l}$ for $l=1, \dots, N-k$.
+        
+        \State \Comment{Update the critic networks}
+        \State Update each critic $\theta_i$ by minimizing the sum of quantile Huber losses:
+        \State $L(\theta_i) = \frac{1}{M(N-k)} \sum_{j=1}^M \sum_{l=1}^{N-k} L_{QH}^{\tau_i} \left( y_{j,l} - Q_{\theta_i}(s_j, a_j) \right)$.
+        
+        \State \Comment{Update the actor network}
+        \State Update policy $\phi$ by gradient ascent on:
+        \State $J(\phi) = \frac{1}{M} \sum_{j=1}^M \left( \frac{1}{N} \sum_{i=1}^N Q_{\theta_i}(s_j, \tilde{a}_j) - \alpha \log \pi_\phi(\tilde{a}_j|s_j) \right)$, where $\tilde{a}_j \sim \pi_\phi(\cdot|s_j)$.
+        
+        \State \Comment{Update the target networks}
+        \State $\bar{\theta}_i \leftarrow \tau \theta_i + (1-\tau)\bar{\theta}_i$ for $i=1, \dots, N$.
+        \State $\bar{\phi} \leftarrow \tau \phi + (1-\tau)\bar{\phi}$.
+    \EndIf
+\EndFor
+\end{algorithmic}
+\end{algorithm}
 
 \begin{itemize}
     \item \textbf{Distributional Learning:} TQC employs an ensemble of $N$ critic networks, \{$Q_{\phi_i}(s, a)\}_{i=1}^{N}$, where each network is trained to estimate a specific quantile $\tau_i$ of the return distribution. The target quantiles are implicitly defined as $\tau_i = \frac{i-0.5}{N}$, uniformly covering the cumulative distribution function. The critics are trained by minimizing the quantile Huber loss, $L_{QH}$, which is a robust asymmetric loss function that penalizes overestimation and underestimation differently:
@@ -121,79 +239,113 @@ TQC represents a significant advancement over standard SAC by modeling the entir
 The TQC algorithm is leveraged from the \textbf{SB3-Contrib} library, a collection of community-contributed extensions to Stable-Baselines3. Using the library's standard \texttt{TQC} implementation allows the framework to benefit from this state-of-the-art distributional RL algorithm without requiring a custom implementation from scratch. The implementation maintains the entropy-regularized objective of SAC while incorporating the distributional critics and truncation mechanism that define TQC's superior performance characteristics.
 \noindent
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
 \subsection{A History-Based Adaptive Reward for Profit Maximization}
 \label{sec:adaptive_reward}
 
-\paragraph{Implementation Details}
-This reward function, along with a suite of other reward strategies, is implemented in the
-\\
-\noindent
- \texttt{ev2gym/rl\_agent/reward.py} module. The main experimentation script, \texttt{run\_experiments.py}, allows the user to dynamically select which reward function to use for a given training run. The \texttt{FastProfitAdaptiveReward} function, specifically, uses \texttt{collections.deque} objects attached to the environment instance to efficiently maintain a sliding window of recent performance for satisfaction and overload events.
-\noindent
-To steer the learning agent towards policies that are both highly profitable and operationally reliable, we have designed a novel, history-based adaptive reward function named \texttt{FastProfitAdaptiveReward}. This function challenges traditional static-weight penalty approaches by introducing a dynamic feedback mechanism where penalty severity responds directly to the agent's recent performance. The underlying principle is straightforward but powerful: prioritize economic profit aggressively, while employing adaptive penalties as guardrails that tighten only when the agent begins to systematically violate operational constraints.
-\noindent
-The total reward at each timestep $t$, $R_t$, is calculated as the net economic profit minus any active penalties for user dissatisfaction or transformer overload.
-\noindent
+To guide the learning agent towards policies that are both highly profitable and operationally reliable, we designed a novel, history-based adaptive reward function, named \texttt{FastProfitAdaptiveReward}. This function departs from traditional approaches that use static weights for penalties. Instead, it introduces a dynamic feedback mechanism where the severity of penalties responds directly to the agent's recent performance. The core principle is to aggressively prioritize economic profit, while employing adaptive penalties as guardrails that tighten only when the agent begins to systematically violate operational constraints.
+
+The total reward at each timestep $t$, $R_t$, is formulated as the net economic profit $\Pi_t$ minus any active penalties for user dissatisfaction $P_t^{\text{sat}}$ or transformer overload $P_t^{\text{tr}}$.
 
 \begin{equation}
     R_t = \Pi_t - P_t^{\text{sat}} - P_t^{\text{tr}}
 \end{equation}
 
-\subsubsection{Economic Profit}
-The foundation of the reward signal is the direct, instantaneous economic profit, $\Pi_t$. This component provides an unambiguous incentive for the agent to exploit market dynamics, encouraging charging during low-price periods and discharging (V2G) during high-price periods.
 \noindent
+The complete logic for this calculation at each timestep is detailed in Algorithm \ref{alg:adaptive_reward}. The components of this reward function are defined as follows:
+\begin{itemize}
+    \item[$\Pi_t$] is the net economic profit at timestep $t$.
+    \item[$P_t^{\text{sat}}$] is the adaptive penalty for user dissatisfaction at timestep $t$.
+    \item[$P_t^{\text{tr}}$] is the adaptive penalty for transformer overload at timestep $t$.
+    \item[$\bar{S}_{hist}$] is the average user satisfaction score over a recent history window (e.g., 100 timesteps).
+    \item[$F_{hist}^{\text{tr}}$] is the frequency of transformer overload events over a recent history window.
+    \item[$\lambda_t^{\text{sat}}$] and $\lambda_t^{\text{tr}}$ are the dynamically computed severity multipliers for the satisfaction and overload penalties, respectively.
+\end{itemize}
 
+\begin{algorithm}[H]
+\caption{History-Based Adaptive Reward Calculation}
+\label{alg:adaptive_reward}
+\begin{algorithmic}[1]
+\State \textbf{Initialization:}
+\State Initialize satisfaction history queue $H_{sat}$ (e.g., maxlen=100).
+\State Initialize overload history queue $H_{tr}$ (e.g., maxlen=100).
+\State Define base multipliers $\lambda_{\text{base}}^{\text{sat}}, \lambda_{\text{base}}^{\text{tr}}$ and base overload penalty $P_{\text{base}}$.
+
+\Function{CalculateReward}{current state $s_t$, action $a_t$}
+    \State \Comment{1. Calculate Economic Profit}
+    \State $\Pi_t \leftarrow \text{CalculateEconomicProfit}(s_t, a_t)$
+    \State $R_t \leftarrow \Pi_t$
+    
+    \State \Comment{2. Calculate Adaptive Satisfaction Penalty}
+    \State $\bar{S}_{hist} \leftarrow \text{Average}(H_{sat})$
+    \State $\lambda_t^{\text{sat}} \leftarrow \lambda_{\text{base}}^{\text{sat}} \cdot (1 - \bar{S}_{hist})^2$
+    \State Let $\mathcal{E}_{\text{depart}}$ be the set of EVs departing at timestep $t$.
+    \If{$\mathcal{E}_{\text{depart}}$ is not empty}
+        \State $S_{min} \leftarrow \min_{k \in \mathcal{E}_{\text{depart}}} S_k$
+        \If{$S_{min} < 0.95$}
+            \State $P_t^{\text{sat}} \leftarrow \lambda_t^{\text{sat}} \cdot (1 - S_{min})$
+            \State $R_t \leftarrow R_t - P_t^{\text{sat}}$
+        \EndIf
+    \EndIf
+    
+    \State \Comment{3. Calculate Adaptive Transformer Overload Penalty}
+    \State $F_{hist}^{\text{tr}} \leftarrow \text{Frequency of overloads in } H_{tr}$
+    \State $\lambda_t^{\text{tr}} \leftarrow \lambda_{\text{base}}^{\text{tr}} \cdot F_{hist}^{\text{tr}}$
+    \State $O_t \leftarrow \sum_{j=1}^{N_T} \max(0, P_j^{\text{total}}(t) - P_j^{\text{max}})$
+    \If{$O_t > 0$}
+        \State $P_t^{\text{tr}} \leftarrow P_{\text{base}} + \lambda_t^{\text{tr}} \cdot O_t$
+        \State $R_t \leftarrow R_t - P_t^{\text{tr}}$
+    \EndIf
+    
+    \State \Comment{4. Update Historical Data}
+    \State $\bar{S}_{curr} \leftarrow \text{Average satisfaction of currently connected EVs}$
+    \State Append $\bar{S}_{curr}$ to $H_{sat}$
+    \State Append $(\mathbf{1} \text{ if } O_t > 0 \text{ else } 0)$ to $H_{tr}$
+    
+    \State \Return $R_t$
+\EndFunction
+\end{algorithmic}
+\end{algorithm}
+
+\subsubsection{Economic Profit}
+The foundation of the reward signal is the direct, instantaneous economic profit, $\Pi_t$. This component provides an unambiguous incentive for the agent to exploit market dynamics by encouraging charging during low-price periods and discharging (V2G) during high-price periods.
 \begin{equation}
-    \Pi_t = \sum_{i=1}^{N} \left( C_t^{\text{sell}} \cdot P_{i,t}^{\text{dis}} - C_t^{\text{buy}} \cdot P_{i,t}^{\text{ch}} \right) \Delta t
+    \Pi_t = \sum_{i=1}^{N_{ev}} \left( C_t^{\text{sell}} \cdot P_{i,t}^{\text{dis}} - C_t^{\text{buy}} \cdot P_{i,t}^{\text{ch}} \right) \Delta t
 \end{equation}
 \noindent
-where $N$ is the number of connected EVs, $C_t^{\text{sell}}$ and $C_t^{\text{buy}}$ are the electricity prices, and $P_{i,t}^{\text{dis}}$ and $P_{i,t}^{\text{ch}}$ are the discharging and charging powers for EV $i$.
-\noindent
+where $N_{ev}$ is the number of connected EVs, $C_t^{\text{sell}}$ and $C_t^{\text{buy}}$ are the electricity selling and buying prices, and $P_{i,t}^{\text{dis}}$ and $P_{i,t}^{\text{ch}}$ are the discharging and charging powers for EV $i$ at timestep $t$.
 
 \subsubsection{Adaptive User Satisfaction Penalty}
-The penalty for failing to meet user charging demands, $P_t^{\text{sat}}$, departs from fixed-value approaches. It adapts based on the system's recent performance history. The environment maintains a short-term memory of the average user satisfaction over the last 100 timesteps, from which we calculate an average satisfaction score, $\bar{S}_{hist}$.
-\noindent
-A \textit{satisfaction severity multiplier}, $\lambda_t^{\text{sat}}$, is then calculated. This multiplier grows quadratically as the historical average satisfaction drops. When the system has been performing poorly, the consequences for a new failure become substantially more severe.
-\noindent
+The penalty for failing to meet user charging demands, $P_t^{\text{sat}}$, adapts based on the system's recent performance. The environment maintains a short-term memory of user satisfaction, from which an average historical score, $\bar{S}_{hist}$, is calculated. A \textit{satisfaction severity multiplier}, $\lambda_t^{\text{sat}}$, is then computed, which grows quadratically as the historical average satisfaction drops. This ensures that as performance degrades, the consequences of new failures become substantially more severe.
 \begin{equation}
     \lambda_t^{\text{sat}} = \lambda_{\text{base}}^{\text{sat}} \cdot (1 - \bar{S}_{hist})^2
 \end{equation}
 \noindent
-where $\lambda_{\text{base}}^{\text{sat}}$ is a base scaling factor (e.g., 20.0). A penalty is only applied if any departing EV's satisfaction, $S_k$, falls below a critical threshold (e.g., 95\%). The magnitude of the penalty is the product of the adaptive multiplier and the current satisfaction deficit.
-\noindentW
+where $\lambda_{\text{base}}^{\text{sat}}$ is a base scaling factor (e.g., 20.0). A penalty is only applied if the satisfaction score of any user, $S_k$, falls below a critical threshold (e.g., 95\%). The magnitude of the penalty is the product of the adaptive multiplier and the current satisfaction deficit.
 \begin{equation}
-    P_t^{\text{sat}} = \lambda_t^{\text{sat}} \cdot (1 - \min(S_k)) \quad \forall k \in \text{EVs departing at } t
+    P_t^{\text{sat}} = 
+    \begin{cases} 
+      \lambda_t^{\text{sat}} \cdot (1 - \min_{k} S_k) & \text{if } \min_{k} S_k < 0.95 \\
+      0 & \text{otherwise}
+    \end{cases}
 \end{equation}
 \noindent
-
-This establishes a feedback loop with non-trivial consequences: a single, isolated failure in an otherwise well-performing system results in a mild penalty, whereas persistent failures trigger rapidly escalating penalties that force behavioral correction.
-\noindent
+This mechanism establishes a powerful feedback loop: an isolated failure in a well-performing system results in a mild penalty, whereas persistent failures trigger rapidly escalating penalties that compel the agent to correct its policy.
 
 \subsubsection{Adaptive Transformer Overload Penalty}
-The transformer overload penalty, $P_t^{\text{tr}}$, operates on a similar adaptive principle, responding to the recent frequency of overloads. The environment tracks how often an overload has occurred in the last 100 timesteps, yielding an overload frequency, $F_{hist}^{\text{tr}}$.
-\noindent
-
-This frequency drives the computation of a linear \textit{overload severity multiplier}, $\lambda_t^{\text{tr}}$. Higher overload frequency translates directly to higher penalties for new violations.
-\noindent
-
+The transformer overload penalty, $P_t^{\text{tr}}$, operates on a similar adaptive principle, responding to the recent frequency of overloads, $F_{hist}^{\text{tr}}$. This frequency is tracked over the same historical window and directly drives the computation of a linear \textit{overload severity multiplier}, $\lambda_t^{\text{tr}}$.
 \begin{equation}
     \lambda_t^{\text{tr}} = \lambda_{\text{base}}^{\text{tr}} \cdot F_{hist}^{\text{tr}}
 \end{equation}
 \noindent
-where $\lambda_{\text{base}}^{\text{tr}}$ is a base scaler (e.g., 50.0). If the total power drawn, $P_j^{\text{total}}(t)$, exceeds the transformer's limit, $P_j^{\text{max}}$, a penalty is applied. This penalty consists of a small, fixed base amount plus the adaptive component, which scales with the magnitude of the current overload.
-\noindent
-
+where $\lambda_{\text{base}}^{\text{tr}}$ is a base scaling factor (e.g., 50.0). If the total power drawn from any transformer $j$, $P_j^{\text{total}}(t)$, exceeds its limit, $P_j^{\text{max}}$, a penalty is applied. This penalty consists of a small, fixed base amount $P_{\text{base}}$ plus the adaptive component, which scales with the magnitude of the current overload.
 \begin{equation}
     P_t^{\text{tr}} = P_{\text{base}} + \lambda_t^{\text{tr}} \cdot \sum_{j=1}^{N_T} \max(0, P_j^{\text{total}}(t) - P_j^{\text{max}})
 \end{equation}
 \noindent
-
-This mechanism enforces a critical lesson: while an occasional, minor overload might be tolerable in pursuit of high profit, habitual overloading becomes increasingly unsustainable as penalties escalate.
-\noindent
+This structure enforces a critical lesson: while an occasional, minor overload might be tolerable in pursuit of high profit, habitual overloading becomes increasingly costly as penalties escalate, forcing the agent to respect physical constraints.
 
 \subsubsection{Rationale and Significance}
-This history-based adaptive reward function represents a departure from static or purely state-based approaches. By making penalty weights a function of recent performance history, we provide a more sophisticated learning signal. The agent is not excessively punished for isolated, exploratory actions that might lead to minor constraint violations. Instead, it is strongly discouraged from developing policies that produce chronic system failures.
-\noindent
-The approach mirrors realistic management objectives: maintain high performance on average, and react decisively only when performance trends begin to deteriorate. This method is also computationally efficient, avoiding complex state-dependent calculations in favor of simple updates to historical data queues. The reward structure guides the agent to discover policies that balance economic objectives with operational reliability, achieving an intelligent equilibrium between profit ambition and system safety constraints.
-\noindent
+This history-based adaptive reward function represents a significant departure from static or purely state-based approaches. By making penalty weights a function of recent performance, we provide a more sophisticated learning signal. The agent is not excessively punished for isolated, exploratory actions that might lead to minor constraint violations. Instead, it is strongly discouraged from developing policies that produce chronic system failures. This approach mirrors realistic management objectives: maintain high performance on average and react decisively only when performance trends begin to deteriorate. The resulting reward structure guides the agent to discover policies that balance economic objectives with operational reliability, achieving an intelligent equilibrium between profit ambition and system safety.
+
+\paragraph{Implementation Details}
+This reward function, along with a suite of other strategies, is implemented in the \texttt{ev2gym/rl\_agent/reward.py} module. The main experimentation script, \texttt{run\_experiments.py}, allows the user to dynamically select the reward function for any given training run. The \texttt{FastProfitAdaptiveReward} function uses \texttt{collections.deque} objects, attached to the environment instance at runtime, to efficiently maintain a sliding window of recent performance for both satisfaction and overload events. This method is computationally efficient, avoiding complex state-dependent calculations in favor of simple updates to the historical data queues.

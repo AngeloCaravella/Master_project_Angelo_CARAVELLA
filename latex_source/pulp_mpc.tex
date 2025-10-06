@@ -1,225 +1,261 @@
 \section{Online MPC Formulation (PuLP Implementation)}
 
-The Model Predictive Control (MPC) implemented with PuLP solves a profit maximization problem at each time step $t$ over a finite prediction horizon $H$. This formulation is designed for online, real-time control, where decisions are made based on the current system state and future predictions. This approach is often termed an "implicit" MPC because the control law is not pre-computed; instead, it is found implicitly by solving a full optimization problem at every control interval.
+The Model Predictive Control (MPC) implemented with PuLP solves a profit maximization problem at each control interval over a finite prediction horizon $H$. This formulation is designed for online, real-time control, where decisions are made based on the current system state and future predictions. This approach is often termed an "implicit" MPC because the control law is not pre-computed; instead, it is found implicitly by solving a full optimization problem at every control interval. The logic is formally detailed in Algorithm \ref{alg:milp_mpc}.
 
 \paragraph{Implementation Details}
 This online controller is implemented as the \texttt{OnlineMPC\_Solver} class within the \texttt{ev2gym/baselines/pulp\_mpc.py} module. At each invocation of its \texttt{get\_action} method, it dynamically constructs the full Mixed-Integer Linear Program (MILP) described below using the \textbf{PuLP} modeling library. PuLP acts as a high-level modeling interface, which then calls an underlying solver. The problem is then solved using the default CBC (COIN-OR Branch and Cut) solver, an open-source solver capable of handling MILPs.
 
+\begin{algorithm}[H]
+\caption{Online Model Predictive Control (MILP)}
+\label{alg:milp_mpc}
+\begin{algorithmic}[1]
+\Function{GetAction}{$E_{\text{initial}}, k_{\text{dep}}, c_{\text{buy}}, c_{\text{sell}}, H, N_c$}
+    \State \textbf{Inputs:} Current energy states $E_{\text{initial}}$, departure times $k_{\text{dep}}$, price vectors $c_{\text{buy}}, c_{\text{sell}}$, prediction horizon $H$, control horizon $N_c$.
+    
+    \State \textbf{Initialize Problem:} Create a new MILP problem for profit maximization.
+    
+    \State \textbf{Define Variables} for $i \in \text{CS}, k \in [0, H-1]$:
+    \State $P^{\text{ch}}_{i,k}, P^{\text{dis}}_{i,k} \in \mathbb{R}^+$ \Comment{Continuous power variables}
+    \State $E_{i,k} \in \mathbb{R}^+$ \Comment{Continuous energy state variables}
+    \State $z_{i,k} \in \{0, 1\}$ \Comment{Binary charge/discharge mode variables}
+    
+    \State \textbf{Define Objective Function:}
+    \State Profit $\leftarrow \sum_{k=0}^{H-1} \sum_{i \in \text{CS}} \left[ (c^{\text{user}} - c^{\text{buy}}_k - c^{\text{deg}}) P^{\text{ch}}_{i,k} + (c^{\text{sell}}_k - c^{\text{deg}}) P^{\text{dis}}_{i,k} \right] \Delta t$
+    \State Set objective to $\max(\text{Profit})$.
+    
+    \State \textbf{Add Constraints} for $i \in \text{CS}, k \in [0, H-1]$:
+    \If{$k=0$}
+        \State $E_{i,k} = E_{\text{initial},i} + (\eta_{\text{ch}} P^{\text{ch}}_{i,k} - \frac{1}{\eta_{\text{dis}}} P^{\text{dis}}_{i,k}) \cdot \Delta t$
+    \Else
+        \State $E_{i,k} = E_{i,k-1} + (\eta_{\text{ch}} P^{\text{ch}}_{i,k} - \frac{1}{\eta_{\text{dis}}} P^{\text{dis}}_{i,k}) \cdot \Delta t$
+    \EndIf
+    \State $0 \le P^{\text{ch}}_{i,k} \le P^{\text{ch,max}}_{i} \cdot z_{i,k}$
+    \State $0 \le P^{\text{dis}}_{i,k} \le P^{\text{dis,max}}_{i} \cdot (1 - z_{i,k})$
+    \State $E^{\text{min}}_{i} \le E_{i,k} \le E^{\text{max}}_{i}$
+    \If{$k = k_{\text{dep},i}$}
+        \State $E_{i,k} \ge E^{\text{des}}_{i}$
+    \EndIf
+    \State $\sum_{i \in \text{CS}} (P^{\text{ch}}_{i,k} - P^{\text{dis}}_{i,k}) \le P^{\text{tr,max}}$
+    
+    \State \textbf{Solve Problem:}
+    \State solution $\leftarrow$ \Call{SolveMILP}{Problem}
+    
+    \If{solution is Optimal}
+        \State Extract action plan $\{a_k^*\}_{k=0}^{N_c-1}$ from solution.
+        \State \Return action plan
+    \Else
+        \State \Return empty plan or default action
+    \EndIf
+\EndFunction
+\end{algorithmic}
+\end{algorithm}
+
 \subsection{Mathematical Formulation}
-At each time step $t$, the MPC controller solves the following optimization problem.
-
-\subsubsection{Objective Function: Net Operational Profit}
-The objective is to maximize the total net operational profit over the control horizon $H$. This provides a comprehensive economic model that goes beyond simple energy arbitrage by incorporating user revenue and battery degradation costs. The objective function is formulated as a summation of the net profit at each time step $k$ for each charging station $i$.
-\begin{equation}
-\max_{P^{\text{ch}}, P^{\text{dis}}, z} \sum_{k=t}^{t+H-1} \sum_{i \in \text{CS}} \left( \text{Revenues}_{i,k} - \text{Costs}_{i,k} \right)
-\end{equation}
-The revenue and cost components are defined for each station $i$ at time step $k$ as:
-\begin{itemize}
-    \item \textbf{Revenues} consist of:
-    \begin{itemize}
-        \item Grid Sales Revenue (V2G): $c^{\text{sell}}_k \cdot P^{\text{dis}}_{i,k} \cdot \Delta t$
-        \item User Charging Revenue: $c^{\text{user}} \cdot P^{\text{ch}}_{i,k} \cdot \Delta t$
-    \end{itemize}
-    \item \textbf{Costs} consist of:
-    \begin{itemize}
-        \item Grid Purchase Cost: $c^{\text{buy}}_k \cdot P^{\text{ch}}_{i,k} \cdot \Delta t$
-        \item Battery Degradation Cost: $c^{\text{deg}} \cdot (P^{\text{ch}}_{i,k} + P^{\text{dis}}_{i,k}) \cdot \Delta t$
-    \end{itemize}
-\end{itemize}
-where $c^{\text{sell}}_k$ and $c^{\text{buy}}_k$ are the time-varying electricity prices, $c^{\text{user}}$ is the fixed price for the end-user, $c^{\text{deg}}$ is the estimated cost of battery degradation per kWh cycled, and $\Delta t$ is the time step duration. By combining these terms, the objective function implemented in the code can be expressed more compactly as:
-\begin{equation}
-\max \sum_{k=t}^{t+H-1} \sum_{i \in \text{CS}} \left[ (c^{\text{user}} - c^{\text{buy}}_k - c^{\text{deg}}) P^{\text{ch}}_{i,k} + (c^{\text{sell}}_k - c^{\text{deg}}) P^{\text{dis}}_{i,k} \right] \Delta t
-\end{equation}
-
-\subsubsection{System Constraints}
-The optimization is subject to the following constraints for each station $i$ and time step $k \in [t, t+H-1]$.
-
-\paragraph{Energy Balance Dynamics.} The state of energy of the EV battery, $E_{i,k}$, evolves according to its previous state and the power exchanged. This is a discrete-time state-space model representing the core system dynamics.
-\begin{equation}
-E_{i,k} = E_{i,k-1} + \left( \eta_{\text{ch}} P^{\text{ch}}_{i,k} - \frac{1}{\eta_{\text{dis}}} P^{\text{dis}}_{i,k} \right) \cdot \Delta t
-\end{equation}
-where the initial state $E_{i,t-1}$ is the currently measured energy level of the EV, and $\eta_{\text{ch}}$ and $\eta_{\text{dis}}$ are the charging and discharging efficiencies, respectively.
-
-\paragraph{Power Limits and Mutual Exclusion.} Charging and discharging powers are bounded by the EV's capabilities. A binary variable $z_{i,k}$ is introduced to enforce mutual exclusion, preventing the physically impossible scenario of simultaneous charging and discharging. This is a classic "Big-M" formulation.
-\begin{align}
-    0 &\le P^{\text{ch}}_{i,k} \le P^{\text{ch,max}}_{i} \cdot z_{i,k} \\
-    0 &\le P^{\text{dis}}_{i,k} \le P^{\text{dis,max}}_{i} \cdot (1 - z_{i,k})
-\end{align}
-
-\paragraph{State of Energy (SoE) Limits.} The battery energy level must remain within its physical operational window to prevent damage and ensure longevity.
-\begin{equation}
-E^{\text{min}}_{i} \le E_{i,k} \le E^{\text{max}}_{i}
-\end{equation}
-
-\paragraph{User Satisfaction (Hard Constraint).} The desired energy level for the user must be met at the time of departure. This is modeled as a hard constraint, reflecting a non-negotiable service level agreement.
-\begin{equation}
-E_{i,k_{\text{dep}}} \ge E^{\text{des}}_{i}
-\end{equation}
-where $k_{\text{dep}}$ is the predicted departure step of the EV within the horizon.
-
-\paragraph{Transformer Power Limit.} The total net power drawn from (or injected into) the grid by all charging stations must not exceed the transformer's maximum capacity. This constraint couples the decisions for all individual EVs.
-\begin{equation}
-\sum_{i \in \text{CS}} (P^{\text{ch}}_{i,k} - P^{\text{dis}}_{i,k}) \le P^{\text{tr,max}}
-\end{equation}
-
-\subsubsection{Problem Classification}
-In the field of Operations Research, a Mixed-Integer Linear Program (MILP) is a powerful modeling tool for optimization problems involving complex decisions. A problem is classified as a MILP if it seeks to optimize a linear objective function, subject to a set of linear equality and inequality constraints, where the decision variables can be a mix of continuous and integer values. The general mathematical formulation of a MILP can be expressed as follows:
-\begin{equation}
-\begin{aligned}
-& \underset{x, y}{\text{minimize}} & & c^T x + h^T y \\
-& \text{subject to} & & Ax + Gy \leq b \\
-& & & x \in \mathbb{Z}^n, \quad y \in \mathbb{R}^p
-\end{aligned}
-\end{equation}
-where $x$ represents the vector of integer variables and $y$ represents the vector of continuous variables. The vectors $c$ and $h$ contain the objective function coefficients, while $A$, $G$, and $b$ define the linear constraints of the system. The requirement for some variables to be integers ($x \in \mathbb{Z}^n$) is what makes MILPs fundamentally different from standard Linear Programs (LPs) and significantly more challenging to solve, forming a core part of the field of combinatorial optimization.
-\noindent
-Based on this definition, the mathematical structure of the optimization problem described above is a classic \textbf{Mixed-Integer Linear Program (MILP)}.
-This classification is justified as follows:
+The mathematical structure of the optimization problem solved in Algorithm \ref{alg:milp_mpc} is a classic \textbf{Mixed-Integer Linear Program (MILP)}. This classification is justified as follows:
 \begin{itemize}
     \item \textbf{Linear Objective Function:} The objective function is a linear combination of the continuous power variables $P^{\text{ch}}$ and $P^{\text{dis}}$.
     \item \textbf{Linear Constraints:} All system constraints, including energy dynamics, power limits, and state of energy bounds, are formulated as linear equations or inequalities.
-    \item \textbf{Mixed-Integer Variables:} The formulation employs both continuous variables (e.g., $P^{\text{ch}}_{i,k}$, $E_{i,k}$) and discrete, binary integer variables ($z_{i,k}$). The binary variables are essential for modeling the logical decision to either charge or discharge at any given time step, but not both simultaneously.
+    \item \textbf{Mixed-Integer Variables:} The formulation employs both continuous variables (e.g., $P^{\text{ch}}_{i,k}$, $E_{i,k}$) and discrete, binary integer variables ($z_{i,k}$). The binary variables are essential for modeling the logical decision to either charge or discharge at any given time step.
 \end{itemize}
-The problem is not a Quadratic Program (QP) or Mixed-Integer Quadratic Program (MIQP) because the objective function does not contain any quadratic terms (e.g., minimizing the square of power). Similarly, it is not a Quadratically Constrained Quadratic Program (QCQP) as all constraints are linear. The \texttt{OnlineMPC\_Solver} is therefore designed to solve this specific MILP formulation at each control step.
 
 \section{Quadratic MPC Formulation (CVXPY Implementation)}
 
-As an alternative to the purely linear model, a quadratic formulation is also implemented. This version extends the previous MILP by introducing quadratic terms into the objective function. While it shares the same underlying constraint structure, the change in the objective function alters the problem's nature and the required solution methodology. This controller is implemented in the \texttt{OnlineMPC\_Solver\_Quadratic} class.
+As an alternative to the purely linear model, a quadratic formulation is also implemented. This version extends the previous MILP by introducing quadratic penalty terms into the objective function. While it shares the same underlying constraint structure, the change in the objective function alters the problem's nature to a \textbf{Mixed-Integer Quadratic Program (MIQP)}. The control logic is detailed in Algorithm \ref{alg:miqp_mpc}.
 
 \paragraph{Implementation Details}
-This controller is built using \textbf{CVXPY}, a Python-embedded modeling language for convex optimization problems. Unlike PuLP, which is geared towards linear programming, CVXPY supports a broader range of problem classes, including quadratic and other nonlinear convex programs. Due to the presence of both quadratic terms and integer variables, this formulation requires a solver capable of handling Mixed-Integer Quadratic Programs (MIQPs), such as SCIP, Gurobi, or MOSEK. The code defaults to attempting to use SCIP.
+This controller is built using \textbf{CVXPY}, a Python-embedded modeling language for convex optimization problems. Due to the presence of both quadratic terms and integer variables, this formulation requires a solver capable of handling MIQPs, such as SCIP, Gurobi, or MOSEK.
 
-\subsection{Mathematical Formulation}
-The constraints of this model are identical to those in the MILP formulation described previously. The key difference lies in the objective function.
+\begin{algorithm}[H]
+\caption{Online Model Predictive Control (MIQP)}
+\label{alg:miqp_mpc}
+\begin{algorithmic}[1]
+\Function{GetAction}{$E_{\text{initial}}, k_{\text{dep}}, c_{\text{buy}}, c_{\text{sell}}, H, N_c$}
+    \State \textbf{Inputs:} Same as Algorithm \ref{alg:milp_mpc}.
+    
+    \State \textbf{Initialize Problem:} Create a new MIQP problem.
+    
+    \State \textbf{Define Variables:} Same as Algorithm \ref{alg:milp_mpc}.
+    
+    \State \textbf{Define Objective Function:}
+    \State LinearProfit $\leftarrow \sum_{k=0}^{H-1} \sum_{i \in \text{CS}} \left[ (c^{\text{user}} - c^{\text{buy}}_k - c^{\text{deg}}) P^{\text{ch}}_{i,k} + (c^{\text{sell}}_k - c^{\text{deg}}) P^{\text{dis}}_{i,k} \right] \Delta t$
+    \State QuadraticPenalty $\leftarrow \sum_{k=0}^{H-1} \sum_{i \in \text{CS}} \left[ \lambda_{\text{ch}} (P^{\text{ch}}_{i,k})^2 + \lambda_{\text{dis}} (P^{\text{dis}}_{i,k})^2 \right] \Delta t$
+    \State Set objective to $\max(\text{LinearProfit} - \text{QuadraticPenalty})$.
+    
+    \State \textbf{Add Constraints:} Same as Algorithm \ref{alg:milp_mpc}.
+    
+    \State \textbf{Solve Problem:}
+    \State solution $\leftarrow$ \Call{SolveMIQP}{Problem}
+    
+    \If{solution is Optimal}
+        \State Extract action plan $\{a_k^*\}_{k=0}^{N_c-1}$ from solution.
+        \State \Return action plan
+    \Else
+        \State \Return empty plan or default action
+    \EndIf
+\EndFunction
+\end{algorithmic}
+\end{algorithm}
 
-\subsubsection{Objective Function: Penalized Net Profit}
-The objective remains the maximization of profit, but it now includes quadratic penalty terms that penalize large magnitudes of charging and discharging power.
-\begin{equation}
-\max_{P^{\text{ch}}, P^{\text{dis}}, z} \sum_{k=t}^{t+H-1} \sum_{i \in \text{CS}} \left( \text{Linear Profit}_{i,k} - \text{Quadratic Penalty}_{i,k} \right)
-\end{equation}
-The two components are defined as:
-\begin{itemize}
-    \item \textbf{Linear Profit}: This part is identical to the objective function of the MILP, representing the direct operational profit.
-    \begin{equation}
-    \text{Linear Profit}_{i,k} = \left[ (c^{\text{user}} - c^{\text{buy}}_k - c^{\text{deg}}) P^{\text{ch}}_{i,k} + (c^{\text{sell}}_k - c^{\text{deg}}) P^{\text{dis}}_{i,k} \right] \Delta t
-    \end{equation}
-    \item \textbf{Quadratic Penalty}: These are convex quadratic terms that subtract from the profit. They are weighted by penalty factors $\lambda_{\text{ch}}$ and $\lambda_{\text{dis}}$.
-    \begin{equation}
-    \text{Quadratic Penalty}_{i,k} = \left[ \lambda_{\text{ch}} (P^{\text{ch}}_{i,k})^2 + \lambda_{\text{dis}} (P^{\text{dis}}_{i,k})^2 \right] \Delta t
-    \end{equation}
-\end{itemize}
-The motivation for these penalty terms is to encourage smoother control actions. By making very high power flows quadratically more "expensive," the optimizer is incentivized to find solutions that are less aggressive, which can be beneficial for battery health (by avoiding high C-rates) and for reducing stress on the local grid infrastructure.
-
-\subsubsection{Problem Classification}
-The introduction of quadratic terms in the objective function, while maintaining linear constraints and integer variables, moves the problem into a different class of optimization problems. This formulation is a \textbf{Mixed-Integer Quadratic Program (MIQP)}.
-This classification is justified as follows:
-\begin{itemize}
-    \item \textbf{Quadratic Objective Function:} The objective function contains squared terms of the continuous decision variables ($P^{\text{ch}}$ and $P^{\text{dis}}$), making it quadratic. Since the quadratic terms are subtracted in a maximization problem (or added in a minimization problem), the function is concave, and the problem is a valid MIQP for which global optima can be found.
-    \item \textbf{Linear Constraints:} All system constraints remain linear, as in the MILP version.
-    \item \textbf{Mixed-Integer Variables:} The formulation continues to use the binary variables $z_{i,k}$ to manage the charge/discharge logic, alongside the continuous power and energy variables.
-\end{itemize}
-Solving an MIQP is computationally more demanding than solving an MILP of a similar size. The choice of this formulation represents a trade-off between potentially superior control behavior (smoother actions) and increased computational requirements for finding the optimal solution at each time step.
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+The motivation for the quadratic penalty terms is to encourage smoother control actions. By making very high power flows quadratically more "expensive," the optimizer is incentivized to find solutions that are less aggressive, which can be beneficial for battery health and for reducing stress on the local grid infrastructure.
 
 \section{Lyapunov-based Adaptive Horizon MPC}
-While the Approximate MPC (A-MPC) offers a significant speed-up, it is an approximation and may not always match the performance of the fully-fledged online MPC. A second enhancement developed in this work is the \textbf{Lyapunov-based Adaptive Horizon MPC}, which aims to reduce the computational burden of the online MPC while retaining its optimality and stability guarantees. This method represents an essential improvement, creating an intelligent trade-off between computational cost and control performance.
 
-\subsection{Core Concept and Practical Implementation}
-The key insight is that a long prediction horizon is not always necessary. When the system is in a stable state and far from its operational constraints, a shorter horizon is sufficient for making good decisions. Conversely, when the system is in a complex or critical state (e.g., an EV is close to its departure time but has a low State of Charge), a longer horizon is needed for careful planning.
-\noindent
-This adaptive controller dynamically adjusts its prediction horizon $H_t$ at each step based on the stability of the system, which is formally assessed using a Lyapunov function. A Lyapunov function $V(x)$ is a scalar function that can be thought of as a measure of the system's "energy" or deviation from a desired equilibrium state.
-
-For the V2G system, we define the state at time $t$ as the vector of energy levels of all connected EVs, $E_t = [E_{1,t}, E_{2,t}, \dots, E_{N,t}]^T$. The desired state is the vector of target energy levels at departure, $E^{\text{des}} = [E^{\text{des}}_1, E^{\text{des}}_2, \dots, E^{\text{des}}_N]^T$. The Lyapunov function is defined as the sum of the squared errors from this desired state:
+A key enhancement developed in this work is the \textbf{Lyapunov-based Adaptive Horizon MPC}, which aims to reduce the computational burden of the online MPC while retaining its optimality and stability guarantees. The controller dynamically adjusts its prediction horizon $H_t$ based on the stability of the system, which is formally assessed using a Lyapunov function. A Lyapunov function $V(x)$ is a scalar function that measures the system's deviation from a desired equilibrium state. For the V2G system, we define it as the sum of squared errors from the desired final energy state:
 \begin{equation}
     V(E_t) = \sum_{i \in \text{EVs}} (E_{i,t} - E_i^{\text{des}})^2
 \end{equation}
-This value is calculated in the code as \texttt{V\_current}. For the system to be considered stable, the value of this function must decrease at each step, ensuring the system is always progressing towards its goal.
+The adaptive control logic, which wraps either the MILP or MIQP solver, is detailed in Algorithm \ref{alg:lyapunov_mpc}.
 
-The practical implementation within the \texttt{get\_action} method of the \texttt{OnlineMPC\_Solver} follows a precise sequence of steps at each time instant $t$:
+\begin{algorithm}[H]
+\caption{Lyapunov-based Adaptive Horizon MPC}
+\label{alg:lyapunov_mpc}
+\begin{algorithmic}[1]
+\State \textbf{Initialization:}
+\State Initialize current horizon $H_{\text{current}} \leftarrow H_{\text{max}}$.
+\State Define horizon bounds $H_{\text{min}}, H_{\text{max}}$ and convergence rate $\alpha$.
+\State Initialize action plan $\mathcal{A} \leftarrow \emptyset$.
 
-\begin{enumerate}
-    \item \textbf{Initialization and Problem Solving:} The controller first solves the standard MPC optimization problem using its current horizon length, $H_t$, which is stored in the class variable \texttt{current\_H}. This yields an optimal sequence of charging and discharging powers over the horizon: $\{P^{\text{ch,*}}_{i,k}, P^{\text{dis,*}}_{i,k}\}$ for $k \in [t, t+H_t-1]$.
+\Function{GetAdaptiveAction}{current state $s_t$}
+    \If{action plan $\mathcal{A}$ is not empty}
+        \State $a_t \leftarrow \text{Pop first action from } \mathcal{A}$.
+        \State \Return $a_t$.
+    \EndIf
+    
+    \State \Comment{Plan is empty, re-optimization is needed}
+    \State $E_t \leftarrow \text{Get current energy states from } s_t$.
+    \State $V(E_t) \leftarrow \sum_{i} (E_{i,t} - E_i^{\text{des}})^2$.
+    
+    \State \Comment{Solve MPC with the current horizon}
+    \State solution $\leftarrow$ \Call{SolveMPC}{$s_t, H_{\text{current}}$} \Comment{Using MILP or MIQP solver}
+    
+    \If{solution is Optimal}
+        \State Extract optimal first action $a_t^* = (P^{\text{ch,*}}_{t}, P^{\text{dis,*}}_{t})$.
+        \State Predict next energy state $E_{t+1}$ using $a_t^*$.
+        \State $V(E_{t+1}) \leftarrow \sum_{i} (E_{i,t+1} - E_i^{\text{des}})^2$.
+        
+        \State \Comment{Verify Lyapunov stability condition}
+        \If{$V(E_{t+1}) \le V(E_t) - \alpha V(E_t)$}
+            \State \Comment{Stable: reduce computational load for next cycle}
+            \State $H_{\text{next}} \leftarrow \max(H_{\text{min}}, H_{\text{current}} - 1)$.
+        \Else
+            \State \Comment{Not stable enough: increase planning depth}
+            \State $H_{\text{next}} \leftarrow \min(H_{\text{max}}, H_{\text{current}} + 1)$.
+        \EndIf
+        \State Extract new action plan $\mathcal{A}$ from solution.
+    \Else
+        \State \Comment{Solver failed: increase horizon as a safeguard}
+        \State $H_{\text{next}} \leftarrow \min(H_{\text{max}}, H_{\text{current}} + 1)$.
+        \State $\mathcal{A} \leftarrow \text{default safe action}$.
+    \EndIf
+    
+    \State $H_{\text{current}} \leftarrow H_{\text{next}}$.
+    \State $a_t \leftarrow \text{Pop first action from } \mathcal{A}$.
+    \State \Return $a_t$.
+\EndFunction
+\end{algorithmic}
+\end{algorithm}
 
-    \item \textbf{State Prediction:} After finding the optimal plan, the controller does not use the entire plan. Instead, it uses only the \textit{first action} of the plan ($k=t$) to predict the state of the system at the next time step, $E_{t+1}$. For each EV $i$, the predicted next energy state $E_{i,t+1}$ is calculated as:
-    \begin{equation}
-    E_{i,t+1} = E_{i,t} + \left( \eta_{\text{ch}} P^{\text{ch,*}}_{i,t} - \frac{1}{\eta_{\text{dis}}} P^{\text{dis,*}}_{i,t} \right) \cdot \Delta t
-    \end{equation}
-    where $P^{\text{ch,*}}_{i,t}$ and $P^{\text{dis,*}}_{i,t}$ are the optimal power values for the very first step of the horizon, obtained from the solver. This calculation corresponds to the creation of the \texttt{E\_next} dictionary in the code.
-
-    \item \textbf{Lyapunov Stability Verification:} With the current state $E_t$ and the predicted next state $E_{t+1}$, the controller calculates their corresponding Lyapunov function values, $V(E_t)$ (as \texttt{V\_current}) and $V(E_{t+1})$ (as \texttt{V\_next}). It then verifies the Lyapunov decrease condition, which mandates a sufficient rate of convergence towards the desired state:
-    \begin{equation}
-    V(E_{t+1}) \le V(E_t) - \alpha V(E_t)
-    \end{equation}
-    where $\alpha$ is a small positive constant (\texttt{lyapunov\_alpha}) that sets the minimum required rate of convergence.
-
-    \item \textbf{Horizon Adaptation Logic:} Based on the result of the stability check, the horizon for the next control step, $H_{t+1}$, is adjusted according to the following rules:
-    \begin{itemize}
-        \item \textbf{If Stable (Condition is met):} The controller is performing well and guiding the system effectively towards its goal. The computational load can be reduced for the next step by shortening the horizon:
-        \begin{equation}
-            H_{t+1} = \max(H_{\min}, H_t - 1)
-        \end{equation}
-        \item \textbf{If Not Stable (Condition is violated):} The current action does not guarantee sufficient progress. The system may be in a complex state that requires more careful, long-term planning. The horizon for the next step is extended to provide a longer view into the future:
-        \begin{equation}
-            H_{t+1} = \min(H_{\max}, H_t + 1)
-        \end{equation}
-        \item \textbf{If Optimization Fails:} As a practical safeguard, if the solver fails to find an optimal solution for the current step (e.g., due to infeasibility), the horizon is also extended. This assumes that the failure might be due to a horizon that is too short to find a feasible path to satisfy all constraints (like the final SoC requirement).
-    \end{itemize}
-\end{enumerate}
 This intelligent adjustment makes the online MPC more efficient and practical, reducing computation time during stable periods while retaining the ability to perform deep planning when necessary to guarantee system stability and constraint satisfaction.
 
 
 
+%%%%%%%%%%%%%%%
 \section{Approximate Explicit MPC: A Machine Learning Approach}
 The online, implicit MPC formulation provides high-quality control decisions by solving an optimization problem at every time step. However, this approach has a significant drawback: its computational complexity. For scenarios with a large number of EVs or a long control horizon, solving a Mixed-Integer Linear Program (MILP) in real-time can be prohibitively slow, making it impractical for many real-world applications.
 \noindent
 To overcome this limitation, this work implements an \textbf{Approximate Explicit Model Predictive Controller (A-MPC)}. This controller leverages machine learning to replace the computationally expensive online optimization with a fast, lightweight inference step.
 
-\paragraph{Implementation Details}
-The A-MPC is implemented in the \texttt{ApproximateExplicitMPC} class, located in the same \texttt{ev2gym/baselines/pulp\_mpc.py} file. It utilizes a pre-trained \texttt{RandomForestRegressor} model from the \textbf{scikit-learn} library. This model is serialized and stored in the \texttt{mpc\_approximator.joblib} file, and it is generated by the dedicated \texttt{train\_mpc\_approximator.py} script, which executes the data generation and offline training steps. During online operation, the controller's \texttt{get\_action} method simply performs a fast inference call to this loaded model.
-
 \subsection{Methodology: From Oracle to Apprentice}
-The core idea is to treat the slow but powerful online MPC as an "oracle" or expert teacher. An apprentice model, in this case a \texttt{RandomForestRegressor} from the \texttt{scikit-learn} library, is trained to mimic the oracle's behavior. The process is as follows:
-\begin{enumerate}
-    \item \textbf{Data Generation:} The online MPC is run across a diverse range of simulated scenarios. At each step, the state of the environment and the corresponding optimal action computed by the MPC are recorded. This creates a large dataset of state-action pairs, where the actions are considered to be the "ground truth" optimal decisions.
-    \item \textbf{State Vector Formulation:} The state $s_t$ fed to the machine learning model is a carefully crafted vector that summarizes all necessary information for making a control decision. It is a fixed-size vector composed of:
-    \begin{equation}
-        s_t = [ \mathbf{SoC}, \mathbf{T}^{\text{rem}}, \mathbf{C}^{\text{ch}}, \mathbf{C}^{\text{dis}} ]^T
-    \end{equation}
-    where:
-    \begin{itemize}
-        \item $\mathbf{SoC}$: A vector of the current State of Charge for all charging stations (padded to a maximum size).
-        \item $\mathbf{T}^{\text{rem}}$: A vector of the remaining time until departure for each connected EV.
-        \item $\mathbf{C}^{\text{ch}}$: A vector of predicted future charging prices over the horizon $H$.
-        \item $\mathbf{C}^{\text{dis}}$: A vector of predicted future discharging prices over the horizon $H$.
-    \end{itemize}
-    \item \textbf{Offline Training:} The \texttt{RandomForestRegressor} model, denoted $f_{\theta}$, is trained offline on this dataset to learn the mapping from a given state $s_t$ to the oracle's action $a_t$. The model's parameters $\theta$ are optimized to minimize the difference between its predicted action and the oracle's action.
-    \item \textbf{Online Inference:} Once trained, the A-MPC controller can be deployed. At each time step, it simply constructs the state vector $s_t$ and computes the action via a fast forward pass through the trained model:
-    \begin{equation}
-        a_t = f_{\theta}(s_t)
-    \end{equation}
-    This inference step is orders of magnitude faster than solving a MILP, enabling real-time control for large-scale systems.
-\end{enumerate}
+The core idea is to treat the slow but powerful online MPC as an "oracle" or expert teacher. An apprentice model, $f_{\theta}$, is trained to mimic the oracle's behavior. The process involves an offline training phase to generate the model, followed by a fast online inference phase for real-time control. The state $s_t$ used for this mapping is a fixed-size vector summarizing all necessary information for a control decision:
+\begin{equation}
+    s_t = [ \mathbf{SoC}, \mathbf{T}^{\text{rem}}, \mathbf{C}^{\text{ch}}, \mathbf{C}^{\text{dis}} ]^T
+\end{equation}
+where $\mathbf{SoC}$ is the vector of current States of Charge, $\mathbf{T}^{\text{rem}}$ is the vector of remaining times until departure, and $\mathbf{C}^{\text{ch}}, \mathbf{C}^{\text{dis}}$ are the vectors of predicted future electricity prices over the horizon $H$. All vectors are padded to a maximum size to ensure a consistent input dimension for the model.
 
-\subsection{A More Principled Approximator: The Deep ReLU Network}
+\subsection{Approximation via Random Forest}
+The first implementation of the A-MPC uses a Random Forest, a powerful ensemble learning method known for its robustness and good performance on tabular data without extensive hyperparameter tuning.
 
-While the Random Forest provides a powerful and general-purpose approximation, Chapter 2 introduces a more theoretically grounded approach for this specific problem: using a deep neural network with Rectified Linear Unit (ReLU) activation functions. This method is not just an approximation but is theoretically capable of \textbf{exactly representing} the Piecewise Affine (PWA) nature of the explicit MPC control law. This work implements this advanced alternative.
+\paragraph{Offline Training}
+The training process, detailed in Algorithm \ref{alg:ampc_training_rf}, involves generating a large dataset by repeatedly querying the MPC oracle across many diverse scenarios and system states. A \texttt{RandomForestRegressor} model is then trained on this dataset using a standard fitting procedure.
+
+\begin{algorithm}[H]
+\caption{Offline Training of Random Forest MPC Approximator}
+\label{alg:ampc_training_rf}
+\begin{algorithmic}[1]
+\State \textbf{Inputs:} Number of samples $N_{samples}$, Set of scenarios $\mathcal{S}$, MPC Oracle $O_{MPC}$.
+\State \textbf{Initialize:} Empty datasets $X \leftarrow \emptyset$, $Y \leftarrow \emptyset$.
+
+\For{$i = 1$ to $N_{samples}$} \Comment{Data Generation Loop}
+    \State Randomly select a scenario $s_{conf} \in \mathcal{S}$ and initialize environment $env$.
+    \State Select a random timestep $t_{rand}$ and advance $env$ to that state.
+    \State Construct state vector $s_t \leftarrow$ \Call{BuildStateVector}{$env$}.
+    \State Obtain optimal action from oracle: $a_t^* \leftarrow O_{MPC}(s_t)$.
+    \If{$a_t^*$ is a valid, non-trivial action}
+        \State Append $s_t$ to dataset $X$; Append $a_t^*$ to dataset $Y$.
+    \EndIf
+\EndFor
+
+\State \Comment{Model Training}
+\State Initialize model $f_{\theta} \leftarrow \text{RandomForestRegressor}(\text{hyperparameters})$.
+\State Train the model on the entire dataset: $f_{\theta}.\text{fit}(X, Y)$.
+\State \Return Trained model $f_{\theta}$.
+\end{algorithmic}
+\end{algorithm}
 
 \paragraph{Implementation Details}
-This controller is implemented as the \texttt{ApproximateExplicitMPC\_NN} class. It utilizes a PyTorch-based neural network, whose architecture is defined in \texttt{MPCApproximatorNet}. The model is trained using the dedicated \texttt{train\_mpc\_approximator\_nn.py} script, which also parallelizes the data generation process for efficiency. The resulting trained model is saved to \texttt{mpc\_approximator\_nn.pth}.
+This controller is implemented in the \texttt{ApproximateExplicitMPC} class. The model is generated by the \texttt{train\_mpc\_approximator.py} script, which executes the steps outlined in Algorithm \ref{alg:ampc_training_rf}. The trained \textbf{scikit-learn} model is serialized to \texttt{mpc\_approximator.joblib}.
 
-\paragraph{Theoretical Motivation}
-As detailed in Section \ref{sec:ev\_and\_scenario} of Chapter 2, the explicit solution to a linear MPC problem is a PWA function. The work by Karg et al. \footcite{karg2020efficient} demonstrated that a deep ReLU network can perfectly replicate such a function. This provides a significant advantage over general-purpose approximators:
-\begin{itemize}
-    \item \textbf{Representational Efficiency:} Deep ReLU networks can represent an exponentially large number of linear regions with only a linear increase in the number of parameters. This directly counters the "curse of dimensionality" that plagues traditional explicit MPC, allowing a compact model to represent a highly complex control law.
-    \item \textbf{Theoretical Soundness:} Using a model that matches the underlying mathematical structure of the solution is more principled and has the potential to yield a more accurate and robust controller.
-\end{itemize}
+\subsection{Approximation via Deep ReLU Network}
+While the Random Forest provides a powerful general-purpose approximation, a more theoretically grounded approach for this problem is to use a deep neural network with Rectified Linear Unit (ReLU) activation functions. As detailed in Chapter 2, the explicit solution to a linear MPC problem is a Piecewise Affine (PWA) function, and a deep ReLU network is theoretically capable of exactly representing such a function \footcite{karg2020efficient}.
 
-\paragraph{Methodology}
-The training methodology mirrors that of the Random Forest version but is adapted for a neural network:
-\begin{enumerate}
-    \item \textbf{Oracle Data Generation:} The \texttt{train\_mpc\_approximator\_nn.py} script uses the fixed-horizon \texttt{OnlineMPC\_Solver} as an oracle to generate a large dataset of state-action pairs. This process is parallelized across multiple CPU cores to drastically reduce the time required.
-    \item \textbf{Offline Supervised Learning:} A Multi-Layer Perceptron (MLP) with hidden layers and ReLU activations is trained on this dataset. The network learns to map the state vector $s_t$ to the optimal power values $a_t$ by minimizing the Mean Squared Error (MSE) loss function using the Adam optimizer.
-    \item \textbf{Fast Online Inference:} During simulation, the \texttt{ApproximateExplicitMPC\_NN} controller performs a single, rapid forward pass of the state vector through the trained network to obtain the control action, achieving the real-time performance required.
-\end{enumerate}
-This implementation provides a direct, practical realization of the advanced explicit MPC representation discussed in the state-of-the-art review, creating a powerful baseline for comparison.
+\paragraph{Offline Training}
+The training methodology for the neural network, detailed in Algorithm \ref{alg:ampc_training_nn}, follows the same oracle-apprentice data generation paradigm. However, the training phase is iterative, involving epochs, mini-batches, and gradient-based optimization to minimize the Mean Squared Error (MSE) between the network's predictions and the oracle's actions.
+
+\begin{algorithm}[H]
+\caption{Offline Training of Neural Network MPC Approximator}
+\label{alg:ampc_training_nn}
+\begin{algorithmic}[1]
+\State \textbf{Inputs:} $N_{samples}$, $\mathcal{S}$, $O_{MPC}$, epochs, batch size $B$, learning rate $\eta$.
+\State \textbf{Data Generation:}
+\State Generate datasets $(X, Y)$ using the same procedure as lines 2-10 in Algorithm \ref{alg:ampc_training_rf}.
+
+\State \Comment{Model Training}
+\State Initialize model $f_{\theta} \leftarrow \text{MPCApproximatorNet}(\text{architecture})$.
+\State Initialize optimizer (e.g., Adam) with learning rate $\eta$.
+\State Initialize loss function $L \leftarrow \text{MSELoss}$.
+\State Create DataLoader $D_L$ from $(X, Y)$ with batch size $B$.
+
+\For{epoch = 1 to epochs}
+    \For{batch $(s_b, a_b)$ in $D_L$}
+        \State Zero gradients: optimizer.zero\_grad().
+        \State \Comment{Forward pass}
+        \State Predict actions: $\hat{a}_b \leftarrow f_{\theta}(s_b)$.
+        \State \Comment{Compute loss and backpropagate}
+        \State loss $\leftarrow L(\hat{a}_b, a_b)$.
+        \State loss.backward().
+        \State \Comment{Update model weights}
+        \State optimizer.step().
+    \EndFor
+\EndFor
+\State \Return Trained model $f_{\theta}$.
+\end{algorithmic}
+\end{algorithm}
+
+\paragraph{Implementation Details}
+This controller is implemented as the \texttt{ApproximateExplicitMPC\_NN} class. The \texttt{train\_mpc\_approximator\_nn.py} script executes Algorithm \ref{alg:ampc_training_nn}, parallelizing the data generation process for efficiency. The trained \textbf{PyTorch} model is saved to \texttt{mpc\_approximator\_nn.pth}.
+
+\subsection{Online Inference}
+Once either the Random Forest or the Neural Network model is trained, it can be deployed for real-time control. The online inference process, shown in Algorithm \ref{alg:ampc_inference}, is identical for both approximators and is orders of magnitude faster than solving the online MPC problem.
+
+\begin{algorithm}[H]
+\caption{Online Inference with Trained A-MPC}
+\label{alg:ampc_inference}
+\begin{algorithmic}[1]
+\State \textbf{Input:} A trained apprentice model $f_{\theta}$ (either RF or NN), current environment state $env_t$.
+\Function{GetAction}{$env_t$}
+    \State Construct state vector $s_t \leftarrow$ \Call{BuildStateVector}{$env_t$}.
+    \State Compute action via fast inference: $a_t \leftarrow f_{\theta}(s_t)$.
+    \State \Return $a_t$.
+\EndFunction
+\end{algorithmic}
+\end{algorithm}

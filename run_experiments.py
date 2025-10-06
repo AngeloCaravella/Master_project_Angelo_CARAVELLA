@@ -253,6 +253,9 @@ class TrainingPlotCallback(BaseCallback):
             self.steps.append(self.num_timesteps)
         return True
 
+    # =====================================================================
+    # --- SEZIONE MODIFICATA ---
+    # =====================================================================
     def _on_training_end(self) -> None:
         if self.save_plot:
             print(f"Plotting training results for {self.model_name}...")
@@ -261,15 +264,23 @@ class TrainingPlotCallback(BaseCallback):
                 print("No episode rewards were logged. Cannot create a plot.")
                 return
 
-            # Crea una media mobile delle ricompense per smussare il grafico
+            # Crea un DataFrame e la media mobile
             rewards_df = pd.DataFrame({'steps': self.steps, 'rewards': self.rewards})
             rolling_avg = rewards_df.rewards.rolling(window=max(1, len(self.rewards) // 10)).mean()
 
             plt.figure(figsize=(10, 5))
-            plt.plot(rewards_df.steps, rewards_df.rewards, 'b.', alpha=0.2, label='Episode Reward')
+            
+            # 1. Plotta il return di ogni episodio come una linea continua, sottile e semi-trasparente
+            plt.plot(rewards_df.steps, rewards_df.rewards, 'b-', linewidth=0.5, alpha=0.4, label='Episodic Return')
+            
+            # 2. Plotta la media mobile come una linea continua, più spessa e di colore rosso
             plt.plot(rewards_df.steps, rolling_avg, 'r-', linewidth=2, label='Rolling Average')
+            
             plt.xlabel("Timesteps")
-            plt.ylabel("Average Reward")
+            
+            # 3. Aggiorna l'etichetta dell'asse Y
+            plt.ylabel("Reward")
+            
             plt.title(f"Training Progress for {self.model_name}")
             plt.grid(True)
             plt.legend()
@@ -282,6 +293,9 @@ class TrainingPlotCallback(BaseCallback):
             plt.savefig(os.path.join(plot_dir, filename))
             plt.close()
             print(f"Training plot saved to {os.path.join(plot_dir, filename)}")
+    # =====================================================================
+    # --- FINE SEZIONE MODIFICATA ---
+    # =====================================================================
 
 # =====================================================================================
 # --- FUNZIONI DI PLOTTING (UNIFICATE) ---
