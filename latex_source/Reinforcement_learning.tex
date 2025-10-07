@@ -9,7 +9,7 @@ SAC is an off-policy actor-critic algorithm designed for continuous action space
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.5\linewidth]{SAC.png}
-    \caption{SAC actor-critic architecture. The actor network outputs a stochastic policy parameterized by a mean and standard deviation, while two separate Q-networks (critics) estimate state-action values. The minimum of the two Q-values is used for policy updates to mitigate overestimation bias. Image from \footcite{Qiu2023}.}
+    \caption{SAC actor-critic architecture. The actor network outputs a stochastic policy parameterized by a mean and standard deviation, while two separate Q-networks (critics) estimate state-action values. The minimum of the two Q-values is used for policy updates to mitigate overestimation bias. Image from \cite{Qiu2023}.}
     \label{fig:SAC}
 \end{figure}
 
@@ -86,7 +86,7 @@ DDPG is an off-policy algorithm that concurrently learns a deterministic policy 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.5\linewidth]{DDPG.png}
-    \caption{DDPG actor-critic architecture. The actor network produces a deterministic action, which is evaluated by the Q-network (critic). Both networks maintain slowly-updating target networks ($\mu'$ and $Q'$) for stable Bellman updates. During training, exploration noise is added to the actor's output. Image from \footcite{Qiu2023}.}
+    \caption{DDPG actor-critic architecture. The actor network produces a deterministic action, which is evaluated by the Q-network (critic). Both networks maintain slowly-updating target networks ($\mu'$ and $Q'$) for stable Bellman updates. During training, exploration noise is added to the actor's output. Image from \cite{Qiu2023}.}
     \label{fig:DDPG}
 \end{figure}
 

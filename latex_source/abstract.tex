@@ -5,12 +5,12 @@
 \begin{otherlanguage}{italian}
 \section*{Abstract in italian}
 
-L'adozione crescente dei \textbf{Veicoli Elettrici (EV)} in concomitanza con la sempre maggiore penetrazione di \textbf{Fonti di Energia Rinnovabile (RES)} intermittenti, presenta sfide significative alla \textbf{stabilità} e all'\textbf{efficienza della rete elettrica}. La tecnologia \textbf{Vehicle-to-Grid (V2G)} emerge come soluzione fondamentale, trasformando gli EV da carichi passivi a \textbf{risorse energetiche flessibili} capaci di fornire vari \textbf{servizi di rete}. Questa tesi affronta il complesso \textbf{problema di ottimizzazione multi-obiettivo} della gestione intelligente di carica e scarica degli EV, che intrinsecamente implica un equilibrio tra \textbf{benefici economici}, \textbf{esigenze di mobilità dell'utente}, \textbf{preservazione della salute della batteria} e \textbf{stabilità della rete} in condizioni stocastiche.
+L'adozione crescente dei \textbf{Veicoli Elettrici (EV)} in concomitanza con la sempre maggiore diffusione di \textbf{Fonti di Energia Rinnovabile (RES)} non programmabili, presenta sfide significative alla \textbf{stabilità} e all'\textbf{efficienza della rete elettrica}. La tecnologia \textbf{Vehicle-to-Grid (V2G)} emerge come soluzione fondamentale, trasformando gli EV da carichi passivi a \textbf{risorse energetiche flessibili} capaci di fornire vari \textbf{servizi di rete}. Questa tesi affronta il complesso \textbf{problema di ottimizzazione multi-obiettivo} della gestione intelligente di carica e scarica degli EV, che intrinsecamente implica un equilibrio tra \textbf{benefici economici}, \textbf{esigenze di mobilità dell'utente}, \textbf{preservazione della salute della batteria} e \textbf{stabilità della rete} in condizioni stocastiche.
 \\
 Di fronte alla complessa sfida di ottimizzare la ricarica dei veicoli elettrici (EV) in scenari Vehicle-to-Grid (V2G), un approccio che si limita a un singolo modello di controllo, come il Deep Q-Networks (DQN), risulterebbe inadeguato. La natura del problema, caratterizzata da molteplici obiettivi contrastanti (benefici economici, esigenze dell'utente, salute della batteria, stabilità della rete) e da una profonda incertezza; richiede un'analisi comparativa e rigorosa di un'ampia gamma di strategie di controllo.
 Per questo motivo, la ricerca si concentra sulla valutazione di un portafoglio diversificato di algoritmi, che include numerosi modelli di Deep Reinforcement Learning (DRL), approcci euristici e il Model Predictive Control (MPC). Questo metodo consente di mappare in modo completo il panorama delle soluzioni, identificando i punti di forza e di debolezza di ciascun approccio in relazione alle diverse sfaccettature del problema V2G.
 \\
-In conclusione questa lavoro di tesi non si focalizza su un singolo modello, ma adotta un approccio comparativo su larga scala perché:
+Il lavoro di tesi non si focalizza su un singolo modello, ma adotta un approccio comparativo su larga scala perché:
 \\
 \textbf{Non esiste una soluzione unica}: La complessità del problema V2G rende improbabile che un solo algoritmo sia ottimale in tutte le condizioni.
 \\
@@ -24,7 +24,7 @@ In conclusione questa lavoro di tesi non si focalizza su un singolo modello, ma 
 % ABSTRACT - ENGLISH
 % ===================================================================
 \section*{Abstract}
-The growing adoption of \textbf{Electric Vehicles (EVs)}, combined with the increasing penetration of intermittent \textbf{Renewable Energy Sources (RES)}, presents significant challenges to the \textbf{stability} and \textbf{efficiency} of the power grid~\footcite{Tavakoli2019}. \textbf{Vehicle-to-Grid (V2G)} technology emerges as a key solution, transforming EVs from passive loads into \textbf{flexible energy resources} capable of providing various \textbf{grid services}. This thesis addresses the complex \textbf{multi-objective optimization problem} of smart EV charging and discharging, which requires balancing \textbf{economic benefits}, \textbf{user mobility needs}, \textbf{battery health preservation}, and \textbf{grid stability} under stochastic conditions.
+The growing adoption of \textbf{Electric Vehicles (EVs)}, combined with the increasing penetration of intermittent \textbf{Renewable Energy Sources (RES)}, presents significant challenges to the \textbf{stability} and \textbf{efficiency} of the power grid~\cite{Tavakoli2019}. \textbf{Vehicle-to-Grid (V2G)} technology emerges as a key solution, transforming EVs from passive loads into \textbf{flexible energy resources} capable of providing various \textbf{grid services}. This thesis addresses the complex \textbf{multi-objective optimization problem} of smart EV charging and discharging, which requires balancing \textbf{economic benefits}, \textbf{user mobility needs}, \textbf{battery health preservation}, and \textbf{grid stability} under stochastic conditions.
 \\
 Given the complexity of optimizing EV charging in V2G scenarios, relying on a single control model is insufficient. The nature of the problem, characterized by multiple conflicting objectives (economic benefits, user needs, battery health, grid stability) and profound uncertainty, demands a rigorous comparative analysis of a wide range of control strategies.
 \\
@@ -69,7 +69,7 @@ LQR & Linear Quadratic Regulator \\
 LSTM & Long Short-Term Memory \\
 MARL & Multi-Agent Reinforcement Learning \\
 MDP & Markov Decision Process \\
-MILP & Mixed-Integer Linear Program \\
+MILP & Mixed-Integer Linear Programming \\
 MPC & Model Predictive Control \\
 NN & Neural Network \\
 PER & Prioritized Experience Replay \\
@@ -112,13 +112,14 @@ RES & Renewable Energy Sources \\
 
 % --- Category: Metrics and Technical Parameters ---
 \multicolumn{2}{l}{\textbf{Metrics \& Technical Parameters}} \\
-DC & Constant Current (charging phase) \\
-CV & Constant Voltage (charging phase) \\
-DoD & Depth of Discharge \\
-MSE & Mean Square Error \\
-OU & Ornstein-Uhlenbeck (stochastic process) \\
+AC  & Alternating Current  \\
+DC  & Direct Current  \\
+CC  & Constant Current \\
+CV  & Constant Voltage  \\
+DoD & Depth of Discharg \\
+MSE & Mean Square Error  \\
+OU  & Ornstein–Uhlenbeck  \\
 RMSE & Root Mean Square Error \\
-
 \end{longtable}
 
 % --- END OF ACRONYM LIST ---

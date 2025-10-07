@@ -4,19 +4,19 @@
 \chapter{An Enhanced V2G Simulation Framework for Robust Control}
 \label{chap:ev2gym}
 
-Developing, validating, and benchmarking advanced control algorithms for Vehicle-to-Grid (V2G) systems presents significant challenges. Real-world experimentation is often impractical due to high costs, logistical constraints, and potential risks to grid stability and vehicle hardware. A realistic, flexible, and standardized simulation environment is therefore essential. This thesis builds upon \textbf{EV2Gym}, an open-source simulator designed for V2G smart charging research \footcite{orfanoudakis2024ev2gym}. The work presented here extends the original framework substantially, transforming it into a high-fidelity \textbf{digital twin} suitable not only for single-scenario optimization, but also for developing and rigorously evaluating \textbf{robust, generalist control agents}.
+Developing, validating, and benchmarking advanced control algorithms for Vehicle-to-Grid (V2G) systems presents significant challenges. Real-world experimentation is often impractical due to high costs, logistical constraints, and potential risks to grid stability and vehicle hardware. A realistic, flexible, and standardized simulation environment is therefore essential. This thesis builds upon \textbf{EV2Gym}, an open-source simulator designed for V2G smart charging research \cite{orfanoudakis2024ev2gym}. The work presented here extends the original framework substantially, transforming it into a high-fidelity \textbf{digital twin} suitable not only for single-scenario optimization, but also for developing and rigorously evaluating \textbf{robust, generalist control agents}.
 
 \noindent
 The enhanced framework supports two complementary modes of experimentation: detailed analysis of agents specialized for a single environment, and a novel methodology for training and testing agents capable of generalizing across multiple diverse and unpredictable scenarios. This chapter presents the extended architecture, its data-driven models, and its evaluation capabilities, establishing the methodological foundation for subsequent chapters.
 
 \section{Core Simulator Architecture}
-The framework maintains the modular architecture of EV2Gym, which mirrors the key entities of a real-world V2G system. It is built on the OpenAI Gym (now Gymnasium) API, which provides a standardized agent-environment interface based on states, actions, and rewards \footcite{brockman2016openai}.
+The framework maintains the modular architecture of EV2Gym, which mirrors the key entities of a real-world V2G system. It is built on the OpenAI Gym (now Gymnasium) API, which provides a standardized agent-environment interface based on states, actions, and rewards \cite{brockman2016openai}.
 
 \begin{figure}[H]
     \centering
    
     \includegraphics[width=0.8\linewidth]{Diagram_charge.png}
-    \caption{Diagram of charging and discharging scheduling for EVs. \footcite{Dou}.}
+    \caption{Diagram of charging and discharging scheduling for EVs. \cite{Dou}.}
     \label{fig:rl_cahrg}
 \end{figure}
 
@@ -137,7 +137,7 @@ The simulation's fidelity depends on its detailed, empirically validated models,
 The framework implements a realistic two-stage charging/discharging model that captures the non-linear behavior of lithium-ion batteries, simulating both the \textbf{constant current (CC)} and \textbf{constant voltage (CV)} phases. Each EV is defined by a comprehensive parameter set: maximum capacity ($E_{max}$), a minimum safety capacity ($E_{min}$), separate power limits for charging and discharging ($P_{ch}^{max}, P_{dis}^{max}$), and distinct efficiencies for each process ($\eta_{ch}, \eta_{dis}$).
 
 \subsection{Battery Degradation Model}
-To address the critical issue of battery health in V2G operations, the simulator incorporates a semi-empirical battery degradation model. It quantifies capacity loss ($Q_{lost}$) as the sum of two primary aging mechanisms \footcite{orfanoudakis2024ev2gym}: calendar aging and cyclic aging.
+To address the critical issue of battery health in V2G operations, the simulator incorporates a semi-empirical battery degradation model. It quantifies capacity loss ($Q_{lost}$) as the sum of two primary aging mechanisms \cite{orfanoudakis2024ev2gym}: calendar aging and cyclic aging.
 
 \noindent
 \begin{itemize}

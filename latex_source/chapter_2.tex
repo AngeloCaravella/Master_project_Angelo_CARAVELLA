@@ -1,3 +1,4 @@
+
 \chapter{State of the Art in Optimal V2G Management}
 \vspace*{1cm} % vertical space before the quote
 
@@ -23,7 +24,7 @@
 Europe finds itself at the confluence of two unprecedented and deeply interlinked transformations reshaping its technological, economic, and societal landscape: the large-scale electrification of transport and a comprehensive restructuring of its energy systems. These parallel transitions involve a radical shift from internal combustion engines to battery electric vehicles and a simultaneous integration of renewable generation, grid modernization, and the deployment of advanced storage and demand-side management solutions.
 \noindent
 \\
-These transformations are not merely aspirational targets but constitute binding legal obligations established under the \textbf{European Green Deal} and the detailed \textbf{"Fit for 55"} legislative package. These frameworks translate climate ambitions into enforceable measures aimed at reducing net greenhouse gas emissions by 55\% by 2030 \footcite{european_commission_2021_fit_for_55}. This policy architecture necessitates the rapid phase-out of fossil-fuelled vehicles alongside a dramatic expansion of renewable energy capacity, a goal further reinforced by the revised \textbf{Renewable Energy Directive (RED III)}, as detailed in Figure \ref{fig:RED3}.
+These transformations are not merely aspirational targets but constitute binding legal obligations established under the \textbf{European Green Deal} and the detailed \textbf{"Fit for 55"} legislative package. These frameworks translate climate ambitions into enforceable measures aimed at reducing net greenhouse gas emissions by 55\% by 2030 \cite{european_commission_2021_fit_for_55}. This policy architecture necessitates the rapid phase-out of fossil-fuelled vehicles alongside a dramatic expansion of renewable energy capacity, a goal further reinforced by the revised \textbf{Renewable Energy Directive (RED III)}, as detailed in Figure \ref{fig:RED3}.
 
 \begin{figure}[H]
     \centering
@@ -38,10 +39,10 @@ Electric Vehicles (EVs) occupy a central position in this transition, simultaneo
 This conceptual shift finds its most concrete expression in \textbf{Vehicle-to-Grid (V2G)} technology, which fundamentally reimagines the role of electric vehicles within the energy system.
 \\
 \noindent
-V2G technology transforms previously passive, unidirectional energy consumers into active, distributed, and intelligent grid resources. The underlying opportunity is substantial: private vehicles spend approximately 96\% of their operational lifetime parked \footcite{evertsson2024investigating}, representing an enormous, geographically distributed, and currently underutilised repository of mobile energy storage.
+V2G technology transforms previously passive, unidirectional energy consumers into active, distributed, and intelligent grid resources. The underlying opportunity is substantial: private vehicles spend approximately 96\% of their operational lifetime parked \cite{evertsson2024investigating}, representing an enormous, geographically distributed, and currently underutilised repository of mobile energy storage.
 \\
 \noindent
-The transformative potential of V2G becomes apparent when individual vehicles are coordinated through centrally managed aggregation. While a single EV's contribution is modest, an orchestrated fleet can function as a unified \textbf{Virtual Power Plant (VPP)}. These software-defined power plants aggregate the collective capacity of numerous distributed energy resources, delivering grid services at scales comparable to conventional generation facilities. The rapid response characteristics of contemporary battery inverters, operating at millisecond timescales, enable these aggregated fleets to provide a comprehensive range of critical grid services. This capability is a prerequisite for maintaining stability in grids increasingly dependent on variable wind and solar generation, thereby enabling the technical and economic viability of the EU's ambitious renewable energy targets \footcite{Tavakoli2019}.
+The transformative potential of V2G becomes apparent when individual vehicles are coordinated through centrally managed aggregation. While a single EV's contribution is modest, an orchestrated fleet can function as a unified \textbf{Virtual Power Plant (VPP)}. These software-defined power plants aggregate the collective capacity of numerous distributed energy resources, delivering grid services at scales comparable to conventional generation facilities. The rapid response characteristics of contemporary battery inverters, operating at millisecond timescales, enable these aggregated fleets to provide a comprehensive range of critical grid services. This capability is a prerequisite for maintaining stability in grids increasingly dependent on variable wind and solar generation, thereby enabling the technical and economic viability of the EU's ambitious renewable energy targets \cite{Tavakoli2019}.
 
 \begin{figure}[H]
     \centering
@@ -54,15 +55,15 @@ The transformative potential of V2G becomes apparent when individual vehicles ar
 The grid services enabled by V2G technology, many of which are illustrated in Figure \ref{fig:rl_v2g_ops}, form the technical foundation for the smart, resilient, and decarbonised electricity system required for Europe's energy future:
 \\
 \noindent
-\textbf{Frequency Regulation:} Grid stability depends on maintaining a precise equilibrium between electricity supply and demand, manifested as a stable grid frequency (50 Hz in Europe). Deviations signal imbalances that can trigger cascading failures. V2G fleets, with their rapid-response inverters, can participate in ancillary service markets like Frequency Containment Reserve (FCR) and automatic Frequency Restoration Reserve (aFRR), injecting or absorbing power within seconds to counteract deviations and prevent blackouts \footcite{alfaverh2022optima, white2011vehicle}.
+\textbf{Frequency Regulation:} Grid stability depends on maintaining a precise equilibrium between electricity supply and demand, manifested as a stable grid frequency (50 Hz in Europe). Deviations signal imbalances that can trigger cascading failures. V2G fleets, with their rapid-response inverters, can participate in ancillary service markets like Frequency Containment Reserve (FCR) and automatic Frequency Restoration Reserve (aFRR), injecting or absorbing power within seconds to counteract deviations and prevent blackouts \cite{alfaverh2022optima, white2011vehicle}.
 \\
 \noindent 
-\textbf{Demand Response and Peak Shaving:} By intelligently shifting charging to off-peak periods and strategically discharging during peak demand, V2G systems flatten daily load profiles. This directly mitigates the "duck curve" phenomenon (Figure \ref{fig:duck_curve}) associated with high solar penetration. Such load management reduces reliance on expensive, carbon-intensive "peaker" plants and can defer or eliminate costly grid infrastructure upgrades \footcite{orfanoudakis2024ev2gym, sadeghi2022deep}.
+\textbf{Demand Response and Peak Shaving:} By intelligently shifting charging to off-peak periods and strategically discharging during peak demand, V2G systems flatten daily load profiles. This directly mitigates the "duck curve" phenomenon (Figure \ref{fig:duck_curve}) associated with high solar penetration. Such load management reduces reliance on expensive, carbon-intensive "peaker" plants and can defer or eliminate costly grid infrastructure upgrades \cite{orfanoudakis2024ev2gym, sadeghi2022deep}.
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.8\linewidth]{duck.png}
-    \caption{The "Duck Curve" illustrating the evolution of net load on the California grid. Net load is the total electricity demand minus variable renewable energy generation. The deepening "belly" of the duck during midday reflects overgeneration from solar power, while the steep "neck" in the evening represents a rapid increase in demand as solar generation fades. This steep ramp poses a significant challenge for grid operators. V2G helps mitigate this by absorbing excess energy during the day (charging) and discharging it during the evening ramp to "flatten the curve".\footcite{Bisetto_Francesca}}
+    \caption{The "Duck Curve" illustrating the evolution of net load on the California grid. Net load is the total electricity demand minus variable renewable energy generation. The deepening "belly" of the duck during midday reflects overgeneration from solar power, while the steep "neck" in the evening represents a rapid increase in demand as solar generation fades. This steep ramp poses a significant challenge for grid operators. V2G helps mitigate this by absorbing excess energy during the day (charging) and discharging it during the evening ramp to "flatten the curve".\cite{Bisetto_Francesca}}
     \label{fig:duck_curve}
 \end{figure}
 
@@ -119,7 +120,7 @@ The fundamental challenge addressed by this thesis extends beyond simply enablin
 \noindent
 While the potential of V2G technology is substantial, the management of distributed vehicular assets presents a complex control challenge. Economic viability drives aggregator decisions, yet a narrow focus on profitability alone proves insufficient for sustainable operations. Effective V2G management requires balancing three competing objectives that frequently conflict with one another. This challenge can be framed as the "V2G Optimizer's Trilemma": the concurrent pursuit of \textbf{economic profitability}, preservation of \textbf{battery longevity}, and maintenance of \textbf{user convenience}.
 \noindent
-Rather than representing a straightforward, static trade-off, this constitutes a dynamic, multi-objective optimisation challenge characterised by \textbf{stochasticity} and \textbf{uncertainty} arising from multiple, interconnected sources \footcite{wang2022multi}:
+Rather than representing a straightforward, static trade-off, this constitutes a dynamic, multi-objective optimisation challenge characterised by \textbf{stochasticity} and \textbf{uncertainty} arising from multiple, interconnected sources \cite{wang2022multi}:
 \\
     \noindent
     \textbf{Market Volatility:} Wholesale electricity prices exhibit significant variability driven by unpredictable supply variations (such as sudden reductions in wind generation capacity) and demand fluctuations (including heat-driven increases in cooling demand). Effective control systems must respond to these price signals dynamically and in real-time.
@@ -186,7 +187,7 @@ This substantial gap between retail purchasing prices and wholesale selling pric
 \noindent
 \\
 A further perspective on this issue is provided by Parisio et al. 
-\footcite{parisio2014mpc}
+\cite{parisio2014mpc}
 (2014), who develop a model predictive control (MPC) framework for microgrid operation. Their formulation explicitly considers the decision of when to buy from or sell to the utility grid, under time-varying spot prices and operational constraints. Importantly, the model prevents physically and economically unrealistic behaviors such as simultaneous buying and selling, and accounts for the real cost of storage and generation. This reinforces the notion that optimal energy management strategies must capture the full set of economic signals—including retail charges, network tariffs, and non-commodity costs,rather than relying solely on wholesale price arbitrage. In the V2G context, this highlights the need for predictive, multi-constraint optimization frameworks capable of managing battery limitations, retail–wholesale spreads, and market participation simultaneously in order to ensure profitability.
 
 \section{Modelling the V2G Ecosystem}
@@ -230,7 +231,7 @@ Combined with vehicle availability patterns—arrival and departure times plus u
 \vspace{0.1cm}
 
 \begin{flushright}
---- Richard S. Sutton \& Andrew G. Barto, \textit{Reinforcement Learning: An Introduction} (2018) \footcite{Sutton2018}
+--- Richard S. Sutton \& Andrew G. Barto, \textit{Reinforcement Learning: An Introduction} (2018) \cite{Sutton2018}
 \end{flushright}
 
 \noindent
@@ -246,7 +247,7 @@ At each time step $t$, the agent receives a representation of the environment's 
     \centering
     % Placeholder for a standard RL interaction diagram
     \includegraphics[width=0.8\linewidth]{RL.png}
-    \caption{The agent-environment interaction loop in reinforcement learning \footcite{Sutton2018}.}
+    \caption{The agent-environment interaction loop in reinforcement learning \cite{Sutton2018}.}
     \label{fig:rl_loop}
 \end{figure}
 
@@ -285,11 +286,11 @@ A POMDP extends the MDP framework to situations where the agent's observations o
     \centering
    
     \includegraphics[width=0.8\linewidth]{MDP.png}
-    \caption{Differences between  POMDP and MDP  \footcite{sadeghi2022deep}.}
+    \caption{Differences between  POMDP and MDP  \cite{sadeghi2022deep}.}
     \label{fig:mdp}
 \end{figure}
 \noindent
-The fundamental difference between an MDP and a POMDP lies in the agent's perception of the environment's state. In an MDP, the agent directly observes the state \(s\). In a POMDP, the agent receives an observation \(o\) and must infer a belief, which is a probability distribution over the possible states, to make a decision. As discussed in Sadeghi's work, this partial observability in POMDPs introduces a significant layer of complexity because the agent must act based on a belief state rather than a certain state.\footcite{sadeghi2022deep}
+The fundamental difference between an MDP and a POMDP lies in the agent's perception of the environment's state. In an MDP, the agent directly observes the state \(s\). In a POMDP, the agent receives an observation \(o\) and must infer a belief, which is a probability distribution over the possible states, to make a decision. As discussed in Sadeghi's work, this partial observability in POMDPs introduces a significant layer of complexity because the agent must act based on a belief state rather than a certain state.\cite{sadeghi2022deep}
 \\
 \noindent
 In our current discussion, we will focus on the MDP framework, assuming that the state of the environment is fully observable to the agent.
@@ -331,7 +332,7 @@ The ultimate goal is to find an \textbf{optimal policy}, $\pi_*$, which is a pol
 This is the \textbf{Bellman optimality equation}. Solving it means finding the optimal policy.
 
 \subsection{Generalized Policy Iteration (GPI)}
-Most RL algorithms can be understood within the framework of \textbf{Generalized Policy Iteration (GPI)}, as described in Chapter 4 of \footcite{Sutton2018}. GPI refers to the general idea of letting two interacting processes, policy evaluation and policy improvement, work towards a common optimal solution.
+Most RL algorithms can be understood within the framework of \textbf{Generalized Policy Iteration (GPI)}, as described in Chapter 4 of \cite{Sutton2018}. GPI refers to the general idea of letting two interacting processes, policy evaluation and policy improvement, work towards a common optimal solution.
 
 \begin{itemize}
     \item \textbf{Policy Evaluation}: Given a policy $\pi$, compute its value function $v_\pi$. This step aims to make the value function consistent with the current policy.
@@ -341,7 +342,7 @@ Most RL algorithms can be understood within the framework of \textbf{Generalized
 These two processes compete in the short term (improving the policy makes the value function inaccurate) but cooperate in the long term to converge to the optimal policy and optimal value function. \textbf{Dynamic Programming (DP)} methods like policy iteration and value iteration are classic examples of GPI, assuming a perfect model of the environment.
 
 \section{Learning from Experience: MC and TD Methods}
-When a model of the environment is not available, we must learn from sampled experience. Chapters 5 and 6 of \footcite{Sutton2018} introduce two primary model-free approaches.
+When a model of the environment is not available, we must learn from sampled experience. Chapters 5 and 6 of \cite{Sutton2018} introduce two primary model-free approaches.
 
 \subsection{Monte Carlo (MC) Methods}
 MC methods learn value functions by averaging the returns from sample episodes.
@@ -349,7 +350,7 @@ MC methods learn value functions by averaging the returns from sample episodes.
     \item \textbf{Principle}: An update to $V(S_t)$ is made only at the end of an episode.
     \item \textbf{Update Target}: The target for the update is the actual, complete return $G_t$.
     \item \textbf{Update Rule} (Constant-$\alpha$): $V(S_t) \leftarrow V(S_t) + \alpha [G_t - V(S_t)]$
-    \item \textbf{Properties}: MC methods are unbiased but can have high variance and are only applicable to episodic tasks. They do not \textit{bootstrap} \footnote{It means that MC updates only from complete sampled returns.}.
+    \item \textbf{Properties}: MC methods are unbiased but can have high variance and are only applicable to episodic tasks. They do not \textit{bootstrap} \cite{It means that MC updates only from complete sampled returns.}.
 \end{itemize}
 
 \subsection{Temporal-Difference (TD) Learning}
@@ -412,7 +413,7 @@ A prime example of this is the Deep Q-Network (DQN) algorithm, where a DNN is us
  L(\theta) = \mathbb{E}_{(s, a, r, s') \sim D} \left[ \left( r + \gamma \max_{a'} Q(s', a'; \theta^{-}) - Q(s, a; \theta) \right)^2 \right]
 \end{equation}
 \noindent
-In this equation, $\theta$ are the weights of the neural network being trained, while $\theta^{-}$ are the weights of a separate, periodically updated target network used to stabilize training. The term $r + \gamma \max_{a'} Q(s', a'; \theta^{-})$ is the target value, and the expectation $\mathbb{E}$ is taken over a batch of experiences $(s, a, r, s')$ sampled from a replay memory $D$. This approach enabled the agent to learn directly from high-dimensional sensory inputs, like raw pixels in Atari games, achieving human-level performance.\footcite{Mnih2015}
+In this equation, $\theta$ are the weights of the neural network being trained, while $\theta^{-}$ are the weights of a separate, periodically updated target network used to stabilize training. The term $r + \gamma \max_{a'} Q(s', a'; \theta^{-})$ is the target value, and the expectation $\mathbb{E}$ is taken over a batch of experiences $(s, a, r, s')$ sampled from a replay memory $D$. This approach enabled the agent to learn directly from high-dimensional sensory inputs, like raw pixels in Atari games, achieving human-level performance.\cite{Mnih2015}
 \\
 \noindent
 Beyond value approximation, deep neural networks are also pivotal in policy gradient methods, where they directly parameterize the agent's policy, $\pi$. In this setup, the network, often called a \textit{policy network}, takes a state as input and outputs a probability distribution over the possible actions. The network's weights, $\theta$, are updated by performing gradient ascent on an objective function, $J(\theta)$, which represents the expected cumulative reward. The policy gradient theorem provides a way to update the policy parameters:
@@ -421,55 +422,61 @@ Beyond value approximation, deep neural networks are also pivotal in policy grad
  \nabla_{\theta} J(\theta) = \mathbb{E}_{\tau \sim \pi_{\theta}} \left[ \sum_{t=0}^{T} \nabla_{\theta} \log \pi_{\theta}(a_t|s_t) G_t \right]
 \end{equation}
 \noindent
-Here, the gradient of the objective function is calculated as the expectation of the sum of the gradients of the log probabilities of the actions taken, each weighted by the cumulative future reward, $G_t$. This effectively increases the probability of actions that lead to higher returns.\footcite{Sutton2018}
+Here, the gradient of the objective function is calculated as the expectation of the sum of the gradients of the log probabilities of the actions taken, each weighted by the cumulative future reward, $G_t$. This effectively increases the probability of actions that lead to higher returns.\cite{Sutton2018}
 \\
 \noindent
-The integration of deep neural networks has thus marked a significant leap in the quality and capability of reinforcement learning. By enabling agents to learn from high-dimensional raw data and generalize across vast state spaces, DRL has unlocked solutions to complex control problems previously considered out of reach, and it now stands as a critical tool for advancing research in V2G control systems.\footcite{Qiu2022}
+The integration of deep neural networks has thus marked a significant leap in the quality and capability of reinforcement learning. By enabling agents to learn from high-dimensional raw data and generalize across vast state spaces, DRL has unlocked solutions to complex control problems previously considered out of reach, and it now stands as a critical tool for advancing research in V2G control systems.\cite{Qiu2022}
 \\
 \noindent
 The convergence of RL with the substantial representational capabilities of deep neural networks has given rise to \textbf{Deep Reinforcement Learning (DRL)}, which currently represents the leading edge of V2G control research. The development of DRL algorithms has yielded a comprehensive toolkit, primarily divided into two main families: off-policy and on-policy methods, each exhibiting distinct operational characteristics.
 The following figure illustrates the evolutionary relationships between the algorithms that  will be discussed, highlighting how newer ideas were built to overcome the limitations of their predecessors.
 
+\begin{figure}[H]
+\centering
 \begin{forest}
 for tree={
-grow=east,
-parent anchor=east,
-child anchor=west,
-edge path={
-\noexpand\path [draw] (!u.parent anchor) -- +(-0.5pt,0) |- (.child anchor)\forestoption{edge label};
-},
-draw,
-rounded corners,
-align=center,
-l sep=7pt,
-s sep=4pt,
-minimum height=0.4cm,
-inner sep=0.1pt,
-anchor=west,
+  grow=east,
+  parent anchor=east,
+  child anchor=west,
+  edge path={
+    \noexpand\path [draw, thick, \forestoption{edge}]
+      (!u.parent anchor) -- +(-0.5pt,0) |- (.child anchor);
+  },
+  draw,
+  rounded corners,
+  align=center,
+  l sep=8pt,
+  s sep=6pt,
+  minimum height=0.5cm,
+  inner sep=2pt,
+  anchor=west,
+  font=\sffamily\small,
 }
-[RL Methods
-[On-Policy
-[Policy Gradient
-[A2C]
-[TRPO\\(Theoretical Stability)
-[PPO\\(Practical Simplification)]
-]
-]
-[Gradient-Free
-[ARS\\(Random Search)]
-]
-]
-[Off-Policy\\
-[DDPG\\(Fundamental)
-[DDPG+PER\\(Improve Sampling)]
-[TD3\\(Resolve Overestimation)]
-[SAC\\(Add Entropy)]
-[TQC\\(Distributional Approach)]
-]
-]
+[RL Methods, fill=blue!20, edge=blue!60
+    [On-Policy, fill=green!20, edge=green!60
+        [Policy Gradient, fill=green!10, edge=green!40
+            [A2C, fill=yellow!15, edge=green!50]
+            [TRPO\\(Theoretical Stability), fill=yellow!15, edge=green!50]
+            [PPO\\(Practical Simplification), fill=yellow!15, edge=green!50]
+        ]
+        [Gradient-Free, fill=teal!15, edge=teal!50
+            [ARS\\(Random Search), fill=yellow!15, edge=teal!50]
+        ]
+    ]
+    [Off-Policy, fill=red!20, edge=red!60
+        [DDPG\\(Fundamental), fill=red!10, edge=red!50
+            [DDPG+PER\\(Improve Sampling), fill=orange!15, edge=red!50]
+            [TD3\\(Resolve Overestimation), fill=orange!15, edge=red!50]
+            [SAC\\(Add Entropy), fill=orange!15, edge=red!50]
+            [TQC\\(Distributional Approach), fill=orange!15, edge=red!50]
+        ]
+    ]
 ]
 \end{forest}
-\subsection{Off-Policy Methods: Data-Efficient Learning from Experience}
+\caption{Hierarchical classification of Reinforcement Learning methods.}
+\label{fig:rl_methods}
+\end{figure}
+
 
 Off-policy algorithms distinguish themselves through their capacity to learn optimal policies from data generated by different, often more exploratory, behavioral policies. \textbf{This enables them to reuse historical experiences stored in large \textit{replay buffers}}, breaking temporal correlation between experiences and achieving high sample efficiency.
 \\
@@ -480,32 +487,32 @@ A pivotal question in this domain is how to balance the exploration of new actio
  Can an agent learn about the optimal way to behave while behaving sub-optimally?
  \end{flushright}
 \noindent
- The development of algorithms like Soft Actor-Critic (SAC) \footcite{haarnoja2018soft} provides a compelling, falsifiable hypothesis: that by explicitly encouraging policy entropy,a measure of randomness,an agent can be guided to explore more broadly and avoid collapsing into a narrow, locally optimal policy. This work builds on that premise, testing whether such an approach can robustly discover profitable and stable V2G control strategies in the face of profound uncertainty.
+ The development of algorithms like Soft Actor-Critic (SAC) \cite{haarnoja2018soft} provides a compelling, falsifiable hypothesis: that by explicitly encouraging policy entropy,a measure of randomness,an agent can be guided to explore more broadly and avoid collapsing into a narrow, locally optimal policy. This work builds on that premise, testing whether such an approach can robustly discover profitable and stable V2G control strategies in the face of profound uncertainty.
 
 \subsubsection{Deep Deterministic Policy Gradient (DDPG)}
 
-A foundational algorithm that successfully extended Deep Q-Networks (DQN) to high-dimensional, continuous action spaces, DDPG represented a significant breakthrough for control problems including V2G \footcite{lillicrap2015continuous}. It employs an actor-critic architecture where the actor deterministically maps states to actions. However, practical applications often encounter substantial training instability and systematic vulnerability to \textbf{overestimation bias}, where critic networks systematically overestimate Q-values, resulting in suboptimal policy learning \footcite{orfanoudakis2024ev2gym, alfaverh2022optima}.
+A foundational algorithm that successfully extended Deep Q-Networks (DQN) to high-dimensional, continuous action spaces, DDPG represented a significant breakthrough for control problems including V2G \cite{lillicrap2015continuous}. It employs an actor-critic architecture where the actor deterministically maps states to actions. However, practical applications often encounter substantial training instability and systematic vulnerability to \textbf{overestimation bias}, where critic networks systematically overestimate Q-values, resulting in suboptimal policy learning \cite{orfanoudakis2024ev2gym, alfaverh2022optima}.
 \\
 \noindent
-Despite these limitations, the foundational concepts of DDPG have been successfully applied and extended in various V2G contexts. For instance, Wang et al. \footcite{wang2022electrical} propose a DDPG-based system for demand response management, demonstrating its potential to reduce charging costs.
+Despite these limitations, the foundational concepts of DDPG have been successfully applied and extended in various V2G contexts. For instance, Wang et al. \cite{wang2022electrical} propose a DDPG-based system for demand response management, demonstrating its potential to reduce charging costs.
 \\
 \noindent
  But can such an approach scale to large, complex systems? 
 \\
 \noindent
-Zhang et al. \footcite{Zhang2023} tackle this question by introducing a transfer learning framework built on DDPG, aiming to coordinate large-scale V2G operations with renewable energy sources. Their work puts forth a testable hypothesis: that knowledge learned in a small-scale environment can be effectively transferred to a large-scale one, thus mitigating the sample inefficiency of DRL. This thesis will implicitly test this hypothesis by evaluating the performance of DRL agents in scenarios of varying complexity.
+Zhang et al. \cite{Zhang2023} tackle this question by introducing a transfer learning framework built on DDPG, aiming to coordinate large-scale V2G operations with renewable energy sources. Their work puts forth a testable hypothesis: that knowledge learned in a small-scale environment can be effectively transferred to a large-scale one, thus mitigating the sample inefficiency of DRL. This thesis will implicitly test this hypothesis by evaluating the performance of DRL agents in scenarios of varying complexity.
 
 
 
 \subsubsection{Twin Delayed DDPG (TD3)}
 
-Developed as a direct successor to address DDPG's instabilities, TD3 introduces three key innovations that have become standard in contemporary DRL \footcite{fujimoto2018addressing}. It incorporates (1) 	\textbf{clipped double Q-learning}, utilizing paired critic networks and selecting minimum estimates to mitigate overestimation bias; (2)\textbf{ delayed policy updates}, updating actors less frequently than critics for enhanced stability; and (3) \textbf{target policy smoothing}, adding noise to target actions for learning regularization. These enhancements establish TD3 as a more robust and reliable baseline for complex V2G applications \footcite{Ding, wang2022multi}.
+Developed as a direct successor to address DDPG's instabilities, TD3 introduces three key innovations that have become standard in contemporary DRL \cite{fujimoto2018addressing}. It incorporates (1) 	\textbf{clipped double Q-learning}, utilizing paired critic networks and selecting minimum estimates to mitigate overestimation bias; (2)\textbf{ delayed policy updates}, updating actors less frequently than critics for enhanced stability; and (3) \textbf{target policy smoothing}, adding noise to target actions for learning regularization. These enhancements establish TD3 as a more robust and reliable baseline for complex V2G applications \cite{Ding, wang2022multi}.
 \\
 \noindent
-The effectiveness of TD3 in V2G scheduling has been explored by multiple researchers. For example, Dou et al. \footcite{Dou} apply a TD3-based approach to the optimal scheduling of EV charging and discharging, demonstrating its ability to find profitable strategies. But can this profitability be achieved without negatively impacting the grid? Ding et al. \footcite{Ding} investigate this by using TD3 for charging scheduling while considering distribution network voltage stability. Their work provides a clear, falsifiable test of the hypothesis that a DRL agent can learn to balance its own economic incentives with the physical constraints of the power grid. This thesis builds upon this line of inquiry by incorporating explicit penalties for transformer overloads into the reward function, directly testing the agent's ability to learn this trade-off.
+The effectiveness of TD3 in V2G scheduling has been explored by multiple researchers. For example, Dou et al. \cite{Dou} apply a TD3-based approach to the optimal scheduling of EV charging and discharging, demonstrating its ability to find profitable strategies. But can this profitability be achieved without negatively impacting the grid? Ding et al. \cite{Ding} investigate this by using TD3 for charging scheduling while considering distribution network voltage stability. Their work provides a clear, falsifiable test of the hypothesis that a DRL agent can learn to balance its own economic incentives with the physical constraints of the power grid. This thesis builds upon this line of inquiry by incorporating explicit penalties for transformer overloads into the reward function, directly testing the agent's ability to learn this trade-off.
 
 \subsubsection{SAC}
-SAC represents a state-of-the-art off-policy algorithm for continuous control, \textbf{recognized for superior sample efficiency and stability} \footcite{haarnoja2019soft}. Its fundamental innovation involves the \textbf{maximum entropy framework}. The agent's objective is modified to maximize both expected reward and policy entropy. This entropy bonus encourages agents to act as randomly as possible while maintaining task success, promoting broader exploration, improved noise robustness, and reduced risk of poor local optima convergence.
+SAC represents a state-of-the-art off-policy algorithm for continuous control, \textbf{recognized for superior sample efficiency and stability} \cite{haarnoja2019soft}. Its fundamental innovation involves the \textbf{maximum entropy framework}. The agent's objective is modified to maximize both expected reward and policy entropy. This entropy bonus encourages agents to act as randomly as possible while maintaining task success, promoting broader exploration, improved noise robustness, and reduced risk of poor local optima convergence.
 \\
 \noindent
 The principle of maximum entropy, while powerful, raises a critical question: 
@@ -514,11 +521,11 @@ The principle of maximum entropy, while powerful, raises a critical question:
 \textbf{Does encouraging random behavior compromise the safety and reliability of the system?}
 \\
 \noindent
- Gu et al. \footcite{gu2025optimization} directly confront this by proposing a safe reinforcement learning approach that considers battery health. Their work tests the hypothesis that one can achieve the exploration benefits of SAC while simultaneously satisfying hard constraints related to battery degradation. This is a crucial step towards making DRL a viable technology for real-world V2G deployment, and it underscores the importance of the multi-objective reward functions explored in this thesis.
+ Gu et al. \cite{gu2025optimization} directly confront this by proposing a safe reinforcement learning approach that considers battery health. Their work tests the hypothesis that one can achieve the exploration benefits of SAC while simultaneously satisfying hard constraints related to battery degradation. This is a crucial step towards making DRL a viable technology for real-world V2G deployment, and it underscores the importance of the multi-objective reward functions explored in this thesis.
 
 \subsubsection{Truncated Quantile Critics (TQC)}
 
-TQC addresses overestimation bias through a distributional RL approach \footcite{kuznetsov2020controlling}. Rather than learning single expected returns (Q-values), its critic \textbf{learns complete return probability distributions using quantile regression}.
+TQC addresses overestimation bias through a distributional RL approach \cite{kuznetsov2020controlling}. Rather than learning single expected returns (Q-values), its critic \textbf{learns complete return probability distributions using quantile regression}.
 \\
 \noindent
 Digression on Quantile regression:
@@ -561,7 +568,7 @@ After learned this can be affirmed that: learning multiple return distribution q
 
 \subsubsection{Enhancement: Prioritized Experience Replay (PER)}
 
-This represents not a standalone algorithm but a crucial orthogonal modification for off-policy methods. Standard replay buffers sample past transitions uniformly. PER samples transitions based on their "importance," typically proportional to TD error magnitude \footcite{schaul2015prioritized}. This focuses learning processes on surprising or informative experiences, significantly accelerating convergence and improving final performance.
+This represents not a standalone algorithm but a crucial orthogonal modification for off-policy methods. Standard replay buffers sample past transitions uniformly. PER samples transitions based on their "importance," typically proportional to TD error magnitude \cite{schaul2015prioritized}. This focuses learning processes on surprising or informative experiences, significantly accelerating convergence and improving final performance.
 
 \subsection{On-Policy Methods: Stability through Cautious Updates}
 
@@ -569,27 +576,27 @@ On-policy methods learn exclusively from data generated by current policies bein
 
 \subsubsection{Advantage Actor-Critic (A2C/A3C)}
 
-A2C represents a foundational synchronous, on-policy Actor-Critic algorithm. Its powerful extension, \textbf{Asynchronous Advantage Actor-Critic (A3C)}, was a landmark contribution demonstrating parallelism benefits \footcite{mnih2016asynchronous}. A3C utilizes multiple parallel workers, each with individual model and environment copies. These workers interact with their environments independently, and collected gradients update a global model asynchronously. This decorrelates data streams and provides powerful stabilizing effects on learning processes.
+A2C represents a foundational synchronous, on-policy Actor-Critic algorithm. Its powerful extension, \textbf{Asynchronous Advantage Actor-Critic (A3C)}, was a landmark contribution demonstrating parallelism benefits \cite{mnih2016asynchronous}. A3C utilizes multiple parallel workers, each with individual model and environment copies. These workers interact with their environments independently, and collected gradients update a global model asynchronously. This decorrelates data streams and provides powerful stabilizing effects on learning processes.
 \\
 \noindent
-While often considered less sample-efficient than their off-policy counterparts, on-policy methods like A2C and its variants are still actively explored in the V2G domain. For example, Chifu et al. \footcite{chifu2024deep} propose a Deep Q-Learning based approach for smart scheduling of EVs for demand response, which shares some of the on-policy characteristics. Their work raises the question:
+While often considered less sample-efficient than their off-policy counterparts, on-policy methods like A2C and its variants are still actively explored in the V2G domain. For example, Chifu et al. \cite{chifu2024deep} propose a Deep Q-Learning based approach for smart scheduling of EVs for demand response, which shares some of the on-policy characteristics. Their work raises the question:
 \\
 \noindent
 Can the stability and reliability of on-policy training outweigh the sample efficiency of off-policy methods in a problem where the environment is highly stochastic? This thesis provides a direct comparison by benchmarking several state-of-the-art off-policy agents against on-policy baselines, allowing for an empirical test of this long-standing hypothesis in the DRL community.
 
 \subsubsection{Trust Region Policy Optimization (TRPO)}
 
-TRPO was the first algorithm to formalize policy update size constraints for guaranteed monotonic policy improvement \footcite{schulman2020trust}. It maximizes a "surrogate" objective function subject to policy change constraints, measured by Kullback-Leibler (KL) divergence. This creates a "trust region" within which new policies are guaranteed to improve upon previous ones, preventing catastrophic updates that can permanently derail learning. However, implementation complexity arises from second-order optimization requirements.
+TRPO was the first algorithm to formalize policy update size constraints for guaranteed monotonic policy improvement \cite{schulman2020trust}. It maximizes a "surrogate" objective function subject to policy change constraints, measured by Kullback-Leibler (KL) divergence. This creates a "trust region" within which new policies are guaranteed to improve upon previous ones, preventing catastrophic updates that can permanently derail learning. However, implementation complexity arises from second-order optimization requirements.
 
 \subsubsection{Proximal Policy Optimization (PPO)}
 
-PPO achieves TRPO's stability benefits and reliable performance using only first-order optimization, making it far simpler to implement and more broadly applicable \footcite{schulman2017proximal}. It employs a novel \textbf{clipping} mechanism in its objective function to discourage large policy updates that would move new policies too far from previous ones, effectively creating "soft" trust regions. Due to its excellent balance of performance, stability, and implementation simplicity, PPO has become a default choice for many on-policy applications.
+PPO achieves TRPO's stability benefits and reliable performance using only first-order optimization, making it far simpler to implement and more broadly applicable \cite{schulman2017proximal}. It employs a novel \textbf{clipping} mechanism in its objective function to discourage large policy updates that would move new policies too far from previous ones, effectively creating "soft" trust regions. Due to its excellent balance of performance, stability, and implementation simplicity, PPO has become a default choice for many on-policy applications.
 
 \subsection{Gradient-Free Methods: An Alternative Path}
 
 \subsubsection{Augmented Random Search (ARS)}
 
-As a counterpoint to dominant gradient-based methods, ARS represents a gradient-free approach that optimizes policies directly in parameter space \footcite{mania2018simple}. It operates by exploring random policy parameter perturbations and updating central policy parameter vectors based on observed performance of these perturbations. While often less sample-efficient for complex, high-dimensional problems, its extreme simplicity, scalability, and robustness to noisy rewards can make it competitive in certain domains.
+As a counterpoint to dominant gradient-based methods, ARS represents a gradient-free approach that optimizes policies directly in parameter space \cite{mania2018simple}. It operates by exploring random policy parameter perturbations and updating central policy parameter vectors based on observed performance of these perturbations. While often less sample-efficient for complex, high-dimensional problems, its extreme simplicity, scalability, and robustness to noisy rewards can make it competitive in certain domains.
 
 \input{mpc.tex}
 
@@ -620,7 +627,7 @@ While DRL represents the cutting edge, contextualizing it within the broader con
 \end{table}
 
 \noindent
-\textbf{Model Predictive Control (MPC)} stands as the most powerful model-based alternative. Its primary and most compelling strength lies in its native ability to handle hard constraints, which is critical for ensuring safe operation (such as never violating transformer limits or user energy requirements). However, its performance remains fundamentally constrained by the accuracy of its internal model and forecasts of future disturbances (prices, user behavior) \footcite{faggio2023design}. In practice, creating accurate, tractable models for the entire V2G domain proves nearly impossible due to non-linear battery dynamics, extreme market volatility, and the profound unpredictability of human behavior. Furthermore, as EV fleet sizes grow, optimization problem dimensionality explodes, making online computation required at each time step intractable for large fleets.
+\textbf{Model Predictive Control (MPC)} stands as the most powerful model-based alternative. Its primary and most compelling strength lies in its native ability to handle hard constraints, which is critical for ensuring safe operation (such as never violating transformer limits or user energy requirements). However, its performance remains fundamentally constrained by the accuracy of its internal model and forecasts of future disturbances (prices, user behavior) \cite{faggio2023design}. In practice, creating accurate, tractable models for the entire V2G domain proves nearly impossible due to non-linear battery dynamics, extreme market volatility, and the profound unpredictability of human behavior. Furthermore, as EV fleet sizes grow, optimization problem dimensionality explodes, making online computation required at each time step intractable for large fleets.
 \\
 \noindent
 Other methods, such as \textbf{meta-heuristic algorithms} (including genetic algorithms and particle swarm optimization), are sometimes proposed. However, these are typically employed for offline scheduling and lack the real-time, reactive responsiveness required for dynamic V2G control in rapidly changing environments.
@@ -633,13 +640,13 @@ Ultimately, DRL's singular advantage lies in its ability to learn and internaliz
 
 The effectiveness, safety, and economic viability of any V2G strategy remain fundamentally constrained by the physical and chemical characteristics of vehicle batteries. Battery chemistry selection dictates EV operational envelopes, influencing energy density, power capabilities, lifespan, and safety profiles. Clear understanding of these trade-offs proves essential for developing robust, realistic, and responsible control algorithms.
 \subsection{Fundamental Concepts and Degradation Mechanisms}
-Battery degradation is a complex and irreversible process that gradually reduces a cell’s ability to store and deliver energy. It manifests primarily as capacity loss (energy fade) and as an increase in internal resistance (power fade). These phenomena are usually attributed to two categories of mechanisms: \textit{calendar aging} and \textit{cyclic aging} \footcite{birkl2017degradation}.
+Battery degradation is a complex and irreversible process that gradually reduces a cell’s ability to store and deliver energy. It manifests primarily as capacity loss (energy fade) and as an increase in internal resistance (power fade). These phenomena are usually attributed to two categories of mechanisms: \textit{calendar aging} and \textit{cyclic aging} \cite{birkl2017degradation}.
 \noindent   
 \\
-\textbf{Calendar aging} occurs while the battery is at rest, regardless of whether it is fully charged or nearly empty. The main mechanism behind this process is the slow growth of the \textbf{Solid Electrolyte Interphase (SEI)} layer on the graphite anode. While a thin and stable SEI layer is necessary for battery operation, its continuous thickening consumes both active lithium and electrolyte, resulting in irreversible capacity loss. The rate of SEI growth is particularly sensitive to operating conditions. High temperatures accelerate chemical reaction rates, including parasitic ones, making storage in hot environments detrimental. Similarly, high states of charge (SoC) correspond to low anode potentials, which increase the reactivity of graphite with the electrolyte and foster faster SEI growth \footcite{vetter2005ageing}. For this reason, leaving electric vehicles stored for long periods at 100\% SoC is generally discouraged.
+\textbf{Calendar aging} occurs while the battery is at rest, regardless of whether it is fully charged or nearly empty. The main mechanism behind this process is the slow growth of the \textbf{Solid Electrolyte Interphase (SEI)} layer on the graphite anode. While a thin and stable SEI layer is necessary for battery operation, its continuous thickening consumes both active lithium and electrolyte, resulting in irreversible capacity loss. The rate of SEI growth is particularly sensitive to operating conditions. High temperatures accelerate chemical reaction rates, including parasitic ones, making storage in hot environments detrimental. Similarly, high states of charge (SoC) correspond to low anode potentials, which increase the reactivity of graphite with the electrolyte and foster faster SEI growth \cite{vetter2005ageing}. For this reason, leaving electric vehicles stored for long periods at 100\% SoC is generally discouraged.
 \noindent   
 \\
-\textbf{Cyclic aging}, in contrast, results from the processes that take place during charging and discharging. This form of degradation is of particular importance for V2G applications, which inherently involve frequent cycling. Several mechanisms contribute to cyclic aging. The repeated intercalation and de-intercalation of lithium ions induce mechanical stress due to the expansion and contraction of electrode materials. Over time, this stress may generate micro-cracks in electrode particles, leading to a loss of electrical contact and a reduction of active material, effects that become more severe with larger \textbf{Depths of Discharge (DoD)}. Mechanical volume changes can also compromise the integrity of the SEI layer, causing cracks that expose fresh anode surface to the electrolyte and trigger renewed SEI growth. In addition, under demanding conditions,such as very high charging rates (high C-rates) or low temperatures,lithium ions may deposit as metallic lithium on the anode surface rather than intercalating properly. This phenomenon, known as lithium plating, is particularly harmful: it leads to rapid capacity loss and may produce dendritic structures capable of piercing the separator, thereby creating internal short circuits and serious safety hazards \footcite{birkl2017degradation}.
+\textbf{Cyclic aging}, in contrast, results from the processes that take place during charging and discharging. This form of degradation is of particular importance for V2G applications, which inherently involve frequent cycling. Several mechanisms contribute to cyclic aging. The repeated intercalation and de-intercalation of lithium ions induce mechanical stress due to the expansion and contraction of electrode materials. Over time, this stress may generate micro-cracks in electrode particles, leading to a loss of electrical contact and a reduction of active material, effects that become more severe with larger \textbf{Depths of Discharge (DoD)}. Mechanical volume changes can also compromise the integrity of the SEI layer, causing cracks that expose fresh anode surface to the electrolyte and trigger renewed SEI growth. In addition, under demanding conditions,such as very high charging rates (high C-rates) or low temperatures,lithium ions may deposit as metallic lithium on the anode surface rather than intercalating properly. This phenomenon, known as lithium plating, is particularly harmful: it leads to rapid capacity loss and may produce dendritic structures capable of piercing the separator, thereby creating internal short circuits and serious safety hazards \cite{birkl2017degradation}.
 \noindent   
 \\
 Both calendar and cyclic aging are unavoidable, the latter is especially critical for V2G systems. Since these applications require frequent and sometimes deep cycling, understanding and mitigating cyclic degradation is paramount to guarantee long-term system viability.

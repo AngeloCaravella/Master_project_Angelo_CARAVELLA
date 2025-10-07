@@ -5,7 +5,7 @@ The design of an effective reward function is arguably the most critical aspect 
 It serves as the primary communication channel through which designers convey desired behaviors and objectives to a learning agent. 
 A poorly designed reward function can lead to agents learning unintended, suboptimal, or even harmful behaviors,despite successfully maximizing their assigned objective.
 Consequently, reward engineering has emerged as a fundamental and increasingly sophisticated discipline within modern RL,
-proving indispensable for the successful application of algorithms in complex, real-world scenarios \footcite{ibrahim2024comprehensive}.
+proving indispensable for the successful application of algorithms in complex, real-world scenarios \cite{ibrahim2024comprehensive}.
 \noindent
 The Vehicle-to-Grid (V2G) challenge, with its inherent multi-objective nature,encompassing profit maximization, assurance of user satisfaction, preservation of battery health, and maintenance of grid stability—presents particularly stringent demands on reward function design.
 \noindent
@@ -33,7 +33,7 @@ how "good" or "desirable" that state is. Although $F$ is formally a function of 
 
 \subsection{Theoretical Foundation and Policy Invariance}
 
-The seminal work by Ng et al. \footcite{ng1999policy} established the theoretical robustness of PBRS by proving a critical property: \textbf{policy invariance}. 
+The seminal work by Ng et al. \cite{ng1999policy} established the theoretical robustness of PBRS by proving a critical property: \textbf{policy invariance}. 
 \\
 \noindent
 This property guarantees that adding a potential-based shaping reward to an MDP does not alter its set of optimal policies. 
@@ -101,20 +101,20 @@ In the V2G context, an agent might initially receive a high reward for simply co
 \end{flushright}
 
 \noindent
-Yes, essentially, curriculum learning (CL) can be described as a strategy where the same model is trained on scenarios of increasing difficulty, starting from the easiest and progressing to the most difficult. This general idea, however, is implemented in different ways, as demonstrated by the two reference papers. The research by Pocius et al. focuses on a curriculum based on \textbf{task simplification}, whereas Freitag et al. propose a more specific and advanced approach based on \textbf{reward function simplification} \footcite{Curriculum_learning, Curriculum_learning_2}.
+Yes, essentially, curriculum learning (CL) can be described as a strategy where the same model is trained on scenarios of increasing difficulty, starting from the easiest and progressing to the most difficult. This general idea, however, is implemented in different ways, as demonstrated by the two reference papers. The research by Pocius et al. focuses on a curriculum based on \textbf{task simplification}, whereas Freitag et al. propose a more specific and advanced approach based on \textbf{reward function simplification} \cite{Curriculum_learning, Curriculum_learning_2}.
 
 \subsection{Specific Principles and Applications}
 
 The core principle of CL is to guide the agent's learning to prevent it from being overwhelmed by the full complexity of the final problem. The provided research offers concrete insights into how and why this approach works.
 \noindent
-\textbf{Pocius et al.} empirically compared curriculum learning, reward shaping, and visual hints in a navigation task within a Minecraft environment \footcite{Curriculum_learning_2}. Their curriculum involved training the agent first on a simpler task (navigating a single room) before moving to a more complex one (navigating through two rooms). Their key finding was that, for their specific task, \textbf{curriculum learning had the most significant impact on performance}, surpassing the effectiveness of reward shaping. This suggests that for certain problems, structuring the learning experience through progressively harder tasks is a more powerful strategy than finely tuning the immediate reward signal \footcite{Curriculum_learning_2}.
+\textbf{Pocius et al.} empirically compared curriculum learning, reward shaping, and visual hints in a navigation task within a Minecraft environment \cite{Curriculum_learning_2}. Their curriculum involved training the agent first on a simpler task (navigating a single room) before moving to a more complex one (navigating through two rooms). Their key finding was that, for their specific task, \textbf{curriculum learning had the most significant impact on performance}, surpassing the effectiveness of reward shaping. This suggests that for certain problems, structuring the learning experience through progressively harder tasks is a more powerful strategy than finely tuning the immediate reward signal \cite{Curriculum_learning_2}.
 \noindent
-On the other hand, \textbf{Freitag et al.} addressed the problem of complex reward functions with multiple and potentially conflicting terms, which often lead agents to get stuck in local optima (e.g., an agent learning to satisfy a constraint without completing the main objective) \footcite{Curriculum_learning}. To solve this, they proposed a \textbf{two-stage reward curriculum}:
+On the other hand, \textbf{Freitag et al.} addressed the problem of complex reward functions with multiple and potentially conflicting terms, which often lead agents to get stuck in local optima (e.g., an agent learning to satisfy a constraint without completing the main objective) \cite{Curriculum_learning}. To solve this, they proposed a \textbf{two-stage reward curriculum}:
 \begin{enumerate}
     \item \textbf{Stage 1:} The agent is trained using only a subset of the reward function, termed the "base reward" ($r_b$), which encodes the primary task objective.
     \item \textbf{Stage 2:} Once the agent has sufficiently learned the basic task, the curriculum switches to training on the full reward function, which also includes the constraint terms ($r_c$).
 \end{enumerate}
-One of their key innovations is a mechanism to \textbf{automatically switch from one stage to the next} by monitoring how well the actor's policy fits the critic's Q-function. They demonstrated that this approach is particularly effective when constraints have a high weight, as it prevents the agent from being "distracted" by the constraints before understanding the main goal, leading to more stable and higher-performing final policies \footcite{Curriculum_learning}.
+One of their key innovations is a mechanism to \textbf{automatically switch from one stage to the next} by monitoring how well the actor's policy fits the critic's Q-function. They demonstrated that this approach is particularly effective when constraints have a high weight, as it prevents the agent from being "distracted" by the constraints before understanding the main goal, leading to more stable and higher-performing final policies \cite{Curriculum_learning}.
 
 \subsection{Curriculum Learning in V2G}
 
@@ -124,4 +124,4 @@ For the V2G challenge, the two-stage reward curriculum approach proposed by Frei
     \item \textbf{Stage 1: Basic Charge Management.} The agent is trained with a simplified reward function (the "base reward," $r_b$) that solely rewards maintaining the charge levels of electric vehicles (EVs) above a minimum threshold. All other objectives, such as grid interaction or profit, are ignored.
     \item \textbf{Stage 2: Full Optimization.} Once the agent has effectively learned to manage charging, it transitions to the full reward function. This includes the base reward plus the "constraint reward" terms ($r_c$), which introduce incentives for grid stability, cost minimization, and adherence to user preferences.
 \end{enumerate}
-This structured approach, as demonstrated by Freitag et al., prevents the agent from being overwhelmed by conflicting objectives from the start, promoting the development of more robust and generalizable V2G management policies \footcite{Curriculum_learning}.
+This structured approach, as demonstrated by Freitag et al., prevents the agent from being overwhelmed by conflicting objectives from the start, promoting the development of more robust and generalizable V2G management policies \cite{Curriculum_learning}.
