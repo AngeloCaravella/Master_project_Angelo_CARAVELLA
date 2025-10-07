@@ -4,11 +4,13 @@
 % ENCODING & LANGUAGE
 % ---------------------------------------------------
 \usepackage[utf8]{inputenc}
+
 \usepackage[T1]{fontenc}
 \usepackage[english]{babel}
 \usepackage{xcolor}         % necessario per i colori
 \usepackage{algorithm}    % Per l'ambiente algorithm
-\usepackage{algpseudocode} % Per i comandi dell'algoritmo (es. \State
+\usepackage{algpseudocode} % Per i comandi dell'algoritmo (es. \State)
+\usepackage{changepage}
 % ---------------------------------------------------
 % FONT SELECTION (PALATINO)
 % ---------------------------------------------------
@@ -51,6 +53,8 @@
 \usepackage{float}
 \usepackage{pgfplots}
 \usepackage{csquotes}
+\usepackage{setspace} % <-- PACCHETTO AGGIUNTO
+\usepackage{helvet} % Aggiungi nel preambolo, dopo i font principali
 
 % ---------------------------------------------------
 % LISTINGS (for code)
@@ -94,23 +98,33 @@
 % ---------------------------------------------------
 % TITLE PAGE - REVISED WITH \vfill FOR BETTER SPACING
 % ---------------------------------------------------
+
 \begin{titlepage}
+
     \begin{center}
         % --- UNIVERSITY NAME ---
         \vspace*{1cm} % Small fixed space at the top
         \textsc{\LARGE University of Sannio}\\[1cm]
         \textsc{Department of Engineering}\\[0.8cm]
         \textsc{Master’s Degree in}\\[0.6cm]
-        \textbf{Electronics Engineering for Automation and Sensing}\\[1.5cm]
+        \textbf{Electronics Engineering for Automation and Sensing}\\[1cm]
         \includegraphics[width=0.3\textwidth]{Logo.png}
 
-        \vfill % Flexible space pushes the title down
+	\vfill % Flexible space pushes the title down
 
-        % --- TITLE ---
-        {\Huge \bfseries
-             OPTIMAL ELECTRIC VEHICLE BATTERY MANAGEMENT FOR VEHICLE-TO-GRID: MODEL PREDICTIVE CONTROL AND REINFORCEMENT LEARNING APPROACHES
-        }
+	\begin{adjustwidth}{-1cm}{-1cm} % <-- ALLARGA IL BLOCCO DI 2cm A SINISTRA E 2cm A DESTRA
+    	\centering % <-- Ricentra il testo all'interno del nuovo blocco più largo
+    	{\Large
+        	 \textbf{ OPTIMAL ELECTRIC VEHICLE BATTERY MANAGEMENT}
+		\vspace{0.1cm}
+		 \textbf{FOR VEHICLE-TO-GRID: }
 
+ 		\vspace{0.1cm}
+		 \textbf{MODEL PREDICTIVE CONTROL} 
+		\vspace{0.1cm}
+	   \textbf{AND REINFORCEMENT LEARNING APPROACHES}
+    	}
+	\end{adjustwidth}
         \vfill % Flexible space pushes the supervisor/candidate info down
 
         % --- SUPERVISORS AND CANDIDATE ---
@@ -139,6 +153,7 @@
         \vspace*{1.5cm} % Small fixed space at the bottom
     \end{center}
 \end{titlepage}
+
 
 
 

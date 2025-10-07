@@ -354,24 +354,69 @@ The class manages the high-level simulation flow.
 \paragraph{Reset (\texttt{reset}).} This method re-initializes the entire environment to a starting state, allowing for the start of a new simulation episode, which could represent a new day or a different random scenario.
 
 
-
-
 \section{Reinforcement Learning Formulation}
 The control problem is formalized as a Markov Decision Process (MDP), defined by the tuple $(S, A, P, R, \gamma)$.
 
 \subsection{State Space ($S$)}
-The state $s_t \in S$ is a feature vector providing a snapshot of the environment at time $t$. A representative state, as defined in modules like \\ \noindent \texttt{V2G\_profit\_max\_loads.py}, includes:
+The state $s_t \in S$ is a feature vector providing a comprehensive snapshot of the environment at time $t$. The composition of this vector is crucial for the agent's performance, as it encapsulates all the information available for decision-making. The framework is designed to be flexible, allowing different state representations to be defined in the \texttt{ev2gym/rl\_agent/state.py} module. For the primary task of profit maximization under grid constraints, the \texttt{V2G\_profit\_max\_loads} function is used.
+
+The process of constructing this state vector at each timestep is formally described in Algorithm \ref{alg:state_construction}. It involves gathering temporal, historical, predictive, and physical information from the environment.
+
+\begin{algorithm}[H]
+\caption{State Vector Construction (\texttt{V2G\_profit\_max\_loads})}
+\label{alg:state_construction}
+\begin{algorithmic}[1]
+\Function{BuildStateVector}{environment $env$}
+    \State \textbf{Initialize:} Empty state list $S_{list} \leftarrow \emptyset$.
+    
+    \State \Comment{1. Add temporal and historical information}
+    \State Append current timestep $env.current\_step$ to $S_{list}$.
+    \State Append total power from previous step $env.current\_power\_usage[t-1]$ to $S_{list}$.
+    
+    \State \Comment{2. Add predictive market information}
+    \State Get future charge prices for horizon $H$: $\mathbf{c} \leftarrow env.charge\_prices[t : t+H]$.
+    \State Pad $\mathbf{c}$ with the last known value if horizon extends beyond simulation end.
+    \State Append $\mathbf{c}$ to $S_{list}$.
+    
+    \State \Comment{3. Add predictive physical constraints and loads for each transformer}
+    \For{each transformer $tr$ in $env.transformers$}
+        \State Get forecasts for horizon $H$: $\mathbf{L}, \mathbf{PV} \leftarrow tr.\text{get\_load\_pv\_forecast}(t, H)$.
+        \State Get future power limits for horizon $H$: $\mathbf{P}_{\text{lim}} \leftarrow tr.\text{get\_power\_limits}(t, H)$.
+        \State Append net load forecast $(\mathbf{L} - \mathbf{PV})$ to $S_{list}$.
+        \State Append power limits $\mathbf{P}_{\text{lim}}$ to $S_{list}$.
+        
+        \State \Comment{4. Add information for each connected EV}
+        \For{each charging station $cs$ connected to $tr$}
+            \For{each EV slot in $cs$}
+                \If{an EV is connected}
+                    \State SoC $\leftarrow$ EV.get\_soc().
+                    \State $t_{\text{rem}} \leftarrow$ EV.time\_of\_departure - $env.current\_step$.
+                    \State Append $[$SoC, $t_{\text{rem}}]$ to $S_{list}$.
+                \Else
+                    \State Append $[0, 0]$ to $S_{list}$ for padding.
+                \EndIf
+            \EndFor
+        \EndFor
+    \EndFor
+    
+    \State \Return Flatten($S_{list}$) into a single vector $s_t$.
+\EndFunction
+\end{algorithmic}
+\end{algorithm}
+
+The resulting state vector $s_t$ is a concatenation of these components, forming a high-dimensional representation suitable for a deep neural network policy. Mathematically, it can be expressed as:
 \[
- s_t = [t, P_{\text{total}}(t-1), \mathbf{c}(t, H), \mathbf{L}_1(t, H), \mathbf{PV}_1(t, H), \dots, \mathbf{s}^{\text{EV}}_1(t), \dots, \mathbf{s}^{\text{EV}}_N(t)]^T
+ s_t = [t, P_{\text{total}}(t-1), \mathbf{c}(t, H), \mathbf{NL}_1(t, H), \mathbf{P}^{\text{lim}}_1(t, H), \dots, \mathbf{s}^{\text{EV}}_1(t), \dots, \mathbf{s}^{\text{EV}}_N(t)]^T
 \]
 where the components are:
 \begin{itemize}
-    \item $t$: The current time step.
-    \item $P_{\text{total}}(t-1)$: The aggregated power from the previous time step.
-    \item $\mathbf{c}(t, H)$: A vector of \textbf{predicted future} electricity prices over a horizon $H$.
-    \item $\mathbf{L}_j(t, H), \mathbf{PV}_j(t, H)$: Forecasts for inflexible loads and solar generation.
-    \item $\mathbf{s}^{\text{EV}}_i(t) = [\text{SoC}_i(t), t^{\text{dep}}_i - t]$: Key information for each EV $i$, including its State of Charge and remaining time until departure.
+    \item $t$: The current time step, providing temporal context.
+    \item $P_{\text{total}}(t-1)$: The aggregated power from the previous time step, serving as a feedback signal of the last action's outcome.
+    \item $\mathbf{c}(t, H)$: A vector of \textbf{predicted future} electricity prices over a horizon $H$ (e.g., 20 steps).
+    \item $\mathbf{NL}_j(t, H), \mathbf{P}^{\text{lim}}_j(t, H)$: Forecasts for the net inflexible loads (loads minus solar generation) and the power limits for each transformer $j$.
+    \item $\mathbf{s}^{\text{EV}}_i(t) = [\text{SoC}_i(t), t^{\text{rem}}_i]$: A sub-vector containing the most critical information for each EV $i$: its current State of Charge and its remaining time until departure ($t^{\text{dep}}_i - t$). If a charger is empty, this sub-vector is padded with zeros to maintain a fixed state size.
 \end{itemize}
+This state representation is deliberately rich, providing the agent with a multi-faceted view of the system. It combines temporal awareness, feedback from past actions, predictive information about market conditions and physical constraints, and the specific needs of each vehicle. This comprehensive view is essential for enabling the agent to learn sophisticated, forward-looking policies that can effectively balance immediate profit opportunities with long-term obligations to users and the grid.
 
 \subsection{Action Space ($A$)}
 The action $a_t \in A$ is a continuous vector in $\mathbb{R}^N$, where $N$ is the number of chargers. For each charger $i$, the command $a_i(t) \in [-1, 1]$ is a normalized value that is translated into a power command:
@@ -380,7 +425,7 @@ The action $a_t \in A$ is a continuous vector in $\mathbb{R}^N$, where $N$ is th
     \item If $a_i(t) < 0$, the EV is discharging (V2G): $P_i(t) = a_i(t) \cdot P^{\text{max}}_{\text{discharge}, i}$.
 \end{itemize}
 
-\subsection{Reward Function}
+\subsection{Reward Function ($R$)}
 The reward function $R(t)$ encodes the objectives of the control agent. The framework allows for the selection of different reward functions from the \texttt{reward.py} module to suit various goals. Key examples include:
 \begin{itemize}
     \item \textbf{Profit Maximization with Penalties} (\texttt{ProfitMax\_TrPenalty\_UserIncentives}): This function creates a balance between economic gain and physical constraints.
@@ -395,10 +440,6 @@ The reward function $R(t)$ encodes the objectives of the control agent. The fram
     \]
     The reward is the negative squared error from the power setpoint, incentivizing the agent to minimize this error at all times.
 \end{itemize}
-\noindent
-By using this enhanced framework, this thesis moves beyond single-scenario optimization to develop and validate an intelligent V2G control agent that is not only high-performing but also robust, adaptable, and ready for the complexities of real-world deployment.
-
-
 
 \input{Reinforcement_learning}
 
