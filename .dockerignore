@@ -1,0 +1,32 @@
+# Git
+.git
+.gitignore
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+pip-selfcheck.json
+
+# Documentation
+docs/
+
+# LaTeX
+latex_source/
+
+# Papers and presentations
+Papers_read/
+"PPT MPC Lectures"/
+
+# Backups and replays
+backup/
+replay/
+
+# IDE/Editor specific
+.idea/
+.vscode/
+*.swp

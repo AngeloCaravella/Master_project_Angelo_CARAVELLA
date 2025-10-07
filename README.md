@@ -101,6 +101,21 @@ Per eseguire il fitting del modello di degradazione della batteria (genera un gr
 python Fit_battery.py
 ```
 
+## Utilizzo con Docker
+
+Per eseguire l'applicazione in un ambiente containerizzato, puoi usare Docker:
+
+1.  **Costruisci l'immagine Docker**:
+    ```bash
+    docker build -t ev2gym-orchestrator .
+    ```
+
+2.  **Esegui il container**:
+    ```bash
+    docker run -p 8501:8501 ev2gym-orchestrator
+    ```
+    L'applicazione sarà accessibile all'indirizzo `http://localhost:8501`.
+
 ## Struttura del Progetto
 
 ```
