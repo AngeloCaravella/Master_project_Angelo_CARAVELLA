@@ -1,4 +1,4 @@
-# --- START OF FILE run_experiments.py ---
+--- START OF FILE run_experiments.py ---
 
 import os
 import yaml
@@ -40,7 +40,7 @@ from matplotlib.patches import Patch
 from stable_baselines3.common.vec_env import DummyVecEnv
 
 # =====================================================================================
-# --- CLASSI WRAPPER E AMBIENTI ---
+# --- CLASSI WRAPPER E AMBIENTI (INVARIATE) ---
 # =====================================================================================
 class CompatibilityWrapper(gym.Wrapper):
     def __init__(self, env, target_obs_shape, target_action_shape):
@@ -114,7 +114,6 @@ class CurriculumEnv(gym.Env):
         self.steps_at_current_level = 0
         self.current_env = None
         
-        # Calculate max_obs_shape and max_action_shape
         max_obs_shape, max_action_shape = 0, 0
         for config in self.config_files:
             temp_env = EV2Gym(config_file=config, reward_function=reward_function, state_function=state_function)
@@ -163,7 +162,7 @@ class CurriculumEnv(gym.Env):
                 self.steps_at_current_level = 0
             else:
                 print("\n--- Curriculum Learning: Completato l'ultimo livello del curriculum ---")
-                terminated = True # Terminate if curriculum is finished
+                terminated = True
 
         return self._pad_observation(obs), reward, terminated, truncated, info
 
@@ -245,17 +244,12 @@ class TrainingPlotCallback(BaseCallback):
         self.steps = []
 
     def _on_step(self) -> bool:
-        # self.locals['infos'] è una lista di dizionari, uno per ogni ambiente.
-        # Per DummyVecEnv, c'è un solo ambiente.
         if 'episode' in self.locals['infos'][0]:
             ep_reward = self.locals['infos'][0]['episode']['r']
             self.rewards.append(ep_reward)
             self.steps.append(self.num_timesteps)
         return True
 
-    # =====================================================================
-    # --- SEZIONE MODIFICATA ---
-    # =====================================================================
     def _on_training_end(self) -> None:
         if self.save_plot:
             print(f"Plotting training results for {self.model_name}...")
@@ -264,23 +258,14 @@ class TrainingPlotCallback(BaseCallback):
                 print("No episode rewards were logged. Cannot create a plot.")
                 return
 
-            # Crea un DataFrame e la media mobile
             rewards_df = pd.DataFrame({'steps': self.steps, 'rewards': self.rewards})
             rolling_avg = rewards_df.rewards.rolling(window=max(1, len(self.rewards) // 10)).mean()
 
             plt.figure(figsize=(10, 5))
-            
-            # 1. Plotta il return di ogni episodio come una linea continua, sottile e semi-trasparente
             plt.plot(rewards_df.steps, rewards_df.rewards, 'b-', linewidth=0.5, alpha=0.4, label='Episodic Return')
-            
-            # 2. Plotta la media mobile come una linea continua, più spessa e di colore rosso
             plt.plot(rewards_df.steps, rolling_avg, 'r-', linewidth=2, label='Rolling Average')
-            
             plt.xlabel("Timesteps")
-            
-            # 3. Aggiorna l'etichetta dell'asse Y
             plt.ylabel("Reward")
-            
             plt.title(f"Training Progress for {self.model_name}")
             plt.grid(True)
             plt.legend()
@@ -293,17 +278,14 @@ class TrainingPlotCallback(BaseCallback):
             plt.savefig(os.path.join(plot_dir, filename))
             plt.close()
             print(f"Training plot saved to {os.path.join(plot_dir, filename)}")
-    # =====================================================================
-    # --- FINE SEZIONE MODIFICATA ---
-    # =====================================================================
 
 # =====================================================================================
-# --- FUNZIONI DI PLOTTING (UNIFICATE) ---
+# --- FUNZIONI DI PLOTTING (INVARIATE) ---
 # =====================================================================================
 def get_color_map_and_legend(algorithms_to_plot):
     full_algo_categories = {
         "AFAP": "heuristic", "ALAP": "heuristic", "RR": "heuristic",
-        "Online_MPC": "mpc", "Approx_Explicit_MPC": "mpc", "Online_MPC_Adaptive": "mpc",
+        "Online_MPC": "mpc", "Approx_Explicit_MPC": "mpc", "Online_MPC_Adaptive": "mpc", "Online_MPC_Quadratic": "mpc", "Online_MPC_Quadratic_Adaptive": "mpc",
         "PPO": "on-policy", "A2C": "on-policy", "TRPO": "on-policy", "ARS": "on-policy",
         "SAC": "off-policy", "TD3": "off-policy", "DDPG": "off-policy", "DDPG+PER": "off-policy", "TQC": "off-policy"
     }
@@ -322,45 +304,104 @@ def plot_performance_metrics(stats_collection, save_path, scenario_name, algorit
     if not model_names: return
     algo_categories, category_colors, legend_elements = get_color_map_and_legend(model_names)
     fig, axes = plt.subplots(2, 2, figsize=(20, 12)); axes = axes.flatten()
-    fig.suptitle(f'Metriche di Performance - Scenario: {scenario_name}', fontsize=22)
+    fig.suptitle(f'Metriche di Performance Aggregate - Scenario: {scenario_name}', fontsize=22)
     for i, (metric, title) in enumerate(metrics_map.items()):
         ax = axes[i]
-        values = [stats_collection[name].get(metric, 0) for name in model_names]
-        if 'satisfaction' in metric or 'degradation' in metric: values = [v * 100 for v in values]
+        means = [stats_collection[name]['mean'].get(metric, 0) for name in model_names]
+        stds = [stats_collection[name]['std'].get(metric, 0) for name in model_names]
+        if 'satisfaction' in metric or 'degradation' in metric or 'loading_pct' in metric:
+            means = [v * 100 for v in means]
+            stds = [v * 100 for v in stds]
         colors = [category_colors.get(algo_categories.get(name, "default"), category_colors["default"]) for name in model_names]
-        ax.bar(model_names, values, color=colors)
+        ax.bar(model_names, means, yerr=stds, color=colors, capsize=5)
         ax.set_title(title, fontsize=14); ax.tick_params(axis='x', rotation=45); ax.grid(True, linestyle='--', alpha=0.6)
-        if '(%)' in title: ax.set_ylim(0, max(105, (max(values) if values else 0) * 1.1))
+        if '(%)' in title: ax.set_ylim(0, max(105, (max(means) if means else 0) * 1.1))
     fig.legend(handles=legend_elements, loc='lower center', ncol=len(legend_elements), bbox_to_anchor=(0.5, 0.01))
     plt.tight_layout(rect=[0, 0.05, 1, 0.95])
-    plt.savefig(os.path.join(save_path, f"performance_{scenario_name}.png")); plt.close(fig)
-
-def plot_degradation_details(stats_collection, save_path, scenario_name, algorithms_to_plot):
-    if not stats_collection: return
-    metrics_map = {
-        'battery_degradation': 'Degradazione Totale Media (%)',
-        'battery_degradation_cyclic': 'Degradazione Ciclica Media (%)',
-        'battery_degradation_calendar': 'Degradazione Calendario Media (%)'
-    }
-    model_names = [name for name in algorithms_to_plot if name in stats_collection]
-    if not model_names: return
-    algo_categories, category_colors, legend_elements = get_color_map_and_legend(model_names)
-    fig, axes = plt.subplots(1, 3, figsize=(24, 8), sharey=True)
-    fig.suptitle(f'Dettaglio Degradazione Batteria - Scenario: {scenario_name}', fontsize=22)
-    for i, (metric, title) in enumerate(metrics_map.items()):
-        ax = axes[i]
-        values = [stats_collection[name].get(metric, 0) * 100 for name in model_names]
-        colors = [category_colors.get(algo_categories.get(name, "default"), category_colors["default"]) for name in model_names]
-        ax.bar(model_names, values, color=colors)
-        ax.set_title(title, fontsize=16); ax.tick_params(axis='x', rotation=45, labelsize=12)
-        if i == 0: ax.set_ylabel('Degradazione Media (%)', fontsize=14)
-        ax.grid(True, linestyle='--', alpha=0.6)
-    fig.legend(handles=legend_elements, loc='lower center', ncol=len(legend_elements), bbox_to_anchor=(0.5, 0.01))
-    plt.tight_layout(rect=[0, 0.05, 1, 0.92])
-    plt.savefig(os.path.join(save_path, f"degradation_{scenario_name}.png")); plt.close(fig)
+    plt.savefig(os.path.join(save_path, f"performance_summary_{scenario_name}.png")); plt.close(fig)
 
 # =====================================================================================
-# --- FUNZIONE DI BENCHMARK UNIFICATA ---
+# --- FUNZIONE PER GENERARE OUTPUT RIASSUNTIVI (MODIFICATA) ---
+# =====================================================================================
+def generate_summary_outputs(stats_collection, save_path, scenario_name, num_simulations):
+    """Genera e salva un'immagine e un CSV con i risultati aggregati, formattati come nella tabella di riferimento."""
+    
+    # <-- MODIFICA: Mappatura completa delle colonne e dei fattori di scala
+    column_mapping = {
+        'total_profits': ('Profits/Costs (€)', 1),
+        'average_user_satisfaction': ('εᵘˢʳ (%)', 100),
+        'total_energy_charged': ('Energy Ch. (kWh)', 1),
+        'total_energy_discharged': ('Energy Disch. (kWh)', 1),
+        'transformer_overload_kwh': ('Tr. Ov. (kWh)', 1),
+        'total_q_lost_kwh': ('Total Qˡᵒˢᵗ (x10⁻³)', 1000),
+        'battery_degradation_calendar': ('Σ dᶜᵃˡ (x10⁻³)', 1000),
+        'battery_degradation_cyclic': ('Σ dᶜʸᶜ (x10⁻³)', 1000),
+        'execution_time': ('Execution Time (s)', 1),
+        'total_reward': ('Reward (x10³)', 0.001)
+    }
+    
+    summary_data = []
+    for name, data in stats_collection.items():
+        row = {'Algorithm': name}
+        for key, (col_name, scale) in column_mapping.items():
+            mean = data['mean'].get(key, 0)
+            std = data['std'].get(key, 0)
+            
+            # Applica il fattore di scala
+            mean_scaled = mean * scale
+            std_scaled = std * scale
+            
+            # Formatta la stringa
+            if num_simulations > 1:
+                # Per il tempo di esecuzione, usa più decimali se necessario
+                if 'Time' in col_name:
+                    row[col_name] = f"{mean_scaled:.2f} ± {std_scaled:.2f}"
+                else:
+                    row[col_name] = f"{mean_scaled:.1f} ± {std_scaled:.1f}"
+            else:
+                if 'Time' in col_name:
+                    row[col_name] = f"{mean_scaled:.2f}"
+                else:
+                    row[col_name] = f"{mean_scaled:.1f}"
+        summary_data.append(row)
+        
+    if not summary_data:
+        print("Nessun dato aggregato da salvare.")
+        return
+
+    df_summary = pd.DataFrame(summary_data).set_index('Algorithm')
+    
+    csv_path = os.path.join(save_path, f"summary_results_{scenario_name}.csv")
+    df_summary.to_csv(csv_path)
+    print(f"Tabella dei risultati aggregati salvata in: {csv_path}")
+
+    # <-- MODIFICA: Aumentata la larghezza della figura per accomodare tutte le colonne
+    fig, ax = plt.subplots(figsize=(22, 1 + len(df_summary) * 0.5))
+    ax.axis('tight')
+    ax.axis('off')
+    
+    table = ax.table(cellText=df_summary.values, colLabels=df_summary.columns, rowLabels=df_summary.index,
+                     cellLoc='center', loc='center')
+    table.auto_set_font_size(False)
+    table.set_fontsize(10)
+    table.scale(1.1, 1.3)
+
+    for (row, col), cell in table.get_celld().items():
+        if (row == 0 or col == -1):
+            cell.set_text_props(weight='bold')
+        if row % 2 == 1 and row > 0:
+            cell.set_facecolor('#f2f2f2')
+
+    fig.suptitle(f'Aggregated Results - Scenario: {scenario_name} (N={num_simulations} simulations)', fontsize=16)
+    plt.tight_layout(rect=[0, 0.03, 1, 0.95])
+    
+    img_path = os.path.join(save_path, f"summary_table_{scenario_name}.png")
+    plt.savefig(img_path, dpi=200, bbox_inches='tight')
+    plt.close(fig)
+    print(f"Immagine della tabella dei risultati aggregati salvata in: {img_path}")
+
+# =====================================================================================
+# --- FUNZIONE DI BENCHMARK CON SANITY CHECK ROBUSTO ---
 # =====================================================================================
 def run_benchmark(config_files, reward_func, algorithms_to_run, num_simulations, model_dir, is_multi_scenario, price_data_file=None):
     all_scenario_stats = {}
@@ -377,8 +418,7 @@ def run_benchmark(config_files, reward_func, algorithms_to_run, num_simulations,
             max_action_shape = tuple(metadata["action_space_shape"])
             print(f"Wrapper shapes caricate dai metadati: OBS={max_obs_shape}, ACT={max_action_shape}")
         else:
-            # Fallback for older models without metadata
-            print("ATTENZIONE: file 'model_metadata.json' non trovato. Calcolo delle dimensioni del wrapper dagli scenari di benchmark.")
+            print("ATTENZIONE: file 'model_metadata.json' non trovato.")
             temp_env = MultiScenarioEnv(config_files, reward_func, V2G_profit_max_loads)
             max_obs_shape, max_action_shape = temp_env.observation_space.shape, temp_env.action_space.shape
             temp_env.close()
@@ -386,10 +426,50 @@ def run_benchmark(config_files, reward_func, algorithms_to_run, num_simulations,
     for config_file in config_files:
         scenario_name = os.path.basename(config_file).replace(".yaml", "")
         print(f"\n\n{'='*80}\nAVVIO BENCHMARK PER SCENARIO: {scenario_name}\n{'='*80}")
+        
+        # --- SANITY CHECK ROBUSTO PER IL SOVRACCARICO DEL TRASFORMATORE ---
+        with open(config_file, 'r') as f:
+            config = yaml.safe_load(f)
+        
+        tr_capacity = config.get('transformer_capacity_kva', 0)
+        if not tr_capacity:
+            tr_capacity = config.get('transformer', {}).get('max_power', 0)
+
+        num_cs = config.get('number_of_charging_stations', 0)
+
+        max_power_cs = 0
+        if 'charging_stations' in config and config['charging_stations']:
+             max_power_cs = config['charging_stations'][0].get('max_power', 0)
+        
+        if not max_power_cs and 'charging_station' in config:
+            cs_config = config['charging_station']
+            voltage = cs_config.get('voltage', 0)
+            current = cs_config.get('max_charge_current', 0)
+            phases = cs_config.get('phases', 1)
+            
+            if voltage > 0 and current > 0:
+                if phases == 3:
+                    power_watts = voltage * current * np.sqrt(3)
+                else:
+                    power_watts = voltage * current
+                max_power_cs = power_watts / 1000.0
+
+        max_theoretical_load = num_cs * max_power_cs
+
+        if max_theoretical_load <= tr_capacity and tr_capacity > 0:
+            print("*"*80)
+            print(f"ATTENZIONE: In questo scenario il sovraccarico del trasformatore è IMPOSSIBILE.")
+            print(f"  - Capacità Trasformatore: {tr_capacity:.2f} kVA")
+            print(f"  - Carico Massimo Teorico (N_stazioni * P_max): {max_theoretical_load:.2f} kW")
+            print("  - Per testare la gestione del sovraccarico, aumenta il numero di stazioni o riduci la capacità del trasformatore.")
+            print("*"*80)
+        # --- FINE SANITY CHECK ---
+
         device = "cuda" if torch.cuda.is_available() else "cpu"
         scenario_save_path = os.path.join(overall_save_path, scenario_name); os.makedirs(scenario_save_path, exist_ok=True)
 
-        all_sim_stats = []
+        all_sim_stats = defaultdict(lambda: defaultdict(list))
+
         for sim_num in range(num_simulations):
             print(f"\n--- Simulazione {sim_num + 1}/{num_simulations} ---")
             env_replay = EV2Gym(config_file=config_file, generate_rnd_game=True, save_replay=True, price_data_file=price_data_file)
@@ -401,7 +481,6 @@ def run_benchmark(config_files, reward_func, algorithms_to_run, num_simulations,
             if eval_env_id in registry: del registry[eval_env_id]
             gym.register(id=eval_env_id, entry_point='ev2gym.models.ev2gym_env:EV2Gym', kwargs={'config_file': config_file, 'generate_rnd_game': False, 'load_from_replay_path': replay_path, 'reward_function': reward_func, 'state_function': V2G_profit_max_loads, 'price_data_file': price_data_file})
 
-            final_stats_collection = {}
             for name, (algorithm_class, rl_class, kwargs) in algorithms_to_run.items():
                 print(f"+ Esecuzione: {name}")
                 try:
@@ -410,44 +489,54 @@ def run_benchmark(config_files, reward_func, algorithms_to_run, num_simulations,
                     if is_rl_model:
                         if is_multi_scenario: env_instance = CompatibilityWrapper(env_instance, max_obs_shape, max_action_shape)
                         model_path = os.path.join(model_dir, f'{name.lower().replace("+", "_")}_model.zip')
-                        if not os.path.exists(model_path): print(f"!!! Modello {name} non trovato in {model_path}. Saltato."); continue
+                        if not os.path.exists(model_path): print(f"!!! Modello {name} non trovato. Saltato."); continue
                         model = rl_class.load(model_path, env=env_instance, device=device)
                     else:
                         model = algorithm_class(env=env_instance.unwrapped, **kwargs)
 
                     obs, _ = env_instance.reset()
                     done = False
+                    start_time = time.time()
                     while not done:
                         if is_rl_model:
                             action, _ = model.predict(obs, deterministic=True)
                         else:
                             action = model.get_action(env_instance.unwrapped)
                         obs, _, done, _, _ = env_instance.step(action)
+                    execution_time = time.time() - start_time
                     
                     stats = env_instance.unwrapped.stats
+                    stats['execution_time'] = execution_time
                     departed_evs = env_instance.unwrapped.departed_evs
                     if departed_evs:
                         stats['battery_degradation_calendar'] = np.mean([ev.calendar_loss for ev in departed_evs])
                         stats['battery_degradation_cyclic'] = np.mean([ev.cyclic_loss for ev in departed_evs])
                         stats['battery_degradation'] = stats['battery_degradation_calendar'] + stats['battery_degradation_cyclic']
-                    final_stats_collection[name] = stats
+                    
+                    for metric, value in stats.items():
+                        all_sim_stats[name][metric].append(value)
+                    
                     env_instance.close()
                 except Exception as e:
                     print(f"!!! ERRORE con '{name}': {e}. Saltato."); traceback.print_exc()
             
-            all_sim_stats.append(final_stats_collection)
             if os.path.exists(replay_path): os.remove(replay_path)
 
         if all_sim_stats:
-            aggregated_stats = {name: {metric: np.mean([s[name][metric] for s in all_sim_stats if name in s and metric in s[name]]) for metric in all_sim_stats[0].get(name, {})} for name in algorithms_to_run}
+            aggregated_stats = defaultdict(dict)
+            for name, metrics in all_sim_stats.items():
+                aggregated_stats[name]['mean'] = {metric: np.mean(values) for metric, values in metrics.items()}
+                aggregated_stats[name]['std'] = {metric: np.std(values) for metric, values in metrics.items()}
+            
             all_scenario_stats[scenario_name] = aggregated_stats
+            
             plot_performance_metrics(aggregated_stats, scenario_save_path, scenario_name, list(algorithms_to_run.keys()))
-            plot_degradation_details(aggregated_stats, scenario_save_path, scenario_name, list(algorithms_to_run.keys()))
+            generate_summary_outputs(aggregated_stats, scenario_save_path, scenario_name, num_simulations)
 
     print(f"\n--- Benchmark completato. Risultati salvati in: {overall_save_path} ---")
 
 # =====================================================================================
-# --- BLOCCO PRINCIPALE ---
+# --- BLOCCO PRINCIPALE (invariato) ---
 # =====================================================================================
 def calculate_max_cs(config_path: str) -> int:
     """Calcola il numero massimo di stazioni di ricarica tra tutti gli scenari."""
@@ -455,7 +544,7 @@ def calculate_max_cs(config_path: str) -> int:
     max_cs = 0
     if not all_scenarios_for_cs:
         print(f"ATTENZIONE: Nessun file di scenario trovato in {config_path}, MAX_CS impostato a 10 di default.")
-        return 10  # Un valore di fallback
+        return 10
     else:
         for scenario_file in all_scenarios_for_cs:
             with open(scenario_file, 'r', encoding='utf-8') as f:
@@ -463,55 +552,35 @@ def calculate_max_cs(config_path: str) -> int:
                 if 'number_of_charging_stations' in config:
                     max_cs = max(max_cs, config['number_of_charging_stations'])
     if max_cs == 0:
-        raise ValueError("Impossibile determinare il numero massimo di stazioni di ricarica. Controlla i file di configurazione.")
+        raise ValueError("Impossibile determinare il numero massimo di stazioni di ricarica.")
     return max_cs
 
 
 def get_algorithms(max_cs: int, is_thesis_mode: bool, mpc_type: str = 'linear') -> Dict[str, Tuple[Any, Any, Dict]]:
     """Definisce e restituisce gli algoritmi disponibili per l'esecuzione."""
-    
-    # Definizione di base per tutti gli algoritmi non-MPC
     base_algorithms = {
         "AFAP": (ChargeAsFastAsPossible, None, {}), "ALAP": (ChargeAsLateAsPossible, None, {}), "RR": (RoundRobin, None, {}),
         "SAC": (None, SAC, {}), "PPO": (None, PPO, {}), "A2C": (None, A2C, {}), "TD3": (None, TD3, {}), "DDPG": (None, DDPG, {}),
         "DDPG+PER": (None, CustomDDPG, {'replay_buffer_class': PrioritizedReplayBuffer}),
         "TQC": (None, TQC, {}), "TRPO": (None, TRPO, {}), "ARS": (None, ARS, {})
     }
-
-    # Algoritmi MPC disponibili
     mpc_algorithms = {
         'linear': {
             "Online_MPC": (OnlineMPC_Solver, None, {'control_horizon': 5}),
-            "Online_MPC_Adaptive": (OnlineMPC_Solver, None, {
-                'use_adaptive_horizon': True, 'h_min': 2, 'h_max': 5, 'lyapunov_alpha': 0.5
-            }),
+            "Online_MPC_Adaptive": (OnlineMPC_Solver, None, {'use_adaptive_horizon': True, 'h_min': 2, 'h_max': 5, 'lyapunov_alpha': 0.5}),
         },
         'quadratic': {
             "Online_MPC_Quadratic": (OnlineMPC_Solver_Quadratic, None, {'control_horizon': 5}),
-            "Online_MPC_Quadratic_Adaptive": (OnlineMPC_Solver_Quadratic, None, {
-                'use_adaptive_horizon': True, 'h_min': 2, 'h_max': 5, 'lyapunov_alpha': 0.1
-            }),
+            "Online_MPC_Quadratic_Adaptive": (OnlineMPC_Solver_Quadratic, None, {'use_adaptive_horizon': True, 'h_min': 2, 'h_max': 5, 'lyapunov_alpha': 0.1}),
         }
     }
-
-    # Algoritmi di approssimazione (comuni a entrambi)
     approx_mpc = {
-        "Approx_Explicit_MPC": (ApproximateExplicitMPC, None, {
-            'control_horizon': 5,
-            'max_cs': max_cs
-        }),
-        "Approx_Explicit_MPC_NN": (ApproximateExplicitMPC_NN, None, {
-            'control_horizon': 5,
-            'max_cs': max_cs
-        }),
+        "Approx_Explicit_MPC": (ApproximateExplicitMPC, None, {'control_horizon': 5, 'max_cs': max_cs}),
+        "Approx_Explicit_MPC_NN": (ApproximateExplicitMPC_NN, None, {'control_horizon': 5, 'max_cs': max_cs}),
     }
-
-    # Unisci gli algoritmi
     ALL_ALGORITHMS = {**base_algorithms, **mpc_algorithms[mpc_type], **approx_mpc}
-
     THESIS_ALGORITHMS_BASE = ["AFAP", "ALAP", "RR", "SAC", "DDPG+PER", "TQC"]
     THESIS_ALGORITHMS = {k: v for k, v in ALL_ALGORITHMS.items() if k in THESIS_ALGORITHMS_BASE or k.startswith('Online_MPC') or k.startswith('Approx')}
-
     return THESIS_ALGORITHMS if is_thesis_mode else ALL_ALGORITHMS
 
 
@@ -542,15 +611,11 @@ def get_selected_price_file() -> Optional[str]:
     """Ottiene la lista dei file CSV dei prezzi disponibili e chiede all'utente quale selezionare."""
     price_data_dir = os.path.join(os.path.dirname(__file__), 'ev2gym', 'data')
     available_price_files = sorted([f for f in os.listdir(price_data_dir) if f.endswith('.csv')])
-
     print("\nSeleziona il file CSV per i prezzi dell'energia:")
-    for i, f in enumerate(available_price_files):
-        print(f"{i+1}. {f}")
+    for i, f in enumerate(available_price_files): print(f"{i+1}. {f}")
     price_choice_input = input(f"Scelta (default: Netherlands_day-ahead-2015-2024.csv): ")
-    
     selected_price_file_abs_path = None
     default_price_file_name = "Netherlands_day-ahead-2015-2024.csv"
-
     if price_choice_input.isdigit() and 1 <= int(price_choice_input) <= len(available_price_files):
         chosen_file_name = available_price_files[int(price_choice_input) - 1]
         selected_price_file_abs_path = os.path.join(price_data_dir, chosen_file_name)
@@ -560,10 +625,9 @@ def get_selected_price_file() -> Optional[str]:
             selected_price_file_abs_path = os.path.join(price_data_dir, default_price_file_name)
             print(f"File prezzi di default: {default_price_file_name}")
         else:
-            print(f"ATTENZIONE: File di prezzo di default '{default_price_file_name}' non trovato. Verrà usato il default interno di loaders.py.")
+            print(f"ATTENZIONE: File di prezzo di default '{default_price_file_name}' non trovato.")
     else:
-        print(f"Scelta non valida. Verrà usato il default interno di loaders.py.")
-    
+        print(f"Scelta non valida.")
     return selected_price_file_abs_path
 
 
@@ -571,65 +635,15 @@ def train_rl_models_if_requested(scenarios_to_test: List[str], selected_reward_f
     """Addestra i modelli RL se richiesto."""
     rl_models_to_run = {k: v for k, v in algorithms_to_run.items() if v[1] is not None}
     mode_str = "Multi-Scenario" if is_multi_scenario else "Single-Domain"
-
     print(f"--- Addestramento modelli RL in modalità {mode_str} ---")
     scenario_name_for_path = 'multi_scenario' if is_multi_scenario else os.path.basename(scenarios_to_test[0]).replace(".yaml", "")
-    
     train_env_id = f'ev-train-{scenario_name_for_path}'
     if training_mode == 'single':
         if train_env_id in registry: del registry[train_env_id]
         gym.register(id=train_env_id, entry_point='ev2gym.models.ev2gym_env:EV2Gym', kwargs={'config_file': scenarios_to_test[0], 'generate_rnd_game': True, 'reward_function': selected_reward_func, 'state_function': V2G_profit_max_loads, 'price_data_file': selected_price_file_abs_path})
         train_env = gym.make(train_env_id)
         train_env = Monitor(train_env)
-    elif training_mode == 'sensitivity_analysis':
-        print("--- Avvio Analisi di Sensitività per le modalità di addestramento ---")
-        scenarios_to_analyze = ['random', 'shuffled', 'curriculum']
-        all_results = defaultdict(dict)
-
-        for name, (_, rl_class, kwargs) in rl_models_to_run.items():
-            print(f"\n--- Analisi per l'algoritmo: {name} ---")
-            plt.figure(figsize=(12, 7))
-
-            for scenario_mode in scenarios_to_analyze:
-                print(f"  - Addestramento in modalità: {scenario_mode}...")
-                
-                if scenario_mode == 'random':
-                    env_lambda = lambda: Monitor(MultiScenarioEnv(scenarios_to_test, selected_reward_func, V2G_profit_max_loads))
-                elif scenario_mode == 'curriculum':
-                    env_lambda = lambda: Monitor(CurriculumEnv(scenarios_to_test, selected_reward_func, V2G_profit_max_loads, curriculum_steps_per_level))
-                elif scenario_mode == 'shuffled':
-                    env_lambda = lambda: Monitor(ShuffledMultiScenarioEnv(scenarios_to_test, selected_reward_func, V2G_profit_max_loads))
-
-                train_env = DummyVecEnv([env_lambda])
-
-                model = rl_class("MlpPolicy", train_env, verbose=0, device=("cuda" if torch.cuda.is_available() else "cpu"), **kwargs)
-                
-                plot_callback = TrainingPlotCallback(model_name=f"{name}_{scenario_mode}", save_plot=False)
-                progress_callback = ProgressCallback(total_timesteps=steps_for_training)
-
-                model.learn(total_timesteps=steps_for_training, callback=[progress_callback, plot_callback])
-                
-                all_results[name][scenario_mode] = (plot_callback.steps, plot_callback.rewards)
-                
-                plt.plot(plot_callback.steps, plot_callback.rewards, label=f"Modalità: {scenario_mode}")
-                train_env.close()
-
-            plt.xlabel("Timesteps")
-            plt.ylabel("Average Reward")
-            plt.title(f"Analisi di Sensitività per {name}")
-            plt.legend()
-            plt.grid(True)
-            
-            plot_dir = "sensitivity_analysis_plots"
-            os.makedirs(plot_dir, exist_ok=True)
-            
-            timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
-            filename = f"sensitivity_{name}_{timestamp}.png"
-            plt.savefig(os.path.join(plot_dir, filename))
-            plt.close()
-            print(f"Grafico di analisi di sensitività per {name} salvato in {os.path.join(plot_dir, filename)}")
-
-    else: # Multi-scenario modes
+    else:
         if training_mode == 'random':
             env_lambda = lambda: Monitor(MultiScenarioEnv(scenarios_to_test, selected_reward_func, V2G_profit_max_loads))
         elif training_mode == 'curriculum':
@@ -637,10 +651,8 @@ def train_rl_models_if_requested(scenarios_to_test: List[str], selected_reward_f
         elif training_mode == 'shuffled':
             env_lambda = lambda: Monitor(ShuffledMultiScenarioEnv(scenarios_to_test, selected_reward_func, V2G_profit_max_loads))
         else:
-            # Fallback to random mode if training_mode is unknown
             print(f"ATTENZIONE: Modalità di training '{training_mode}' non riconosciuta. Verrà usata la modalità 'random' di default.")
             env_lambda = lambda: Monitor(MultiScenarioEnv(scenarios_to_test, selected_reward_func, V2G_profit_max_loads))
-        
         train_env = DummyVecEnv([env_lambda])
 
     for name, (_, rl_class, kwargs) in rl_models_to_run.items():
@@ -654,14 +666,10 @@ def train_rl_models_if_requested(scenarios_to_test: List[str], selected_reward_f
     if is_multi_scenario:
         obs_shape = train_env.observation_space.shape
         act_shape = train_env.action_space.shape
-        metadata = {
-            "observation_space_shape": list(obs_shape),
-            "action_space_shape": list(act_shape)
-        }
+        metadata = {"observation_space_shape": list(obs_shape), "action_space_shape": list(act_shape)}
         with open(os.path.join(model_dir, 'model_metadata.json'), 'w') as f:
             json.dump(metadata, f, indent=4)
         print(f"Metadati del modello salvati in {os.path.join(model_dir, 'model_metadata.json')}")
-
     train_env.close()
 
 
@@ -674,89 +682,3 @@ def run_fit_battery_if_requested() -> None:
             print("--- Fit_battery.py completato. ---")
         except (subprocess.CalledProcessError, FileNotFoundError) as e:
             print(f"ERRORE: {e}. Lo script procederà con i parametri esistenti.")
-
-
-import argparse
-from typing import List, Dict, Any, Tuple, Callable, Optional
-
-# ... (altre importazioni)
-
-def main(args):
-    if args.run_fit_battery:
-        print("--- Esecuzione di Fit_battery.py ---")
-        try:
-            subprocess.run(["python", "Fit_battery.py"], check=True)
-            print("--- Fit_battery.py completato. ---")
-        except (subprocess.CalledProcessError, FileNotFoundError) as e:
-            print(f"ERRORE: {e}. Lo script procederà con i parametri esistenti.")
-
-    is_thesis_mode = (args.plot_mode == 'thesis')
-
-    config_path_for_cs = "ev2gym/example_config_files/"
-    MAX_CS = calculate_max_cs(config_path_for_cs)
-    print(f"\nRilevato un massimo di {MAX_CS} stazioni di ricarica tra tutti gli scenari.")
-
-    algorithms_to_run = get_algorithms(MAX_CS, is_thesis_mode, args.mpc_type)
-
-    config_path = "ev2gym/example_config_files/"
-    # scenarios_to_test = get_scenarios_to_test(config_path) # Sostituito da args.scenarios
-    available_scenarios_full_paths = sorted(glob(os.path.join(config_path, "*.yaml")))
-    if 'all' in args.scenarios:
-        scenarios_to_test = available_scenarios_full_paths
-    else:
-        scenarios_to_test = [s for s in available_scenarios_full_paths if os.path.basename(s).replace(".yaml", "") in args.scenarios]
-    print(f"Scenari selezionati: {[os.path.basename(s) for s in scenarios_to_test]}")
-
-    # selected_reward_func = get_selected_reward_function() # Sostituito da args.reward_func
-    available_rewards = [(name, func) for name, func in inspect.getmembers(reward_module, inspect.isfunction) if inspect.getmodule(func) == reward_module]
-    selected_reward_func = next((func for name, func in available_rewards if name == args.reward_func), None)
-    if selected_reward_func is None:
-        raise ValueError(f"Funzione di reward '{args.reward_func}' non trovata.")
-    print(f"Funzione di reward selezionata: {args.reward_func}")
-
-    is_multi_scenario = len(scenarios_to_test) > 1
-    scenario_name_for_path = 'multi_scenario' if is_multi_scenario else os.path.basename(scenarios_to_test[0]).replace(".yaml", "")
-    model_dir = f'./saved_models/{scenario_name_for_path}/'
-    os.makedirs(model_dir, exist_ok=True)
-
-    # selected_price_file_abs_path = get_selected_price_file() # Sostituito da args.price_file
-    selected_price_file_abs_path = args.price_file
-    if selected_price_file_abs_path == "default":
-        price_data_dir = os.path.join(os.path.dirname(__file__), 'ev2gym', 'data')
-        default_price_file_name = "Netherlands_day-ahead-2015-2024.csv"
-        selected_price_file_abs_path = os.path.join(price_data_dir, default_price_file_name)
-
-    if args.train_rl_models:
-        train_rl_models_if_requested(
-            scenarios_to_test=scenarios_to_test,
-            selected_reward_func=selected_reward_func,
-            algorithms_to_run=algorithms_to_run,
-            is_multi_scenario=is_multi_scenario,
-            model_dir=model_dir,
-            selected_price_file_abs_path=selected_price_file_abs_path,
-            steps_for_training=args.steps_for_training,
-            training_mode=args.training_mode
-        )
-
-    num_sims = args.num_sims
-
-    run_benchmark(scenarios_to_test, selected_reward_func, algorithms_to_run, num_sims, model_dir, is_multi_scenario, selected_price_file_abs_path)
-
-    print("\n--- ESECUZIONE COMPLETATA ---")
-
-
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Esegui esperimenti di simulazione EV2Gym.")
-    parser.add_argument('--run_fit_battery', action='store_true', help="Esegui Fit_battery.py per calibrare il modello di degradazione.")
-    parser.add_argument('--plot_mode', type=str, default='thesis', choices=['thesis', 'complete'], help="Modalità grafici: 'thesis' (default) o 'complete'.")
-    parser.add_argument('--scenarios', nargs='+', default=['all'], help="Lista di nomi di scenari da testare (es. 'BusinessPST PublicPST') o 'all' (default).")
-    parser.add_argument('--reward_func', type=str, default='FastProfitAdaptiveReward', help="Nome della funzione di reward da usare (default: FastProfitAdaptiveReward).")
-    parser.add_argument('--price_file', type=str, default='distribution-of-arrival-weekend.csv', help="Percorso assoluto del file CSV per i prezzi dell'energia o 'default'.")
-    parser.add_argument('--train_rl_models', action='store_true', help="Addestra i modelli RL.")
-    parser.add_argument('--steps_for_training', type=int, default=100000, help="Numero di passi per l'addestramento dei modelli RL.")
-    parser.add_argument('--training_mode', type=str, default='multi-scenario', choices=['single', 'multi-scenario', 'curriculum', 'sensitivity_analysis'], help="Modalità di addestramento: 'single' (default), 'multi-scenario' o 'curriculum'.")
-    parser.add_argument('--num_sims', type=int, default=1, help="Numero di simulazioni di valutazione per scenario.")
-    parser.add_argument('--mpc_type', type=str, default='linear', choices=['linear', 'quadratic'], help="Tipo di solver MPC da usare: 'linear' (default) o 'quadratic'.")
-
-    args = parser.parse_args()
-    main(args)

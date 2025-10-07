@@ -54,6 +54,132 @@ The key steps in the workflow include:
     \item \textbf{Battery Calibration:} The option to run \texttt{Fit\_battery.py} is provided to calibrate the parameters of the battery degradation model, ensuring that simulations use the most up-to-date data.
 \end{itemize}
 
+\subsection {Scenario structure Yaml file}
+
+The YAML (YAML Ain't Markup Language) configuration file serves as the foundational blueprint for defining a simulation experiment within the EV2Gym framework.
+It is a powerful and indispensable tool for the systematic study of EV smart charging strategies. It provides a structured and transparent method for defining the physical, economic, and stochastic properties of the simulation environment. A thorough understanding and deliberate manipulation of these parameters are essential for formulating meaningful research questions, generating valid results, and drawing robust conclusions about the performance of various control algorithms.
+
+\section{Core Simulation Parameters}
+
+This primary section establishes the temporal boundaries and fundamental operational logic of the simulation.
+
+\begin{description}
+    \item[\texttt{\textbf{timescale}}] Defines the temporal granularity of a single simulation step, measured in minutes. This parameter is critical as it dictates the resolution of the control problem; a smaller timescale allows for finer control but increases computational complexity.
+    \begin{lstlisting}
+# Timescale in minutes per simulation step
+timescale: 15 
+    \end{lstlisting}
+
+    \item[\texttt{\textbf{simulation\_length}}] Specifies the total duration of a single simulation episode, measured in the number of steps defined by \texttt{timescale}.
+    \begin{lstlisting}
+# Duration in steps per simulation
+simulation_length: 112 
+    \end{lstlisting}
+\end{description}
+
+\section{Temporal and Contextual Settings}
+
+These parameters anchor the simulation to a specific point in time, which is crucial for sourcing external data such as electricity prices and solar irradiance profiles.
+
+\begin{description}
+    \item[\texttt{\textbf{date}}] The \texttt{year}, \texttt{month}, and \texttt{day} parameters set the initial date. The \texttt{random\_day} boolean determines if a new, random date is selected upon each environment reset, facilitating stochastic analysis over different time periods.
+    \begin{lstlisting}
+year: 2022
+month: 1
+day: 17
+random_day: True
+    \end{lstlisting}
+
+    \item[\texttt{\textbf{time}}] The initial \texttt{hour} and \texttt{minute} of the simulation. These typically remain fixed across resets to ensure consistent starting conditions.
+    
+    \item[\texttt{\textbf{simulation\_days}}] Constrains the simulation to specific day types (\texttt{weekdays}, \texttt{weekends}, or \texttt{both}), allowing for the study of distinct demand patterns.
+\end{description}
+
+\section{Stochastic Demand Modeling}
+
+This section governs the arrival and behavior of Electric Vehicles (EVs), which constitute the primary source of flexible load in the simulation.
+
+\begin{description}
+    \item[\texttt{\textbf{scenario}}] Defines the archetypal environment (e.g., \texttt{workplace}, \texttt{public}, \texttt{private}), which loads a corresponding statistical model for EV arrival times, departure times, and required energy.
+    
+    \item[\texttt{\textbf{spawn\_multiplier}}] A scalar value that adjusts the baseline EV arrival rate. A value greater than 1 increases the density of EVs, thereby intensifying the stress on the charging infrastructure and creating more challenging control problems.
+    \begin{lstlisting}
+scenario: workplace
+spawn_multiplier: 5
+    \end{lstlisting}
+\end{description}
+
+\section{Economic Framework}
+
+These parameters establish the financial incentives and constraints that drive the optimization objective.
+
+\begin{description}
+    \item[\texttt{\textbf{discharge\_price\_factor}}] A foundational economic lever for Vehicle-to-Grid (V2G) operations. It defines the remuneration for discharging energy back to the grid as a fraction of the purchasing price. A value less than 1.0 models a realistic bid-ask spread, ensuring economic viability for the grid operator.
+    \begin{lstlisting}
+# A factor of 0.95 means selling energy yields 95% of the purchasing price.
+discharge_price_factor: 0.95
+    \end{lstlisting}
+\end{description}
+
+\section{Physical Infrastructure}
+
+This section specifies the hardware and topological constraints of the charging network. These are the "hard" constraints that no algorithm can violate without incurring significant penalties.
+
+\begin{description}
+    \item[\texttt{\textbf{v2g\_enabled}}] A global boolean flag to enable or disable V2G capabilities for all charging stations.
+    
+    \item[\texttt{\textbf{number\_of\_charging\_stations}}] The total count of charging points available.
+    
+    \item[\texttt{\textbf{transformer}}] Defines the properties of the local transformer, most critically its \texttt{max\_power} capacity in kW. This parameter represents the primary bottleneck of the system; exceeding this limit results in an overload condition.
+    \begin{lstlisting}
+transformer:
+  max_power: 100 # in kW
+    \end{lstlisting}
+    
+    \item[\texttt{\textbf{charging\_station}}] Specifies the default electrical properties of a charging station, including maximum current, voltage, and number of phases. These are used to calculate the maximum power per station.
+    \begin{lstlisting}
+charging_station:  
+  max_charge_current: 32 # Amperes
+  voltage: 400 # Volts
+  phases: 3
+    \end{lstlisting}
+\end{description}
+
+\section{Exogenous Energy Events}
+
+These parameters introduce external, often uncontrollable, energy flows and grid requests that add realism and complexity to the simulation.
+
+\begin{description}
+    \item[\texttt{\textbf{inflexible\_loads}}] Models background energy consumption from sources other than EVs (e.g., building lighting, HVAC). When enabled, this load consumes a portion of the transformer's capacity, reducing the available power for EV charging.
+    
+    \item[\texttt{\textbf{solar\_power}}] Simulates on-site photovoltaic generation. This introduces a source of low-cost, intermittent energy that intelligent algorithms can leverage to reduce charging costs.
+    
+    \item[\texttt{\textbf{demand\_response}}] Models a request from the grid operator to curtail power consumption for a specified duration. The \texttt{notification\_of\_event\_minutes} parameter is crucial, as it provides the forecast horizon that advanced control algorithms (like MPC) require to plan and adapt their charging strategies effectively.
+\end{description}
+
+\section{Electric Vehicle Fleet Specification}
+
+This section defines the characteristics of the vehicles being charged.
+
+\begin{description}
+    \item[\texttt{\textbf{heterogeneous\_ev\_specs}}] A boolean that, if true, populates the simulation with a diverse fleet of EVs with varying battery capacities and charging rates, as defined in the \texttt{ev\_specs\_file}. This enhances simulation realism.
+    
+    \item[\texttt{\textbf{ev}}] This subsection defines the default properties of a single EV. Key parameters include:
+    \begin{itemize}
+        \item \texttt{charge\_efficiency} and \texttt{discharge\_efficiency}: Model the energy losses inherent in the charging and discharging processes. Values less than 1.0 are physically realistic and are the source of the \texttt{Q\_lost} metric.
+        \item \texttt{desired\_capacity}: Represents the target state-of-charge requested by the user, modeling the fact that not all users require a full 100\% charge.
+    \end{itemize}
+    \begin{lstlisting}
+ev:
+  charge_efficiency: 0.95
+  discharge_efficiency: 0.95
+  desired_capacity: 0.9 
+    \end{lstlisting}
+\end{description}
+
+
+
+
 \subsection{Dual-Mode Training: Specialists and Generalists}
 
 The new workflow seamlessly manages the training of both "specialist" agents (optimized for a single scenario) and "generalist" agents (robust across multiple scenarios). The behavior is determined by the number of selected scenarios:

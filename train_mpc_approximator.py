@@ -33,7 +33,7 @@ MAX_CS = 25
 
 print(f"Trovati {len(AVAILABLE_SCENARIOS)} scenari. Il numero massimo di stazioni di ricarica è: {MAX_CS}")
 
-NUM_SAMPLES = 100  # Impostare a 5000+ per il modello finale
+NUM_SAMPLES = 300  # Impostare a 5000+ per il modello finale
 CONTROL_HORIZON = 5
 MODEL_SAVE_PATH = 'ev2gym/baselines/mpc_approximator.joblib'
 
