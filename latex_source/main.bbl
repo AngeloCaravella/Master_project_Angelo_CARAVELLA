@@ -481,7 +481,6 @@
       \field{sortinithash}{4d103a86280481745c9c897c925753c0}
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
-      \field{note}{Accessed: 2025-09-21}
       \field{title}{Fit for 55: Delivering the EU's 2030 Climate Target}
       \field{year}{2021}
       \verb{urlraw}
@@ -598,7 +597,6 @@
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
       \field{journaltitle}{arXiv preprint arXiv:2410.16790}
-      \field{note}{Emails: \{tamino, cederk, laezza, knut.akesson, morteza.chehreghani\}@chalmers.se}
       \field{title}{Curriculum Reinforcement Learning for Complex Reward Functions}
       \field{year}{2024}
     \endentry
@@ -773,7 +771,7 @@
       \field{sortinithash}{23a3aa7c24e56cfa16945d55545109b5}
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
-      \field{booktitle}{International conference on machine learning}
+      \field{booktitle}{International Conference on Machine Learning}
       \field{title}{Soft actor-critic: Off-policy maximum entropy deep reinforcement learning with a stochastic actor}
       \field{year}{2018}
       \field{pages}{1861\bibrangedash 1870}
@@ -820,7 +818,6 @@
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
       \field{journaltitle}{IEEE Access}
-      \field{note}{Accessed: 2025-09-21}
       \field{number}{99}
       \field{title}{Comprehensive Overview of Reward Engineering and Shaping in Advancing Reinforcement Learning Applications}
       \field{volume}{PP}
@@ -835,47 +832,6 @@
       \endverb
       \verb{url}
       \verb https://arxiv.org/abs/2408.10215
-      \endverb
-    \endentry
-    \entry{Richalet1978ModelPH}{article}{}{}
-      \name{author}{2}{}{%
-        {{hash=eccf003c433f2cafa32f27484880a878}{%
-           family={J.\bibnamedelimi RICHALET},
-           familyi={J\bibinitperiod\bibinitdelim R\bibinitperiod},
-           given={J.\bibnamedelimi L.\bibnamedelimi TESTUD},
-           giveni={J\bibinitperiod\bibinitdelim L\bibinitperiod\bibinitdelim T\bibinitperiod},
-           suffix={A.\bibnamedelimi RAULT},
-           suffixi={A\bibinitperiod\bibinitdelim R\bibinitperiod}}}%
-        {{hash=404148d8523b1339cf0b04c1ceda6291}{%
-           family={PAPON},
-           familyi={P\bibinitperiod},
-           given={J.},
-           giveni={J\bibinitperiod}}}%
-      }
-      \list{publisher}{1}{%
-        {Elsevier}%
-      }
-      \strng{namehash}{ddaeb9a2d497e6e7ccef5d04d5395dd5}
-      \strng{fullhash}{ddaeb9a2d497e6e7ccef5d04d5395dd5}
-      \strng{fullhashraw}{ddaeb9a2d497e6e7ccef5d04d5395dd5}
-      \strng{bibnamehash}{ddaeb9a2d497e6e7ccef5d04d5395dd5}
-      \strng{authorbibnamehash}{ddaeb9a2d497e6e7ccef5d04d5395dd5}
-      \strng{authornamehash}{ddaeb9a2d497e6e7ccef5d04d5395dd5}
-      \strng{authorfullhash}{ddaeb9a2d497e6e7ccef5d04d5395dd5}
-      \strng{authorfullhashraw}{ddaeb9a2d497e6e7ccef5d04d5395dd5}
-      \field{sortinit}{J}
-      \field{sortinithash}{b2f54a9081ace9966a7cb9413811edb4}
-      \field{labelnamesource}{author}
-      \field{labeltitlesource}{title}
-      \field{journaltitle}{Automatica}
-      \field{number}{5}
-      \field{title}{Model predictive heuristic control: Applications to industrial processes}
-      \field{volume}{14}
-      \field{year}{1978}
-      \field{pages}{413\bibrangedash 428}
-      \range{pages}{16}
-      \verb{doi}
-      \verb 10.1016/0005-1098(78)90001-8
       \endverb
     \endentry
     \entry{karg2020efficient}{article}{}{}
@@ -1024,7 +980,6 @@
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
       \field{journaltitle}{Minerals}
-      \field{note}{Accessed: 2025-09-21}
       \field{number}{7}
       \field{title}{Investigating Dynamic Behavior in SAG Mill Pebble Recycling Circuits: A Simulation Approach}
       \field{volume}{14}
@@ -1097,7 +1052,7 @@
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
       \field{journaltitle}{arXiv preprint arXiv:1509.02971}
-      \field{title}{CONTINUOUS CONTROL WITH DEEP REINFORCEMENT LEARNING}
+      \field{title}{Continuous control with deep reinforcement learning}
       \field{year}{2015}
     \endentry
     \entry{Ding}{article}{}{}
@@ -1379,12 +1334,9 @@
       \field{sortinithash}{22369a73d5f88983a108b63f07f37084}
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
-      \field{journaltitle}{ICML}
+      \field{journaltitle}{University of California, Berkeley}
       \field{title}{Policy invariance under reward transformations: Theory and application to reward shaping}
-      \field{volume}{99}
       \field{year}{1999}
-      \field{pages}{278\bibrangedash 287}
-      \range{pages}{10}
     \endentry
     \entry{NielsonElton2021InductionPopperML}{article}{}{}
       \name{author}{2}{}{%
@@ -1559,7 +1511,6 @@
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
       \field{journaltitle}{Proceedings of the AAAI Conference on Artificial Intelligence}
-      \field{note}{Oregon State University, School of EECS, Corvallis, OR 97331, USA | pociusr@oregonstate.edu; University of Pennsylvania, School of EAS, Philadelphia, Pennsylvania, 19104, USA | isele@seas.upenn.edu; Naval Research Laboratory, Code 5514; Washington, DC, 20375, USA}
       \field{title}{Comparing Reward Shaping, Visual Hints, and Curriculum Learning}
       \field{year}{2019}
     \endentry
@@ -1658,6 +1609,55 @@
       \range{pages}{1}
       \verb{doi}
       \verb 10.1016/j.rser.2022.112443
+      \endverb
+    \endentry
+    \entry{Richalet1978ModelPH}{article}{}{}
+      \name{author}{4}{}{%
+        {{hash=3220dab9e397f23369731377bb8150bf}{%
+           family={Richalet},
+           familyi={R\bibinitperiod},
+           given={Jacques},
+           giveni={J\bibinitperiod}}}%
+        {{hash=38886a2711ec865b81e05125c7c4da44}{%
+           family={Rault},
+           familyi={R\bibinitperiod},
+           given={André},
+           giveni={A\bibinitperiod}}}%
+        {{hash=de7c0cbf4a5c3576373df03e804726a8}{%
+           family={Testud},
+           familyi={T\bibinitperiod},
+           given={Jean\bibnamedelima Louis},
+           giveni={J\bibinitperiod\bibinitdelim L\bibinitperiod}}}%
+        {{hash=ef3dbcca4091bfa2b15ddea39f22b50e}{%
+           family={Papon},
+           familyi={P\bibinitperiod},
+           given={Jean},
+           giveni={J\bibinitperiod}}}%
+      }
+      \list{publisher}{1}{%
+        {Elsevier}%
+      }
+      \strng{namehash}{ff184ec0a344b12f427e7d9596424b5a}
+      \strng{fullhash}{72efc7fe0f791b9c1c5ce214a0e62bad}
+      \strng{fullhashraw}{72efc7fe0f791b9c1c5ce214a0e62bad}
+      \strng{bibnamehash}{ff184ec0a344b12f427e7d9596424b5a}
+      \strng{authorbibnamehash}{ff184ec0a344b12f427e7d9596424b5a}
+      \strng{authornamehash}{ff184ec0a344b12f427e7d9596424b5a}
+      \strng{authorfullhash}{72efc7fe0f791b9c1c5ce214a0e62bad}
+      \strng{authorfullhashraw}{72efc7fe0f791b9c1c5ce214a0e62bad}
+      \field{sortinit}{R}
+      \field{sortinithash}{5e1c39a9d46ffb6bebd8f801023a9486}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{Automatica}
+      \field{number}{5}
+      \field{title}{Model predictive heuristic control: Applications to industrial processes}
+      \field{volume}{14}
+      \field{year}{1978}
+      \field{pages}{413\bibrangedash 428}
+      \range{pages}{16}
+      \verb{doi}
+      \verb 10.1016/0005-1098(78)90001-8
       \endverb
     \endentry
     \entry{sadeghi2022deep}{article}{}{}
@@ -1882,7 +1882,7 @@
       \field{sortinithash}{b164b07b29984b41daf1e85279fbc5ab}
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
-      \field{journaltitle}{Proceedings of the 32nd International Conference on Machine Learning}
+      \field{journaltitle}{Proceedings of the 32nd International Conference on Machine Learning (ICML}
       \field{title}{Trust Region Policy Optimization}
       \field{volume}{37}
       \field{year}{2015}

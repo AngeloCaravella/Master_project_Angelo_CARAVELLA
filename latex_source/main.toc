@@ -33,9 +33,9 @@
 \contentsline {section}{\numberline {2.10}Reward Engineering: Shaping Agent Behavior}{27}{section.2.10}%
 \contentsline {subsection}{\numberline {2.10.1}Potential-Based Reward Shaping (PBRS)}{27}{subsection.2.10.1}%
 \contentsline {subsection}{\numberline {2.10.2}Theoretical Foundation and Policy Invariance}{28}{subsection.2.10.2}%
-\contentsline {subsection}{\numberline {2.10.3}Practical Implications and Design Considerations}{28}{subsection.2.10.3}%
+\contentsline {subsection}{\numberline {2.10.3}Practical Implications and Design Considerations}{29}{subsection.2.10.3}%
 \contentsline {section}{\numberline {2.11}Dynamic and Adaptive Rewards}{29}{section.2.11}%
-\contentsline {subsection}{\numberline {2.11.1}Motivation and Mechanisms}{29}{subsection.2.11.1}%
+\contentsline {subsection}{\numberline {2.11.1}Motivation and Mechanisms}{30}{subsection.2.11.1}%
 \contentsline {section}{\numberline {2.12}Curriculum Learning}{30}{section.2.12}%
 \contentsline {subsection}{\numberline {2.12.1}Specific Principles and Applications}{31}{subsection.2.12.1}%
 \contentsline {subsection}{\numberline {2.12.2}Curriculum Learning in V2G}{31}{subsection.2.12.2}%
