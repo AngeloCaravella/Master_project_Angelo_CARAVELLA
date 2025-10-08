@@ -413,69 +413,69 @@
 \newlabel{alg:state_construction}{{1}{75}{State Space ($S$)}{algorithm.1}{}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {3.14.2}Action Space ($A$)}{76}{subsection.3.14.2}\protected@file@percent }
 \@writefile{toc}{\contentsline {subsection}{\numberline {3.14.3}Reward Function ($R$)}{76}{subsection.3.14.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {3.15}Reinforcement Learning Algorithms}{76}{section.3.15}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{Soft Actor-Critic (SAC)}{76}{section*.37}\protected@file@percent }
 \abx@aux@cite{0}{Qiu2023}
 \abx@aux@segm{0}{0}{Qiu2023}
 \abx@aux@cite{0}{Qiu2023}
 \abx@aux@segm{0}{0}{Qiu2023}
-\@writefile{toc}{\contentsline {section}{\numberline {3.15}Reinforcement Learning Algorithms}{77}{section.3.15}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{Soft Actor-Critic (SAC)}{77}{section*.37}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {3.2}{\ignorespaces SAC actor-critic architecture. The actor network outputs a stochastic policy parameterized by a mean and standard deviation, while two separate Q-networks (critics) estimate state-action values. The minimum of the two Q-values is used for policy updates to mitigate overestimation bias. Image from \blx@tocontentsinit {0}\cite {Qiu2023}.}}{78}{figure.3.2}\protected@file@percent }
-\newlabel{fig:SAC}{{3.2}{78}{SAC actor-critic architecture. The actor network outputs a stochastic policy parameterized by a mean and standard deviation, while two separate Q-networks (critics) estimate state-action values. The minimum of the two Q-values is used for policy updates to mitigate overestimation bias. Image from \cite {Qiu2023}}{figure.3.2}{}}
-\@writefile{loa}{\contentsline {algorithm}{\numberline {2}{\ignorespaces Soft Actor-Critic (SAC)}}{79}{algorithm.2}\protected@file@percent }
-\newlabel{alg:sac}{{2}{79}{Soft Actor-Critic (SAC)}{algorithm.2}{}}
-\@writefile{toc}{\contentsline {paragraph}{Implementation Details}{79}{section*.38}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {3.2}{\ignorespaces SAC actor-critic architecture. The actor network outputs a stochastic policy parameterized by a mean and standard deviation, while two separate Q-networks (critics) estimate state-action values. The minimum of the two Q-values is used for policy updates to mitigate overestimation bias. Image from \blx@tocontentsinit {0}\cite {Qiu2023}.}}{77}{figure.3.2}\protected@file@percent }
+\newlabel{fig:SAC}{{3.2}{77}{SAC actor-critic architecture. The actor network outputs a stochastic policy parameterized by a mean and standard deviation, while two separate Q-networks (critics) estimate state-action values. The minimum of the two Q-values is used for policy updates to mitigate overestimation bias. Image from \cite {Qiu2023}}{figure.3.2}{}}
+\@writefile{loa}{\contentsline {algorithm}{\numberline {2}{\ignorespaces Soft Actor-Critic (SAC)}}{78}{algorithm.2}\protected@file@percent }
+\newlabel{alg:sac}{{2}{78}{Soft Actor-Critic (SAC)}{algorithm.2}{}}
+\@writefile{toc}{\contentsline {paragraph}{Implementation Details}{78}{section*.38}\protected@file@percent }
 \abx@aux@cite{0}{Qiu2023}
 \abx@aux@segm{0}{0}{Qiu2023}
 \abx@aux@cite{0}{Qiu2023}
 \abx@aux@segm{0}{0}{Qiu2023}
-\@writefile{toc}{\contentsline {subsubsection}{Deep Deterministic Policy Gradient + PER (DDPG+PER)}{80}{section*.39}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {3.3}{\ignorespaces DDPG actor-critic architecture. The actor network produces a deterministic action, which is evaluated by the Q-network (critic). Both networks maintain slowly-updating target networks ($\mu '$ and $Q'$) for stable Bellman updates. During training, exploration noise is added to the actor's output. Image from \blx@tocontentsinit {0}\cite {Qiu2023}.}}{80}{figure.3.3}\protected@file@percent }
-\newlabel{fig:DDPG}{{3.3}{80}{DDPG actor-critic architecture. The actor network produces a deterministic action, which is evaluated by the Q-network (critic). Both networks maintain slowly-updating target networks ($\mu '$ and $Q'$) for stable Bellman updates. During training, exploration noise is added to the actor's output. Image from \cite {Qiu2023}}{figure.3.3}{}}
-\@writefile{loa}{\contentsline {algorithm}{\numberline {3}{\ignorespaces DDPG with Prioritized Experience Replay (PER)}}{81}{algorithm.3}\protected@file@percent }
-\newlabel{alg:ddpg_per}{{3}{81}{Deep Deterministic Policy Gradient + PER (DDPG+PER)}{algorithm.3}{}}
-\@writefile{toc}{\contentsline {paragraph}{Implementation Details}{82}{section*.40}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{Truncated Quantile Critics (TQC)}{82}{section*.41}\protected@file@percent }
-\@writefile{loa}{\contentsline {algorithm}{\numberline {4}{\ignorespaces Truncated Quantile Critics (TQC)}}{83}{algorithm.4}\protected@file@percent }
-\newlabel{alg:tqc}{{4}{83}{Truncated Quantile Critics (TQC)}{algorithm.4}{}}
-\@writefile{toc}{\contentsline {paragraph}{Implementation Details}{84}{section*.42}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.15.1}A History-Based Adaptive Reward for Profit Maximization}{84}{subsection.3.15.1}\protected@file@percent }
-\newlabel{sec:adaptive_reward}{{3.15.1}{84}{A History-Based Adaptive Reward for Profit Maximization}{subsection.3.15.1}{}}
-\@writefile{loa}{\contentsline {algorithm}{\numberline {5}{\ignorespaces History-Based Adaptive Reward Calculation}}{86}{algorithm.5}\protected@file@percent }
-\newlabel{alg:adaptive_reward}{{5}{86}{A History-Based Adaptive Reward for Profit Maximization}{algorithm.5}{}}
-\@writefile{toc}{\contentsline {subsubsection}{Economic Profit}{86}{section*.43}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{Adaptive User Satisfaction Penalty}{87}{section*.44}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{Adaptive Transformer Overload Penalty}{87}{section*.45}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{Rationale and Significance}{88}{section*.46}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{Implementation Details}{88}{section*.47}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {3.16}Online MPC Formulation (PuLP Implementation)}{88}{section.3.16}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{Implementation Details}{88}{section*.48}\protected@file@percent }
-\@writefile{loa}{\contentsline {algorithm}{\numberline {6}{\ignorespaces Online Model Predictive Control (MILP)}}{89}{algorithm.6}\protected@file@percent }
-\newlabel{alg:milp_mpc}{{6}{89}{Implementation Details}{algorithm.6}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.16.1}Mathematical Formulation}{89}{subsection.3.16.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {3.17}Quadratic MPC Formulation (CVXPY Implementation)}{90}{section.3.17}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{Implementation Details}{90}{section*.49}\protected@file@percent }
-\@writefile{loa}{\contentsline {algorithm}{\numberline {7}{\ignorespaces Online Model Predictive Control (MIQP)}}{90}{algorithm.7}\protected@file@percent }
-\newlabel{alg:miqp_mpc}{{7}{90}{Implementation Details}{algorithm.7}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {3.18}Lyapunov-based Adaptive Horizon MPC}{91}{section.3.18}\protected@file@percent }
-\@writefile{loa}{\contentsline {algorithm}{\numberline {8}{\ignorespaces Lyapunov-based Adaptive Horizon MPC}}{92}{algorithm.8}\protected@file@percent }
-\newlabel{alg:lyapunov_mpc}{{8}{92}{Lyapunov-based Adaptive Horizon MPC}{algorithm.8}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {3.19}Approximate Explicit MPC: A Machine Learning Approach}{93}{section.3.19}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.19.1}Methodology: From Oracle to Apprentice}{93}{subsection.3.19.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.19.2}Approximation via Random Forest}{93}{subsection.3.19.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{Offline Training}{93}{section*.50}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{Deep Deterministic Policy Gradient + PER (DDPG+PER)}{79}{section*.39}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {3.3}{\ignorespaces DDPG actor-critic architecture. The actor network produces a deterministic action, which is evaluated by the Q-network (critic). Both networks maintain slowly-updating target networks ($\mu '$ and $Q'$) for stable Bellman updates. During training, exploration noise is added to the actor's output. Image from \blx@tocontentsinit {0}\cite {Qiu2023}.}}{79}{figure.3.3}\protected@file@percent }
+\newlabel{fig:DDPG}{{3.3}{79}{DDPG actor-critic architecture. The actor network produces a deterministic action, which is evaluated by the Q-network (critic). Both networks maintain slowly-updating target networks ($\mu '$ and $Q'$) for stable Bellman updates. During training, exploration noise is added to the actor's output. Image from \cite {Qiu2023}}{figure.3.3}{}}
+\@writefile{loa}{\contentsline {algorithm}{\numberline {3}{\ignorespaces DDPG with Prioritized Experience Replay (PER)}}{80}{algorithm.3}\protected@file@percent }
+\newlabel{alg:ddpg_per}{{3}{80}{Deep Deterministic Policy Gradient + PER (DDPG+PER)}{algorithm.3}{}}
+\@writefile{toc}{\contentsline {paragraph}{Implementation Details}{81}{section*.40}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{Truncated Quantile Critics (TQC)}{81}{section*.41}\protected@file@percent }
+\@writefile{loa}{\contentsline {algorithm}{\numberline {4}{\ignorespaces Truncated Quantile Critics (TQC)}}{82}{algorithm.4}\protected@file@percent }
+\newlabel{alg:tqc}{{4}{82}{Truncated Quantile Critics (TQC)}{algorithm.4}{}}
+\@writefile{toc}{\contentsline {paragraph}{Implementation Details}{83}{section*.42}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.15.1}A History-Based Adaptive Reward for Profit Maximization}{83}{subsection.3.15.1}\protected@file@percent }
+\newlabel{sec:adaptive_reward}{{3.15.1}{83}{A History-Based Adaptive Reward for Profit Maximization}{subsection.3.15.1}{}}
+\@writefile{loa}{\contentsline {algorithm}{\numberline {5}{\ignorespaces History-Based Adaptive Reward Calculation}}{85}{algorithm.5}\protected@file@percent }
+\newlabel{alg:adaptive_reward}{{5}{85}{A History-Based Adaptive Reward for Profit Maximization}{algorithm.5}{}}
+\@writefile{toc}{\contentsline {subsubsection}{Economic Profit}{85}{section*.43}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{Adaptive User Satisfaction Penalty}{86}{section*.44}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{Adaptive Transformer Overload Penalty}{86}{section*.45}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{Rationale and Significance}{87}{section*.46}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Implementation Details}{87}{section*.47}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {3.16}Online MPC Formulation (PuLP Implementation)}{87}{section.3.16}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Implementation Details}{87}{section*.48}\protected@file@percent }
+\@writefile{loa}{\contentsline {algorithm}{\numberline {6}{\ignorespaces Online Model Predictive Control (MILP)}}{88}{algorithm.6}\protected@file@percent }
+\newlabel{alg:milp_mpc}{{6}{88}{Implementation Details}{algorithm.6}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.16.1}Mathematical Formulation}{88}{subsection.3.16.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {3.17}Quadratic MPC Formulation (CVXPY Implementation)}{89}{section.3.17}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Implementation Details}{89}{section*.49}\protected@file@percent }
+\@writefile{loa}{\contentsline {algorithm}{\numberline {7}{\ignorespaces Online Model Predictive Control (MIQP)}}{89}{algorithm.7}\protected@file@percent }
+\newlabel{alg:miqp_mpc}{{7}{89}{Implementation Details}{algorithm.7}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {3.18}Lyapunov-based Adaptive Horizon MPC}{90}{section.3.18}\protected@file@percent }
+\@writefile{loa}{\contentsline {algorithm}{\numberline {8}{\ignorespaces Lyapunov-based Adaptive Horizon MPC}}{91}{algorithm.8}\protected@file@percent }
+\newlabel{alg:lyapunov_mpc}{{8}{91}{Lyapunov-based Adaptive Horizon MPC}{algorithm.8}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {3.19}Approximate Explicit MPC: A Machine Learning Approach}{92}{section.3.19}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.19.1}Methodology: From Oracle to Apprentice}{92}{subsection.3.19.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.19.2}Approximation via Random Forest}{92}{subsection.3.19.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Offline Training}{92}{section*.50}\protected@file@percent }
 \abx@aux@cite{0}{karg2020efficient}
 \abx@aux@segm{0}{0}{karg2020efficient}
-\@writefile{loa}{\contentsline {algorithm}{\numberline {9}{\ignorespaces Offline Training of Random Forest MPC Approximator}}{94}{algorithm.9}\protected@file@percent }
-\newlabel{alg:ampc_training_rf}{{9}{94}{Offline Training}{algorithm.9}{}}
-\@writefile{toc}{\contentsline {paragraph}{Implementation Details}{94}{section*.51}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.19.3}Approximation via Deep ReLU Network}{94}{subsection.3.19.3}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{Offline Training}{94}{section*.52}\protected@file@percent }
-\@writefile{loa}{\contentsline {algorithm}{\numberline {10}{\ignorespaces Offline Training of Neural Network MPC Approximator}}{95}{algorithm.10}\protected@file@percent }
-\newlabel{alg:ampc_training_nn}{{10}{95}{Offline Training}{algorithm.10}{}}
-\@writefile{toc}{\contentsline {paragraph}{Implementation Details}{95}{section*.53}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.19.4}Online Inference}{95}{subsection.3.19.4}\protected@file@percent }
-\@writefile{loa}{\contentsline {algorithm}{\numberline {11}{\ignorespaces Online Inference with Trained A-MPC}}{95}{algorithm.11}\protected@file@percent }
-\newlabel{alg:ampc_inference}{{11}{95}{Online Inference}{algorithm.11}{}}
+\@writefile{loa}{\contentsline {algorithm}{\numberline {9}{\ignorespaces Offline Training of Random Forest MPC Approximator}}{93}{algorithm.9}\protected@file@percent }
+\newlabel{alg:ampc_training_rf}{{9}{93}{Offline Training}{algorithm.9}{}}
+\@writefile{toc}{\contentsline {paragraph}{Implementation Details}{93}{section*.51}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.19.3}Approximation via Deep ReLU Network}{93}{subsection.3.19.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Offline Training}{93}{section*.52}\protected@file@percent }
+\@writefile{loa}{\contentsline {algorithm}{\numberline {10}{\ignorespaces Offline Training of Neural Network MPC Approximator}}{94}{algorithm.10}\protected@file@percent }
+\newlabel{alg:ampc_training_nn}{{10}{94}{Offline Training}{algorithm.10}{}}
+\@writefile{toc}{\contentsline {paragraph}{Implementation Details}{94}{section*.53}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.19.4}Online Inference}{94}{subsection.3.19.4}\protected@file@percent }
+\@writefile{loa}{\contentsline {algorithm}{\numberline {11}{\ignorespaces Online Inference with Trained A-MPC}}{94}{algorithm.11}\protected@file@percent }
+\newlabel{alg:ampc_inference}{{11}{94}{Online Inference}{algorithm.11}{}}
 \abx@aux@lbx@loadrequest{italian}
 \abx@aux@lbx@loadrequest{italian}
 \abx@aux@read@bbl@mdfivesum{393CD622165B31F20E8DD61C2FFEA984}
@@ -533,4 +533,4 @@
 \abx@aux@defaultrefcontext{0}{Xie2025}{nty/global//global/global/global}
 \abx@aux@defaultrefcontext{0}{NaXu}{nty/global//global/global/global}
 \abx@aux@defaultrefcontext{0}{Zhang2023}{nty/global//global/global/global}
-\gdef \@abspage@last{101}
+\gdef \@abspage@last{100}

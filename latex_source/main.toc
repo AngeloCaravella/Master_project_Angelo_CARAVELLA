@@ -137,31 +137,31 @@
 \contentsline {subsection}{\numberline {3.14.1}State Space ($S$)}{74}{subsection.3.14.1}%
 \contentsline {subsection}{\numberline {3.14.2}Action Space ($A$)}{76}{subsection.3.14.2}%
 \contentsline {subsection}{\numberline {3.14.3}Reward Function ($R$)}{76}{subsection.3.14.3}%
-\contentsline {section}{\numberline {3.15}Reinforcement Learning Algorithms}{77}{section.3.15}%
-\contentsline {subsubsection}{Soft Actor-Critic (SAC)}{77}{section*.37}%
-\contentsline {paragraph}{Implementation Details}{79}{section*.38}%
-\contentsline {subsubsection}{Deep Deterministic Policy Gradient + PER (DDPG+PER)}{80}{section*.39}%
-\contentsline {paragraph}{Implementation Details}{82}{section*.40}%
-\contentsline {subsubsection}{Truncated Quantile Critics (TQC)}{82}{section*.41}%
-\contentsline {paragraph}{Implementation Details}{84}{section*.42}%
-\contentsline {subsection}{\numberline {3.15.1}A History-Based Adaptive Reward for Profit Maximization}{84}{subsection.3.15.1}%
-\contentsline {subsubsection}{Economic Profit}{86}{section*.43}%
-\contentsline {subsubsection}{Adaptive User Satisfaction Penalty}{87}{section*.44}%
-\contentsline {subsubsection}{Adaptive Transformer Overload Penalty}{87}{section*.45}%
-\contentsline {subsubsection}{Rationale and Significance}{88}{section*.46}%
-\contentsline {paragraph}{Implementation Details}{88}{section*.47}%
-\contentsline {section}{\numberline {3.16}Online MPC Formulation (PuLP Implementation)}{88}{section.3.16}%
-\contentsline {paragraph}{Implementation Details}{88}{section*.48}%
-\contentsline {subsection}{\numberline {3.16.1}Mathematical Formulation}{89}{subsection.3.16.1}%
-\contentsline {section}{\numberline {3.17}Quadratic MPC Formulation (CVXPY Implementation)}{90}{section.3.17}%
-\contentsline {paragraph}{Implementation Details}{90}{section*.49}%
-\contentsline {section}{\numberline {3.18}Lyapunov-based Adaptive Horizon MPC}{91}{section.3.18}%
-\contentsline {section}{\numberline {3.19}Approximate Explicit MPC: A Machine Learning Approach}{93}{section.3.19}%
-\contentsline {subsection}{\numberline {3.19.1}Methodology: From Oracle to Apprentice}{93}{subsection.3.19.1}%
-\contentsline {subsection}{\numberline {3.19.2}Approximation via Random Forest}{93}{subsection.3.19.2}%
-\contentsline {paragraph}{Offline Training}{93}{section*.50}%
-\contentsline {paragraph}{Implementation Details}{94}{section*.51}%
-\contentsline {subsection}{\numberline {3.19.3}Approximation via Deep ReLU Network}{94}{subsection.3.19.3}%
-\contentsline {paragraph}{Offline Training}{94}{section*.52}%
-\contentsline {paragraph}{Implementation Details}{95}{section*.53}%
-\contentsline {subsection}{\numberline {3.19.4}Online Inference}{95}{subsection.3.19.4}%
+\contentsline {section}{\numberline {3.15}Reinforcement Learning Algorithms}{76}{section.3.15}%
+\contentsline {subsubsection}{Soft Actor-Critic (SAC)}{76}{section*.37}%
+\contentsline {paragraph}{Implementation Details}{78}{section*.38}%
+\contentsline {subsubsection}{Deep Deterministic Policy Gradient + PER (DDPG+PER)}{79}{section*.39}%
+\contentsline {paragraph}{Implementation Details}{81}{section*.40}%
+\contentsline {subsubsection}{Truncated Quantile Critics (TQC)}{81}{section*.41}%
+\contentsline {paragraph}{Implementation Details}{83}{section*.42}%
+\contentsline {subsection}{\numberline {3.15.1}A History-Based Adaptive Reward for Profit Maximization}{83}{subsection.3.15.1}%
+\contentsline {subsubsection}{Economic Profit}{85}{section*.43}%
+\contentsline {subsubsection}{Adaptive User Satisfaction Penalty}{86}{section*.44}%
+\contentsline {subsubsection}{Adaptive Transformer Overload Penalty}{86}{section*.45}%
+\contentsline {subsubsection}{Rationale and Significance}{87}{section*.46}%
+\contentsline {paragraph}{Implementation Details}{87}{section*.47}%
+\contentsline {section}{\numberline {3.16}Online MPC Formulation (PuLP Implementation)}{87}{section.3.16}%
+\contentsline {paragraph}{Implementation Details}{87}{section*.48}%
+\contentsline {subsection}{\numberline {3.16.1}Mathematical Formulation}{88}{subsection.3.16.1}%
+\contentsline {section}{\numberline {3.17}Quadratic MPC Formulation (CVXPY Implementation)}{89}{section.3.17}%
+\contentsline {paragraph}{Implementation Details}{89}{section*.49}%
+\contentsline {section}{\numberline {3.18}Lyapunov-based Adaptive Horizon MPC}{90}{section.3.18}%
+\contentsline {section}{\numberline {3.19}Approximate Explicit MPC: A Machine Learning Approach}{92}{section.3.19}%
+\contentsline {subsection}{\numberline {3.19.1}Methodology: From Oracle to Apprentice}{92}{subsection.3.19.1}%
+\contentsline {subsection}{\numberline {3.19.2}Approximation via Random Forest}{92}{subsection.3.19.2}%
+\contentsline {paragraph}{Offline Training}{92}{section*.50}%
+\contentsline {paragraph}{Implementation Details}{93}{section*.51}%
+\contentsline {subsection}{\numberline {3.19.3}Approximation via Deep ReLU Network}{93}{subsection.3.19.3}%
+\contentsline {paragraph}{Offline Training}{93}{section*.52}%
+\contentsline {paragraph}{Implementation Details}{94}{section*.53}%
+\contentsline {subsection}{\numberline {3.19.4}Online Inference}{94}{subsection.3.19.4}%

@@ -22,7 +22,7 @@ def get_statistics(env) -> Dict:
     average_user_satisfaction = np.mean(satisfaction_list) if satisfaction_list else 0
 
     # get transformer overload from env.tr_overload
-    total_transformer_overload = np.array(env.tr_overload).sum()
+    transformer_overload_kwh = np.array(env.tr_overload).sum() * (env.timescale / 60)
 
     # Calculate transformer loading percentages
     # Use mean of max_power to account for DR events
@@ -83,7 +83,7 @@ def get_statistics(env) -> Dict:
              'std_energy_user_satisfaction': np.std(energy_user_satisfaction),
              'min_energy_user_satisfaction': np.min(energy_user_satisfaction),
              'total_steps_min_emergency_battery_capacity_violation': total_steps_min_emergency_battery_capacity_violation,
-             'total_transformer_overload': total_transformer_overload,
+             'transformer_overload_kwh': transformer_overload_kwh,
              'peak_transformer_loading_pct': peak_transformer_loading_pct,
              'average_transformer_loading_pct': average_transformer_loading_pct,
              'battery_degradation': battery_degradation,

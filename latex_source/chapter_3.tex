@@ -552,21 +552,7 @@ The action $a_t \in A$ is a continuous vector in $\mathbb{R}^N$, where $N$ is th
 \end{itemize}
 
 \subsection{Reward Function ($R$)}
-The reward function $R(t)$ encodes the objectives of the control agent. The framework allows for the selection of different reward functions from the \texttt{reward.py} module to suit various goals. Key examples include:
-\begin{itemize}
-    \item \textbf{Profit Maximization with Penalties} (\texttt{ProfitMax\_TrPenalty\_UserIncentives}): This function creates a balance between economic gain and physical constraints.
-    \[
-    R(t) = \underbrace{\text{Profit}(t)}_{\text{Economic Gain}} - \underbrace{\lambda_1 \cdot \text{Overload}(t)}_{\text{Grid Penalty}} - \underbrace{\lambda_2 \cdot \text{Unsatisfaction}(t)}_{\text{User Penalty}}
-    \]
-    The agent is rewarded for profit but penalized for overloading transformers and for failing to meet the charging needs of departing drivers.
-    
-    \item \textbf{Squared Tracking Error} (\texttt{SquaredTrackingErrorReward}): Used for grid service applications where precision is paramount.
-    \[
-    R(t) = - \left( P_{\text{setpoint}}(t) - \sum_{i=1}^N P_i(t) \right)^2
-    \]
-    The reward is the negative squared error from the power setpoint, incentivizing the agent to minimize this error at all times.
-\end{itemize}
-
+The reward function $R(t)$ encodes the objectives of the control agent. The framework allows for the selection of different reward functions from the \texttt{reward.py} module to suit various goals. 
 \input{Reinforcement_learning}
 
 
