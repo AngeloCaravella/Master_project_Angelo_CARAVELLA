@@ -1,0 +1,22 @@
+Riepilogo delle modifiche apportate allo script di benchmark (run_experiments.py)
+
+Data: 08/10/2025
+
+===================================================================
+
+1. Aggiunta di Nuovi Grafici di Benchmark:
+------------------------------------------
+- **Numero di EV nel Tempo**: È stato aggiunto un nuovo grafico (`ev_presence_{scenario}.png`) che mostra il numero di veicoli elettrici (EV) attivi in ogni istante della simulazione.
+- **Andamento del SoC Medio**: È stato aggiunto un grafico (`average_soc_over_time_{scenario}.png`) che mostra l'andamento dello Stato di Carica (SoC) medio nel tempo per ogni algoritmo. Se vengono eseguite più simulazioni, il grafico mostra la curva media con una banda che rappresenta la deviazione standard.
+
+2. Correzione di Errori e Problemi:
+------------------------------------
+- **Errore di Parsing YAML**: È stato corretto un errore di sintassi nel file `V2GProfitPlusLoads.yaml` (mancava uno spazio dopo i due punti), che impediva l'avvio dello script `run_interactive.py`.
+
+- **Scala del Grafico "Peak Transformer Loading"**: È stato corretto un bug nel plottaggio del carico di picco del trasformatore. Il valore, già in percentuale, veniva erroneamente moltiplicato per 100 una seconda volta, portando a valori irrealistici (es. 5000%). Ora la scala è corretta.
+
+- **Calcolo della "Average Total Degradation"**: È stato risolto un problema per cui la degradazione della batteria risultava sempre zero. La funzione che calcola l'invecchiamento non veniva mai chiamata; ora è stata attivata e il valore viene calcolato correttamente alla fine di ogni simulazione.
+
+3. Miglioramenti Generali:
+--------------------------
+- **Traduzione in Inglese**: Tutti i titoli, le etichette e le legende nei grafici e nelle tabelle di riepilogo generati da `run_experiments.py` sono stati tradotti in inglese per maggiore chiarezza e coerenza.

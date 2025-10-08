@@ -72,7 +72,7 @@ solar_power:
 
 # Whether to include demand response in the transformer power limit
 demand_response:
-  include: True # True or False
+  include: False # True or False
   events_per_day: 1
   #How much of the transformer power limit can be used for demand response
   event_capacity_percentage_mean: 35 # (in percentage +/- %) reduction

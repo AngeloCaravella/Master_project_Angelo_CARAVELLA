@@ -22,7 +22,7 @@ from ev2gym.utilities.utils import get_statistics, print_statistics, calculate_c
 from ev2gym.utilities.loaders import load_ev_spawn_scenarios, load_power_setpoints, load_transformers, load_ev_charger_profiles, load_ev_profiles, load_electricity_prices
 from ev2gym.visuals.render import Renderer
 
-from ev2gym.rl_agent.reward import SquaredTrackingErrorReward
+from ev2gym.rl_agent.reward import FastProfitAdaptiveReward
 from ev2gym.rl_agent.state import PublicPST
 
 
@@ -38,7 +38,7 @@ class EV2Gym(gym.Env):
                  save_replay=False,
                  save_plots=False,
                  state_function=PublicPST,
-                 reward_function=SquaredTrackingErrorReward,
+                 reward_function=FastProfitAdaptiveReward,
                  cost_function=None,  # cost function to use in the simulation
                  eval_mode="Normal",  # eval mode can be "Normal", "Unstirred" or "Optimal" in order to save the correct statistics in the replay file
                  lightweight_plots=False,

@@ -1,4 +1,3 @@
---- START OF FILE run_experiments.py ---
 
 import os
 import yaml
@@ -25,7 +24,7 @@ from typing import List, Dict, Any, Tuple, Callable, Optional
 from ev2gym.models.ev2gym_env import EV2Gym
 from ev2gym.baselines.heuristics import ChargeAsFastAsPossible, ChargeAsLateAsPossible, RoundRobin
 from ev2gym.baselines.pulp_mpc import OnlineMPC_Solver, ApproximateExplicitMPC, ApproximateExplicitMPC_NN
-from ev2gym.baselines.pulp_mpc_quadratic import OnlineMPC_Solver_Quadratic
+from ev2gym.baselines.cvxpy_mpc_quadratic import OnlineMPC_Solver_Quadratic
 from ev2gym.rl_agent.custom_algorithms import CustomDDPG
 from ev2gym.utilities.per_buffer import PrioritizedReplayBuffer
 from ev2gym.rl_agent import reward as reward_module
@@ -297,19 +296,19 @@ def get_color_map_and_legend(algorithms_to_plot):
 def plot_performance_metrics(stats_collection, save_path, scenario_name, algorithms_to_plot):
     if not stats_collection: return
     metrics_map = {
-        'total_profits': 'Profitto Totale (€)', 'average_user_satisfaction': 'Soddisfazione Utente Media (%)',
-        'peak_transformer_loading_pct': 'Carico di Picco Trasformatore (%)', 'battery_degradation': 'Degradazione Totale Media (%)'
+        'total_profits': 'Total Profit (€)', 'average_user_satisfaction': 'Average User Satisfaction (%)',
+        'peak_transformer_loading_pct': 'Peak Transformer Loading (%)', 'battery_degradation': 'Average Total Degradation (%)'
     }
     model_names = [name for name in algorithms_to_plot if name in stats_collection]
     if not model_names: return
     algo_categories, category_colors, legend_elements = get_color_map_and_legend(model_names)
     fig, axes = plt.subplots(2, 2, figsize=(20, 12)); axes = axes.flatten()
-    fig.suptitle(f'Metriche di Performance Aggregate - Scenario: {scenario_name}', fontsize=22)
+    fig.suptitle(f'Aggregated Performance Metrics - Scenario: {scenario_name}', fontsize=22)
     for i, (metric, title) in enumerate(metrics_map.items()):
         ax = axes[i]
         means = [stats_collection[name]['mean'].get(metric, 0) for name in model_names]
         stds = [stats_collection[name]['std'].get(metric, 0) for name in model_names]
-        if 'satisfaction' in metric or 'degradation' in metric or 'loading_pct' in metric:
+        if ('satisfaction' in metric or 'degradation' in metric) and 'loading' not in metric:
             means = [v * 100 for v in means]
             stds = [v * 100 for v in stds]
         colors = [category_colors.get(algo_categories.get(name, "default"), category_colors["default"]) for name in model_names]
@@ -320,23 +319,201 @@ def plot_performance_metrics(stats_collection, save_path, scenario_name, algorit
     plt.tight_layout(rect=[0, 0.05, 1, 0.95])
     plt.savefig(os.path.join(save_path, f"performance_summary_{scenario_name}.png")); plt.close(fig)
 
+def plot_ev_presence(save_path, scenario_name, ev_counts, timescale):
+    """Plots the number of active EVs over time."""
+    fig, ax = plt.subplots(figsize=(12, 6))
+    time_hours = np.arange(len(ev_counts)) * timescale / 60
+    ax.plot(time_hours, ev_counts, label='Number of EVs')
+    ax.set_xlabel("Time (hours)")
+    ax.set_ylabel("Number of Active EVs")
+    ax.set_title(f"Number of Active EVs over Time - Scenario: {scenario_name}")
+    ax.grid(True, linestyle='--', alpha=0.6)
+    ax.legend()
+    plt.tight_layout()
+    plt.savefig(os.path.join(save_path, f"ev_presence_{scenario_name}.png"))
+    plt.close(fig)
+
+def plot_average_soc_over_time(save_path, scenario_name, soc_data, timescale):
+    """Plots the average SoC over time for each algorithm."""
+    if not soc_data:
+        return
+
+    fig, ax = plt.subplots(figsize=(15, 8))
+    
+    # Get the color mapping
+    algorithms_to_plot = list(soc_data.keys())
+    algo_categories, category_colors, legend_elements = get_color_map_and_legend(algorithms_to_plot)
+
+    for name, runs in soc_data.items():
+        if not runs:
+            continue
+        
+        # Find the length of the shortest run to align arrays
+        min_len = min(len(run) for run in runs)
+        aligned_runs = [run[:min_len] for run in runs]
+        
+        mean_soc = np.mean(aligned_runs, axis=0)
+        std_soc = np.std(aligned_runs, axis=0)
+        
+        time_hours = np.arange(min_len) * timescale / 60
+        color = category_colors.get(algo_categories.get(name, "default"), category_colors["default"])
+        
+        ax.plot(time_hours, mean_soc, label=name, color=color, linewidth=2)
+        ax.fill_between(time_hours, mean_soc - std_soc, mean_soc + std_soc, color=color, alpha=0.2)
+
+    ax.set_xlabel("Time (hours)")
+    ax.set_ylabel("Average State of Charge (SoC)")
+    ax.set_title(f"Average SoC Over Time - Scenario: {scenario_name}")
+    ax.yaxis.set_major_formatter(plt.FuncFormatter(lambda y, _: f'{y:.0%}'))
+    ax.grid(True, linestyle='--', alpha=0.6)
+    ax.legend(title="Algorithms")
+    plt.tight_layout()
+    plt.savefig(os.path.join(save_path, f"average_soc_over_time_{scenario_name}.png"))
+    plt.close(fig)
+
+def plot_tradeoff_scatter(stats_collection, save_path, scenario_name, algorithms_to_plot):
+    """Plots a scatter matrix to show trade-offs between key metrics."""
+    if not stats_collection:
+        return
+
+    metrics_to_compare = {
+        'total_profits': 'Total Profit (€)',
+        'peak_transformer_loading_pct': 'Peak Load (%)',
+        'average_user_satisfaction': 'User Satisfaction (%)',
+        'battery_degradation': 'Degradation (%)'
+    }
+
+    model_names = [name for name in algorithms_to_plot if name in stats_collection]
+    if not model_names:
+        return
+
+    df_data = []
+    for name in model_names:
+        row = {'Algorithm': name}
+        for key, label in metrics_to_compare.items():
+            value = stats_collection[name]['mean'].get(key, 0)
+            # Scale satisfaction and degradation to %
+            if 'satisfaction' in key or 'degradation' in key:
+                value *= 100
+            row[label] = value
+        df_data.append(row)
+    
+    df = pd.DataFrame(df_data)
+    if df.empty:
+        return
+
+    num_metrics = len(metrics_to_compare)
+    fig, axes = plt.subplots(num_metrics, num_metrics, figsize=(18, 18))
+    fig.suptitle(f'Performance Trade-offs - Scenario: {scenario_name}', fontsize=22, y=0.95)
+
+    metric_labels = list(metrics_to_compare.values())
+    algo_categories, category_colors, _ = get_color_map_and_legend(model_names)
+    colors = [category_colors.get(algo_categories.get(name, "default"), category_colors["default"]) for name in df['Algorithm']]
+
+    for i in range(num_metrics):
+        for j in range(num_metrics):
+            ax = axes[i, j]
+            x_metric = metric_labels[j]
+            y_metric = metric_labels[i]
+
+            if i == j:
+                # On the diagonal, plot a histogram of the metric
+                ax.hist(df[x_metric], color='#bdc3c7')
+            else:
+                ax.scatter(df[x_metric], df[y_metric], c=colors, s=100, alpha=0.8)
+                # Annotate points
+                for k, txt in enumerate(df['Algorithm']):
+                    ax.annotate(txt, (df[x_metric][k], df[y_metric][k]), xytext=(5,5), textcoords='offset points', fontsize=8, alpha=0.7)
+
+            # Set labels
+            if i == num_metrics - 1:
+                ax.set_xlabel(x_metric, fontsize=12)
+            if j == 0:
+                ax.set_ylabel(y_metric, fontsize=12)
+            
+            ax.grid(True, linestyle='--', alpha=0.5)
+
+    plt.tight_layout(rect=[0, 0.03, 1, 0.93])
+    plt.savefig(os.path.join(save_path, f"tradeoff_scatter_matrix_{scenario_name}.png"))
+    plt.close(fig)
+
+def plot_overload_composition(save_path, scenario_name, algorithm_name, power_data, timescale):
+    """Plots a stacked area chart of power composition causing transformer load."""
+    
+    ev_load = power_data.get('ev_load', [])
+    inflexible_load = power_data.get('inflexible_load', [])
+    solar_power = power_data.get('solar_power', [])
+    limit = power_data.get('transformer_limit')
+
+    if len(ev_load) == 0 or len(inflexible_load) == 0 or len(solar_power) == 0 or limit is None:
+        print(f"Skipping overload plot for {algorithm_name} due to missing data.")
+        return
+
+    # Ensure all arrays have the same length
+    min_len = min(len(ev_load), len(inflexible_load), len(solar_power))
+    time_hours = np.arange(min_len) * timescale / 60
+    
+    ev_load = ev_load[:min_len]
+    inflexible_load = inflexible_load[:min_len]
+    solar_power = solar_power[:min_len]
+
+    gross_load = ev_load + inflexible_load
+    net_load = gross_load - solar_power
+
+    fig, ax = plt.subplots(figsize=(18, 9))
+    
+    # Stacked Area for loads
+    ax.stackplot(time_hours, inflexible_load, ev_load, 
+                 labels=['Inflexible Loads', 'EV Charging'], 
+                 colors=['#3498db', '#9b59b6'], alpha=0.7)
+
+    # Line for solar power (negative load)
+    ax.fill_between(time_hours, 0, -solar_power, color='#2ecc71', alpha=0.6, label='Solar Generation')
+
+    # Line for Net Load
+    ax.plot(time_hours, net_load, label='Net Load', color='#e74c3c', linewidth=2.5)
+
+    # Line for Transformer Limit
+    limit_series = np.full(min_len, limit) if np.isscalar(limit) else limit[:min_len]
+    ax.plot(time_hours, limit_series, color='black', linestyle='--', linewidth=2, label=f'Transformer Limit')
+
+    # Fill area for overload
+    ax.fill_between(time_hours, net_load, limit_series, where=net_load > limit_series, 
+                    facecolor='red', alpha=0.5, interpolate=True, label='Overload')
+
+    ax.set_xlabel("Time (hours)")
+    ax.set_ylabel("Power (kW)")
+    ax.set_title(f'Transformer Load Composition - {scenario_name} - Algorithm: {algorithm_name}', fontsize=16)
+    ax.legend(loc='upper left')
+    ax.grid(True, linestyle='--', alpha=0.6)
+    ax.set_ylim(bottom=min(0, np.min(-solar_power)) * 1.1)
+    ax.axhline(y=0, color='black', linewidth=0.5)
+
+    plt.tight_layout()
+    # Sanitize algorithm name for filename
+    safe_algo_name = "".join(c for c in algorithm_name if c.isalnum() or c in ('_', '-')).rstrip()
+    plt.savefig(os.path.join(save_path, f"overload_composition_{scenario_name}_{safe_algo_name}.png"))
+    plt.close(fig)
+
+
+
+
 # =====================================================================================
 # --- FUNZIONE PER GENERARE OUTPUT RIASSUNTIVI (MODIFICATA) ---
 # =====================================================================================
 def generate_summary_outputs(stats_collection, save_path, scenario_name, num_simulations):
-    """Genera e salva un'immagine e un CSV con i risultati aggregati, formattati come nella tabella di riferimento."""
+    """Generates and saves an image and a CSV with the aggregated results."""
     
-    # <-- MODIFICA: Mappatura completa delle colonne e dei fattori di scala
     column_mapping = {
         'total_profits': ('Profits/Costs (€)', 1),
-        'average_user_satisfaction': ('εᵘˢʳ (%)', 100),
+        'average_user_satisfaction': ('User Sat. (%)', 100),
         'total_energy_charged': ('Energy Ch. (kWh)', 1),
         'total_energy_discharged': ('Energy Disch. (kWh)', 1),
         'transformer_overload_kwh': ('Tr. Ov. (kWh)', 1),
         'total_q_lost_kwh': ('Total Qˡᵒˢᵗ (x10⁻³)', 1000),
         'battery_degradation_calendar': ('Σ dᶜᵃˡ (x10⁻³)', 1000),
         'battery_degradation_cyclic': ('Σ dᶜʸᶜ (x10⁻³)', 1000),
-        'execution_time': ('Execution Time (s)', 1),
+        'execution_time': ('Exec. Time (s)', 1),
         'total_reward': ('Reward (x10³)', 0.001)
     }
     
@@ -347,13 +524,10 @@ def generate_summary_outputs(stats_collection, save_path, scenario_name, num_sim
             mean = data['mean'].get(key, 0)
             std = data['std'].get(key, 0)
             
-            # Applica il fattore di scala
             mean_scaled = mean * scale
             std_scaled = std * scale
             
-            # Formatta la stringa
             if num_simulations > 1:
-                # Per il tempo di esecuzione, usa più decimali se necessario
                 if 'Time' in col_name:
                     row[col_name] = f"{mean_scaled:.2f} ± {std_scaled:.2f}"
                 else:
@@ -366,25 +540,21 @@ def generate_summary_outputs(stats_collection, save_path, scenario_name, num_sim
         summary_data.append(row)
         
     if not summary_data:
-        print("Nessun dato aggregato da salvare.")
+        print("No aggregated data to save.")
         return
 
     df_summary = pd.DataFrame(summary_data).set_index('Algorithm')
     
     csv_path = os.path.join(save_path, f"summary_results_{scenario_name}.csv")
     df_summary.to_csv(csv_path)
-    print(f"Tabella dei risultati aggregati salvata in: {csv_path}")
+    print(f"Aggregated results table saved to: {csv_path}")
 
-    # <-- MODIFICA: Aumentata la larghezza della figura per accomodare tutte le colonne
     fig, ax = plt.subplots(figsize=(22, 1 + len(df_summary) * 0.5))
-    ax.axis('tight')
-    ax.axis('off')
+    ax.axis('tight'); ax.axis('off')
     
     table = ax.table(cellText=df_summary.values, colLabels=df_summary.columns, rowLabels=df_summary.index,
                      cellLoc='center', loc='center')
-    table.auto_set_font_size(False)
-    table.set_fontsize(10)
-    table.scale(1.1, 1.3)
+    table.auto_set_font_size(False); table.set_fontsize(10); table.scale(1.1, 1.3)
 
     for (row, col), cell in table.get_celld().items():
         if (row == 0 or col == -1):
@@ -398,7 +568,7 @@ def generate_summary_outputs(stats_collection, save_path, scenario_name, num_sim
     img_path = os.path.join(save_path, f"summary_table_{scenario_name}.png")
     plt.savefig(img_path, dpi=200, bbox_inches='tight')
     plt.close(fig)
-    print(f"Immagine della tabella dei risultati aggregati salvata in: {img_path}")
+    print(f"Aggregated results table image saved to: {img_path}")
 
 # =====================================================================================
 # --- FUNZIONE DI BENCHMARK CON SANITY CHECK ROBUSTO ---
@@ -416,62 +586,59 @@ def run_benchmark(config_files, reward_func, algorithms_to_run, num_simulations,
                 metadata = json.load(f)
             max_obs_shape = tuple(metadata["observation_space_shape"])
             max_action_shape = tuple(metadata["action_space_shape"])
-            print(f"Wrapper shapes caricate dai metadati: OBS={max_obs_shape}, ACT={max_action_shape}")
+            print(f"Wrapper shapes loaded from metadata: OBS={max_obs_shape}, ACT={max_action_shape}")
         else:
-            print("ATTENZIONE: file 'model_metadata.json' non trovato.")
+            print("WARNING: 'model_metadata.json' file not found.")
             temp_env = MultiScenarioEnv(config_files, reward_func, V2G_profit_max_loads)
             max_obs_shape, max_action_shape = temp_env.observation_space.shape, temp_env.action_space.shape
             temp_env.close()
 
     for config_file in config_files:
         scenario_name = os.path.basename(config_file).replace(".yaml", "")
-        print(f"\n\n{'='*80}\nAVVIO BENCHMARK PER SCENARIO: {scenario_name}\n{'='*80}")
+        print(f"\n\n{'='*80}\nSTARTING BENCHMARK FOR SCENARIO: {scenario_name}\n{'='*80}")
         
-        # --- SANITY CHECK ROBUSTO PER IL SOVRACCARICO DEL TRASFORMATORE ---
         with open(config_file, 'r') as f:
             config = yaml.safe_load(f)
         
-        tr_capacity = config.get('transformer_capacity_kva', 0)
-        if not tr_capacity:
-            tr_capacity = config.get('transformer', {}).get('max_power', 0)
-
+        tr_capacity = config.get('transformer_capacity_kva', 0) or config.get('transformer', {}).get('max_power', 0)
         num_cs = config.get('number_of_charging_stations', 0)
-
         max_power_cs = 0
         if 'charging_stations' in config and config['charging_stations']:
              max_power_cs = config['charging_stations'][0].get('max_power', 0)
-        
-        if not max_power_cs and 'charging_station' in config:
+        elif 'charging_station' in config:
             cs_config = config['charging_station']
-            voltage = cs_config.get('voltage', 0)
-            current = cs_config.get('max_charge_current', 0)
-            phases = cs_config.get('phases', 1)
-            
+            voltage = cs_config.get('voltage', 0); current = cs_config.get('max_charge_current', 0); phases = cs_config.get('phases', 1)
             if voltage > 0 and current > 0:
-                if phases == 3:
-                    power_watts = voltage * current * np.sqrt(3)
-                else:
-                    power_watts = voltage * current
-                max_power_cs = power_watts / 1000.0
+                max_power_cs = (voltage * current * (np.sqrt(3) if phases == 3 else 1)) / 1000.0
 
-        max_theoretical_load = num_cs * max_power_cs
-
-        if max_theoretical_load <= tr_capacity and tr_capacity > 0:
+        if (max_theoretical_load := num_cs * max_power_cs) <= tr_capacity and tr_capacity > 0:
             print("*"*80)
-            print(f"ATTENZIONE: In questo scenario il sovraccarico del trasformatore è IMPOSSIBILE.")
-            print(f"  - Capacità Trasformatore: {tr_capacity:.2f} kVA")
-            print(f"  - Carico Massimo Teorico (N_stazioni * P_max): {max_theoretical_load:.2f} kW")
-            print("  - Per testare la gestione del sovraccarico, aumenta il numero di stazioni o riduci la capacità del trasformatore.")
+            print(f"WARNING: Transformer overload is IMPOSSIBLE in this scenario.")
+            print(f"  - Transformer Capacity: {tr_capacity:.2f} kVA")
+            print(f"  - Max Theoretical Load (N_stations * P_max): {max_theoretical_load:.2f} kW")
+            print("  - To test overload management, increase the number of stations or decrease transformer capacity.")
             print("*"*80)
-        # --- FINE SANITY CHECK ---
 
         device = "cuda" if torch.cuda.is_available() else "cpu"
         scenario_save_path = os.path.join(overall_save_path, scenario_name); os.makedirs(scenario_save_path, exist_ok=True)
 
         all_sim_stats = defaultdict(lambda: defaultdict(list))
+        soc_over_time_by_algo = defaultdict(list)
+
+        # --- Data collection for EV presence plot ---
+        print("\n--- Collecting EV presence data for the scenario ---")
+        presence_env = EV2Gym(config_file=config_file, generate_rnd_game=True)
+        ev_counts_over_time = []
+        done = False
+        while not done:
+            num_evs = sum(1 for cs in presence_env.charging_stations for ev in cs.evs_connected if ev is not None)
+            ev_counts_over_time.append(num_evs)
+            _, _, done, _, _ = presence_env.step(np.zeros(presence_env.action_space.shape[0]))
+        timescale = presence_env.timescale
+        presence_env.close()
 
         for sim_num in range(num_simulations):
-            print(f"\n--- Simulazione {sim_num + 1}/{num_simulations} ---")
+            print(f"\n--- Simulation {sim_num + 1}/{num_simulations} ---")
             env_replay = EV2Gym(config_file=config_file, generate_rnd_game=True, save_replay=True, price_data_file=price_data_file)
             replay_path = f"replay/replay_{env_replay.sim_name}.pkl"
             while not env_replay.step(np.zeros(env_replay.action_space.shape[0]))[2]: pass
@@ -482,14 +649,14 @@ def run_benchmark(config_files, reward_func, algorithms_to_run, num_simulations,
             gym.register(id=eval_env_id, entry_point='ev2gym.models.ev2gym_env:EV2Gym', kwargs={'config_file': config_file, 'generate_rnd_game': False, 'load_from_replay_path': replay_path, 'reward_function': reward_func, 'state_function': V2G_profit_max_loads, 'price_data_file': price_data_file})
 
             for name, (algorithm_class, rl_class, kwargs) in algorithms_to_run.items():
-                print(f"+ Esecuzione: {name}")
+                print(f"+ Running: {name}")
                 try:
                     env_instance = gym.make(eval_env_id)
                     is_rl_model = rl_class is not None
                     if is_rl_model:
                         if is_multi_scenario: env_instance = CompatibilityWrapper(env_instance, max_obs_shape, max_action_shape)
                         model_path = os.path.join(model_dir, f'{name.lower().replace("+", "_")}_model.zip')
-                        if not os.path.exists(model_path): print(f"!!! Modello {name} non trovato. Saltato."); continue
+                        if not os.path.exists(model_path): print(f"!!! Model {name} not found. Skipping."); continue
                         model = rl_class.load(model_path, env=env_instance, device=device)
                     else:
                         model = algorithm_class(env=env_instance.unwrapped, **kwargs)
@@ -497,28 +664,50 @@ def run_benchmark(config_files, reward_func, algorithms_to_run, num_simulations,
                     obs, _ = env_instance.reset()
                     done = False
                     start_time = time.time()
+                    
+                    current_run_soc_over_time = []
                     while not done:
-                        if is_rl_model:
-                            action, _ = model.predict(obs, deterministic=True)
-                        else:
-                            action = model.get_action(env_instance.unwrapped)
+                        action = model.predict(obs, deterministic=True)[0] if is_rl_model else model.get_action(env_instance.unwrapped)
                         obs, _, done, _, _ = env_instance.step(action)
+                        
+                        # Calculate and record average SoC for the current step
+                        connected_evs = [ev for cs in env_instance.unwrapped.charging_stations for ev in cs.evs_connected if ev is not None]
+                        if connected_evs:
+                            avg_soc = np.mean([ev.current_capacity / ev.battery_capacity for ev in connected_evs])
+                            current_run_soc_over_time.append(avg_soc)
+                        else:
+                            current_run_soc_over_time.append(0) # Append 0 if no EVs are connected
+
+                    soc_over_time_by_algo[name].append(current_run_soc_over_time)
+
+                    # Collect data for overload composition plot on the first run
+                    if sim_num == 0:
+                        power_data = {
+                            'ev_load': np.sum(env_instance.unwrapped.cs_power, axis=0),
+                            'inflexible_load': np.sum(env_instance.unwrapped.tr_inflexible_loads, axis=0),
+                            'solar_power': np.sum(env_instance.unwrapped.tr_solar_power, axis=0),
+                            'transformer_limit': env_instance.unwrapped.transformers[0].max_power
+                        }
+                        plot_overload_composition(scenario_save_path, scenario_name, name, power_data, env_instance.unwrapped.timescale)
+
                     execution_time = time.time() - start_time
                     
                     stats = env_instance.unwrapped.stats
                     stats['execution_time'] = execution_time
                     departed_evs = env_instance.unwrapped.departed_evs
                     if departed_evs:
+                        for ev in departed_evs:
+                            ev.get_battery_degradation()
                         stats['battery_degradation_calendar'] = np.mean([ev.calendar_loss for ev in departed_evs])
                         stats['battery_degradation_cyclic'] = np.mean([ev.cyclic_loss for ev in departed_evs])
                         stats['battery_degradation'] = stats['battery_degradation_calendar'] + stats['battery_degradation_cyclic']
-                    
+
                     for metric, value in stats.items():
                         all_sim_stats[name][metric].append(value)
                     
                     env_instance.close()
                 except Exception as e:
-                    print(f"!!! ERRORE con '{name}': {e}. Saltato."); traceback.print_exc()
+                    print(f"!!! ERROR with '{name}': {e}. Skipping."); traceback.print_exc()
             
             if os.path.exists(replay_path): os.remove(replay_path)
 
@@ -530,10 +719,15 @@ def run_benchmark(config_files, reward_func, algorithms_to_run, num_simulations,
             
             all_scenario_stats[scenario_name] = aggregated_stats
             
+            # --- Generate all plots and summaries ---
+            print("\n--- Generating output plots and summaries ---")
             plot_performance_metrics(aggregated_stats, scenario_save_path, scenario_name, list(algorithms_to_run.keys()))
+            plot_ev_presence(scenario_save_path, scenario_name, ev_counts_over_time, timescale)
+            plot_average_soc_over_time(scenario_save_path, scenario_name, soc_over_time_by_algo, timescale)
+            plot_tradeoff_scatter(aggregated_stats, scenario_save_path, scenario_name, list(algorithms_to_run.keys()))
             generate_summary_outputs(aggregated_stats, scenario_save_path, scenario_name, num_simulations)
 
-    print(f"\n--- Benchmark completato. Risultati salvati in: {overall_save_path} ---")
+    print(f"\n--- Benchmark finished. Results saved in: {overall_save_path} ---")
 
 # =====================================================================================
 # --- BLOCCO PRINCIPALE (invariato) ---
