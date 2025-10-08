@@ -25,6 +25,8 @@ class EvCityReplay():
         self.sim_name = env.sim_name + '_replay'
         self.sim_length = env.simulation_length
         self.n_cs = env.cs
+        self.seed = env.seed
+        self.tr_seed = env.tr_seed
         self.n_transformers = env.number_of_transformers
         self.timescale = env.timescale
         self.sim_date = env.sim_starting_date

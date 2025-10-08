@@ -104,6 +104,10 @@ class EV2Gym(gym.Env):
             with open(load_from_replay_path, 'rb') as file:
                 self.replay = pickle.load(file)
 
+            # Force the seeds to match the replay's seeds for perfect reproducibility
+            self.seed = self.replay.seed
+            self.tr_seed = self.replay.tr_seed
+
             sim_name = self.replay.replay_path.split(
                 'replay_')[-1].split('.')[0]
             self.sim_name = sim_name + '_replay'
@@ -203,7 +207,11 @@ class EV2Gym(gym.Env):
                 random.shuffle(self.cs_transformers)
 
         # Instatiate Transformers
-        self.transformers = load_transformers(self)
+        if self.load_from_replay_path is not None:
+            self.transformers = self.replay.transformers
+        else:
+            self.transformers = load_transformers(self)
+
         for tr in self.transformers:
             tr.reset(step=0)
 

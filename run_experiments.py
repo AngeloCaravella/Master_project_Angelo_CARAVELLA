@@ -495,6 +495,34 @@ def plot_overload_composition(save_path, scenario_name, algorithm_name, power_da
     plt.savefig(os.path.join(save_path, f"overload_composition_{scenario_name}_{safe_algo_name}.png"))
     plt.close(fig)
 
+def plot_electricity_prices(save_path, scenario_name, charge_prices, discharge_prices, timescale):
+    """Plots the electricity charge and discharge prices over time."""
+    if charge_prices is None or discharge_prices is None:
+        return
+
+    # Assuming prices are the same for all stations, take the first one.
+    charge_price_series = charge_prices[0]
+    discharge_price_series = discharge_prices[0]
+    
+    min_len = min(len(charge_price_series), len(discharge_price_series))
+    time_hours = np.arange(min_len) * timescale / 60
+
+    fig, ax = plt.subplots(figsize=(15, 7))
+    
+    ax.plot(time_hours, charge_price_series[:min_len], label='Charge Price', color='#e74c3c', linewidth=2)
+    ax.plot(time_hours, discharge_price_series[:min_len], label='Discharge Price', color='#2ecc71', linewidth=2, linestyle='--')
+
+    ax.set_xlabel("Time (hours)")
+    ax.set_ylabel("Price (€/kWh)") # Assuming the unit is €/kWh
+    ax.set_title(f'Electricity Prices - Scenario: {scenario_name}', fontsize=16)
+    ax.legend()
+    ax.grid(True, linestyle='--', alpha=0.6)
+    
+    plt.tight_layout()
+    plt.savefig(os.path.join(save_path, f"electricity_prices_{scenario_name}.png"))
+    plt.close(fig)
+
+
 
 
 
@@ -635,6 +663,8 @@ def run_benchmark(config_files, reward_func, algorithms_to_run, num_simulations,
             ev_counts_over_time.append(num_evs)
             _, _, done, _, _ = presence_env.step(np.zeros(presence_env.action_space.shape[0]))
         timescale = presence_env.timescale
+        charge_prices = presence_env.charge_prices
+        discharge_prices = presence_env.discharge_prices
         presence_env.close()
 
         for sim_num in range(num_simulations):
@@ -646,7 +676,7 @@ def run_benchmark(config_files, reward_func, algorithms_to_run, num_simulations,
 
             eval_env_id = f'eval-env-{scenario_name}-{sim_num}'
             if eval_env_id in registry: del registry[eval_env_id]
-            gym.register(id=eval_env_id, entry_point='ev2gym.models.ev2gym_env:EV2Gym', kwargs={'config_file': config_file, 'generate_rnd_game': False, 'load_from_replay_path': replay_path, 'reward_function': reward_func, 'state_function': V2G_profit_max_loads, 'price_data_file': price_data_file})
+            gym.register(id=eval_env_id, entry_point='ev2gym.models.ev2gym_env:EV2Gym', kwargs={'config_file': config_file, 'generate_rnd_game': True, 'load_from_replay_path': replay_path, 'reward_function': reward_func, 'state_function': V2G_profit_max_loads, 'price_data_file': price_data_file})
 
             for name, (algorithm_class, rl_class, kwargs) in algorithms_to_run.items():
                 print(f"+ Running: {name}")
@@ -725,6 +755,7 @@ def run_benchmark(config_files, reward_func, algorithms_to_run, num_simulations,
             plot_ev_presence(scenario_save_path, scenario_name, ev_counts_over_time, timescale)
             plot_average_soc_over_time(scenario_save_path, scenario_name, soc_over_time_by_algo, timescale)
             plot_tradeoff_scatter(aggregated_stats, scenario_save_path, scenario_name, list(algorithms_to_run.keys()))
+            plot_electricity_prices(scenario_save_path, scenario_name, charge_prices, discharge_prices, timescale)
             generate_summary_outputs(aggregated_stats, scenario_save_path, scenario_name, num_simulations)
 
     print(f"\n--- Benchmark finished. Results saved in: {overall_save_path} ---")
