@@ -19,6 +19,57 @@
 
 \refsection{0}
   \datalist[entry]{nty/global//global/global/global}
+    \entry{Feyijimi}{article}{}{}
+      \name{author}{4}{}{%
+        {{hash=1e88b5ad79638b0939fd770b792a233e}{%
+           family={Adegbohun},
+           familyi={A\bibinitperiod},
+           given={Feyijimi},
+           giveni={F\bibinitperiod}}}%
+        {{hash=a5e747405d6d2c1e8566aa34f039cbf1}{%
+           family={Jouanne},
+           familyi={J\bibinitperiod},
+           given={Annette},
+           giveni={A\bibinitperiod},
+           prefix={von},
+           prefixi={v\bibinitperiod}}}%
+        {{hash=b0bcc2b0c1698c819e1144d1300bddaf}{%
+           family={Agamloh},
+           familyi={A\bibinitperiod},
+           given={Emmanuel},
+           giveni={E\bibinitperiod}}}%
+        {{hash=ad944c9f762ba09b8af1651ab76fab3f}{%
+           family={Yokochi},
+           familyi={Y\bibinitperiod},
+           given={Alex},
+           giveni={A\bibinitperiod}}}%
+      }
+      \list{publisher}{1}{%
+        {MDPI}%
+      }
+      \strng{namehash}{2171fe22bf785f32836abf2dfc667445}
+      \strng{fullhash}{9892b9b0a0b432ff3d45e203fafeaae1}
+      \strng{fullhashraw}{9892b9b0a0b432ff3d45e203fafeaae1}
+      \strng{bibnamehash}{2171fe22bf785f32836abf2dfc667445}
+      \strng{authorbibnamehash}{2171fe22bf785f32836abf2dfc667445}
+      \strng{authornamehash}{2171fe22bf785f32836abf2dfc667445}
+      \strng{authorfullhash}{9892b9b0a0b432ff3d45e203fafeaae1}
+      \strng{authorfullhashraw}{9892b9b0a0b432ff3d45e203fafeaae1}
+      \field{sortinit}{A}
+      \field{sortinithash}{2f401846e2029bad6b3ecc16d50031e2}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{Energies}
+      \field{number}{6}
+      \field{title}{A Review of Bidirectional Charging Grid Support Applications and Control}
+      \field{volume}{17}
+      \field{year}{2024}
+      \field{pages}{1320}
+      \range{pages}{1}
+      \verb{doi}
+      \verb 10.3390/en17061320
+      \endverb
+    \endentry
     \entry{alfaverh2022optima}{article}{}{}
       \name{author}{3}{}{%
         {{hash=718f1b7d3df49c29ca4d0f00949163d4}{%
@@ -474,6 +525,31 @@
       \field{note}{Paper No. WP5-B}
       \field{title}{Dynamic Matrix Control -- A Computer Control Algorithm}
       \field{year}{1980}
+    \endentry
+    \entry{Englberger2021}{article}{}{}
+      \name{author}{1}{}{%
+        {{hash=b134c8ecde2e7e08b6397ea87ace264d}{%
+           family={Englberger},
+           familyi={E\bibinitperiod}}}%
+      }
+      \strng{namehash}{b134c8ecde2e7e08b6397ea87ace264d}
+      \strng{fullhash}{b134c8ecde2e7e08b6397ea87ace264d}
+      \strng{fullhashraw}{b134c8ecde2e7e08b6397ea87ace264d}
+      \strng{bibnamehash}{b134c8ecde2e7e08b6397ea87ace264d}
+      \strng{authorbibnamehash}{b134c8ecde2e7e08b6397ea87ace264d}
+      \strng{authornamehash}{b134c8ecde2e7e08b6397ea87ace264d}
+      \strng{authorfullhash}{b134c8ecde2e7e08b6397ea87ace264d}
+      \strng{authorfullhashraw}{b134c8ecde2e7e08b6397ea87ace264d}
+      \field{sortinit}{E}
+      \field{sortinithash}{8da8a182d344d5b9047633dfc0cc9131}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{Applied Energy}
+      \field{title}{Electric vehicle multi-use: Optimizing multiple value streams using mobile storage systems in a vehicle-to-grid context}
+      \field{year}{2021}
+      \verb{doi}
+      \verb 10.1016/j.apenergy.2021.117138
+      \endverb
     \endentry
     \entry{faggio2023design}{thesis}{}{}
       \name{author}{1}{}{%
@@ -1282,50 +1358,6 @@
       \verb 10.48550/arXiv.2404.01849
       \endverb
     \endentry
-    \entry{parisio2014mpc}{article}{}{}
-      \name{author}{3}{}{%
-        {{hash=08b50fb76c1e03128b33b3992e998c9e}{%
-           family={Parisio},
-           familyi={P\bibinitperiod},
-           given={Alessandra},
-           giveni={A\bibinitperiod}}}%
-        {{hash=348e7ad6a84edabdf0de296374175002}{%
-           family={Rikos},
-           familyi={R\bibinitperiod},
-           given={Evangelos},
-           giveni={E\bibinitperiod}}}%
-        {{hash=0f20783bcde70b126cd3896eed1e1cb6}{%
-           family={Glielmo},
-           familyi={G\bibinitperiod},
-           given={Luigi},
-           giveni={L\bibinitperiod}}}%
-      }
-      \list{publisher}{1}{%
-        {IEEE}%
-      }
-      \strng{namehash}{0b354576fe7ccf2230d577a8d1d9230d}
-      \strng{fullhash}{0b354576fe7ccf2230d577a8d1d9230d}
-      \strng{fullhashraw}{0b354576fe7ccf2230d577a8d1d9230d}
-      \strng{bibnamehash}{0b354576fe7ccf2230d577a8d1d9230d}
-      \strng{authorbibnamehash}{0b354576fe7ccf2230d577a8d1d9230d}
-      \strng{authornamehash}{0b354576fe7ccf2230d577a8d1d9230d}
-      \strng{authorfullhash}{0b354576fe7ccf2230d577a8d1d9230d}
-      \strng{authorfullhashraw}{0b354576fe7ccf2230d577a8d1d9230d}
-      \field{sortinit}{P}
-      \field{sortinithash}{ff3bcf24f47321b42cb156c2cc8a8422}
-      \field{labelnamesource}{author}
-      \field{labeltitlesource}{title}
-      \field{journaltitle}{IEEE Transactions on Control Systems Technology}
-      \field{number}{5}
-      \field{title}{A Model Predictive Control Approach to Microgrid Operation Optimization}
-      \field{volume}{22}
-      \field{year}{2014}
-      \field{pages}{1813\bibrangedash 1827}
-      \range{pages}{15}
-      \verb{doi}
-      \verb 10.1109/TCST.2013.2295737
-      \endverb
-    \endentry
     \entry{Curriculum_learning_2}{article}{}{}
       \name{author}{4}{}{%
         {{hash=600ecfe48dd071b6d5fa724bb8a3101b}{%
@@ -1542,6 +1574,64 @@
       \field{title}{Cost and power loss aware coalitions under uncertainty in transactive energy systems}
       \field{year}{2022}
     \endentry
+    \entry{salvatti2020electric}{article}{}{}
+      \name{author}{5}{}{%
+        {{hash=90623bca7218c11dfb0ac81fa3307f6e}{%
+           family={Salvatti},
+           familyi={S\bibinitperiod},
+           given={Gabriel\bibnamedelima Antonio},
+           giveni={G\bibinitperiod\bibinitdelim A\bibinitperiod}}}%
+        {{hash=df3fbfbf0eaa97746953908c282b93e6}{%
+           family={Carati},
+           familyi={C\bibinitperiod},
+           given={Emerson\bibnamedelima Giovani},
+           giveni={E\bibinitperiod\bibinitdelim G\bibinitperiod}}}%
+        {{hash=95bf0d03fcd9e180864e13d89bf98e0a}{%
+           family={Cardoso},
+           familyi={C\bibinitperiod},
+           given={Rafael},
+           giveni={R\bibinitperiod}}}%
+        {{hash=68c36495ab198dcdaba16b35d034604c}{%
+           family={Costa},
+           familyi={C\bibinitperiod},
+           given={Jean\bibnamedelima Patric},
+           giveni={J\bibinitperiod\bibinitdelim P\bibinitperiod},
+           prefix={da},
+           prefixi={d\bibinitperiod}}}%
+        {{hash=06a447000f607f5c8b45f0c9f5ca2cfa}{%
+           family={Oliveira\bibnamedelima Stein},
+           familyi={O\bibinitperiod\bibinitdelim S\bibinitperiod},
+           given={Carlos\bibnamedelima Marcelo},
+           giveni={C\bibinitperiod\bibinitdelim M\bibinitperiod},
+           prefix={de},
+           prefixi={d\bibinitperiod}}}%
+      }
+      \list{publisher}{1}{%
+        {MDPI}%
+      }
+      \strng{namehash}{571a5c4d8440be4521dab63f370f7502}
+      \strng{fullhash}{7ff4765d7fcc2533f3fdd1a57ae8badf}
+      \strng{fullhashraw}{7ff4765d7fcc2533f3fdd1a57ae8badf}
+      \strng{bibnamehash}{571a5c4d8440be4521dab63f370f7502}
+      \strng{authorbibnamehash}{571a5c4d8440be4521dab63f370f7502}
+      \strng{authornamehash}{571a5c4d8440be4521dab63f370f7502}
+      \strng{authorfullhash}{7ff4765d7fcc2533f3fdd1a57ae8badf}
+      \strng{authorfullhashraw}{7ff4765d7fcc2533f3fdd1a57ae8badf}
+      \field{sortinit}{S}
+      \field{sortinithash}{b164b07b29984b41daf1e85279fbc5ab}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{Energies}
+      \field{number}{5}
+      \field{title}{Electric Vehicles Energy Management with V2G/G2V Multifactor Optimization of Smart Grids}
+      \field{volume}{13}
+      \field{year}{2020}
+      \field{pages}{1191}
+      \range{pages}{1}
+      \verb{doi}
+      \verb 10.3390/en13051191
+      \endverb
+    \endentry
     \entry{schaul2015prioritized}{article}{}{}
       \name{author}{4}{}{%
         {{hash=a56e72b23778a835bdade7d0511e43a3}{%
@@ -1692,6 +1782,59 @@
       \endverb
       \verb{url}
       \verb https://proceedings.mlr.press/v37/schulman15.html
+      \endverb
+    \endentry
+    \entry{Srihari}{article}{}{}
+      \name{author}{5}{}{%
+        {{hash=e96e3971eb769b76c2f95acf1f6d75b4}{%
+           family={Srihari},
+           familyi={S\bibinitperiod},
+           given={G.},
+           giveni={G\bibinitperiod}}}%
+        {{hash=ffe3c07b741d55bfdce1e0fae614d499}{%
+           family={Naidu},
+           familyi={N\bibinitperiod},
+           given={R.\bibnamedelimi S.\bibnamedelimi R.\bibnamedelimi Krishnam},
+           giveni={R\bibinitperiod\bibinitdelim S\bibinitperiod\bibinitdelim R\bibinitperiod\bibinitdelim K\bibinitperiod}}}%
+        {{hash=b8f2584b51e505a281dd8d95b23be4c6}{%
+           family={Falkowski-Gilski},
+           familyi={F\bibinithyphendelim G\bibinitperiod},
+           given={Przemysław},
+           giveni={P\bibinitperiod}}}%
+        {{hash=70e20ae2d5d6a044c1b2cfed2220febc}{%
+           family={Divakarachari},
+           familyi={D\bibinitperiod},
+           given={Parameshachari\bibnamedelima Bidare},
+           giveni={P\bibinitperiod\bibinitdelim B\bibinitperiod}}}%
+        {{hash=a1a63e5c6a4a2af508eddec4008c735c}{%
+           family={Penmatsa},
+           familyi={P\bibinitperiod},
+           given={Ravi\bibnamedelimb Kiran\bibnamedelima Varma},
+           giveni={R\bibinitperiod\bibinitdelim K\bibinitperiod\bibinitdelim V\bibinitperiod}}}%
+      }
+      \list{publisher}{1}{%
+        {Frontiers Media SA}%
+      }
+      \strng{namehash}{6903ed3452f2b55f724a1968a5898a2c}
+      \strng{fullhash}{f5385d5e6cde13634f0486627ceaf80a}
+      \strng{fullhashraw}{f5385d5e6cde13634f0486627ceaf80a}
+      \strng{bibnamehash}{6903ed3452f2b55f724a1968a5898a2c}
+      \strng{authorbibnamehash}{6903ed3452f2b55f724a1968a5898a2c}
+      \strng{authornamehash}{6903ed3452f2b55f724a1968a5898a2c}
+      \strng{authorfullhash}{f5385d5e6cde13634f0486627ceaf80a}
+      \strng{authorfullhashraw}{f5385d5e6cde13634f0486627ceaf80a}
+      \field{sortinit}{S}
+      \field{sortinithash}{b164b07b29984b41daf1e85279fbc5ab}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{Frontiers in Energy Research}
+      \field{title}{Integration of electric vehicle into smart grid: a meta heuristic algorithm for energy management between V2G and G2V}
+      \field{volume}{12}
+      \field{year}{2024}
+      \field{pages}{1357863}
+      \range{pages}{1}
+      \verb{doi}
+      \verb 10.3389/fenrg.2024.1357863
       \endverb
     \endentry
     \entry{Sutton2018}{book}{}{}
@@ -2044,6 +2187,87 @@
       \verb 10.1016/j.jpowsour.2010.11.010
       \endverb
     \endentry
+    \entry{Xie2025}{article}{}{}
+      \name{author}{1}{}{%
+        {{hash=ae0426ede5160de73b69701588443a78}{%
+           family={Xie},
+           familyi={X\bibinitperiod},
+           given={H.},
+           giveni={H\bibinitperiod}}}%
+      }
+      \strng{namehash}{ae0426ede5160de73b69701588443a78}
+      \strng{fullhash}{ae0426ede5160de73b69701588443a78}
+      \strng{fullhashraw}{ae0426ede5160de73b69701588443a78}
+      \strng{bibnamehash}{ae0426ede5160de73b69701588443a78}
+      \strng{authorbibnamehash}{ae0426ede5160de73b69701588443a78}
+      \strng{authornamehash}{ae0426ede5160de73b69701588443a78}
+      \strng{authorfullhash}{ae0426ede5160de73b69701588443a78}
+      \strng{authorfullhashraw}{ae0426ede5160de73b69701588443a78}
+      \field{sortinit}{X}
+      \field{sortinithash}{1965c258adceecf23ce3d67b05113442}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{ScienceDirect}
+      \field{title}{Reinforcement learning for vehicle-to-grid: A review}
+      \field{year}{2025}
+      \verb{doi}
+      \verb 10.1016/j.sciad.2025.100008
+      \endverb
+    \endentry
+    \entry{NaXu}{article}{}{}
+      \name{author}{5}{}{%
+        {{hash=e8c01e619a1d48bb37cd9620dbbdd12d}{%
+           family={Xu},
+           familyi={X\bibinitperiod},
+           given={Na},
+           giveni={N\bibinitperiod}}}%
+        {{hash=b2f5bfc4983d4eab3850afa0c09dd4ce}{%
+           family={Tang},
+           familyi={T\bibinitperiod},
+           given={Zhuo},
+           giveni={Z\bibinitperiod}}}%
+        {{hash=5ac54b390b7a4ccb453bcbbc0aea9500}{%
+           family={Si},
+           familyi={S\bibinitperiod},
+           given={Chenyi},
+           giveni={C\bibinitperiod}}}%
+        {{hash=58569500c176723e7253cf702cd2cb55}{%
+           family={Bian},
+           familyi={B\bibinitperiod},
+           given={Jinshan},
+           giveni={J\bibinitperiod}}}%
+        {{hash=ec2912b2d1caa4a4853f28814e0f60e6}{%
+           family={Mu},
+           familyi={M\bibinitperiod},
+           given={Chaoxu},
+           giveni={C\bibinitperiod}}}%
+      }
+      \list{publisher}{1}{%
+        {MDPI}%
+      }
+      \strng{namehash}{e7807e34eb13efb509459465e83cb0bd}
+      \strng{fullhash}{6b414194fd3e639f42e64164ada8a157}
+      \strng{fullhashraw}{6b414194fd3e639f42e64164ada8a157}
+      \strng{bibnamehash}{e7807e34eb13efb509459465e83cb0bd}
+      \strng{authorbibnamehash}{e7807e34eb13efb509459465e83cb0bd}
+      \strng{authornamehash}{e7807e34eb13efb509459465e83cb0bd}
+      \strng{authorfullhash}{6b414194fd3e639f42e64164ada8a157}
+      \strng{authorfullhashraw}{6b414194fd3e639f42e64164ada8a157}
+      \field{sortinit}{X}
+      \field{sortinithash}{1965c258adceecf23ce3d67b05113442}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{Energies}
+      \field{number}{7}
+      \field{title}{A Review of Smart Grid Evolution and Reinforcement Learning: Applications, Challenges and Future Directions}
+      \field{volume}{18}
+      \field{year}{2024}
+      \field{pages}{1837}
+      \range{pages}{1}
+      \verb{doi}
+      \verb 10.3390/en18071837
+      \endverb
+    \endentry
     \entry{Zhang2023}{article}{}{}
       \name{author}{3}{}{%
         {{hash=29c94b90358bd60564e0725e9346a39c}{%
@@ -2079,7 +2303,6 @@
       \field{year}{2023}
     \endentry
   \enddatalist
-  \missing{It means that MC updates only from complete sampled returns.}
   \missing{evertsson2024investigating}
 \endrefsection
 \endinput

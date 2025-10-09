@@ -20,7 +20,7 @@
 \end{flushright}
 
 \section{The V2G Imperative: A Foundation of Europe's Green Transition}
-
+\noindent
 Europe finds itself at the confluence of two unprecedented and deeply interlinked transformations reshaping its technological, economic, and societal landscape: the large-scale electrification of transport and a comprehensive restructuring of its energy systems. These parallel transitions involve a radical shift from internal combustion engines to battery electric vehicles and a simultaneous integration of renewable generation, grid modernization, and the deployment of advanced storage and demand-side management solutions.
 \noindent
 \\
@@ -39,15 +39,22 @@ Electric Vehicles (EVs) occupy a central position in this transition, simultaneo
 This conceptual shift finds its most concrete expression in \textbf{Vehicle-to-Grid (V2G)} technology, which fundamentally reimagines the role of electric vehicles within the energy system.
 \\
 \noindent
-V2G technology transforms previously passive, unidirectional energy consumers into active, distributed, and intelligent grid resources. The underlying opportunity is substantial: private vehicles spend approximately 96\% of their operational lifetime parked \cite{evertsson2024investigating}, representing an enormous, geographically distributed, and currently underutilised repository of mobile energy storage.
+V2G technology transforms previously passive, unidirectional energy consumers into active, distributed, and intelligent grid resources. The underlying opportunity is substantial: private vehicles spend approximately 96\% of their operational lifetime parked \cite{Englberger2021}, representing an enormous, geographically distributed, and currently underutilised repository of mobile energy storage.
 \\
 \noindent
 The transformative potential of V2G becomes apparent when individual vehicles are coordinated through centrally managed aggregation. While a single EV's contribution is modest, an orchestrated fleet can function as a unified \textbf{Virtual Power Plant (VPP)}. These software-defined power plants aggregate the collective capacity of numerous distributed energy resources, delivering grid services at scales comparable to conventional generation facilities. The rapid response characteristics of contemporary battery inverters, operating at millisecond timescales, enable these aggregated fleets to provide a comprehensive range of critical grid services. This capability is a prerequisite for maintaining stability in grids increasingly dependent on variable wind and solar generation, thereby enabling the technical and economic viability of the EU's ambitious renewable energy targets \cite{Tavakoli2019}.
 
+
+This \ref{{fig:rl_v2g_ops} diagram illustrates the multifaceted roles an EV fleet
+can play, orchestrated by an aggregator using RL. Key operations include gridstabilizing services (frequency control, demand response), economic optimization
+(bidding and pricing strategies), and user-centric management (energy storage,
+battery health). The objectives range from reducing electricity costs and enhancing
+grid flexibility to ensuring data privacy and transaction security, showcasing the
+complexity of optimizing V2G operations
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.9\linewidth]{Reinforcement_learning_V2G_operations.png}
-    \caption{Reinforcement learning (RL) applications in V2G from the perspective of participating entities. This diagram illustrates the multifaceted roles an EV fleet can play, orchestrated by an aggregator using RL. Key operations include grid-stabilizing services (frequency control, demand response), economic optimization (bidding and pricing strategies), and user-centric management (energy storage, battery health). The objectives range from reducing electricity costs and enhancing grid flexibility to ensuring data privacy and transaction security, showcasing the complexity of optimizing V2G operations.}
+    \caption{Reinforcement learning (RL) applications in V2G from the perspective of participating entities.}
     \label{fig:rl_v2g_ops}
 \end{figure}
 
@@ -58,12 +65,13 @@ The grid services enabled by V2G technology, many of which are illustrated in Fi
 \textbf{Frequency Regulation:} Grid stability depends on maintaining a precise equilibrium between electricity supply and demand, manifested as a stable grid frequency (50 Hz in Europe). Deviations signal imbalances that can trigger cascading failures. V2G fleets, with their rapid-response inverters, can participate in ancillary service markets like Frequency Containment Reserve (FCR) and automatic Frequency Restoration Reserve (aFRR), injecting or absorbing power within seconds to counteract deviations and prevent blackouts \cite{alfaverh2022optima, white2011vehicle}.
 \\
 \noindent 
-\textbf{Demand Response and Peak Shaving:} By intelligently shifting charging to off-peak periods and strategically discharging during peak demand, V2G systems flatten daily load profiles. This directly mitigates the "duck curve" phenomenon (Figure \ref{fig:duck_curve}) associated with high solar penetration. Such load management reduces reliance on expensive, carbon-intensive "peaker" plants and can defer or eliminate costly grid infrastructure upgrades \cite{orfanoudakis2024ev2gym, sadeghi2022deep}.
+\textbf{Demand Response and Peak Shaving:} By intelligently shifting charging to off-peak periods and strategically discharging during peak demand, V2G systems flatten daily load profiles. This directly mitigates the "duck curve" phenomenon (Figure \ref{fig:duck_curve}) associated with high solar penetration. Such load management reduces reliance on expensive, carbon-intensive "peaker" plants and can defer or eliminate costly grid infrastructure upgrades \cite{orfanoudakis2024ev2gym, sadeghi2022deep}.\noindent
+Net load is the total electricity demand minus variable renewable energy generation. The deepening "belly" of the duck during midday reflects overgeneration from solar power, while the steep "neck" in the evening represents a rapid increase in demand as solar generation fades. This steep ramp poses a significant challenge for grid operators. V2G helps mitigate this by absorbing excess energy during the day (charging) and discharging it during the evening ramp to "flatten the curve".\cite{Bisetto_Francesca}
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.8\linewidth]{duck.png}
-    \caption{The "Duck Curve" illustrating the evolution of net load on the California grid. Net load is the total electricity demand minus variable renewable energy generation. The deepening "belly" of the duck during midday reflects overgeneration from solar power, while the steep "neck" in the evening represents a rapid increase in demand as solar generation fades. This steep ramp poses a significant challenge for grid operators. V2G helps mitigate this by absorbing excess energy during the day (charging) and discharging it during the evening ramp to "flatten the curve".\cite{Bisetto_Francesca}}
+    \caption{The "Duck Curve" illustrating the evolution of net load on the California grid.}
     \label{fig:duck_curve}
 \end{figure}
 
@@ -103,21 +111,6 @@ The fundamental challenge addressed by this thesis extends beyond simply enablin
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{The Optimizer's Trilemma: Navigating a Stochastic World}
-\begin{center}
-  \begin{minipage}{0.85\textwidth}
-    \begin{displayquote}
-      \large\itshape
-      ``Uncertainty quantification provides a systematic way to assess the credibility of computational predictions.''
-    \end{displayquote}
-  \end{minipage}
-\end{center}
-
-\vspace{0.1cm}
-
-\begin{flushright}
-  --- \textsc{Omar Ghattas \& Karen Willcox}, \textit{Uncertainty Quantification in Computational Science and Engineering} (2016)
-\end{flushright}
-\noindent
 While the potential of V2G technology is substantial, the management of distributed vehicular assets presents a complex control challenge. Economic viability drives aggregator decisions, yet a narrow focus on profitability alone proves insufficient for sustainable operations. Effective V2G management requires balancing three competing objectives that frequently conflict with one another. This challenge can be framed as the "V2G Optimizer's Trilemma": the concurrent pursuit of \textbf{economic profitability}, preservation of \textbf{battery longevity}, and maintenance of \textbf{user convenience}.
 \noindent
 Rather than representing a straightforward, static trade-off, this constitutes a dynamic, multi-objective optimisation challenge characterised by \textbf{stochasticity} and \textbf{uncertainty} arising from multiple, interconnected sources \cite{wang2022multi}:
@@ -153,22 +146,7 @@ Access to reliable, real-time, and historical market data remains crucial for bo
 
 
 \subsection{Buying vs. Selling: The Critical Retail-Wholesale Spread}
-\begin{center}
-  \begin{minipage}{0.8\textwidth}
-    \begin{displayquote}
-      \large\itshape
-      ``Price spreads, or marketing margins, are the difference between prices at different stages of the supply chain. 
-      The wholesale-to-retail spread is the difference between the wholesale price and the retail price.''
-    \end{displayquote}
-  \end{minipage}
-\end{center}
 
-\vspace{0.1cm}
-
-\begin{flushright}
-  --- \textsc{Sebastien Pouliot \& Lee L. Schulz}, \textit{Measuring Price Spreads in Red Meat} (2016)
-\end{flushright}
-\noindent
 A critical yet frequently overlooked aspect of V2G economics involves the distinction between EV owner charging costs and aggregator grid sales revenue.
 
 \begin{itemize}
@@ -184,11 +162,6 @@ A critical yet frequently overlooked aspect of V2G economics involves the distin
 \end{itemize}
 \noindent
 This substantial gap between retail purchasing prices and wholesale selling prices constitutes the "retail-wholesale spread," creating the primary opportunity for profitable energy arbitrage. Successful control strategies must account for these price differentials to enable economically rational decision-making.
-\noindent
-\\
-A further perspective on this issue is provided by Parisio et al. 
-\cite{parisio2014mpc}
-(2014), who develop a model predictive control (MPC) framework for microgrid operation. Their formulation explicitly considers the decision of when to buy from or sell to the utility grid, under time-varying spot prices and operational constraints. Importantly, the model prevents physically and economically unrealistic behaviors such as simultaneous buying and selling, and accounts for the real cost of storage and generation. This reinforces the notion that optimal energy management strategies must capture the full set of economic signals—including retail charges, network tariffs, and non-commodity costs,rather than relying solely on wholesale price arbitrage. In the V2G context, this highlights the need for predictive, multi-constraint optimization frameworks capable of managing battery limitations, retail–wholesale spreads, and market participation simultaneously in order to ensure profitability.
 
 \section{Modelling the V2G Ecosystem}
 \label{sec:ev_and_scenario}
@@ -350,7 +323,7 @@ MC methods learn value functions by averaging the returns from sample episodes.
     \item \textbf{Principle}: An update to $V(S_t)$ is made only at the end of an episode.
     \item \textbf{Update Target}: The target for the update is the actual, complete return $G_t$.
     \item \textbf{Update Rule} (Constant-$\alpha$): $V(S_t) \leftarrow V(S_t) + \alpha [G_t - V(S_t)]$
-    \item \textbf{Properties}: MC methods are unbiased but can have high variance and are only applicable to episodic tasks. They do not \textit{bootstrap} \cite{It means that MC updates only from complete sampled returns.}.
+    \item \textbf{Properties}: MC methods are unbiased but can have high variance and are only applicable to episodic tasks. They do not \textit{bootstrap} \footnote{It means that MC updates only from complete sampled returns.}.
 \end{itemize}
 
 \subsection{Temporal-Difference (TD) Learning}

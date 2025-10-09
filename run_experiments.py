@@ -635,7 +635,7 @@ def get_algorithms(max_cs: int, is_thesis_mode: bool, mpc_type: str = 'linear') 
         "SAC": (None, SAC, {}), 
         "DDPG+PER": (None, CustomDDPG, {'replay_buffer_class': PrioritizedReplayBuffer}),
         "TQC": (None, TQC, {}),
-        "Optimal_Profit": (OptimalOfflineSolver, None, {}),
+        "Optimal_Profit": (OptimalOfflineSolver, None, {'penalty_overload': 1e9}), # The deterministic optimal solver
        
     }
     mpc_algorithms = {

@@ -77,6 +77,7 @@ class OnlineMPC_Solver:
         
         E = pulp.LpVariable.dicts("Energy", indices, lowBound=0)
         slack_soc = pulp.LpVariable.dicts("SlackSoC", active_evs.keys(), lowBound=0)
+        slack_transformer = pulp.LpVariable.dicts("SlackTransformer", range(prediction_horizon), lowBound=0)
 
         # Objective is to maximize the sum of final energy levels, with a large penalty for not meeting the desired SoC.
         final_energy_sum = pulp.lpSum(
@@ -85,7 +86,8 @@ class OnlineMPC_Solver:
             if 0 <= ev_data['ev'].time_of_departure - current_step < prediction_horizon
         )
         soc_penalty = pulp.lpSum(10000 * slack_soc[cs_id] for cs_id in active_evs.keys())
-        prob.setObjective(final_energy_sum - soc_penalty)
+        transformer_overload_penalty = pulp.lpSum(self.penalty_overload * slack_transformer[t] for t in range(prediction_horizon))
+        prob.setObjective(final_energy_sum - soc_penalty - transformer_overload_penalty)
 
         # --- MODEL CONSTRAINTS ---
         for cs_id, data in active_evs.items():
@@ -96,6 +98,8 @@ class OnlineMPC_Solver:
                 prob += P_ch[cs_id, t] <= ev.max_ac_charge_power * b_ch[cs_id, t]
                 prob += P_dis[cs_id, t] <= -ev.max_discharge_power * b_dis[cs_id, t]
                 prob += b_ch[cs_id, t] + b_dis[cs_id, t] <= 1
+                # Prohibit idle action: must either charge or discharge
+                prob += b_ch[cs_id, t] + b_dis[cs_id, t] >= 1
                 
                 # Battery dynamics
                 E_prev = E_initial[cs_id] if t == 0 else E[cs_id, t-1]
@@ -105,10 +109,10 @@ class OnlineMPC_Solver:
                 prob += E[cs_id, t] >= ev.min_battery_capacity
                 prob += E[cs_id, t] <= ev.battery_capacity
             
-            # --- SOFT CONSTRAINT FOR USER SATISFACTION ---
+            # --- SOFT CONSTRAINT FOR USER SATISFACTION (aim for 100% SoC) ---
             departure_step_in_horizon = ev.time_of_departure - current_step - 1
             if 0 <= departure_step_in_horizon < prediction_horizon:
-                desired_energy = ev.desired_capacity * self.mpc_desired_soc_factor
+                desired_energy = ev.battery_capacity # Aim for 100% SoC
                 prob += E[cs_id, departure_step_in_horizon] >= desired_energy - slack_soc[cs_id]
 
         for i in range(num_cs):
@@ -122,7 +126,7 @@ class OnlineMPC_Solver:
             power_evs = pulp.lpSum(P_ch[i, t] - P_dis[i, t] for i in range(num_cs))
             total_power = power_evs + load_forecast[t] + pv_forecast[t]
             limit = transformer_limit_horizon[t] if t < len(transformer_limit_horizon) else transformer_limit_horizon[-1]
-            prob += total_power <= limit
+            prob += total_power <= limit + slack_transformer[t]
 
         prob.solve(pulp.PULP_CBC_CMD(msg=0))
 
@@ -168,9 +172,10 @@ class OptimalOfflineSolver:
 
     This solver serves as the theoretical benchmark for user satisfaction.
     """
-    def __init__(self, env, mpc_desired_soc_factor=1, **kwargs):
+    def __init__(self, env, mpc_desired_soc_factor=1, penalty_overload=100.0, **kwargs):
         self.env = env
         self.mpc_desired_soc_factor = mpc_desired_soc_factor
+        self.penalty_overload = penalty_overload
         self.action_plan = None
         print(f"Optimal Offline Satisfaction Solver initialized.")
 
@@ -186,10 +191,24 @@ class OptimalOfflineSolver:
         transformer_limit = transformer.get_power_limits(0, T)
         all_ev_sessions = env.get_all_future_ev_sessions()
 
+        # Calculate time to full charge for each EV
+        ev_time_to_full = {}
+        for ev_id, ev_info in all_ev_sessions.items():
+            ev = ev_info['ev']
+            energy_needed = ev.battery_capacity - ev.initial_soc_replay * ev.battery_capacity
+            
+            max_charge_power_kw = ev.max_ac_charge_power 
+            
+            if max_charge_power_kw > 0:
+                time_steps_to_full = energy_needed / (max_charge_power_kw * timescale_h)
+                ev_time_to_full[ev_id] = time_steps_to_full
+            else:
+                ev_time_to_full[ev_id] = float('inf') # Cannot charge
+
         # =============================================================================
-        # --- OBJECTIVE: Maximize the final state of charge for all EVs ---
+        # --- OBJECTIVE: Maximize the final state of charge for all EVs (soft constraint) ---
         # =============================================================================
-        prob = pulp.LpProblem("Maximize_Final_SoC", pulp.LpMaximize)
+        prob = pulp.LpProblem("Maximize_Final_SoC_Soft", pulp.LpMaximize)
         
         # Definiamo le variabili come prima
         indices = [(i, t) for i in range(num_cs) for t in range(T)]
@@ -199,13 +218,18 @@ class OptimalOfflineSolver:
         b_dis = pulp.LpVariable.dicts("isDischarging", indices, cat='Binary')
         ev_indices = [(ev_id, t) for ev_id in all_ev_sessions.keys() for t in range(T)]
         E = pulp.LpVariable.dicts("Energy", ev_indices, lowBound=0)
+        slack_soc = pulp.LpVariable.dicts("SlackSoC", all_ev_sessions.keys(), lowBound=0) # Slack for user satisfaction
+        slack_transformer = pulp.LpVariable.dicts("SlackTransformer", range(T), lowBound=0)
 
-        # The objective is to maximize the sum of energy for all EVs at their departure time.
+        # The objective is to maximize the sum of energy for all EVs at their departure time,
+        # with a large penalty for not meeting the desired SoC.
         final_energy_sum = pulp.lpSum(
             E[ev_id, ev_info['departure_step'] - 1]
             for ev_id, ev_info in all_ev_sessions.items() if ev_info['departure_step'] > ev_info['arrival_step']
         )
-        prob.setObjective(final_energy_sum)
+        soc_penalty = pulp.lpSum(10000 * slack_soc[ev_id] for ev_id in all_ev_sessions.keys())
+        transformer_overload_penalty = pulp.lpSum(self.penalty_overload * slack_transformer[t] for t in range(T))
+        prob.setObjective(final_energy_sum - soc_penalty - transformer_overload_penalty)
         
         # =============================================================================
         # --- THE CONSTRAINTS ARE NOW ALL HARD AND ABSOLUTE ---
@@ -228,10 +252,13 @@ class OptimalOfflineSolver:
                 prob += E[ev_id, t] <= ev.battery_capacity
                 prob += E[ev_id, t] >= ev.min_battery_capacity
 
-            # HARD AND INFALLIBLE CONSTRAINT ON SATISFACTION
-            desired_energy = ev.desired_capacity * self.mpc_desired_soc_factor
+            # SOFT CONSTRAINT FOR USER SATISFACTION (aim for 100% SoC)
+            desired_energy = ev.battery_capacity # Always aim for 100% SoC for OptimalOfflineSolver
             if t_departure > t_arrival:
-                prob += E[ev_id, t_departure - 1] >= desired_energy
+                prob += E[ev_id, t_departure - 1] >= desired_energy - slack_soc[ev_id]
+
+            # V2G is implicitly discouraged by maximizing final SoC and penalizing transformer overload.
+            # No explicit conditional V2G constraint needed here.
 
         # Vincoli di potenza delle stazioni
         for i, t in indices:
@@ -253,7 +280,7 @@ class OptimalOfflineSolver:
         for t in range(T):
             power_evs = pulp.lpSum(P_ch[i, t] - P_dis[i, t] for i in range(num_cs))
             total_power = power_evs + load_forecast[t] - pv_forecast[t]
-            prob += total_power <= transformer_limit[t]
+            prob += total_power <= transformer_limit[t] + slack_transformer[t]
 
         # Solve
         prob.solve(pulp.PULP_CBC_CMD(msg=0))
@@ -271,7 +298,7 @@ class OptimalOfflineSolver:
                         self.action_plan[t, i] = net_power / max_power
             self.action_plan = np.clip(self.action_plan, -1, 1)
         else:
-            print(f"--- [Optimal Offline Solver] FAILURE: The problem is infeasible (Status: {pulp.LpStatus[prob.status]}). ---")
+            print(f"--- [Optimal Offline Solver] FAILURE: Problem is infeasible (Status: {pulp.LpStatus[prob.status]}). ---")
             self.action_plan = np.zeros((T, num_cs))
         
     def get_action(self, env):
