@@ -674,3 +674,35 @@ class EV2Gym(gym.Env):
         self.total_reward += reward
 
         return reward
+
+    #
+    def get_all_future_ev_sessions(self):
+        """
+        Restituisce un dizionario di tutte le sessioni EV programmate per l'intera simulazione.
+        Questo è possibile solo quando si carica da un replay o si usa una schedule fissa.
+        """
+        if not self.load_from_replay_path and not hasattr(self, 'fixed_ev_schedule'):
+            raise EnvironmentError("La conoscenza completa del futuro è disponibile solo caricando da un replay.")
+
+        all_sessions = {}
+        # Assumiamo che self.ev_arrival_schedule contenga tutte le informazioni necessarie
+        # La struttura di questo dato potrebbe variare, adattala se necessario
+        for step, events in self.ev_arrival_schedule.items():
+            for event in events:
+                # Creiamo un ID univoco per ogni sessione
+                ev_session_id = f"ev_{event['cs_id']}_{step}"
+                
+                # Creiamo un'istanza temporanea dell'EV per accedere ai suoi parametri
+                temp_ev = self.ev_factory.get_ev(
+                    time_of_arrival=step,
+                    initial_soc=event['initial_soc'],
+                    desired_soc=event['desired_soc']
+                )
+
+                all_sessions[ev_session_id] = {
+                    'ev': temp_ev,
+                    'cs_id': event['cs_id'],
+                    'arrival_step': step,
+                    'departure_step': temp_ev.time_of_departure
+                }
+        return all_sessions

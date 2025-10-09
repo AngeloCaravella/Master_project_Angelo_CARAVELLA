@@ -2483,7 +2483,6 @@
     <bcf:citekey order="100" intorder="1">Qiu2023</bcf:citekey>
     <bcf:citekey order="101" intorder="1">Qiu2023</bcf:citekey>
     <bcf:citekey order="102" intorder="1">Qiu2023</bcf:citekey>
-    <bcf:citekey order="103" intorder="1">karg2020efficient</bcf:citekey>
   </bcf:section>
   <!-- SORTING TEMPLATES -->
   <bcf:sortingtemplate name="nty">

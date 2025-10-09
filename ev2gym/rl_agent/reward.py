@@ -22,13 +22,13 @@ def FastProfitAdaptiveReward(env, total_costs, user_satisfaction_list, *args):
     if not hasattr(env, 'overload_frequency'):
         env.overload_frequency = deque(maxlen=100)
 
-    # La ricompensa principale è il profitto economico diretto.
-    reward = total_costs
+    # La ricompensa principale è il profitto economico diretto, ma con meno importanza.
+    reward = total_costs * 0.1
     reward_components = {'profit': reward}
 
     # Penalità Adattiva per la Soddisfazione dell'Utente
     avg_satisfaction = sum(env.satisfaction_history) / len(env.satisfaction_history) if env.satisfaction_history else 1.0
-    satisfaction_severity_multiplier = 50.0 * (1 - avg_satisfaction)**2
+    satisfaction_severity_multiplier = 200.0 * (1 - avg_satisfaction)**2
     
     current_satisfaction_penalty = 0
     if user_satisfaction_list:

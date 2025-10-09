@@ -156,12 +156,3 @@
 \contentsline {section}{\numberline {3.17}Quadratic MPC Formulation (CVXPY Implementation)}{89}{section.3.17}%
 \contentsline {paragraph}{Implementation Details}{89}{section*.49}%
 \contentsline {section}{\numberline {3.18}Lyapunov-based Adaptive Horizon MPC}{90}{section.3.18}%
-\contentsline {section}{\numberline {3.19}Approximate Explicit MPC: A Machine Learning Approach}{92}{section.3.19}%
-\contentsline {subsection}{\numberline {3.19.1}Methodology: From Oracle to Apprentice}{92}{subsection.3.19.1}%
-\contentsline {subsection}{\numberline {3.19.2}Approximation via Random Forest}{92}{subsection.3.19.2}%
-\contentsline {paragraph}{Offline Training}{92}{section*.50}%
-\contentsline {paragraph}{Implementation Details}{93}{section*.51}%
-\contentsline {subsection}{\numberline {3.19.3}Approximation via Deep ReLU Network}{93}{subsection.3.19.3}%
-\contentsline {paragraph}{Offline Training}{93}{section*.52}%
-\contentsline {paragraph}{Implementation Details}{94}{section*.53}%
-\contentsline {subsection}{\numberline {3.19.4}Online Inference}{94}{subsection.3.19.4}%

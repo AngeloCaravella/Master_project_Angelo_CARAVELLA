@@ -23,7 +23,7 @@ from typing import List, Dict, Any, Tuple, Callable, Optional
 # --- Importazioni dalla libreria custom ev2gym ---
 from ev2gym.models.ev2gym_env import EV2Gym
 from ev2gym.baselines.heuristics import ChargeAsFastAsPossible, ChargeAsLateAsPossible, RoundRobin
-from ev2gym.baselines.pulp_mpc import OnlineMPC_Solver, ApproximateExplicitMPC, ApproximateExplicitMPC_NN
+from ev2gym.baselines.pulp_mpc import OnlineMPC_Solver, ApproximateExplicitMPC, ApproximateExplicitMPC_NN, OptimalOfflineSolver
 from ev2gym.baselines.cvxpy_mpc_quadratic import OnlineMPC_Solver_Quadratic
 from ev2gym.rl_agent.custom_algorithms import CustomDDPG
 from ev2gym.utilities.per_buffer import PrioritizedReplayBuffer
@@ -282,27 +282,40 @@ class TrainingPlotCallback(BaseCallback):
 # --- FUNZIONI DI PLOTTING (INVARIATE) ---
 # =====================================================================================
 def get_color_map_and_legend(algorithms_to_plot):
-    full_algo_categories = {
-        "AFAP": "heuristic", "ALAP": "heuristic", "RR": "heuristic",
-        "Online_MPC": "mpc", "Approx_Explicit_MPC": "mpc", "Online_MPC_Adaptive": "mpc", "Online_MPC_Quadratic": "mpc", "Online_MPC_Quadratic_Adaptive": "mpc",
-        "PPO": "on-policy", "A2C": "on-policy", "TRPO": "on-policy", "ARS": "on-policy",
-        "SAC": "off-policy", "TD3": "off-policy", "DDPG": "off-policy", "DDPG+PER": "off-policy", "TQC": "off-policy"
-    }
-    category_colors = {"heuristic": "#4C72B0", "mpc": "#55A868", "on-policy": "#C44E52", "off-policy": "#8172B2", "default": "#B2B2B2"}
-    present_categories = {full_algo_categories[algo] for algo in algorithms_to_plot if algo in full_algo_categories}
-    legend_elements = [Patch(facecolor=color, edgecolor='black', label=cat_name) for cat_name, color in zip(['Heuristics', 'MPC', 'On-Policy RL', 'Off-Policy RL'], ["#4C72B0", "#55A868", "#C44E52", "#8172B2"]) if color in [category_colors[cat] for cat in present_categories]]
-    return {k: v for k, v in full_algo_categories.items() if k in algorithms_to_plot}, category_colors, legend_elements
+    """Generates a unique color map and legend for each algorithm."""
+    # Define a list of visually distinct colors for the plots.
+    distinct_colors = [
+        '#1f77b4', '#ff7f0e', '#2ca02c', '#d62728', '#9467bd', '#8c564b', 
+        '#e377c2', '#7f7f7f', '#bcbd22', '#17becf', '#aec7e8', '#ffbb78', 
+        '#98df8a', '#ff9896', '#c5b0d5', '#c49c94' 
+    ]
+    
+    # Create a mapping from each algorithm to its own name (which acts as its category).
+    algo_categories = {algo: algo for algo in algorithms_to_plot}
+    
+    # Create a mapping from each algorithm name to a unique color.
+    color_map = {algo: distinct_colors[i % len(distinct_colors)] for i, algo in enumerate(algorithms_to_plot)}
+    
+    # Add a default color for categories not explicitly defined
+    color_map["default"] = "#cccccc" # Light grey for default
+
+    # Create legend elements for each individual algorithm.
+    legend_elements = [Patch(facecolor=color_map[algo], edgecolor='black', label=algo) for algo in algorithms_to_plot]
+    
+    return algo_categories, color_map, legend_elements
 
 def plot_performance_metrics(stats_collection, save_path, scenario_name, algorithms_to_plot):
     if not stats_collection: return
+    # Removed 'battery_degradation' from the metrics map
     metrics_map = {
         'total_profits': 'Total Profit (€)', 'average_user_satisfaction': 'Average User Satisfaction (%)',
-        'peak_transformer_loading_pct': 'Peak Transformer Loading (%)', 'battery_degradation': 'Average Total Degradation (%)'
+        'peak_transformer_loading_pct': 'Peak Transformer Loading (%)' 
     }
     model_names = [name for name in algorithms_to_plot if name in stats_collection]
     if not model_names: return
     algo_categories, category_colors, legend_elements = get_color_map_and_legend(model_names)
-    fig, axes = plt.subplots(2, 2, figsize=(20, 12)); axes = axes.flatten()
+    # Changed subplot layout to 1x3
+    fig, axes = plt.subplots(1, 3, figsize=(24, 8)); axes = axes.flatten()
     fig.suptitle(f'Aggregated Performance Metrics - Scenario: {scenario_name}', fontsize=22)
     for i, (metric, title) in enumerate(metrics_map.items()):
         ax = axes[i]
@@ -315,8 +328,8 @@ def plot_performance_metrics(stats_collection, save_path, scenario_name, algorit
         ax.bar(model_names, means, yerr=stds, color=colors, capsize=5)
         ax.set_title(title, fontsize=14); ax.tick_params(axis='x', rotation=45); ax.grid(True, linestyle='--', alpha=0.6)
         if '(%)' in title: ax.set_ylim(0, max(105, (max(means) if means else 0) * 1.1))
-    fig.legend(handles=legend_elements, loc='lower center', ncol=len(legend_elements), bbox_to_anchor=(0.5, 0.01))
-    plt.tight_layout(rect=[0, 0.05, 1, 0.95])
+    fig.legend(handles=legend_elements, loc='lower center', ncol=len(legend_elements), bbox_to_anchor=(0.5, -0.1))
+    plt.tight_layout(rect=[0, 0, 1, 0.95])
     plt.savefig(os.path.join(save_path, f"performance_summary_{scenario_name}.png")); plt.close(fig)
 
 def plot_ev_presence(save_path, scenario_name, ev_counts, timescale):
@@ -522,6 +535,52 @@ def plot_electricity_prices(save_path, scenario_name, charge_prices, discharge_p
     plt.savefig(os.path.join(save_path, f"electricity_prices_{scenario_name}.png"))
     plt.close(fig)
 
+def plot_degradation_components(save_path, scenario_name, degradation_data, algorithms_to_plot):
+    """Plots the components of battery degradation against average SoC."""
+    if not degradation_data:
+        return
+
+    df = pd.DataFrame(degradation_data)
+    if df.empty:
+        return
+
+    # Get the unique color map for algorithms
+    _, color_map, _ = get_color_map_and_legend(algorithms_to_plot)
+
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(22, 9), sharey=True)
+    fig.suptitle(f'Degradation Analysis - Scenario: {scenario_name}', fontsize=20)
+
+    # Plot 1: Calendar Degradation
+    ax1.set_title('Calendar Degradation vs. Average SoC', fontsize=16)
+    for name, group in df.groupby('algorithm'):
+        ax1.scatter(group['avg_soc'], group['d_cal'], 
+                    label=name, color=color_map.get(name, '#000000'), 
+                    alpha=0.6, s=50)
+    ax1.set_xlabel('Average SoC during parking session')
+    ax1.set_ylabel('Capacity Loss Fraction (d_cal)')
+    ax1.xaxis.set_major_formatter(plt.FuncFormatter(lambda x, _: f'{x:.0%}'))
+    ax1.grid(True, linestyle='--', alpha=0.5)
+
+    # Plot 2: Cyclic Degradation
+    ax2.set_title('Cyclic Degradation vs. Average SoC', fontsize=16)
+    for name, group in df.groupby('algorithm'):
+        ax2.scatter(group['avg_soc'], group['d_cyc'], 
+                    label=name, color=color_map.get(name, '#000000'), 
+                    alpha=0.6, s=50)
+    ax2.set_xlabel('Average SoC during parking session')
+    ax2.set_ylabel('Capacity Loss Fraction (d_cyc)')
+    ax2.xaxis.set_major_formatter(plt.FuncFormatter(lambda x, _: f'{x:.0%}'))
+    ax2.grid(True, linestyle='--', alpha=0.5)
+
+    # Create a single legend for the whole figure
+    handles, labels = ax1.get_legend_handles_labels()
+    fig.legend(handles, labels, loc='lower center', ncol=min(len(algorithms_to_plot), 6), bbox_to_anchor=(0.5, -0.02))
+
+    plt.tight_layout(rect=[0, 0.03, 1, 0.95])
+    plt.savefig(os.path.join(save_path, f"degradation_components_{scenario_name}.png"))
+    plt.close(fig)
+
+
 
 
 
@@ -538,7 +597,7 @@ def generate_summary_outputs(stats_collection, save_path, scenario_name, num_sim
         'total_energy_charged': ('Energy Ch. (kWh)', 1),
         'total_energy_discharged': ('Energy Disch. (kWh)', 1),
         'transformer_overload_kwh': ('Tr. Ov. (kWh)', 1),
-        'total_q_lost_kwh': ('Total Qˡᵒˢᵗ (x10⁻³)', 1000),
+        'battery_degradation': ('Total Qˡᵒˢᵗ (x10⁻³)', 1000),
         'battery_degradation_calendar': ('Σ dᶜᵃˡ (x10⁻³)', 1000),
         'battery_degradation_cyclic': ('Σ dᶜʸᶜ (x10⁻³)', 1000),
         'execution_time': ('Exec. Time (s)', 1),
@@ -652,6 +711,7 @@ def run_benchmark(config_files, reward_func, algorithms_to_run, num_simulations,
 
         all_sim_stats = defaultdict(lambda: defaultdict(list))
         soc_over_time_by_algo = defaultdict(list)
+        degradation_data_points = [] # To store data for the new degradation plot
 
         # --- Data collection for EV presence plot ---
         print("\n--- Collecting EV presence data for the scenario ---")
@@ -732,6 +792,18 @@ def run_benchmark(config_files, reward_func, algorithms_to_run, num_simulations,
                         stats['battery_degradation_cyclic'] = np.mean([ev.cyclic_loss for ev in departed_evs])
                         stats['battery_degradation'] = stats['battery_degradation_calendar'] + stats['battery_degradation_cyclic']
 
+                        # Collect data for the new degradation component plot
+                        for ev in departed_evs:
+                            if ev.historic_soc:
+                                avg_soc = np.mean(ev.historic_soc)
+                                degradation_data_points.append({
+                                    'algorithm': name,
+                                    'avg_soc': avg_soc,
+                                    'd_cal': ev.calendar_loss,
+                                    'd_cyc': ev.cyclic_loss
+                                })
+
+
                     for metric, value in stats.items():
                         all_sim_stats[name][metric].append(value)
                     
@@ -756,6 +828,7 @@ def run_benchmark(config_files, reward_func, algorithms_to_run, num_simulations,
             plot_average_soc_over_time(scenario_save_path, scenario_name, soc_over_time_by_algo, timescale)
             plot_tradeoff_scatter(aggregated_stats, scenario_save_path, scenario_name, list(algorithms_to_run.keys()))
             plot_electricity_prices(scenario_save_path, scenario_name, charge_prices, discharge_prices, timescale)
+            plot_degradation_components(scenario_save_path, scenario_name, degradation_data_points, list(algorithms_to_run.keys()))
             generate_summary_outputs(aggregated_stats, scenario_save_path, scenario_name, num_simulations)
 
     print(f"\n--- Benchmark finished. Results saved in: {overall_save_path} ---")
@@ -782,30 +855,78 @@ def calculate_max_cs(config_path: str) -> int:
 
 
 def get_algorithms(max_cs: int, is_thesis_mode: bool, mpc_type: str = 'linear') -> Dict[str, Tuple[Any, Any, Dict]]:
-    """Definisce e restituisce gli algoritmi disponibili per l'esecuzione."""
+    """
+    Definisce e restituisce un dizionario di algoritmi disponibili per l'esecuzione.
+
+    Args:
+        max_cs (int): Il numero massimo di stazioni di ricarica, necessario per alcuni modelli.
+        is_thesis_mode (bool): Se True, restituisce solo il sottoinsieme di algoritmi usati per la tesi.
+        mpc_type (str): Tipo di MPC da includere ('linear' o 'quadratic').
+
+    Returns:
+        Dict[str, Tuple[Any, Any, Dict]]: Un dizionario dove la chiave è il nome dell'algoritmo
+        e il valore è una tupla contenente:
+        - La classe dell'algoritmo (se non è un modello RL).
+        - La classe del modello RL di Stable Baselines (se applicabile).
+        - Un dizionario di argomenti (kwargs) per l'inizializzazione.
+    """
+    # Algoritmi di base: euristiche, modelli RL e il solver ottimale offline
     base_algorithms = {
-        "AFAP": (ChargeAsFastAsPossible, None, {}), "ALAP": (ChargeAsLateAsPossible, None, {}), "RR": (RoundRobin, None, {}),
-        "SAC": (None, SAC, {}), "PPO": (None, PPO, {}), "A2C": (None, A2C, {}), "TD3": (None, TD3, {}), "DDPG": (None, DDPG, {}),
+        "AFAP": (ChargeAsFastAsPossible, None, {}), 
+        "ALAP": (ChargeAsLateAsPossible, None, {}), 
+        "RR": (RoundRobin, None, {}),
+        "SAC": (None, SAC, {}), 
+        "PPO": (None, PPO, {}), 
+        "A2C": (None, A2C, {}), 
+        "TD3": (None, TD3, {}), 
+        "DDPG": (None, DDPG, {}),
         "DDPG+PER": (None, CustomDDPG, {'replay_buffer_class': PrioritizedReplayBuffer}),
-        "TQC": (None, TQC, {}), "TRPO": (None, TRPO, {}), "ARS": (None, ARS, {})
+        "TQC": (None, TQC, {}), 
+        "TRPO": (None, TRPO, {}), 
+        "ARS": (None, ARS, {}),
+        "Optimal_Offline": (OptimalOfflineSolver, None, {}),  # <-- AGGIUNTO: Il solver ottimale
     }
+    
+    # Algoritmi MPC Online, selezionabili tramite il parametro mpc_type
     mpc_algorithms = {
         'linear': {
-            "Online_MPC": (OnlineMPC_Solver, None, {'control_horizon': 5}),
-            "Online_MPC_Adaptive": (OnlineMPC_Solver, None, {'use_adaptive_horizon': True, 'h_min': 2, 'h_max': 5, 'lyapunov_alpha': 0.5}),
+            "Online_MPC_Profit_Max": (OnlineMPC_Solver, None, {
+                'prediction_horizon': 25, 
+                'control_horizon': 'half'
+            }),
         },
         'quadratic': {
             "Online_MPC_Quadratic": (OnlineMPC_Solver_Quadratic, None, {'control_horizon': 5}),
-            "Online_MPC_Quadratic_Adaptive": (OnlineMPC_Solver_Quadratic, None, {'use_adaptive_horizon': True, 'h_min': 2, 'h_max': 5, 'lyapunov_alpha': 0.1}),
         }
     }
+
+    # Algoritmi MPC Espliciti Approssimati
     approx_mpc = {
         "Approx_Explicit_MPC": (ApproximateExplicitMPC, None, {'control_horizon': 5, 'max_cs': max_cs}),
         "Approx_Explicit_MPC_NN": (ApproximateExplicitMPC_NN, None, {'control_horizon': 5, 'max_cs': max_cs}),
     }
-    ALL_ALGORITHMS = {**base_algorithms, **mpc_algorithms[mpc_type], **approx_mpc}
-    THESIS_ALGORITHMS_BASE = ["AFAP", "ALAP", "RR", "SAC", "DDPG+PER", "TQC"]
-    THESIS_ALGORITHMS = {k: v for k, v in ALL_ALGORITHMS.items() if k in THESIS_ALGORITHMS_BASE or k.startswith('Online_MPC') or k.startswith('Approx')}
+    
+    # Unisce tutti i dizionari per creare l'elenco completo degli algoritmi
+    ALL_ALGORITHMS = {**base_algorithms, **mpc_algorithms.get(mpc_type, {}), **approx_mpc}
+    
+    # Definisce il sottoinsieme di algoritmi da usare in "modalità tesi"
+    THESIS_ALGORITHMS_BASE = [
+        "AFAP", 
+        "ALAP", 
+        "RR", 
+        "SAC", 
+        "DDPG+PER", 
+        "TQC", 
+        "Online_MPC_Profit_Max", 
+        "Approx_Explicit_MPC", 
+        "Approx_Explicit_MPC_NN",
+        "Optimal_Offline"  # <-- AGGIUNTO: Il solver ottimale anche qui per il confronto
+    ]
+                              
+    # Filtra l'elenco completo per ottenere solo gli algoritmi della modalità tesi
+    THESIS_ALGORITHMS = {k: v for k, v in ALL_ALGORITHMS.items() if k in THESIS_ALGORITHMS_BASE}
+    
+    # Restituisce l'elenco appropriato in base alla modalità scelta
     return THESIS_ALGORITHMS if is_thesis_mode else ALL_ALGORITHMS
 
 
