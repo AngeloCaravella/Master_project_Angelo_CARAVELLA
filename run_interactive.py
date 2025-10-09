@@ -73,22 +73,26 @@ def main():
     # --- Get ALL available algorithms ---
     all_available_algorithms = get_algorithms(MAX_CS, is_thesis_mode, mpc_type_choice)
     
-    # --- Interactive MPC Selection ---
-    mpc_keys = [k for k in all_available_algorithms if "MPC" in k]
-    non_mpc_algorithms = {k: v for k, v in all_available_algorithms.items() if "MPC" not in k}
+    # --- Interactive Algorithm Selection ---
+    # Identify all "advanced" controllers (MPC and Optimal) for user selection
+    advanced_solver_keys = [k for k in all_available_algorithms if "MPC" in k or "Optimal" in k]
+    
+    # Other algorithms (heuristics and RL) are kept separate
+    base_algorithms = {k: v for k, v in all_available_algorithms.items() if k not in advanced_solver_keys}
 
-    if mpc_keys:
-        selected_mpc_keys = select_from_list(
-            mpc_keys, 
-            "Seleziona quali controller MPC eseguire:", 
+    if advanced_solver_keys:
+        selected_advanced_keys = select_from_list(
+            advanced_solver_keys, 
+            "Seleziona quali controller avanzati (MPC, Optimal) eseguire:", 
             multiple=True
         )
-        selected_mpc = {k: all_available_algorithms[k] for k in selected_mpc_keys}
-        algorithms_to_run = {**non_mpc_algorithms, **selected_mpc}
+        selected_advanced = {k: all_available_algorithms[k] for k in selected_advanced_keys}
+        # The final list for the benchmark will include both base and selected advanced algorithms
+        algorithms_to_run = {**base_algorithms, **selected_advanced}
     else:
-        algorithms_to_run = non_mpc_algorithms
+        algorithms_to_run = base_algorithms
 
-    print(f"\nAlgoritmi che verranno eseguiti: {list(algorithms_to_run.keys())}")
+    print(f"\nAlgoritmi che verranno eseguiti nel benchmark: {list(algorithms_to_run.keys())}")
 
     # --- Algorithm-specific Configurations ---
     if 'DDPG+PER' in algorithms_to_run:
@@ -140,6 +144,15 @@ def main():
     is_multi_scenario = False
 
     if train_rl_models:
+        # Create a filtered list of algorithms for training (excluding non-trainable solvers)
+        algorithms_for_training = algorithms_to_run.copy()
+        non_trainable_solvers = [k for k in algorithms_for_training if "Optimal" in k]
+        if non_trainable_solvers:
+            print("\nNOTA: I seguenti solver di benchmark verranno esclusi dall'addestramento:")
+            for solver_key in non_trainable_solvers:
+                print(f" - {solver_key}")
+                del algorithms_for_training[solver_key]
+        
         prompt = ("\nScegli la modalità di addestramento:\n" 
                   "  '1' per Scenario Singolo\n"
                   "  '2' per Multi-Scenario Casuale (con reinserimento)\n"
@@ -181,7 +194,7 @@ def main():
         train_rl_models_if_requested(
             scenarios_to_test=training_scenarios,
             selected_reward_func=selected_reward_func,
-            algorithms_to_run=algorithms_to_run,
+            algorithms_to_run=algorithms_for_training,  # <-- Use the filtered list
             is_multi_scenario=is_multi_scenario,
             model_dir=model_dir,
             selected_price_file_abs_path=selected_price_file_abs_path,
@@ -199,7 +212,6 @@ def main():
         selected_model_name = select_from_list(available_models, "Seleziona il set di modelli da caricare:", multiple=False)
         model_dir = os.path.join(saved_models_dir, selected_model_name)
         
-        # Infer is_multi_scenario from metadata file or folder name as fallback
         metadata_path = os.path.join(model_dir, 'model_metadata.json')
         if os.path.exists(metadata_path):
             is_multi_scenario = True
@@ -218,7 +230,7 @@ def main():
     run_benchmark(
         config_files=benchmark_scenarios,
         reward_func=selected_reward_func,
-        algorithms_to_run=algorithms_to_run,
+        algorithms_to_run=algorithms_to_run, # <-- Here we use the full list with Optimal (if chosen)
         num_simulations=num_sims,
         model_dir=model_dir,
         is_multi_scenario=is_multi_scenario,

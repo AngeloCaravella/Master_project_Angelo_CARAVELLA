@@ -19,57 +19,6 @@
 
 \refsection{0}
   \datalist[entry]{nty/global//global/global/global}
-    \entry{Feyijimi}{article}{}{}
-      \name{author}{4}{}{%
-        {{hash=1e88b5ad79638b0939fd770b792a233e}{%
-           family={Adegbohun},
-           familyi={A\bibinitperiod},
-           given={Feyijimi},
-           giveni={F\bibinitperiod}}}%
-        {{hash=a5e747405d6d2c1e8566aa34f039cbf1}{%
-           family={Jouanne},
-           familyi={J\bibinitperiod},
-           given={Annette},
-           giveni={A\bibinitperiod},
-           prefix={von},
-           prefixi={v\bibinitperiod}}}%
-        {{hash=b0bcc2b0c1698c819e1144d1300bddaf}{%
-           family={Agamloh},
-           familyi={A\bibinitperiod},
-           given={Emmanuel},
-           giveni={E\bibinitperiod}}}%
-        {{hash=ad944c9f762ba09b8af1651ab76fab3f}{%
-           family={Yokochi},
-           familyi={Y\bibinitperiod},
-           given={Alex},
-           giveni={A\bibinitperiod}}}%
-      }
-      \list{publisher}{1}{%
-        {MDPI}%
-      }
-      \strng{namehash}{2171fe22bf785f32836abf2dfc667445}
-      \strng{fullhash}{9892b9b0a0b432ff3d45e203fafeaae1}
-      \strng{fullhashraw}{9892b9b0a0b432ff3d45e203fafeaae1}
-      \strng{bibnamehash}{2171fe22bf785f32836abf2dfc667445}
-      \strng{authorbibnamehash}{2171fe22bf785f32836abf2dfc667445}
-      \strng{authornamehash}{2171fe22bf785f32836abf2dfc667445}
-      \strng{authorfullhash}{9892b9b0a0b432ff3d45e203fafeaae1}
-      \strng{authorfullhashraw}{9892b9b0a0b432ff3d45e203fafeaae1}
-      \field{sortinit}{A}
-      \field{sortinithash}{2f401846e2029bad6b3ecc16d50031e2}
-      \field{labelnamesource}{author}
-      \field{labeltitlesource}{title}
-      \field{journaltitle}{Energies}
-      \field{number}{6}
-      \field{title}{A Review of Bidirectional Charging Grid Support Applications and Control}
-      \field{volume}{17}
-      \field{year}{2024}
-      \field{pages}{1320}
-      \range{pages}{1}
-      \verb{doi}
-      \verb 10.3390/en17061320
-      \endverb
-    \endentry
     \entry{alfaverh2022optima}{article}{}{}
       \name{author}{3}{}{%
         {{hash=718f1b7d3df49c29ca4d0f00949163d4}{%
@@ -944,58 +893,6 @@
       \verb https://proceedings.mlr.press/v119/kuznetsov20a/kuznetsov20a.pdf
       \endverb
     \endentry
-    \entry{evertsson2024investigating}{article}{}{}
-      \name{author}{4}{}{%
-        {{hash=e88fb16b7d817721c22bf60c296a85bd}{%
-           family={Li},
-           familyi={L\bibinitperiod},
-           given={Haijie},
-           giveni={H\bibinitperiod}}}%
-        {{hash=872693b0a80a98dbcf9a32899368bbb4}{%
-           family={Asbjörnsson},
-           familyi={A\bibinitperiod},
-           given={Gauti},
-           giveni={G\bibinitperiod}}}%
-        {{hash=0e679a7337d70a022101d7236d301230}{%
-           family={Bhadani},
-           familyi={B\bibinitperiod},
-           given={Kanishk},
-           giveni={K\bibinitperiod}}}%
-        {{hash=af6e5e8d0e09f1a4720b7e536451f653}{%
-           family={Evertsson},
-           familyi={E\bibinitperiod},
-           given={Magnus},
-           giveni={M\bibinitperiod}}}%
-      }
-      \strng{namehash}{4f372b280cbbd2b98706585425e74658}
-      \strng{fullhash}{f5b243516ee37e454935f6e716687c2d}
-      \strng{fullhashraw}{f5b243516ee37e454935f6e716687c2d}
-      \strng{bibnamehash}{4f372b280cbbd2b98706585425e74658}
-      \strng{authorbibnamehash}{4f372b280cbbd2b98706585425e74658}
-      \strng{authornamehash}{4f372b280cbbd2b98706585425e74658}
-      \strng{authorfullhash}{f5b243516ee37e454935f6e716687c2d}
-      \strng{authorfullhashraw}{f5b243516ee37e454935f6e716687c2d}
-      \field{sortinit}{L}
-      \field{sortinithash}{7c47d417cecb1f4bd38d1825c427a61a}
-      \field{labelnamesource}{author}
-      \field{labeltitlesource}{title}
-      \field{journaltitle}{Minerals}
-      \field{number}{7}
-      \field{title}{Investigating Dynamic Behavior in SAG Mill Pebble Recycling Circuits: A Simulation Approach}
-      \field{volume}{14}
-      \field{year}{2024}
-      \field{pages}{716}
-      \range{pages}{1}
-      \verb{doi}
-      \verb 10.3390/min14070716
-      \endverb
-      \verb{urlraw}
-      \verb https://www.mdpi.com/2075-163X/14/7/716
-      \endverb
-      \verb{url}
-      \verb https://www.mdpi.com/2075-163X/14/7/716
-      \endverb
-    \endentry
     \entry{lillicrap2015continuous}{article}{}{}
       \name{author}{8}{}{%
         {{hash=2a321a868e44d49baf52b5e2d816fb71}{%
@@ -1338,46 +1235,6 @@
       \field{title}{Policy invariance under reward transformations: Theory and application to reward shaping}
       \field{year}{1999}
     \endentry
-    \entry{NielsonElton2021InductionPopperML}{article}{}{}
-      \name{author}{2}{}{%
-        {{hash=fcf627eefe176283480ee71cb4d9dfd0}{%
-           family={Nielson},
-           familyi={N\bibinitperiod},
-           given={Bruce},
-           giveni={B\bibinitperiod}}}%
-        {{hash=e9e3c7454d9ab277e128c574829a241b}{%
-           family={Elton},
-           familyi={E\bibinitperiod},
-           given={Daniel\bibnamedelima C.},
-           giveni={D\bibinitperiod\bibinitdelim C\bibinitperiod}}}%
-      }
-      \strng{namehash}{d2e3383fd9aea0cbcbaba67774442fc3}
-      \strng{fullhash}{d2e3383fd9aea0cbcbaba67774442fc3}
-      \strng{fullhashraw}{d2e3383fd9aea0cbcbaba67774442fc3}
-      \strng{bibnamehash}{d2e3383fd9aea0cbcbaba67774442fc3}
-      \strng{authorbibnamehash}{d2e3383fd9aea0cbcbaba67774442fc3}
-      \strng{authornamehash}{d2e3383fd9aea0cbcbaba67774442fc3}
-      \strng{authorfullhash}{d2e3383fd9aea0cbcbaba67774442fc3}
-      \strng{authorfullhashraw}{d2e3383fd9aea0cbcbaba67774442fc3}
-      \field{sortinit}{N}
-      \field{sortinithash}{22369a73d5f88983a108b63f07f37084}
-      \field{labelnamesource}{author}
-      \field{labeltitlesource}{title}
-      \field{journaltitle}{arXiv preprint}
-      \field{note}{cs.AI}
-      \field{title}{Induction, Popper, and Machine Learning}
-      \field{volume}{arXiv:2110.00840}
-      \field{year}{2021}
-      \verb{eprint}
-      \verb 2110.00840
-      \endverb
-      \verb{urlraw}
-      \verb https://arxiv.org/abs/2110.00840
-      \endverb
-      \verb{url}
-      \verb https://arxiv.org/abs/2110.00840
-      \endverb
-    \endentry
     \entry{orfanoudakis2024ev2gym}{article}{}{}
       \name{author}{5}{}{%
         {{hash=b91bc3e164dfa99a9e9851b80e389a6d}{%
@@ -1685,64 +1542,6 @@
       \field{title}{Cost and power loss aware coalitions under uncertainty in transactive energy systems}
       \field{year}{2022}
     \endentry
-    \entry{salvatti2020electric}{article}{}{}
-      \name{author}{5}{}{%
-        {{hash=90623bca7218c11dfb0ac81fa3307f6e}{%
-           family={Salvatti},
-           familyi={S\bibinitperiod},
-           given={Gabriel\bibnamedelima Antonio},
-           giveni={G\bibinitperiod\bibinitdelim A\bibinitperiod}}}%
-        {{hash=df3fbfbf0eaa97746953908c282b93e6}{%
-           family={Carati},
-           familyi={C\bibinitperiod},
-           given={Emerson\bibnamedelima Giovani},
-           giveni={E\bibinitperiod\bibinitdelim G\bibinitperiod}}}%
-        {{hash=95bf0d03fcd9e180864e13d89bf98e0a}{%
-           family={Cardoso},
-           familyi={C\bibinitperiod},
-           given={Rafael},
-           giveni={R\bibinitperiod}}}%
-        {{hash=68c36495ab198dcdaba16b35d034604c}{%
-           family={Costa},
-           familyi={C\bibinitperiod},
-           given={Jean\bibnamedelima Patric},
-           giveni={J\bibinitperiod\bibinitdelim P\bibinitperiod},
-           prefix={da},
-           prefixi={d\bibinitperiod}}}%
-        {{hash=06a447000f607f5c8b45f0c9f5ca2cfa}{%
-           family={Oliveira\bibnamedelima Stein},
-           familyi={O\bibinitperiod\bibinitdelim S\bibinitperiod},
-           given={Carlos\bibnamedelima Marcelo},
-           giveni={C\bibinitperiod\bibinitdelim M\bibinitperiod},
-           prefix={de},
-           prefixi={d\bibinitperiod}}}%
-      }
-      \list{publisher}{1}{%
-        {MDPI}%
-      }
-      \strng{namehash}{571a5c4d8440be4521dab63f370f7502}
-      \strng{fullhash}{7ff4765d7fcc2533f3fdd1a57ae8badf}
-      \strng{fullhashraw}{7ff4765d7fcc2533f3fdd1a57ae8badf}
-      \strng{bibnamehash}{571a5c4d8440be4521dab63f370f7502}
-      \strng{authorbibnamehash}{571a5c4d8440be4521dab63f370f7502}
-      \strng{authornamehash}{571a5c4d8440be4521dab63f370f7502}
-      \strng{authorfullhash}{7ff4765d7fcc2533f3fdd1a57ae8badf}
-      \strng{authorfullhashraw}{7ff4765d7fcc2533f3fdd1a57ae8badf}
-      \field{sortinit}{S}
-      \field{sortinithash}{b164b07b29984b41daf1e85279fbc5ab}
-      \field{labelnamesource}{author}
-      \field{labeltitlesource}{title}
-      \field{journaltitle}{Energies}
-      \field{number}{5}
-      \field{title}{Electric Vehicles Energy Management with V2G/G2V Multifactor Optimization of Smart Grids}
-      \field{volume}{13}
-      \field{year}{2020}
-      \field{pages}{1191}
-      \range{pages}{1}
-      \verb{doi}
-      \verb 10.3390/en13051191
-      \endverb
-    \endentry
     \entry{schaul2015prioritized}{article}{}{}
       \name{author}{4}{}{%
         {{hash=a56e72b23778a835bdade7d0511e43a3}{%
@@ -1893,59 +1692,6 @@
       \endverb
       \verb{url}
       \verb https://proceedings.mlr.press/v37/schulman15.html
-      \endverb
-    \endentry
-    \entry{Srihari}{article}{}{}
-      \name{author}{5}{}{%
-        {{hash=e96e3971eb769b76c2f95acf1f6d75b4}{%
-           family={Srihari},
-           familyi={S\bibinitperiod},
-           given={G.},
-           giveni={G\bibinitperiod}}}%
-        {{hash=ffe3c07b741d55bfdce1e0fae614d499}{%
-           family={Naidu},
-           familyi={N\bibinitperiod},
-           given={R.\bibnamedelimi S.\bibnamedelimi R.\bibnamedelimi Krishnam},
-           giveni={R\bibinitperiod\bibinitdelim S\bibinitperiod\bibinitdelim R\bibinitperiod\bibinitdelim K\bibinitperiod}}}%
-        {{hash=b8f2584b51e505a281dd8d95b23be4c6}{%
-           family={Falkowski-Gilski},
-           familyi={F\bibinithyphendelim G\bibinitperiod},
-           given={Przemysław},
-           giveni={P\bibinitperiod}}}%
-        {{hash=70e20ae2d5d6a044c1b2cfed2220febc}{%
-           family={Divakarachari},
-           familyi={D\bibinitperiod},
-           given={Parameshachari\bibnamedelima Bidare},
-           giveni={P\bibinitperiod\bibinitdelim B\bibinitperiod}}}%
-        {{hash=a1a63e5c6a4a2af508eddec4008c735c}{%
-           family={Penmatsa},
-           familyi={P\bibinitperiod},
-           given={Ravi\bibnamedelimb Kiran\bibnamedelima Varma},
-           giveni={R\bibinitperiod\bibinitdelim K\bibinitperiod\bibinitdelim V\bibinitperiod}}}%
-      }
-      \list{publisher}{1}{%
-        {Frontiers Media SA}%
-      }
-      \strng{namehash}{6903ed3452f2b55f724a1968a5898a2c}
-      \strng{fullhash}{f5385d5e6cde13634f0486627ceaf80a}
-      \strng{fullhashraw}{f5385d5e6cde13634f0486627ceaf80a}
-      \strng{bibnamehash}{6903ed3452f2b55f724a1968a5898a2c}
-      \strng{authorbibnamehash}{6903ed3452f2b55f724a1968a5898a2c}
-      \strng{authornamehash}{6903ed3452f2b55f724a1968a5898a2c}
-      \strng{authorfullhash}{f5385d5e6cde13634f0486627ceaf80a}
-      \strng{authorfullhashraw}{f5385d5e6cde13634f0486627ceaf80a}
-      \field{sortinit}{S}
-      \field{sortinithash}{b164b07b29984b41daf1e85279fbc5ab}
-      \field{labelnamesource}{author}
-      \field{labeltitlesource}{title}
-      \field{journaltitle}{Frontiers in Energy Research}
-      \field{title}{Integration of electric vehicle into smart grid: a meta heuristic algorithm for energy management between V2G and G2V}
-      \field{volume}{12}
-      \field{year}{2024}
-      \field{pages}{1357863}
-      \range{pages}{1}
-      \verb{doi}
-      \verb 10.3389/fenrg.2024.1357863
       \endverb
     \endentry
     \entry{Sutton2018}{book}{}{}
@@ -2298,87 +2044,6 @@
       \verb 10.1016/j.jpowsour.2010.11.010
       \endverb
     \endentry
-    \entry{Xie2025}{article}{}{}
-      \name{author}{1}{}{%
-        {{hash=ae0426ede5160de73b69701588443a78}{%
-           family={Xie},
-           familyi={X\bibinitperiod},
-           given={H.},
-           giveni={H\bibinitperiod}}}%
-      }
-      \strng{namehash}{ae0426ede5160de73b69701588443a78}
-      \strng{fullhash}{ae0426ede5160de73b69701588443a78}
-      \strng{fullhashraw}{ae0426ede5160de73b69701588443a78}
-      \strng{bibnamehash}{ae0426ede5160de73b69701588443a78}
-      \strng{authorbibnamehash}{ae0426ede5160de73b69701588443a78}
-      \strng{authornamehash}{ae0426ede5160de73b69701588443a78}
-      \strng{authorfullhash}{ae0426ede5160de73b69701588443a78}
-      \strng{authorfullhashraw}{ae0426ede5160de73b69701588443a78}
-      \field{sortinit}{X}
-      \field{sortinithash}{1965c258adceecf23ce3d67b05113442}
-      \field{labelnamesource}{author}
-      \field{labeltitlesource}{title}
-      \field{journaltitle}{ScienceDirect}
-      \field{title}{Reinforcement learning for vehicle-to-grid: A review}
-      \field{year}{2025}
-      \verb{doi}
-      \verb 10.1016/j.sciad.2025.100008
-      \endverb
-    \endentry
-    \entry{NaXu}{article}{}{}
-      \name{author}{5}{}{%
-        {{hash=e8c01e619a1d48bb37cd9620dbbdd12d}{%
-           family={Xu},
-           familyi={X\bibinitperiod},
-           given={Na},
-           giveni={N\bibinitperiod}}}%
-        {{hash=b2f5bfc4983d4eab3850afa0c09dd4ce}{%
-           family={Tang},
-           familyi={T\bibinitperiod},
-           given={Zhuo},
-           giveni={Z\bibinitperiod}}}%
-        {{hash=5ac54b390b7a4ccb453bcbbc0aea9500}{%
-           family={Si},
-           familyi={S\bibinitperiod},
-           given={Chenyi},
-           giveni={C\bibinitperiod}}}%
-        {{hash=58569500c176723e7253cf702cd2cb55}{%
-           family={Bian},
-           familyi={B\bibinitperiod},
-           given={Jinshan},
-           giveni={J\bibinitperiod}}}%
-        {{hash=ec2912b2d1caa4a4853f28814e0f60e6}{%
-           family={Mu},
-           familyi={M\bibinitperiod},
-           given={Chaoxu},
-           giveni={C\bibinitperiod}}}%
-      }
-      \list{publisher}{1}{%
-        {MDPI}%
-      }
-      \strng{namehash}{e7807e34eb13efb509459465e83cb0bd}
-      \strng{fullhash}{6b414194fd3e639f42e64164ada8a157}
-      \strng{fullhashraw}{6b414194fd3e639f42e64164ada8a157}
-      \strng{bibnamehash}{e7807e34eb13efb509459465e83cb0bd}
-      \strng{authorbibnamehash}{e7807e34eb13efb509459465e83cb0bd}
-      \strng{authornamehash}{e7807e34eb13efb509459465e83cb0bd}
-      \strng{authorfullhash}{6b414194fd3e639f42e64164ada8a157}
-      \strng{authorfullhashraw}{6b414194fd3e639f42e64164ada8a157}
-      \field{sortinit}{X}
-      \field{sortinithash}{1965c258adceecf23ce3d67b05113442}
-      \field{labelnamesource}{author}
-      \field{labeltitlesource}{title}
-      \field{journaltitle}{Energies}
-      \field{number}{7}
-      \field{title}{A Review of Smart Grid Evolution and Reinforcement Learning: Applications, Challenges and Future Directions}
-      \field{volume}{18}
-      \field{year}{2024}
-      \field{pages}{1837}
-      \range{pages}{1}
-      \verb{doi}
-      \verb 10.3390/en18071837
-      \endverb
-    \endentry
     \entry{Zhang2023}{article}{}{}
       \name{author}{3}{}{%
         {{hash=29c94b90358bd60564e0725e9346a39c}{%
@@ -2415,7 +2080,7 @@
     \endentry
   \enddatalist
   \missing{It means that MC updates only from complete sampled returns.}
-  \missing{\href {https://www.iea.org/reports/global-ev-outlook-2025/executive-summary}{Global EV Outlook 2025 - Executive Summary}}
+  \missing{evertsson2024investigating}
 \endrefsection
 \endinput
 

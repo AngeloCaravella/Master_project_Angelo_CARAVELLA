@@ -8,10 +8,7 @@ import torch
 import torch.nn as nn
 from pathlib import Path
 
-# =====================================================================================
-# --- SOLVER 1: MPC CON PRIORITÀ ALLA SODDISFAZIONE UTENTE (Vincoli Morbidi) ---
-# =====================================================================================/
-#
+
 
 # =====================================================================================
 # --- SOLVER 2: MPC PER V2G PROFIT MAXIMIZATION (come da Paper, Vincoli Rigidi) ---
@@ -19,20 +16,15 @@ from pathlib import Path
 #V2GProfitMaxMPC_Solver
 class OnlineMPC_Solver:
     """
-    Un solver MPC con un unico obiettivo: garantire la ricarica dell'utente.
+    An MPC solver that maximizes user satisfaction.
     
-    STRATEGIA:
-    1. OBIETTIVO: Minimizzare il costo di acquisto dell'energia.
-    2. DIVIETO DI SCARICA (V2G): La scarica è completamente disabilitata. Il solver
-       può solo decidere QUANDO caricare e QUANTO caricare.
-    3. VINCOLO RIGIDO SULLA CARICA: È obbligatorio raggiungere il target di SoC
-       alla partenza del veicolo.
-
-    Questo approccio elimina ogni conflitto con la massimizzazione del profitto e
-    forza il solver a comportarsi come un puro fornitore di servizi di ricarica intelligente.
+    STRATEGY:
+    1. OBJECTIVE: Maximize user satisfaction by ensuring EVs reach their desired SoC at departure.
+    2. V2G ENABLED: The solver can decide to charge or discharge the EV battery to meet the objective.
+    3. SOFT CONSTRAINT ON USER SATISFACTION: The solver will try its best to reach the desired SoC.
     """
     def __init__(self, env, prediction_horizon=25, control_horizon='half', 
-                 mpc_desired_soc_factor=0.90,
+                 mpc_desired_soc_factor=1,
                  penalty_overload=100.0,
                  **kwargs):
         
@@ -42,8 +34,8 @@ class OnlineMPC_Solver:
         self.mpc_desired_soc_factor = mpc_desired_soc_factor
         self.penalty_overload = penalty_overload
         
-        print(f"MPC (Charge-Only, User-First) configurato con Np={self.H}, Nc={self.Nc}")
-        print(f"    -> Target SoC alla partenza: {self.mpc_desired_soc_factor:.0%}")
+        print(f"MPC (User Satisfaction) configured with Np={self.H}, Nc={self.Nc}")
+        print(f"    -> Target SoC at departure: {self.mpc_desired_soc_factor:.0%}")
 
         self.action_plan = []
         self.plan_step = 0
@@ -70,60 +62,67 @@ class OnlineMPC_Solver:
             ev = next((ev for ev in cs.evs_connected if ev is not None), None)
             if ev:
                 eta_ch = np.mean(list(ev.charge_efficiency.values())) if isinstance(ev.charge_efficiency, dict) else ev.charge_efficiency
-                active_evs[i] = {'ev': ev, 'eta_ch': eta_ch}
+                eta_dis = np.mean(list(ev.discharge_efficiency.values())) if isinstance(ev.discharge_efficiency, dict) else ev.discharge_efficiency
+                active_evs[i] = {'ev': ev, 'eta_ch': eta_ch, 'eta_dis': eta_dis}
                 E_initial[i] = ev.get_soc() * ev.battery_capacity
 
-        # --- OBIETTIVO: MINIMIZZARE IL COSTO ---
-        prob = pulp.LpProblem(f"ChargeOnly_CostMin_MPC_{current_step}", pulp.LpMinimize)
+        # --- OBJECTIVE: MAXIMIZE FINAL SOC, with penalty for not meeting desired SoC ---
+        prob = pulp.LpProblem(f"V2G_UserSatisfaction_MPC_{current_step}", pulp.LpMaximize)
         
         indices = [(i, j) for i in range(num_cs) for j in range(prediction_horizon)]
         P_ch = pulp.LpVariable.dicts("ChargePower", indices, lowBound=0)
-        E = pulp.LpVariable.dicts("Energy", indices, lowBound=0)
-        slack_overload = pulp.LpVariable.dicts("SlackOverload", range(prediction_horizon), lowBound=0)
-
-        prices_charge = env.charge_prices[0, current_step : current_step + prediction_horizon]
+        P_dis = pulp.LpVariable.dicts("DischargePower", indices, lowBound=0)
+        b_ch = pulp.LpVariable.dicts("isCharging", indices, cat='Binary')
+        b_dis = pulp.LpVariable.dicts("isDischarging", indices, cat='Binary')
         
-        # L'obiettivo è minimizzare il costo dell'energia acquistata + la penalità di sovraccarico
-        cost_of_charging = pulp.lpSum(
-            prices_charge[t] * P_ch[i, t] * timescale_h
-            for i in active_evs.keys() for t in range(prediction_horizon)
-        )
-        overload_penalty = pulp.lpSum(self.penalty_overload * slack_overload[t] for t in range(prediction_horizon))
-        prob.setObjective(cost_of_charging + overload_penalty)
+        E = pulp.LpVariable.dicts("Energy", indices, lowBound=0)
+        slack_soc = pulp.LpVariable.dicts("SlackSoC", active_evs.keys(), lowBound=0)
 
-        # --- VINCOLI DEL MODELLO ---
+        # Objective is to maximize the sum of final energy levels, with a large penalty for not meeting the desired SoC.
+        final_energy_sum = pulp.lpSum(
+            E[cs_id, ev_data['ev'].time_of_departure - current_step]
+            for cs_id, ev_data in active_evs.items()
+            if 0 <= ev_data['ev'].time_of_departure - current_step < prediction_horizon
+        )
+        soc_penalty = pulp.lpSum(10000 * slack_soc[cs_id] for cs_id in active_evs.keys())
+        prob.setObjective(final_energy_sum - soc_penalty)
+
+        # --- MODEL CONSTRAINTS ---
         for cs_id, data in active_evs.items():
-            ev, eta_ch = data['ev'], data['eta_ch']
+            ev, eta_ch, eta_dis = data['ev'], data['eta_ch'], data['eta_dis']
             
             for t in range(prediction_horizon):
-                # Vincolo sulla potenza massima (solo carica)
-                prob += P_ch[cs_id, t] <= ev.max_ac_charge_power
+                # Max power constraints and binary logic
+                prob += P_ch[cs_id, t] <= ev.max_ac_charge_power * b_ch[cs_id, t]
+                prob += P_dis[cs_id, t] <= -ev.max_discharge_power * b_dis[cs_id, t]
+                prob += b_ch[cs_id, t] + b_dis[cs_id, t] <= 1
                 
-                # Dinamica della batteria (solo carica)
+                # Battery dynamics
                 E_prev = E_initial[cs_id] if t == 0 else E[cs_id, t-1]
-                prob += E[cs_id, t] == E_prev + (P_ch[cs_id, t] * eta_ch) * timescale_h
+                prob += E[cs_id, t] == E_prev + (P_ch[cs_id, t] * eta_ch - P_dis[cs_id, t] / eta_dis) * timescale_h
                 
-                # Limiti fisici della batteria
+                # Battery physical limits
                 prob += E[cs_id, t] >= ev.min_battery_capacity
                 prob += E[cs_id, t] <= ev.battery_capacity
             
-            # --- VINCOLO RIGIDO (HARD CONSTRAINT) PER LA SODDISFAZIONE UTENTE ---
+            # --- SOFT CONSTRAINT FOR USER SATISFACTION ---
             departure_step_in_horizon = ev.time_of_departure - current_step - 1
             if 0 <= departure_step_in_horizon < prediction_horizon:
                 desired_energy = ev.desired_capacity * self.mpc_desired_soc_factor
-                prob += E[cs_id, departure_step_in_horizon] >= desired_energy
+                prob += E[cs_id, departure_step_in_horizon] >= desired_energy - slack_soc[cs_id]
 
         for i in range(num_cs):
             if i not in active_evs:
                 for t in range(prediction_horizon):
                     prob += P_ch[i, t] == 0
+                    prob += P_dis[i, t] == 0
 
-        # Vincolo morbido per il limite del trasformatore (solo carica)
+        # Hard constraint for transformer limit
         for t in range(prediction_horizon):
-            power_evs = pulp.lpSum(P_ch[i, t] for i in range(num_cs))
+            power_evs = pulp.lpSum(P_ch[i, t] - P_dis[i, t] for i in range(num_cs))
             total_power = power_evs + load_forecast[t] + pv_forecast[t]
             limit = transformer_limit_horizon[t] if t < len(transformer_limit_horizon) else transformer_limit_horizon[-1]
-            prob += total_power <= limit + slack_overload[t]
+            prob += total_power <= limit
 
         prob.solve(pulp.PULP_CBC_CMD(msg=0))
 
@@ -134,254 +133,83 @@ class OnlineMPC_Solver:
                 action_t = np.zeros(num_cs)
                 for i in range(num_cs):
                     charge = pulp.value(P_ch[i, t])
-                    net_power = charge or 0
-                    max_power = env.charging_stations[i].get_max_power()
-                    if max_power > 0: action_t[i] = net_power / max_power
-                new_plan.append(np.clip(action_t, 0, 1)) # L'azione ora è solo positiva
+                    discharge = pulp.value(P_dis[i, t])
+                    net_power = (charge or 0) - (discharge or 0)
+                    
+                    # Normalize action
+                    max_charge_power = env.charging_stations[i].get_max_power()
+                    max_discharge_power = env.charging_stations[i].get_min_power() # This is negative
+
+                    if net_power > 0 and max_charge_power > 0:
+                        action_t[i] = net_power / max_charge_power
+                    elif net_power < 0 and max_discharge_power < 0:
+                        action_t[i] = net_power / abs(max_discharge_power)
+                    else:
+                        action_t[i] = 0
+
+                new_plan.append(np.clip(action_t, -1, 1))
             self.action_plan = new_plan
             if self.action_plan:
                 self.plan_step = 1
                 return self.action_plan[0]
         else:
-            print(f"Attenzione: MPC INFEASIBLE al timestep {current_step}. Impossibile raggiungere il target di ricarica.")
-            # Come fallback, carichiamo il più velocemente possibile
-            action_fallback = np.ones(num_cs)
+            print(f"Warning: MPC problem (but not infeasible) at timestep {current_step}. Status: {pulp.LpStatus[prob.status]}")
+            # Fallback: charge as fast as possible
+            action_fallback = np.zeros(num_cs)
+            for i in active_evs.keys():
+                action_fallback[i] = 1.0
             return action_fallback
-# =====================================================================================
-# --- CLASSI PER MPC ESPLICITO APPROSSIMATO (Invariate) ---
-# =====================================================================================
-
-class ApproximateExplicitMPC:
-    """
-    Implementa un controller MPC Esplicito Approssimato.
-    Questo approccio utilizza un modello di machine learning (es. Gradient Boosting)
-    per approssimare la funzione di controllo ottimale calcolata dall'MPC online.
-    """
-    def __init__(self, env, model_path=None, control_horizon=10, max_cs=None, **kwargs):
-        print(f"Inizializzazione controller MPC Esplicito Approssimato...")
-        
-        if model_path is None:
-            script_dir = os.path.dirname(os.path.abspath(__file__))
-            model_path = os.path.join(script_dir, 'mpc_approximator.joblib')
-
-        if not os.path.exists(model_path):
-            raise FileNotFoundError(f"Modello non trovato in '{model_path}'. Esegui prima lo script di addestramento.")
-        
-        if max_cs is None:
-            raise ValueError("Il parametro 'max_cs' (numero massimo di stazioni) deve essere fornito.")
-        self.max_cs = max_cs
-
-        self.model = joblib.load(model_path)
-        self.H = control_horizon
-        print(f"Modello caricato con successo da: {model_path}")
-
-    def _build_state_vector(self, env):
-        """
-        Costruisce il vettore di stato per il modello approssimato.
-        """
-        current_step = env.current_step
-        horizon = min(self.H, env.simulation_length - current_step)
-        num_cs_in_env = env.cs
-        
-        ev_socs = np.zeros(self.max_cs)
-        ev_time_to_departure = np.zeros(self.max_cs)
-        
-        for i in range(num_cs_in_env):
-            ev = next((ev for ev in env.charging_stations[i].evs_connected if ev is not None), None)
-            if ev:
-                ev_socs[i] = ev.get_soc()
-                ev_time_to_departure[i] = max(0, ev.time_of_departure - current_step)
-
-        prices_charge = env.charge_prices[0, current_step : current_step + horizon]
-        prices_discharge = env.discharge_prices[0, current_step : current_step + horizon]
-        
-        padded_prices_ch = np.pad(prices_charge, (0, self.H - len(prices_charge)), 'edge')
-        padded_prices_dis = np.pad(prices_discharge, (0, self.H - len(prices_discharge)), 'edge')
-
-        state_vector = np.concatenate([
-            ev_socs,
-            ev_time_to_departure,
-            padded_prices_ch,
-            padded_prices_dis
-        ])
-        return state_vector.reshape(1, -1)
-
-    def get_action(self, env):
-        if env.current_step >= env.simulation_length - 1:
-            return np.zeros(env.cs)
-            
-        state_vector = self._build_state_vector(env)
-        predicted_powers = self.model.predict(state_vector)[0]
-        
-        action = np.zeros(env.cs)
-        for i in range(env.cs):
-            max_power = env.charging_stations[i].get_max_power()
-            if max_power > 0:
-                action[i] = predicted_powers[i] / max_power
-
-        return np.clip(action, -1, 1)
-
-class MPCApproximatorNet(nn.Module):
-    """Definizione dell'architettura della rete neurale per l'approssimatore MPC."""
-    def __init__(self, input_size, output_size, hidden_layers=[256, 128, 64]):
-        super(MPCApproximatorNet, self).__init__()
-        layers = []
-        prev_size = input_size
-        for hidden_size in hidden_layers:
-            layers.append(nn.Linear(prev_size, hidden_size))
-            layers.append(nn.ReLU())
-            prev_size = hidden_size
-        layers.append(nn.Linear(prev_size, output_size))
-        self.model = nn.Sequential(*layers)
-
-    def forward(self, x):
-        return self.model(x)
-
-class ApproximateExplicitMPC_NN:
-    """
-    Implementa un controller MPC Esplicito Approssimato usando una Rete Neurale.
-    """
-    def __init__(self, env, model_path=None, control_horizon=5, max_cs=None, **kwargs):
-        print("Inizializzazione controller MPC Esplicito Approssimato (Rete Neurale)...")
-        
-        if model_path is None:
-            script_dir = Path(__file__).parent.resolve()
-            model_path = script_dir / 'mpc_approximator_nn.pth'
-
-        if not os.path.exists(model_path):
-            raise FileNotFoundError(f"Modello non trovato in '{model_path}'. Esegui prima lo script di addestramento.")
-        
-        if max_cs is None:
-            raise ValueError("Il parametro 'max_cs' deve essere fornito.")
-        self.max_cs = max_cs
-        self.H = control_horizon
-
-        state_vector_size = self.max_cs * 2 + self.H * 2
-        output_size = self.max_cs
-
-        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-        self.model = MPCApproximatorNet(input_size=state_vector_size, output_size=output_size)
-        self.model.load_state_dict(torch.load(model_path, map_location=self.device))
-        self.model.to(self.device)
-        self.model.eval()
-
-        print(f"Modello Rete Neurale caricato con successo da: {model_path} su device {self.device}")
-
-    def _build_state_vector(self, env):
-        current_step = env.current_step
-        horizon = min(self.H, env.simulation_length - current_step)
-        num_cs_in_env = env.cs
-        
-        ev_socs = np.zeros(self.max_cs)
-        ev_time_to_departure = np.zeros(self.max_cs)
-        
-        for i in range(num_cs_in_env):
-            ev = next((ev for ev in env.charging_stations[i].evs_connected if ev is not None), None)
-            if ev:
-                ev_socs[i] = ev.get_soc()
-                ev_time_to_departure[i] = max(0, ev.time_of_departure - current_step)
-
-        prices_charge = env.charge_prices[0, current_step : current_step + horizon]
-        prices_discharge = env.discharge_prices[0, current_step : current_step + horizon]
-        
-        padded_prices_ch = np.pad(prices_charge, (0, self.H - len(prices_charge)), 'edge')
-        padded_prices_dis = np.pad(prices_discharge, (0, self.H - len(prices_discharge)), 'edge')
-
-        state_vector = np.concatenate([
-            ev_socs,
-            ev_time_to_departure,
-            padded_prices_ch,
-            padded_prices_dis
-        ])
-        return state_vector
-
-    def get_action(self, env):
-        if env.current_step >= env.simulation_length - 1:
-            return np.zeros(env.cs)
-            
-        state_vector_np = self._build_state_vector(env)
-        state_tensor = torch.tensor(state_vector_np, dtype=torch.float32).to(self.device)
-        
-        with torch.no_grad():
-            predicted_powers_tensor = self.model(state_tensor)
-        
-        predicted_powers = predicted_powers_tensor.cpu().numpy()
-        
-        action = np.zeros(env.cs)
-        for i in range(env.cs):
-            max_power = env.charging_stations[i].get_max_power()
-            if max_power > 0:
-                action[i] = predicted_powers[i] / max_power
-
-        return np.clip(action, -1, 1)
 
     
 class OptimalOfflineSolver:
     """
-    Un solver di ottimizzazione globale offline che calcola il piano di azione ottimale
-    per l'intera simulazione, assumendo una conoscenza perfetta di tutti gli eventi futuri.
-    
-    Questo solver serve come benchmark teorico (upper bound) per la massimizzazione del profitto.
+    An offline solver that finds the optimal charging schedule to maximize user satisfaction
+    for all EVs in the simulation, while respecting all hard constraints.
+
+    This solver serves as the theoretical benchmark for user satisfaction.
     """
-    def __init__(self, env, mpc_desired_soc_factor=0.95, penalty_overload=1000.0, **kwargs):
+    def __init__(self, env, mpc_desired_soc_factor=1, **kwargs):
         self.env = env
         self.mpc_desired_soc_factor = mpc_desired_soc_factor
-        self.penalty_overload = penalty_overload
-        
-        # Il piano di azione verrà calcolato una sola volta
         self.action_plan = None
-        print(f"Solver 'Optimal Offline' inizializzato.")
+        print(f"Optimal Offline Satisfaction Solver initialized.")
 
     def _solve_once(self, env):
-        """
-        Metodo principale che formula e risolve il problema di ottimizzazione globale.
-        """
-        print("--- [Optimal Solver] Avvio calcolo del piano di azione globale... ---")
+        print("--- [Optimal Offline Solver] Starting to solve for maximum user satisfaction... ---")
         
-        # 1. Raccogliere tutte le informazioni a priori dall'ambiente
         T = env.simulation_length
         num_cs = env.cs
         timescale_h = env.timescale / 60.0
         
-        # Prezzi, carichi e generazione per l'intera simulazione
-        prices_charge = env.charge_prices[0, :T]
-        prices_discharge = env.discharge_prices[0, :T]
         transformer = env.transformers[0]
         load_forecast, pv_forecast = transformer.get_load_pv_forecast(0, T)
         transformer_limit = transformer.get_power_limits(0, T)
-
-        # Mappa di tutti i veicoli che arriveranno, indicizzati per ID univoco
-        # L'ambiente caricato da replay contiene questa informazione
         all_ev_sessions = env.get_all_future_ev_sessions()
 
-        # 2. Impostare il problema di ottimizzazione con PuLP
-        prob = pulp.LpProblem("Optimal_V2G_Profit_Maximization", pulp.LpMaximize)
-
-        # 3. Definire le variabili di decisione per l'intera simulazione
+        # =============================================================================
+        # --- OBJECTIVE: Maximize the final state of charge for all EVs ---
+        # =============================================================================
+        prob = pulp.LpProblem("Maximize_Final_SoC", pulp.LpMaximize)
+        
+        # Definiamo le variabili come prima
         indices = [(i, t) for i in range(num_cs) for t in range(T)]
         P_ch = pulp.LpVariable.dicts("ChargePower", indices, lowBound=0)
         P_dis = pulp.LpVariable.dicts("DischargePower", indices, lowBound=0)
-        
-        # Variabili binarie per evitare carica e scarica simultanee
         b_ch = pulp.LpVariable.dicts("isCharging", indices, cat='Binary')
         b_dis = pulp.LpVariable.dicts("isDischarging", indices, cat='Binary')
-
-        # Variabili di stato per l'energia di ogni EV
         ev_indices = [(ev_id, t) for ev_id in all_ev_sessions.keys() for t in range(T)]
         E = pulp.LpVariable.dicts("Energy", ev_indices, lowBound=0)
-        
-        # Variabile slack per la penalità di sovraccarico
-        slack_overload = pulp.LpVariable.dicts("SlackOverload", range(T), lowBound=0)
 
-        # 4. Definire la funzione obiettivo: Massimizzare il profitto
-        profit = pulp.lpSum(
-            (prices_discharge[t] * P_dis[i, t] - prices_charge[t] * P_ch[i, t]) * timescale_h
-            for i, t in indices
+        # The objective is to maximize the sum of energy for all EVs at their departure time.
+        final_energy_sum = pulp.lpSum(
+            E[ev_id, ev_info['departure_step'] - 1]
+            for ev_id, ev_info in all_ev_sessions.items() if ev_info['departure_step'] > ev_info['arrival_step']
         )
-        penalty = pulp.lpSum(self.penalty_overload * slack_overload[t] for t in range(T))
-        prob.setObjective(profit - penalty)
-
-        # 5. Aggiungere i vincoli
+        prob.setObjective(final_energy_sum)
+        
+        # =============================================================================
+        # --- THE CONSTRAINTS ARE NOW ALL HARD AND ABSOLUTE ---
+        # =============================================================================
         
         # Vincoli per ogni sessione EV
         for ev_id, ev_info in all_ev_sessions.items():
@@ -392,81 +220,63 @@ class OptimalOfflineSolver:
             
             eta_ch = np.mean(list(ev.charge_efficiency.values()))
             eta_dis = np.mean(list(ev.discharge_efficiency.values()))
+            initial_energy_kwh = ev.initial_soc_replay * ev.battery_capacity
 
             for t in range(t_arrival, t_departure):
-                # Dinamica della batteria
-                E_prev = ev.initial_capacity if t == t_arrival else E[ev_id, t-1]
+                E_prev = initial_energy_kwh if t == t_arrival else E[ev_id, t-1]
                 prob += E[ev_id, t] == E_prev + (P_ch[cs_id, t] * eta_ch - P_dis[cs_id, t] / eta_dis) * timescale_h
-                
-                # Limiti di energia della batteria
                 prob += E[ev_id, t] <= ev.battery_capacity
                 prob += E[ev_id, t] >= ev.min_battery_capacity
 
-            # Vincolo rigido sul SoC alla partenza
+            # HARD AND INFALLIBLE CONSTRAINT ON SATISFACTION
             desired_energy = ev.desired_capacity * self.mpc_desired_soc_factor
-            prob += E[ev_id, t_departure - 1] >= desired_energy
+            if t_departure > t_arrival:
+                prob += E[ev_id, t_departure - 1] >= desired_energy
 
-        # Vincoli per ogni stazione di ricarica e timestep
-        M = 1000 # Big-M per i vincoli binari
+        # Vincoli di potenza delle stazioni
         for i, t in indices:
-            # Mappa l'EV corretto alla stazione i al tempo t
             current_ev_id = None
             for ev_id, ev_info in all_ev_sessions.items():
                 if ev_info['cs_id'] == i and ev_info['arrival_step'] <= t < ev_info['departure_step']:
                     current_ev_id = ev_id
                     break
-            
             if current_ev_id:
                 ev = all_ev_sessions[current_ev_id]['ev']
-                # Limiti di potenza e vincoli binari
                 prob += P_ch[i, t] <= ev.max_ac_charge_power * b_ch[i, t]
-                prob += P_dis[i, t] <= ev.max_ac_discharge_power * b_dis[i, t]
+                prob += P_dis[i, t] <= -ev.max_discharge_power * b_dis[i, t]
                 prob += b_ch[i, t] + b_dis[i, t] <= 1
             else:
-                # Se non c'è nessun EV, la potenza è zero
                 prob += P_ch[i, t] == 0
                 prob += P_dis[i, t] == 0
 
-        # Vincolo sul limite del trasformatore
+        # HARD AND INFALLIBLE TRANSFORMER CONSTRAINT (without slack)
         for t in range(T):
             power_evs = pulp.lpSum(P_ch[i, t] - P_dis[i, t] for i in range(num_cs))
             total_power = power_evs + load_forecast[t] - pv_forecast[t]
-            prob += total_power <= transformer_limit[t] + slack_overload[t]
+            prob += total_power <= transformer_limit[t]
 
-        # 6. Risolvere il problema
-        prob.solve(pulp.PULP_CBC_CMD(msg=1))
+        # Solve
+        prob.solve(pulp.PULP_CBC_CMD(msg=0))
 
-        # 7. Estrarre la soluzione e creare l'action_plan
         if pulp.LpStatus[prob.status] == 'Optimal':
-            print("--- [Optimal Solver] Soluzione ottimale globale trovata! ---")
+            print("--- [Optimal Offline Solver] SUCCESS: Optimal charging plan found. ---")
             self.action_plan = np.zeros((T, num_cs))
             for t in range(T):
                 for i in range(num_cs):
                     charge = pulp.value(P_ch[i, t])
                     discharge = pulp.value(P_dis[i, t])
                     net_power = charge - discharge
-                    
                     max_power = env.charging_stations[i].get_max_power()
                     if max_power > 0:
                         self.action_plan[t, i] = net_power / max_power
-            
             self.action_plan = np.clip(self.action_plan, -1, 1)
         else:
-            print(f"!!! [Optimal Solver] ERRORE: Nessuna soluzione ottimale trovata (Status: {pulp.LpStatus[prob.status]}). Verrà usato un piano di fallback (zero azioni).")
+            print(f"--- [Optimal Offline Solver] FAILURE: The problem is infeasible (Status: {pulp.LpStatus[prob.status]}). ---")
             self.action_plan = np.zeros((T, num_cs))
-
+        
     def get_action(self, env):
-        # Se il piano non è stato calcolato, calcolalo ora
         if self.action_plan is None:
-            # L'ambiente deve essere in grado di fornire le informazioni future
-            # Questo funziona solo se l'ambiente è stato caricato da un replay
             if not hasattr(env, 'get_all_future_ev_sessions'):
-                 raise Exception("L'ambiente deve implementare 'get_all_future_ev_sessions' per il solver ottimale.")
+                 raise Exception("The environment must implement 'get_all_future_ev_sessions' for the optimal solver.")
             self._solve_once(env)
-
-        current_step = env.current_step
-        if current_step < len(self.action_plan):
-            return self.action_plan[current_step]
-        else:
-            # Se la simulazione continua oltre il piano, ritorna zero
-            return np.zeros(env.cs)
+        return self.action_plan[env.current_step] if env.current_step < len(self.action_plan) else np.zeros(env.cs)

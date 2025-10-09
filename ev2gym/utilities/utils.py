@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 import math
 import datetime
 from typing import List, Dict
+import pandas as pd
 
 from ev2gym.models.ev import EV
 

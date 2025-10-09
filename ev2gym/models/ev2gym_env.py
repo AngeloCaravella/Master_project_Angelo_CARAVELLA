@@ -48,6 +48,7 @@ class EV2Gym(gym.Env):
                  verbose=False,
                  render_mode=None,
                  price_data_file=None,
+                 record_historic_soc=False,
                  ):
 
         super(EV2Gym, self).__init__()
@@ -75,6 +76,7 @@ class EV2Gym(gym.Env):
         self.verbose = verbose  # Whether to print the simulation progress or not
         # Whether to render the simulation in real-time or not
         self.render_mode = render_mode
+        self.record_historic_soc = record_historic_soc
 
         self.simulation_length = self.config['simulation_length']
 
@@ -355,6 +357,8 @@ class EV2Gym(gym.Env):
         self.total_evs_spawned = 0
         self.total_reward = 0
         self.departed_evs = []
+        if self.record_historic_soc:
+            self.historic_soc = []
 
         self.current_ev_departed = 0
         self.current_ev_arrived = 0
@@ -483,6 +487,17 @@ class EV2Gym(gym.Env):
                 break
 
         self.departed_evs.extend(departing_evs_this_step)
+
+        if self.record_historic_soc:
+            for ev in departing_evs_this_step:
+                self.historic_soc.append({
+                    'arrival_time': ev.time_of_arrival,
+                    'departure_time': ev.time_of_departure,
+                    'requested_soc': ev.desired_capacity / ev.battery_capacity,
+                    'final_soc': ev.current_capacity / ev.battery_capacity,
+                    'user_satisfaction': ev.get_user_satisfaction(),
+                })
+
         self._update_power_statistics(departing_evs_this_step)
 
         self.current_step += 1
@@ -675,34 +690,54 @@ class EV2Gym(gym.Env):
 
         return reward
 
-    #
+
+    
     def get_all_future_ev_sessions(self):
         """
-        Restituisce un dizionario di tutte le sessioni EV programmate per l'intera simulazione.
-        Questo è possibile solo quando si carica da un replay o si usa una schedule fissa.
+        Restituisce un dizionario di tutte le sessioni EV programmate per l'intera simulazione,
+        leggendo dalla lista self.EVs_profiles.
+        Questo è possibile solo quando si carica da un replay, dove la lista è completa e fissa.
         """
-        if not self.load_from_replay_path and not hasattr(self, 'fixed_ev_schedule'):
+        if not self.load_from_replay_path:
             raise EnvironmentError("La conoscenza completa del futuro è disponibile solo caricando da un replay.")
 
-        all_sessions = {}
-        # Assumiamo che self.ev_arrival_schedule contenga tutte le informazioni necessarie
-        # La struttura di questo dato potrebbe variare, adattala se necessario
-        for step, events in self.ev_arrival_schedule.items():
-            for event in events:
-                # Creiamo un ID univoco per ogni sessione
-                ev_session_id = f"ev_{event['cs_id']}_{step}"
-                
-                # Creiamo un'istanza temporanea dell'EV per accedere ai suoi parametri
-                temp_ev = self.ev_factory.get_ev(
-                    time_of_arrival=step,
-                    initial_soc=event['initial_soc'],
-                    desired_soc=event['desired_soc']
-                )
+        if not hasattr(self, 'EVs_profiles'):
+            raise AttributeError("L'ambiente EV2Gym non ha l'attributo 'EVs_profiles'.")
 
-                all_sessions[ev_session_id] = {
-                    'ev': temp_ev,
-                    'cs_id': event['cs_id'],
-                    'arrival_step': step,
-                    'departure_step': temp_ev.time_of_departure
-                }
+        all_sessions = {}
+        
+        # Itera sulla lista completa dei profili EV
+        for ev_profile in self.EVs_profiles:
+            t_arrival = ev_profile.time_of_arrival
+            cs_id = ev_profile.location
+            
+            ev_session_id = f"ev_{cs_id}_{t_arrival}"
+            
+            temp_ev = deepcopy(ev_profile)
+            temp_ev.reset()
+
+            # --- KEY CHANGE ---
+            # The 'ev_profile' object has the 'battery_capacity_at_arrival' attribute, which is read from the scenario file.
+            # We calculate the initial SoC from this and the total battery capacity.
+            # We then explicitly add it to the 'temp_ev' object that we will use in the solver.
+            # We use a specific name to avoid conflicts.
+            if hasattr(ev_profile, 'battery_capacity_at_arrival') and hasattr(ev_profile, 'battery_capacity'):
+                if ev_profile.battery_capacity > 0:
+                    initial_soc = ev_profile.battery_capacity_at_arrival / ev_profile.battery_capacity
+                else:
+                    initial_soc = 0
+                temp_ev.initial_soc_replay = initial_soc
+            else:
+                # Fallback if the attributes have different names, to be adapted if necessary
+                raise AttributeError("The EV object in EVs_profiles does not have the attributes 'battery_capacity_at_arrival' or 'battery_capacity'.")
+
+            all_sessions[ev_session_id] = {
+                'ev': temp_ev,
+                'cs_id': cs_id,
+                'arrival_step': t_arrival,
+                'departure_step': temp_ev.time_of_departure
+            }
+            
         return all_sessions
+
+    
