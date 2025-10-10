@@ -296,10 +296,10 @@ def get_color_map_and_legend(algorithms_to_plot):
     legend_elements = [Patch(facecolor=color_map[algo], edgecolor='black', label=algo) for algo in algorithms_to_plot]
     return algo_categories, color_map, legend_elements
 
-def plot_performance_metrics(stats_collection, save_path, scenario_name, algorithms_to_plot):
+def plot_performance_metrics(stats_collection, save_path, scenario_name, algorithms_to_plot, num_evs_in_scenario):
     if not stats_collection: return
     metrics_map = {
-        'total_profits': 'Total Profit (€)', 'average_user_satisfaction': 'Average User Satisfaction (%)',
+        'total_profits': f'Total Profit (€) (N={num_evs_in_scenario} EVs)', 'average_user_satisfaction': 'Average User Satisfaction (%)',
         'peak_transformer_loading_pct': 'Peak Transformer Loading (%)' 
     }
     model_names = [name for name in algorithms_to_plot if name in stats_collection]
@@ -462,6 +462,7 @@ def generate_summary_outputs(stats_collection, save_path, scenario_name, num_sim
         'total_profits': ('Profits/Costs (€)', 1), 'average_user_satisfaction': ('User Sat. (%)', 100),
         'total_energy_charged': ('Energy Ch. (kWh)', 1), 'total_energy_discharged': ('Energy Disch. (kWh)', 1),
         'transformer_overload_kwh': ('Tr. Ov. (kWh)', 1), 'battery_degradation': ('Total Qˡᵒˢᵗ (x10⁻³)', 1000),
+        'calendar_aging': ('Cal. Qˡᵒˢᵗ (x10⁻³)', 1000), 'cyclic_aging': ('Cyc. Qˡᵒˢᵗ (x10⁻³)', 1000),
         'execution_time': ('Exec. Time (s)', 1), 'total_reward': ('Reward (x10³)', 0.001)
     }
     summary_data = []
@@ -576,7 +577,10 @@ def run_benchmark(config_files, reward_func, algorithms_to_run, num_simulations,
                     
                     soc_over_time_by_algo[name].append(current_run_soc_over_time)
                     
+                    num_departed_evs_for_scenario = 0 # Initialize
                     if sim_num == 0:
+                        if departed_evs := env_instance.unwrapped.departed_evs:
+                            num_departed_evs_for_scenario = len(departed_evs)
                         power_data = {
                             'ev_load': np.sum(env_instance.unwrapped.cs_power, axis=0),
                             'inflexible_load': np.sum(env_instance.unwrapped.tr_inflexible_loads, axis=0),
@@ -592,7 +596,18 @@ def run_benchmark(config_files, reward_func, algorithms_to_run, num_simulations,
                     stats['execution_time'] = time.time() - start_time # Calculate duration here
                     print(f"DEBUG: {name} execution_time: {stats['execution_time']:.4f} seconds") # Debug print
                     if departed_evs := env_instance.unwrapped.departed_evs:
-                        stats['battery_degradation'] = np.mean([ev.get_battery_degradation() for ev in departed_evs])
+                        all_total_degradations = []
+                        all_calendar_agings = []
+                        all_cyclic_agings = []
+                        for ev in departed_evs:
+                            d_cal, d_cyc = ev.get_battery_degradation() # This calculates and sets ev.calendar_loss and ev.cyclic_loss
+                            all_total_degradations.append(d_cal + d_cyc)
+                            all_calendar_agings.append(ev.calendar_loss) # Now these attributes are set
+                            all_cyclic_agings.append(ev.cyclic_loss)     # Now these attributes are set
+
+                        stats['battery_degradation'] = np.mean(all_total_degradations)
+                        stats['calendar_aging'] = np.mean(all_calendar_agings)
+                        stats['cyclic_aging'] = np.mean(all_cyclic_agings)
                     for metric, value in stats.items():
                         all_sim_stats[name][metric].append(value)
                     
@@ -609,7 +624,7 @@ def run_benchmark(config_files, reward_func, algorithms_to_run, num_simulations,
                 aggregated_stats[name]['std'] = {metric: np.std(values) for metric, values in metrics.items()}
             
             print("\n--- Generating output plots and summaries ---")
-            plot_performance_metrics(aggregated_stats, scenario_save_path, scenario_name, list(algorithms_to_run.keys()))
+            plot_performance_metrics(aggregated_stats, scenario_save_path, scenario_name, list(algorithms_to_run.keys()), num_departed_evs_for_scenario)
             plot_ev_presence(scenario_save_path, scenario_name, ev_counts_over_time, timescale)
             plot_average_soc_over_time(scenario_save_path, scenario_name, soc_over_time_by_algo, timescale)
             plot_electricity_prices(scenario_save_path, scenario_name, charge_prices, discharge_prices, timescale)
