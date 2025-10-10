@@ -180,13 +180,10 @@ class OnlineMPC_Solver:
         # sono omessi perché il modello opera a livello di potenza aggregata sul trasformatore,
         # e i limiti di corrente dei singoli EV sono già inclusi.
 
-        # --- Risoluzione del problema ---
-        solver = pulp.PULP_CBC_CMD(
-            options=['logLevel', '1']
-        )
+        
 
+        prob.solve(pulp.PULP_CBC_CMD(msg=0))
 
-        prob.solve(solver)
         status = pulp.LpStatus[prob.status]
 
 
