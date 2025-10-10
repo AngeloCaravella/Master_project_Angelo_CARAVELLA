@@ -207,7 +207,7 @@ In addition to random selection, the workflow supports advanced strategies to en
 The workflow integrates both classical MPC and its approximations:
 
 \begin{itemize}
-    \item \textbf{Linear and Quadratic MPC:} The \texttt{run\_experiments.py} script allows choosing between an MPC based on a linear optimization model (\texttt{OnlineMPC\_Solver}) or a quadratic one (\texttt{OnlineMPC\_Solver\_Quadratic}), depending on the desired complexity of the objective function.
+    \item \textbf{Linear MPC:} The \texttt{run\_experiments.py} script utilizes an MPC based on a linear optimization model (\texttt{OnlineMPC\_Solver}).
     \item \textbf{Approximate Explicit MPC:} The scripts \texttt{train\_mpc\_approximator.py} and \texttt{train\_mpc\_approximator\_nn.py} are dedicated to creating an \textbf{Approximate Explicit MPC}. This process:
     \begin{enumerate}
         \item Generates a dataset of samples (state, optimal action) by solving the MPC problem (the oracle) across a large number of random states in different scenarios.

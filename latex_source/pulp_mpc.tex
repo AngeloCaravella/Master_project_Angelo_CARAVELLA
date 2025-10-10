@@ -58,46 +58,6 @@ The mathematical structure of the optimization problem solved in Algorithm \ref{
     \item \textbf{Mixed-Integer Variables:} The formulation employs both continuous variables (e.g., $P^{\text{ch}}_{i,k}$, $E_{i,k}$) and discrete, binary integer variables ($z_{i,k}$). The binary variables are essential for modeling the logical decision to either charge or discharge at any given time step.
 \end{itemize}
 
-\section{Quadratic MPC Formulation (CVXPY Implementation)}
-
-As an alternative to the purely linear model, a quadratic formulation is also implemented. This version extends the previous MILP by introducing quadratic penalty terms into the objective function. While it shares the same underlying constraint structure, the change in the objective function alters the problem's nature to a \textbf{Mixed-Integer Quadratic Program (MIQP)}. The control logic is detailed in Algorithm \ref{alg:miqp_mpc}.
-
-\paragraph{Implementation Details}
-This controller is built using \textbf{CVXPY}, a Python-embedded modeling language for convex optimization problems. Due to the presence of both quadratic terms and integer variables, this formulation requires a solver capable of handling MIQPs, such as SCIP, Gurobi, or MOSEK.
-
-\begin{algorithm}[H]
-\caption{Online Model Predictive Control (MIQP)}
-\label{alg:miqp_mpc}
-\begin{algorithmic}[1]
-\Function{GetAction}{$E_{\text{initial}}, k_{\text{dep}}, c_{\text{buy}}, c_{\text{sell}}, H, N_c$}
-    \State \textbf{Inputs:} Same as Algorithm \ref{alg:milp_mpc}.
-    
-    \State \textbf{Initialize Problem:} Create a new MIQP problem.
-    
-    \State \textbf{Define Variables:} Same as Algorithm \ref{alg:milp_mpc}.
-    
-    \State \textbf{Define Objective Function:}
-    \State LinearProfit $\leftarrow \sum_{k=0}^{H-1} \sum_{i \in \text{CS}} \left[ (c^{\text{user}} - c^{\text{buy}}_k - c^{\text{deg}}) P^{\text{ch}}_{i,k} + (c^{\text{sell}}_k - c^{\text{deg}}) P^{\text{dis}}_{i,k} \right] \Delta t$
-    \State QuadraticPenalty $\leftarrow \sum_{k=0}^{H-1} \sum_{i \in \text{CS}} \left[ \lambda_{\text{ch}} (P^{\text{ch}}_{i,k})^2 + \lambda_{\text{dis}} (P^{\text{dis}}_{i,k})^2 \right] \Delta t$
-    \State Set objective to $\max(\text{LinearProfit} - \text{QuadraticPenalty})$.
-    
-    \State \textbf{Add Constraints:} Same as Algorithm \ref{alg:milp_mpc}.
-    
-    \State \textbf{Solve Problem:}
-    \State solution $\leftarrow$ \Call{SolveMIQP}{Problem}
-    
-    \If{solution is Optimal}
-        \State Extract action plan $\{a_k^*\}_{k=0}^{N_c-1}$ from solution.
-        \State \Return action plan
-    \Else
-        \State \Return empty plan or default action
-    \EndIf
-\EndFunction
-\end{algorithmic}
-\end{algorithm}
-
-The motivation for the quadratic penalty terms is to encourage smoother control actions. By making very high power flows quadratically more "expensive," the optimizer is incentivized to find solutions that are less aggressive, which can be beneficial for battery health and for reducing stress on the local grid infrastructure.
-
 \section{Lyapunov-based Adaptive Horizon MPC}
 
 A key enhancement developed in this work is the \textbf{Lyapunov-based Adaptive Horizon MPC}, which aims to reduce the computational burden of the online MPC while retaining its optimality and stability guarantees. The controller dynamically adjusts its prediction horizon $H_t$ based on the stability of the system, which is formally assessed using a Lyapunov function. A Lyapunov function $V(x)$ is a scalar function that measures the system's deviation from a desired equilibrium state. For the V2G system, we define it as the sum of squared errors from the desired final energy state:

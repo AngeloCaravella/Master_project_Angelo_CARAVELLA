@@ -564,6 +564,7 @@ def run_benchmark(config_files, reward_func, algorithms_to_run, num_simulations,
                     else:
                         model = algorithm_class(env=env_instance.unwrapped, **kwargs)
 
+                    start_time = time.time() # Start timing here
                     obs, _ = env_instance.reset()
                     done = False
                     current_run_soc_over_time = []
@@ -588,7 +589,8 @@ def run_benchmark(config_files, reward_func, algorithms_to_run, num_simulations,
                         plot_individual_ev_sessions(scenario_save_path, scenario_name, name, env_instance.unwrapped.departed_evs, timescale)
 
                     stats = env_instance.unwrapped.stats
-                    stats['execution_time'] = time.time() - (start_time := time.time())
+                    stats['execution_time'] = time.time() - start_time # Calculate duration here
+                    print(f"DEBUG: {name} execution_time: {stats['execution_time']:.4f} seconds") # Debug print
                     if departed_evs := env_instance.unwrapped.departed_evs:
                         stats['battery_degradation'] = np.mean([ev.get_battery_degradation() for ev in departed_evs])
                     for metric, value in stats.items():
@@ -627,7 +629,7 @@ def calculate_max_cs(config_path: str) -> int:
     if max_cs == 0: raise ValueError("Could not determine max number of charging stations.")
     return max_cs
 
-def get_algorithms(max_cs: int, is_thesis_mode: bool, mpc_type: str = 'linear') -> Dict[str, Tuple[Any, Any, Dict]]:
+def get_algorithms(max_cs: int, is_thesis_mode: bool) -> Dict[str, Tuple[Any, Any, Dict]]:
     base_algorithms = {
         "AFAP": (ChargeAsFastAsPossible, None, {}), 
         "ALAP": (ChargeAsLateAsPossible, None, {}), 
@@ -638,12 +640,11 @@ def get_algorithms(max_cs: int, is_thesis_mode: bool, mpc_type: str = 'linear') 
        
     }
     mpc_algorithms = {
-        'linear': {
-            "Online_MPC_Profit_Max": (pulp_mpc.OnlineMPC_Solver, None, {'prediction_horizon': 25, 'control_horizon': 'half'})
-        }
+        "Online_MPC_Profit_Max": (pulp_mpc.OnlineMPC_Solver, None, {'prediction_horizon': 25, 'control_horizon': 'half'}),
+        "Online_MPC_Lyapunov_Adaptive": (pulp_mpc.OnlineMPC_Solver, None, {'prediction_horizon': 25, 'control_horizon': 'half', 'lyapunov_adaptive': True}) # Placeholder for Lyapunov adaptive kwargs
     }
-    ALL_ALGORITHMS = {**base_algorithms, **mpc_algorithms.get(mpc_type, {})}
-    THESIS_ALGORITHMS_BASE = ["AFAP", "ALAP", "RR", "SAC", "DDPG", "DDPG+PER", "TQC", "Online_MPC_Profit_Max"]
+    ALL_ALGORITHMS = {**base_algorithms, **mpc_algorithms}
+    THESIS_ALGORITHMS_BASE = ["AFAP", "ALAP", "RR", "SAC", "DDPG", "DDPG+PER", "TQC", "Online_MPC_Profit_Max", "Online_MPC_Lyapunov_Adaptive"]
     THESIS_ALGORITHMS = {k: v for k, v in ALL_ALGORITHMS.items() if k in THESIS_ALGORITHMS_BASE}
     return THESIS_ALGORITHMS if is_thesis_mode else ALL_ALGORITHMS
 

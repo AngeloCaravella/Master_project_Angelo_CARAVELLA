@@ -67,11 +67,8 @@ def main():
     MAX_CS = calculate_max_cs(config_path)
     print(f"\nRilevato un massimo di {MAX_CS} stazioni di ricarica tra tutti gli scenari.")
 
-    # --- MPC Type ---
-    mpc_type_choice = 'linear'
-
     # --- Get ALL available algorithms ---
-    all_available_algorithms = get_algorithms(MAX_CS, is_thesis_mode, mpc_type_choice)
+    all_available_algorithms = get_algorithms(MAX_CS, is_thesis_mode)
     
     # --- Interactive Algorithm Selection ---
     # Identify all "advanced" controllers (MPC and Optimal) for user selection

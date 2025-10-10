@@ -8,7 +8,7 @@
 \contentsline {subsection}{\numberline {1.1.1}Objectives and Contributions of the Thesis}{9}{subsection.1.1.1}%
 \contentsline {subsection}{\numberline {1.1.2}Research Methodology}{10}{subsection.1.1.2}%
 \contentsline {subsection}{\numberline {1.1.3}Thesis Structure}{11}{subsection.1.1.3}%
-\contentsline {chapter}{\numberline {2}State of the Art in Optimal V2G Management}{13}{chapter.2}%
+\contentsline {chapter}{\numberline {2}Foundations and State of the Art in Intelligent Control for Vehicle-to-Grid Systems}{13}{chapter.2}%
 \contentsline {section}{\numberline {2.1}The V2G Imperative: A Foundation of Europe's Green Transition}{13}{section.2.1}%
 \contentsline {section}{\numberline {2.2}The Optimizer's Trilemma: Navigating a Stochastic World}{17}{section.2.2}%
 \contentsline {subsection}{\numberline {2.2.1}Sources for Energy Price Data}{18}{subsection.2.2.1}%
@@ -153,6 +153,4 @@
 \contentsline {section}{\numberline {3.16}Online MPC Formulation (PuLP Implementation)}{85}{section.3.16}%
 \contentsline {paragraph}{Implementation Details}{85}{section*.48}%
 \contentsline {subsection}{\numberline {3.16.1}Mathematical Formulation}{86}{subsection.3.16.1}%
-\contentsline {section}{\numberline {3.17}Quadratic MPC Formulation (CVXPY Implementation)}{87}{section.3.17}%
-\contentsline {paragraph}{Implementation Details}{87}{section*.49}%
-\contentsline {section}{\numberline {3.18}Lyapunov-based Adaptive Horizon MPC}{88}{section.3.18}%
+\contentsline {section}{\numberline {3.17}Lyapunov-based Adaptive Horizon MPC}{87}{section.3.17}%
