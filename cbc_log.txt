@@ -1,0 +1,56 @@
+Welcome to the CBC MILP Solver 
+Version: 2.10.3 
+Build Date: Dec 15 2019 
+
+command line - C:\Users\angel\AppData\Local\Programs\Python\Python311\Lib\site-packages\pulp\apis\../solverdir/cbc/win/i64/cbc.exe C:\Users\angel\AppData\Local\Temp\db458bec106543a8b70e920fc96f7b3a-pulp.mps -max -logLevel -2 -timeMode elapsed -branch -printingOptions all -solution C:\Users\angel\AppData\Local\Temp\db458bec106543a8b70e920fc96f7b3a-pulp.sol (default strategy 1)
+At line 2 NAME          MODEL
+At line 3 ROWS
+At line 255 COLUMNS
+At line 1052 RHS
+At line 1303 BOUNDS
+At line 1384 ENDATA
+Problem MODEL has 250 rows, 200 columns and 556 elements
+Coin0008I MODEL read with 0 errors
+logLevel was changed from 1 to -2
+Option for timeMode changed from cpu to elapsed
+Continuous objective value is 27.8849 - 0.00 seconds
+Cgl0009I 80 elements changed
+Cgl0003I 0 fixed, 0 tightened bounds, 80 strengthened rows, 0 substitutions
+Cgl0004I processed model has 134 rows, 160 columns (80 integer (80 of which binary)) and 400 elements
+Cbc0038I Initial state - 5 integers unsatisfied sum - 0.892802
+Cbc0038I Pass   1: suminf.    0.00000 (0) obj. -25.7713 iterations 21
+Cbc0038I Solution found of -25.7713
+Cbc0038I Relaxing continuous gives -25.7715
+Cbc0038I Before mini branch and bound, 75 integers at bound fixed and 70 continuous
+Cgl0004I processed model has 5 rows, 9 columns (0 integer (0 of which binary)) and 12 elements
+Cbc0038I Full problem 134 rows 160 columns, reduced to 5 rows 9 columns
+Cbc0028I Starting sub-tree for CbcHeuristicLocalAfterFPump - maximum nodes 200
+Cbc3007W No integer variables - nothing to do
+Cbc0029I Ending sub-tree for CbcHeuristicLocalAfterFPump
+Cbc0038I Mini branch and bound improved solution from -25.7715 to -27.8849 (0.02 seconds)
+Cbc0038I After 0.02 seconds - Feasibility pump exiting with objective of -27.8849 - took 0.01 seconds
+Cbc0045I Heuristic feasibility pump took 0.00699997 seconds (good)
+Cbc0012I Integer solution of -27.884886 found by feasibility pump after 0 iterations and 0 nodes (0.02 seconds)
+Cbc0001I Search completed - best objective -27.88488587406144, took 0 iterations and 0 nodes (0.02 seconds)
+Cbc0035I Maximum depth 0, 0 variables fixed on reduced cost
+Cuts at root node changed objective from -27.8849 to -27.8849
+Probing was tried 0 times and created 0 cuts of which 0 were active after adding rounds of cuts (0.000 seconds)
+Gomory was tried 0 times and created 0 cuts of which 0 were active after adding rounds of cuts (0.000 seconds)
+Knapsack was tried 0 times and created 0 cuts of which 0 were active after adding rounds of cuts (0.000 seconds)
+Clique was tried 0 times and created 0 cuts of which 0 were active after adding rounds of cuts (0.000 seconds)
+MixedIntegerRounding2 was tried 0 times and created 0 cuts of which 0 were active after adding rounds of cuts (0.000 seconds)
+FlowCover was tried 0 times and created 0 cuts of which 0 were active after adding rounds of cuts (0.000 seconds)
+TwoMirCuts was tried 0 times and created 0 cuts of which 0 were active after adding rounds of cuts (0.000 seconds)
+ZeroHalf was tried 0 times and created 0 cuts of which 0 were active after adding rounds of cuts (0.000 seconds)
+
+Result - Optimal solution found
+
+Objective value:                27.88488587
+Enumerated nodes:               0
+Total iterations:               0
+Time (CPU seconds):             0.02
+Time (Wallclock seconds):       0.02
+
+Option for printingOptions changed from normal to all
+Total time (CPU seconds):       0.03   (Wallclock seconds):       0.03
+

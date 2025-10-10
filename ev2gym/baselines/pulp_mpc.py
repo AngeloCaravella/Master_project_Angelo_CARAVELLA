@@ -181,8 +181,14 @@ class OnlineMPC_Solver:
         # e i limiti di corrente dei singoli EV sono già inclusi.
 
         # --- Risoluzione del problema ---
-        prob.solve(pulp.PULP_CBC_CMD(msg=0))
+        solver = pulp.PULP_CBC_CMD(
+            options=['logLevel', '1']
+        )
+
+
+        prob.solve(solver)
         status = pulp.LpStatus[prob.status]
+
 
         if status == 'Optimal':
             action = np.zeros(num_cs)
