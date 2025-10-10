@@ -635,6 +635,7 @@ def get_algorithms(max_cs: int, is_thesis_mode: bool) -> Dict[str, Tuple[Any, An
         "ALAP": (ChargeAsLateAsPossible, None, {}), 
         "RR": (RoundRobin, None, {}),
         "SAC": (None, SAC, {}), 
+        "DDPG": (None, DDPG, {}), 
         "DDPG+PER": (None, CustomDDPG, {'replay_buffer_class': PrioritizedReplayBuffer}),
         "TQC": (None, TQC, {}),
        
