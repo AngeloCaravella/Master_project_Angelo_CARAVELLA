@@ -100,57 +100,60 @@
 \contentsline {subsubsection}{Advanced Multi-Scenario Training Strategies}{61}{section*.16}%
 \contentsline {subsection}{\numberline {3.9.2}MPC Integration and Approximation}{62}{subsection.3.9.2}%
 \contentsline {subsection}{\numberline {3.9.3}Rigorous and Reproducible Benchmarking}{62}{subsection.3.9.3}%
-\contentsline {subsection}{\numberline {3.9.4}Software Implementation and Project Structure}{63}{subsection.3.9.4}%
+\contentsline {subsection}{\numberline {3.9.4}Software Implementation and Project Structure}{62}{subsection.3.9.4}%
 \contentsline {section}{\numberline {3.10}Core Physical Models}{63}{section.3.10}%
 \contentsline {subsection}{\numberline {3.10.1}EV Model and Charging/Discharging Dynamics}{63}{subsection.3.10.1}%
-\contentsline {subsection}{\numberline {3.10.2}Battery Degradation Model}{64}{subsection.3.10.2}%
+\contentsline {subsection}{\numberline {3.10.2}Battery Degradation Model}{63}{subsection.3.10.2}%
 \contentsline {subsection}{\numberline {3.10.3}Reproducible Benchmarking and Evaluation}{64}{subsection.3.10.3}%
 \contentsline {subsection}{\numberline {3.10.4}Interactive Web-Based Dashboard}{64}{subsection.3.10.4}%
-\contentsline {subsubsection}{Simulation Orchestrator}{65}{section*.17}%
+\contentsline {subsubsection}{Simulation Orchestrator}{64}{section*.17}%
 \contentsline {subsubsection}{Results Visualizer}{65}{section*.18}%
 \contentsline {section}{\numberline {3.11}Evaluation Metrics}{65}{section.3.11}%
 \contentsline {section}{\numberline {3.12}Simulator Implementation Details}{66}{section.3.12}%
 \contentsline {subsubsection}{Vehicle Definition Modes}{66}{section*.19}%
-\contentsline {subsubsection}{Empirical Calibration of the Degradation Model}{67}{section*.20}%
+\contentsline {subsubsection}{Empirical Calibration of the Degradation Model}{66}{section*.20}%
 \contentsline {section}{\numberline {3.13}Simulation Framework Components}{67}{section.3.13}%
 \contentsline {subsection}{\numberline {3.13.1}Electric Vehicle Model (\texttt {ev.py})}{67}{subsection.3.13.1}%
-\contentsline {subsubsection}{State and Attribute Representation}{68}{section*.21}%
-\contentsline {subsubsection}{Charging and Discharging Dynamics}{68}{section*.22}%
+\contentsline {subsubsection}{State and Attribute Representation}{67}{section*.21}%
+\contentsline {subsubsection}{Charging and Discharging Dynamics}{67}{section*.22}%
 \contentsline {paragraph}{Two-Stage Charging Model (\texttt {\_charge} method).}{68}{section*.23}%
-\contentsline {paragraph}{Discharging Model (\texttt {\_discharge} method).}{69}{section*.24}%
-\contentsline {subsubsection}{User Satisfaction Metric}{69}{section*.25}%
+\contentsline {paragraph}{Discharging Model (\texttt {\_discharge} method).}{68}{section*.24}%
+\contentsline {subsubsection}{User Satisfaction Metric}{68}{section*.25}%
 \contentsline {subsection}{\numberline {3.13.2}Charging Station Model (\texttt {ev\_charger.py})}{69}{subsection.3.13.2}%
 \contentsline {subsubsection}{Role and Attributes}{69}{section*.26}%
 \contentsline {subsubsection}{Operational Logic (\texttt {step} method)}{69}{section*.27}%
-\contentsline {subsection}{\numberline {3.13.3}Transformer Model (\texttt {transformer.py})}{70}{subsection.3.13.3}%
+\contentsline {subsection}{\numberline {3.13.3}Transformer Model (\texttt {transformer.py})}{69}{subsection.3.13.3}%
 \contentsline {subsubsection}{Model Components}{70}{section*.28}%
 \contentsline {subsubsection}{Core Functionality}{70}{section*.29}%
 \contentsline {paragraph}{Load Aggregation.}{70}{section*.30}%
-\contentsline {paragraph}{Overload Detection.}{71}{section*.31}%
-\contentsline {paragraph}{Forecasting with Uncertainty.}{71}{section*.32}%
-\contentsline {subsection}{\numberline {3.13.4}Main Gym Environment (\texttt {ev2gym\_env.py})}{71}{subsection.3.13.4}%
-\contentsline {subsubsection}{Environment Structure and Main Loop}{71}{section*.33}%
+\contentsline {paragraph}{Overload Detection.}{70}{section*.31}%
+\contentsline {paragraph}{Forecasting with Uncertainty.}{70}{section*.32}%
+\contentsline {subsection}{\numberline {3.13.4}Main Gym Environment (\texttt {ev2gym\_env.py})}{70}{subsection.3.13.4}%
+\contentsline {subsubsection}{Environment Structure and Main Loop}{70}{section*.33}%
 \contentsline {paragraph}{Initialization (\texttt {\_\_init\_\_}).}{71}{section*.34}%
 \contentsline {paragraph}{Simulation Step (\texttt {step(actions)}).}{71}{section*.35}%
-\contentsline {paragraph}{Reset (\texttt {reset}).}{72}{section*.36}%
-\contentsline {section}{\numberline {3.14}Reinforcement Learning Formulation}{72}{section.3.14}%
-\contentsline {subsection}{\numberline {3.14.1}State Space ($S$)}{72}{subsection.3.14.1}%
-\contentsline {subsection}{\numberline {3.14.2}Action Space ($A$)}{74}{subsection.3.14.2}%
-\contentsline {subsection}{\numberline {3.14.3}Reward Function ($R$)}{74}{subsection.3.14.3}%
-\contentsline {section}{\numberline {3.15}Reinforcement Learning Algorithms}{74}{section.3.15}%
-\contentsline {subsubsection}{Soft Actor-Critic (SAC)}{74}{section*.37}%
-\contentsline {paragraph}{Implementation Details}{76}{section*.38}%
-\contentsline {subsubsection}{Deep Deterministic Policy Gradient + PER (DDPG+PER)}{77}{section*.39}%
-\contentsline {paragraph}{Implementation Details}{79}{section*.40}%
-\contentsline {subsubsection}{Truncated Quantile Critics (TQC)}{79}{section*.41}%
-\contentsline {paragraph}{Implementation Details}{81}{section*.42}%
-\contentsline {subsection}{\numberline {3.15.1}A History-Based Adaptive Reward for Profit Maximization}{81}{subsection.3.15.1}%
-\contentsline {subsubsection}{Economic Profit}{83}{section*.43}%
-\contentsline {subsubsection}{Adaptive User Satisfaction Penalty}{84}{section*.44}%
-\contentsline {subsubsection}{Adaptive Transformer Overload Penalty}{84}{section*.45}%
-\contentsline {subsubsection}{Rationale and Significance}{85}{section*.46}%
-\contentsline {paragraph}{Implementation Details}{85}{section*.47}%
-\contentsline {section}{\numberline {3.16}Online MPC Formulation (PuLP Implementation)}{85}{section.3.16}%
-\contentsline {paragraph}{Implementation Details}{85}{section*.48}%
-\contentsline {subsection}{\numberline {3.16.1}Mathematical Formulation}{86}{subsection.3.16.1}%
-\contentsline {section}{\numberline {3.17}Lyapunov-based Adaptive Horizon MPC}{87}{section.3.17}%
+\contentsline {paragraph}{Reset (\texttt {reset}).}{71}{section*.36}%
+\contentsline {section}{\numberline {3.14}Reinforcement Learning Formulation}{71}{section.3.14}%
+\contentsline {section}{\numberline {3.15}State Space ($S$)}{72}{section.3.15}%
+\contentsline {subsection}{\numberline {3.15.1}Action Space ($A$)}{73}{subsection.3.15.1}%
+\contentsline {subsection}{\numberline {3.15.2}Reward Function ($R$)}{73}{subsection.3.15.2}%
+\contentsline {section}{\numberline {3.16}Reinforcement Learning Algorithms}{73}{section.3.16}%
+\contentsline {subsubsection}{Soft Actor-Critic (SAC)}{73}{section*.37}%
+\contentsline {paragraph}{Implementation Details}{75}{section*.38}%
+\contentsline {subsubsection}{Deep Deterministic Policy Gradient + PER (DDPG+PER)}{76}{section*.39}%
+\contentsline {paragraph}{Implementation Details}{78}{section*.40}%
+\contentsline {subsubsection}{Truncated Quantile Critics (TQC)}{78}{section*.41}%
+\contentsline {paragraph}{Implementation Details}{80}{section*.42}%
+\contentsline {section}{\numberline {3.17}A History-Based Adaptive Reward for Profit Maximization}{80}{section.3.17}%
+\contentsline {subsubsection}{Economic Profit}{82}{section*.43}%
+\contentsline {subsubsection}{Adaptive User Satisfaction Penalty}{83}{section*.44}%
+\contentsline {subsubsection}{Adaptive Transformer Overload Penalty}{83}{section*.45}%
+\contentsline {subsubsection}{Rationale and Significance}{83}{section*.46}%
+\contentsline {paragraph}{Implementation Details}{84}{section*.47}%
+\contentsline {section}{\numberline {3.18}Model Predictive Control (MPC) Implementation}{84}{section.3.18}%
+\contentsline {section}{\numberline {3.19}Online MPC Formulation (PuLP Implementation)}{84}{section.3.19}%
+\contentsline {paragraph}{Implementation Details}{84}{section*.48}%
+\contentsline {subsection}{\numberline {3.19.1}Mathematical Formulation}{85}{subsection.3.19.1}%
+\contentsline {subsubsection}{Objective Function}{85}{section*.49}%
+\contentsline {subsubsection}{Constraints}{86}{section*.50}%
+\contentsline {section}{\numberline {3.20}Lyapunov-based Adaptive Horizon MPC}{87}{section.3.20}%

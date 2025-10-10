@@ -1,70 +1,111 @@
 \section{Online MPC Formulation (PuLP Implementation)}
 
-The Model Predictive Control (MPC) implemented with PuLP solves a profit maximization problem at each control interval over a finite prediction horizon $H$. This formulation is designed for online, real-time control, where decisions are made based on the current system state and future predictions. This approach is often termed an "implicit" MPC because the control law is not pre-computed; instead, it is found implicitly by solving a full optimization problem at every control interval. The logic is formally detailed in Algorithm \ref{alg:milp_mpc}.
+The Model Predictive Control (MPC) implemented with PuLP solves a profit maximization problem at each control interval over a finite prediction horizon $H$. This formulation is designed for online, real-time control, where decisions are made based on the current system state and future predictions. This approach is often termed an "implicit" MPC because the control law is not pre-computed; instead, it is found by solving a full optimization problem at every control interval.
 
 \paragraph{Implementation Details}
-This online controller is implemented as the \texttt{OnlineMPC\_Solver} class within the \texttt{ev2gym/baselines/pulp\_mpc.py} module. At each invocation of its \texttt{get\_action} method, it dynamically constructs the full Mixed-Integer Linear Program (MILP) described below using the \textbf{PuLP} modeling library. PuLP acts as a high-level modeling interface, which then calls an underlying solver. The problem is then solved using the default CBC (COIN-OR Branch and Cut) solver, an open-source solver capable of handling MILPs.
+This online controller is implemented as the \texttt{OnlineMPC\_Solver} class within the \texttt{pulp\_mpc.py} module. At each invocation of its \texttt{get\_action} method, it dynamically constructs and solves a Mixed-Integer Linear Program (MILP) using the \textbf{PuLP} modeling library. PuLP acts as a high-level modeling interface for the underlying \textbf{CBC (COIN-OR Branch and Cut)} solver, an open-source solver capable of handling MILPs.
 
-\begin{algorithm}[H]
-\caption{Online Model Predictive Control (MILP)}
-\label{alg:milp_mpc}
-\begin{algorithmic}[1]
-\Function{GetAction}{$E_{\text{initial}}, k_{\text{dep}}, c_{\text{buy}}, c_{\text{sell}}, H, N_c$}
-    \State \textbf{Inputs:} Current energy states $E_{\text{initial}}$, departure times $k_{\text{dep}}$, price vectors $c_{\text{buy}}, c_{\text{sell}}$, prediction horizon $H$, control horizon $N_c$.
-    
-    \State \textbf{Initialize Problem:} Create a new MILP problem for profit maximization.
-    
-    \State \textbf{Define Variables} for $i \in \text{CS}, k \in [0, H-1]$:
-    \State $P^{\text{ch}}_{i,k}, P^{\text{dis}}_{i,k} \in \mathbb{R}^+$ \Comment{Continuous power variables}
-    \State $E_{i,k} \in \mathbb{R}^+$ \Comment{Continuous energy state variables}
-    \State $z_{i,k} \in \{0, 1\}$ \Comment{Binary charge/discharge mode variables}
-    
-    \State \textbf{Define Objective Function:}
-    \State Profit $\leftarrow \sum_{k=0}^{H-1} \sum_{i \in \text{CS}} \left[ (c^{\text{user}} - c^{\text{buy}}_k - c^{\text{deg}}) P^{\text{ch}}_{i,k} + (c^{\text{sell}}_k - c^{\text{deg}}) P^{\text{dis}}_{i,k} \right] \Delta t$
-    \State Set objective to $\max(\text{Profit})$.
-    
-    \State \textbf{Add Constraints} for $i \in \text{CS}, k \in [0, H-1]$:
-    \If{$k=0$}
-        \State $E_{i,k} = E_{\text{initial},i} + (\eta_{\text{ch}} P^{\text{ch}}_{i,k} - \frac{1}{\eta_{\text{dis}}} P^{\text{dis}}_{i,k}) \cdot \Delta t$
-    \Else
-        \State $E_{i,k} = E_{i,k-1} + (\eta_{\text{ch}} P^{\text{ch}}_{i,k} - \frac{1}{\eta_{\text{dis}}} P^{\text{dis}}_{i,k}) \cdot \Delta t$
-    \EndIf
-    \State $0 \le P^{\text{ch}}_{i,k} \le P^{\text{ch,max}}_{i} \cdot z_{i,k}$
-    \State $0 \le P^{\text{dis}}_{i,k} \le P^{\text{dis,max}}_{i} \cdot (1 - z_{i,k})$
-    \State $E^{\text{min}}_{i} \le E_{i,k} \le E^{\text{max}}_{i}$
-    \If{$k = k_{\text{dep},i}$}
-        \State $E_{i,k} \ge E^{\text{des}}_{i}$
-    \EndIf
-    \State $\sum_{i \in \text{CS}} (P^{\text{ch}}_{i,k} - P^{\text{dis}}_{i,k}) \le P^{\text{tr,max}}$
-    
-    \State \textbf{Solve Problem:}
-    \State solution $\leftarrow$ \Call{SolveMILP}{Problem}
-    
-    \If{solution is Optimal}
-        \State Extract action plan $\{a_k^*\}_{k=0}^{N_c-1}$ from solution.
-        \State \Return action plan
-    \Else
-        \State \Return empty plan or default action
-    \EndIf
-\EndFunction
-\end{algorithmic}
-\end{algorithm}
+A key characteristic of this implementation is that it strictly adheres to the mathematical formulation of a specific reference paper, including several equations that are physically unconventional. This is explicitly noted in the source code comments and reflected in the formulation below.
 
 \subsection{Mathematical Formulation}
-The mathematical structure of the optimization problem solved in Algorithm \ref{alg:milp_mpc} is a classic \textbf{Mixed-Integer Linear Program (MILP)}. This classification is justified as follows:
+The optimization problem is a \textbf{Mixed-Integer Linear Program (MILP)} characterized by a linear objective function, linear constraints, and a mix of continuous and binary decision variables.
+
 \begin{itemize}
-    \item \textbf{Linear Objective Function:} The objective function is a linear combination of the continuous power variables $P^{\text{ch}}$ and $P^{\text{dis}}$.
-    \item \textbf{Linear Constraints:} All system constraints, including energy dynamics, power limits, and state of energy bounds, are formulated as linear equations or inequalities.
-    \item \textbf{Mixed-Integer Variables:} The formulation employs both continuous variables (e.g., $P^{\text{ch}}_{i,k}$, $E_{i,k}$) and discrete, binary integer variables ($z_{i,k}$). The binary variables are essential for modeling the logical decision to either charge or discharge at any given time step.
+    \item \textbf{Indices}:
+    \begin{itemize}
+        \item $i \in \text{EVs}$: Index for each active Electric Vehicle.
+        \item $t \in [0, H-1]$: Index for each time step in the prediction horizon $H$.
+    \end{itemize}
+
+    \item \textbf{Decision Variables}:
+    \begin{itemize}
+        \item $I^{\text{ch}}_{i,t}, I^{\text{dis}}_{i,t} \in \mathbb{R}^+$: Continuous variables for charge and discharge current (A).
+        \item $E_{i,t} \in \mathbb{R}^+$: Continuous variable for the battery's stored energy (kWh).
+        \item $\omega^{\text{ch}}_{i,t}, \omega^{\text{dis}}_{i,t} \in \{0, 1\}$: Binary variables indicating charging or discharging mode.
+    \end{itemize}
+    
+    \item \textbf{Parameters}:
+    \begin{itemize}
+        \item $c^{\text{ch}}_t, c^{\text{dis}}_t$: Electricity prices for charging and discharging at time $t$ (€/kWh).
+        \item $\Delta t$: Duration of a single time step (h).
+        \item $V_i, \phi_i$: Voltage (kV) and power factor for the connection of EV $i$.
+        \item $\eta^{\text{ch}}_i, \eta^{\text{dis}}_i$: Charging and discharging efficiencies for EV $i$.
+        \item $\bar{I}^{\text{ch}}_{i}, \bar{I}^{\text{dis}}_{i}$: Maximum charge and discharge current for EV $i$ (A).
+        \item $E^{\text{max}}_{i}, E^{\text{min}}_{i}$: Maximum and minimum battery capacity for EV $i$ (kWh).
+        \item $E^{\text{des}}_{i}$: Desired energy for EV $i$ at its departure time $t_{\text{dep},i}$.
+        \item $\bar{P}^{\text{tr}}_t$: Power limit of the transformer at time $t$ (kW).
+        \item $P^{\text{L}}_t, P^{\text{PV}}_t$: Forecasted inflexible load and PV generation at time $t$ (kW).
+    \end{itemize}
+\end{itemize}
+
+\subsubsection{Objective Function}
+The objective is to maximize the total profit from charging and discharging activities over the prediction horizon, as defined in Equation (23) of the reference paper.
+\begin{equation}
+\label{eq:objective}
+\max \sum_{t=0}^{H-1} \sum_{i \in \text{EVs}} \left( -P^{\text{ch}}_{i,t} c^{\text{ch}}_t + P^{\text{dis}}_{i,t} c^{\text{dis}}_t \right) \Delta t
+\end{equation}
+
+\subsubsection{Constraints}
+The optimization is subject to the following constraints for all $i \in \text{EVs}$ and $t \in [0, H-1]$:
+
+\begin{itemize}
+    \item \textbf{Power Definitions (Eq. 10, 11):} Power is defined as a linear function of current.
+    \begin{align}
+        P^{\text{ch}}_{i,t} &= I^{\text{ch}}_{i,t} \cdot V_i \cdot \sqrt{\phi_i} \cdot \eta^{\text{ch}}_i \label{eq:pch} \\
+        P^{\text{dis}}_{i,t} &= I^{\text{dis}}_{i,t} \cdot V_i \cdot \sqrt{\phi_i} \cdot \eta^{\text{dis}}_i \label{eq:pdis}
+    \end{align}
+    \textit{Note: The formulation for discharge power in Eq. \ref{eq:pdis} unconventionally multiplies by the efficiency $\eta^{\text{dis}}_i$ instead of dividing by it.}
+
+    \item \textbf{Battery Dynamics (Eq. 13):} The energy state evolution over time.
+    \begin{equation}
+    \label{eq:dynamics}
+    E_{i,t} = 
+    \begin{cases} 
+    E_{i, \text{initial}} + (P^{\text{ch}}_{i,t} + P^{\text{dis}}_{i,t}) \Delta t & \text{if } t = 0 \\
+    E_{i,t-1} + (P^{\text{ch}}_{i,t} + P^{\text{dis}}_{i,t}) \Delta t & \text{if } t > 0 
+    \end{cases}
+    \end{equation}
+    \textit{Note: This equation is physically incorrect as it adds discharge power instead of subtracting it. The implementation strictly follows this formulation.}
+
+    \item \textbf{Energy Limits (Eq. 12):} The battery energy must remain within its operational bounds.
+    \begin{equation}
+    \label{eq:energy_limits}
+    E^{\text{min}}_{i} \le E_{i,t} \le E^{\text{max}}_{i}
+    \end{equation}
+
+    \item \textbf{Current Limits (Eq. 15, 16):} The charge/discharge currents are limited and linked to the binary mode variables.
+    \begin{align}
+        0 \le I^{\text{ch}}_{i,t} &\le \bar{I}^{\text{ch}}_{i} \cdot \omega^{\text{ch}}_{i,t} \label{eq:ich_limit} \\
+        0 \le I^{\text{dis}}_{i,t} &\le \bar{I}^{\text{dis}}_{i} \cdot \omega^{\text{dis}}_{i,t} \label{eq:idis_limit}
+    \end{align}
+
+    \item \textbf{Mode Exclusivity (Eq. 21):} An EV cannot charge and discharge simultaneously.
+    \begin{equation}
+    \label{eq:exclusivity}
+    \omega^{\text{ch}}_{i,t} + \omega^{\text{dis}}_{i,t} \le 1
+    \end{equation}
+
+    \item \textbf{Transformer Power Limit (Eq. 19, 20):} The total power drawn from the grid must not exceed the transformer's capacity.
+    \begin{equation}
+    \label{eq:transformer_limit}
+    \sum_{i \in \text{EVs}} (P^{\text{ch}}_{i,t} + P^{\text{dis}}_{i,t}) + P^{\text{L}}_t + P^{\text{PV}}_t \le \bar{P}^{\text{tr}}_t
+    \end{equation}
+    \textit{Note: Consistent with Eq. \ref{eq:dynamics}, the total EV power is calculated by adding charge and discharge power, which is physically unconventional.}
+
+    \item \textbf{Departure Energy Requirement (Eq. 24):} Each EV must reach its desired energy level by its departure time.
+    \begin{equation}
+    \label{eq:departure}
+    E_{i, t_{\text{dep},i}} \ge E^{\text{des}}_{i} \quad \text{for } t = t_{\text{dep},i}
+    \end{equation}
 \end{itemize}
 
 \section{Lyapunov-based Adaptive Horizon MPC}
 
-A key enhancement developed in this work is the \textbf{Lyapunov-based Adaptive Horizon MPC}, which aims to reduce the computational burden of the online MPC while retaining its optimality and stability guarantees. The controller dynamically adjusts its prediction horizon $H_t$ based on the stability of the system, which is formally assessed using a Lyapunov function. A Lyapunov function $V(x)$ is a scalar function that measures the system's deviation from a desired equilibrium state. For the V2G system, we define it as the sum of squared errors from the desired final energy state:
+A key enhancement is the \textbf{Lyapunov-based Adaptive Horizon MPC}, which aims to reduce the computational burden of the online MPC while retaining its optimality and stability guarantees. The controller dynamically adjusts its prediction horizon $H_t$ based on the stability of the system, which is formally assessed using a Lyapunov function. A Lyapunov function $V(x)$ is a scalar function that measures the system's deviation from a desired equilibrium state. For the V2G system, we define it as the sum of squared errors from the desired final energy state:
 \begin{equation}
     V(E_t) = \sum_{i \in \text{EVs}} (E_{i,t} - E_i^{\text{des}})^2
 \end{equation}
-The adaptive control logic, which wraps either the MILP or MIQP solver, is detailed in Algorithm \ref{alg:lyapunov_mpc}.
+The adaptive control logic, which wraps the MILP solver, is detailed in Algorithm \ref{alg:lyapunov_mpc}. This intelligent adjustment makes the online MPC more efficient, reducing computation time during stable periods while retaining the ability to perform deep planning when necessary to guarantee system stability and constraint satisfaction.
 
 \begin{algorithm}[H]
 \caption{Lyapunov-based Adaptive Horizon MPC}
@@ -86,7 +127,7 @@ The adaptive control logic, which wraps either the MILP or MIQP solver, is detai
     \State $V(E_t) \leftarrow \sum_{i} (E_{i,t} - E_i^{\text{des}})^2$.
     
     \State \Comment{Solve MPC with the current horizon}
-    \State solution $\leftarrow$ \Call{SolveMPC}{$s_t, H_{\text{current}}$} \Comment{Using MILP or MIQP solver}
+    \State solution $\leftarrow$ \Call{SolveMPC}{$s_t, H_{\text{current}}$} \Comment{Using MILP solver}
     
     \If{solution is Optimal}
         \State Extract optimal first action $a_t^* = (P^{\text{ch,*}}_{t}, P^{\text{dis,*}}_{t})$.
@@ -114,9 +155,3 @@ The adaptive control logic, which wraps either the MILP or MIQP solver, is detai
 \EndFunction
 \end{algorithmic}
 \end{algorithm}
-
-This intelligent adjustment makes the online MPC more efficient and practical, reducing computation time during stable periods while retaining the ability to perform deep planning when necessary to guarantee system stability and constraint satisfaction.
-
-
-
-%%%%%%%%%%%%%%%

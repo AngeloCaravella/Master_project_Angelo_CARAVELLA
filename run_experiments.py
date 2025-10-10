@@ -296,17 +296,19 @@ def get_color_map_and_legend(algorithms_to_plot):
     legend_elements = [Patch(facecolor=color_map[algo], edgecolor='black', label=algo) for algo in algorithms_to_plot]
     return algo_categories, color_map, legend_elements
 
-def plot_performance_metrics(stats_collection, save_path, scenario_name, algorithms_to_plot):
+def plot_performance_metrics(stats_collection, save_path, scenario_name, algorithms_to_plot, total_evs, num_charging_points, transformer_limit):
     if not stats_collection: return
     metrics_map = {
-        'total_profits': 'Total Profit (€)', 'average_user_satisfaction': 'Average User Satisfaction (%)',
-        'peak_transformer_loading_pct': 'Peak Transformer Loading (%)' 
+        'total_profits': f'Total Profit (€) for {total_evs} EVs',
+        'average_user_satisfaction': 'Average User Satisfaction (%)',
+        'peak_transformer_loading_pct': 'Peak Transformer Loading (%)'
     }
     model_names = [name for name in algorithms_to_plot if name in stats_collection]
     if not model_names: return
     algo_categories, category_colors, legend_elements = get_color_map_and_legend(model_names)
     fig, axes = plt.subplots(1, 3, figsize=(24, 8)); axes = axes.flatten()
-    fig.suptitle(f'Aggregated Performance Metrics - Scenario: {scenario_name}', fontsize=22)
+    fig.suptitle(f'Aggregated Performance Metrics - Scenario: {scenario_name}\n'
+                 f'({num_charging_points} charging points, {transformer_limit} kW transformer limit)', fontsize=22)
     for i, (metric, title) in enumerate(metrics_map.items()):
         ax = axes[i]
         means = [stats_collection[name]['mean'].get(metric, 0) for name in model_names]
@@ -321,6 +323,35 @@ def plot_performance_metrics(stats_collection, save_path, scenario_name, algorit
     fig.legend(handles=legend_elements, loc='lower center', ncol=len(legend_elements), bbox_to_anchor=(0.5, -0.1))
     plt.tight_layout(rect=[0, 0, 1, 0.95])
     plt.savefig(os.path.join(save_path, f"performance_summary_{scenario_name}.png")); plt.close(fig)
+
+def plot_profit_per_ev(stats_collection, save_path, scenario_name, algorithms_to_plot, total_evs):
+    if not stats_collection or total_evs == 0: return
+    
+    metric = 'total_profits'
+    title = 'Profit per EV (€)'
+    
+    model_names = [name for name in algorithms_to_plot if name in stats_collection]
+    if not model_names: return
+    
+    algo_categories, category_colors, legend_elements = get_color_map_and_legend(model_names)
+    
+    fig, ax = plt.subplots(figsize=(12, 8))
+    fig.suptitle(f'Profit per EV - Scenario: {scenario_name}', fontsize=16)
+    
+    means = [stats_collection[name]['mean'].get(metric, 0) / total_evs for name in model_names]
+    stds = [stats_collection[name]['std'].get(metric, 0) / total_evs for name in model_names]
+    
+    colors = [category_colors.get(algo_categories.get(name, "default"), category_colors["default"]) for name in model_names]
+    
+    ax.bar(model_names, means, yerr=stds, color=colors, capsize=5)
+    ax.set_title(title, fontsize=14)
+    ax.tick_params(axis='x', rotation=45)
+    ax.grid(True, linestyle='--', alpha=0.6)
+    
+    fig.legend(handles=legend_elements, loc='lower center', ncol=len(legend_elements), bbox_to_anchor=(0.5, -0.15))
+    plt.tight_layout(rect=[0, 0, 1, 0.95])
+    plt.savefig(os.path.join(save_path, f"profit_per_ev_{scenario_name}.png"))
+    plt.close(fig)
 
 def plot_ev_presence(save_path, scenario_name, ev_counts, timescale):
     fig, ax = plt.subplots(figsize=(12, 6))
@@ -459,10 +490,15 @@ def plot_electricity_prices(save_path, scenario_name, charge_prices, discharge_p
 # =====================================================================================
 def generate_summary_outputs(stats_collection, save_path, scenario_name, num_simulations):
     column_mapping = {
-        'total_profits': ('Profits/Costs (€)', 1), 'average_user_satisfaction': ('User Sat. (%)', 100),
-        'total_energy_charged': ('Energy Ch. (kWh)', 1), 'total_energy_discharged': ('Energy Disch. (kWh)', 1),
-        'transformer_overload_kwh': ('Tr. Ov. (kWh)', 1), 'battery_degradation': ('Total Qˡᵒˢᵗ (x10⁻³)', 1000),
-        'execution_time': ('Exec. Time (s)', 1), 'total_reward': ('Reward (x10³)', 0.001)
+        'total_profits': ('Profits/Costs (€)', 1),
+        'average_user_satisfaction': ('User Sat. (%)', 100),
+        'total_energy_charged': ('Energy Ch. (kWh)', 1),
+        'total_energy_discharged': ('Energy Disch. (kWh)', 1),
+        'transformer_overload_kwh': ('Tr. Ov. (kWh)', 1),
+        'calendar_degradation': ('Calendar Deg. (x10⁻³)', 1000),
+        'cyclic_degradation': ('Cyclic Deg. (x10⁻³)', 1000),
+        'execution_time': ('Exec. Time (s)', 1),
+        'total_reward': ('Reward (x10³)', 0.001)
     }
     summary_data = []
     for name, data in stats_collection.items():
@@ -491,9 +527,10 @@ def generate_summary_outputs(stats_collection, save_path, scenario_name, num_sim
 # =====================================================================================
 # --- FUNZIONE DI BENCHMARK ---
 # =====================================================================================
-def run_benchmark(config_files, reward_func, algorithms_to_run, num_simulations, model_dir, is_multi_scenario, price_data_file=None):
+def run_benchmark(config_files, reward_func, algorithms_to_run, num_simulations, model_dir, is_multi_scenario, price_data_file=None, generate_plots=True):
     overall_save_path = f'./results/benchmark_{datetime.datetime.now().strftime("%Y%m%d_%H%M%S")}/'
-    os.makedirs(overall_save_path, exist_ok=True)
+    if generate_plots:
+        os.makedirs(overall_save_path, exist_ok=True)
 
     max_obs_shape, max_action_shape = (0,), (0,)
     if is_multi_scenario:
@@ -508,14 +545,24 @@ def run_benchmark(config_files, reward_func, algorithms_to_run, num_simulations,
 
     for config_file in config_files:
         scenario_name = os.path.basename(config_file).replace(".yaml", "")
-        print(f"\n\n{'='*80}\nSTARTING BENCHMARK FOR SCENARIO: {scenario_name}\n{'='*80}")
+        if generate_plots:
+            print(f"\n\n{'='*80}\nSTARTING BENCHMARK FOR SCENARIO: {scenario_name}\n{'='*80}")
         
-        scenario_save_path = os.path.join(overall_save_path, scenario_name); os.makedirs(scenario_save_path, exist_ok=True)
+        scenario_save_path = os.path.join(overall_save_path, scenario_name)
+        if generate_plots:
+            os.makedirs(scenario_save_path, exist_ok=True)
         all_sim_stats = defaultdict(lambda: defaultdict(list))
         soc_over_time_by_algo = defaultdict(list)
 
         presence_env = EV2Gym(config_file=config_file, generate_rnd_game=True)
-        print_desired_soc_summary(presence_env)
+        if generate_plots:
+            print_desired_soc_summary(presence_env)
+        total_evs = len(presence_env.EVs_profiles)
+        num_charging_points = presence_env.cs
+        transformer_limit = presence_env.transformers[0].max_power
+        if isinstance(transformer_limit, (list, np.ndarray)):
+            transformer_limit = transformer_limit[0]
+
         ev_counts_over_time = []
         done = False
         while not done:
@@ -525,7 +572,8 @@ def run_benchmark(config_files, reward_func, algorithms_to_run, num_simulations,
         presence_env.close()
 
         for sim_num in range(num_simulations):
-            print(f"\n--- Simulation {sim_num + 1}/{num_simulations} ---")
+            if generate_plots:
+                print(f"\n--- Simulation {sim_num + 1}/{num_simulations} ---")
             env_replay = EV2Gym(config_file=config_file, generate_rnd_game=True, save_replay=True, price_data_file=price_data_file)
             replay_path = f"replay/replay_{env_replay.sim_name}.pkl"
             while not env_replay.step(np.zeros(env_replay.action_space.shape[0]))[2]: pass
@@ -534,9 +582,6 @@ def run_benchmark(config_files, reward_func, algorithms_to_run, num_simulations,
             eval_env_id = f'eval-env-{scenario_name}-{sim_num}'
             if eval_env_id in registry: del registry[eval_env_id]
             
-            # =================================================================
-            # --- KEY CHANGE: Activation of SoC recording ---
-            # =================================================================
             gym.register(
                 id=eval_env_id, 
                 entry_point='ev2gym.models.ev2gym_env:EV2Gym', 
@@ -547,24 +592,27 @@ def run_benchmark(config_files, reward_func, algorithms_to_run, num_simulations,
                     'reward_function': reward_func, 
                     'state_function': V2G_profit_max_loads, 
                     'price_data_file': price_data_file,
-                    'record_historic_soc': True  # <-- THIS IS THE ADDED LINE
+                    'record_historic_soc': True
                 }
             )
 
             for name, (algorithm_class, rl_class, kwargs) in algorithms_to_run.items():
-                print(f"+ Running: {name}")
+                if generate_plots:
+                    print(f"+ Running: {name}")
                 try:
                     env_instance = gym.make(eval_env_id)
                     is_rl_model = rl_class is not None
                     if is_rl_model:
                         if is_multi_scenario: env_instance = CompatibilityWrapper(env_instance, max_obs_shape, max_action_shape)
                         model_path = os.path.join(model_dir, f'{name.lower().replace("+", "_")}_model.zip')
-                        if not os.path.exists(model_path): print(f"!!! Model {name} not found. Skipping."); continue
+                        if not os.path.exists(model_path): 
+                            if generate_plots: print(f"!!! Model {name} not found. Skipping."); 
+                            continue
                         model = rl_class.load(model_path, env=env_instance, device="cuda" if torch.cuda.is_available() else "cpu")
                     else:
                         model = algorithm_class(env=env_instance.unwrapped, **kwargs)
 
-                    start_time = time.time() # Start timing here
+                    start_time = time.time()
                     obs, _ = env_instance.reset()
                     done = False
                     current_run_soc_over_time = []
@@ -576,7 +624,7 @@ def run_benchmark(config_files, reward_func, algorithms_to_run, num_simulations,
                     
                     soc_over_time_by_algo[name].append(current_run_soc_over_time)
                     
-                    if sim_num == 0:
+                    if sim_num == 0 and generate_plots:
                         power_data = {
                             'ev_load': np.sum(env_instance.unwrapped.cs_power, axis=0),
                             'inflexible_load': np.sum(env_instance.unwrapped.tr_inflexible_loads, axis=0),
@@ -584,21 +632,25 @@ def run_benchmark(config_files, reward_func, algorithms_to_run, num_simulations,
                             'transformer_limit': env_instance.unwrapped.transformers[0].max_power
                         }
                         plot_overload_composition(scenario_save_path, scenario_name, name, power_data, timescale)
-                        
-                        # Call to the new individual plot
                         plot_individual_ev_sessions(scenario_save_path, scenario_name, name, env_instance.unwrapped.departed_evs, timescale)
 
                     stats = env_instance.unwrapped.stats
-                    stats['execution_time'] = time.time() - start_time # Calculate duration here
-                    print(f"DEBUG: {name} execution_time: {stats['execution_time']:.4f} seconds") # Debug print
+                    stats['execution_time'] = time.time() - start_time
                     if departed_evs := env_instance.unwrapped.departed_evs:
-                        stats['battery_degradation'] = np.mean([ev.get_battery_degradation() for ev in departed_evs])
+                        degradation_data = [ev.get_battery_degradation() for ev in departed_evs]
+                        stats['calendar_degradation'] = np.mean([d[0] for d in degradation_data])
+                        stats['cyclic_degradation'] = np.mean([d[1] for d in degradation_data])
+                        if total_evs > 0:
+                            stats['profit_per_ev'] = stats['total_profits'] / total_evs
+                        else:
+                            stats['profit_per_ev'] = 0
+
                     for metric, value in stats.items():
                         all_sim_stats[name][metric].append(value)
                     
                     env_instance.close()
                 except Exception as e:
-                    print(f"!!! ERROR with '{name}': {e}. Skipping."); traceback.print_exc()
+                    if generate_plots: print(f"!!! ERROR with '{name}': {e}. Skipping."); traceback.print_exc()
             
             if os.path.exists(replay_path): os.remove(replay_path)
 
@@ -608,14 +660,19 @@ def run_benchmark(config_files, reward_func, algorithms_to_run, num_simulations,
                 aggregated_stats[name]['mean'] = {metric: np.mean(values) for metric, values in metrics.items()}
                 aggregated_stats[name]['std'] = {metric: np.std(values) for metric, values in metrics.items()}
             
-            print("\n--- Generating output plots and summaries ---")
-            plot_performance_metrics(aggregated_stats, scenario_save_path, scenario_name, list(algorithms_to_run.keys()))
-            plot_ev_presence(scenario_save_path, scenario_name, ev_counts_over_time, timescale)
-            plot_average_soc_over_time(scenario_save_path, scenario_name, soc_over_time_by_algo, timescale)
-            plot_electricity_prices(scenario_save_path, scenario_name, charge_prices, discharge_prices, timescale)
-            generate_summary_outputs(aggregated_stats, scenario_save_path, scenario_name, num_simulations)
+            if generate_plots:
+                print("\n--- Generating output plots and summaries ---")
+                plot_performance_metrics(aggregated_stats, scenario_save_path, scenario_name, list(algorithms_to_run.keys()), total_evs, num_charging_points, transformer_limit)
+                plot_profit_per_ev(aggregated_stats, scenario_save_path, scenario_name, list(algorithms_to_run.keys()), total_evs)
+                plot_ev_presence(scenario_save_path, scenario_name, ev_counts_over_time, timescale)
+                plot_average_soc_over_time(scenario_save_path, scenario_name, soc_over_time_by_algo, timescale)
+                plot_electricity_prices(scenario_save_path, scenario_name, charge_prices, discharge_prices, timescale)
+                generate_summary_outputs(aggregated_stats, scenario_save_path, scenario_name, num_simulations)
 
-    print(f"\n--- Benchmark finished. Results saved in: {overall_save_path} ---")
+    if generate_plots:
+        print(f"\n--- Benchmark finished. Results saved in: {overall_save_path} ---")
+    
+    return aggregated_stats
 
 # =====================================================================================
 # --- FUNZIONI DI CONFIGURAZIONE E ADDESTRAMENTO ---
@@ -638,16 +695,31 @@ def get_algorithms(max_cs: int, is_thesis_mode: bool) -> Dict[str, Tuple[Any, An
         "DDPG": (None, DDPG, {}), 
         "DDPG+PER": (None, CustomDDPG, {'replay_buffer_class': PrioritizedReplayBuffer}),
         "TQC": (None, TQC, {}),
-       
     }
+
     # MPC algorithms
     mpc_algorithms = {
-        "Online_MPC_Profit_Max": (pulp_mpc.OnlineMPC_Solver, None, {'prediction_horizon': 5, 'control_horizon': 1, 'use_adaptive_horizon': False}),
-        "Online_MPC_Lyapunov_Adaptive": (pulp_mpc.OnlineMPC_Solver, None, {'prediction_horizon': 10, 'control_horizon': 5, 'use_adaptive_horizon': True})
+        "Online_MPC_NonAdaptive": (pulp_mpc.OnlineMPC_Solver, None, {
+            'prediction_horizon': 10, 
+            'control_horizon': 5, 
+            'use_adaptive_horizon': False,
+        }),
+        "Online_MPC_Adaptive": (pulp_mpc.OnlineMPC_Solver, None, {
+            'use_adaptive_horizon': True,
+            'h_max': 15,
+            'control_horizon': 5,
+        })
     }
+
     ALL_ALGORITHMS = {**base_algorithms, **mpc_algorithms}
-    THESIS_ALGORITHMS_BASE = ["AFAP", "ALAP", "RR", "SAC", "DDPG", "DDPG+PER", "TQC", "Online_MPC_Profit_Max", "Online_MPC_Lyapunov_Adaptive"]
+    
+    THESIS_ALGORITHMS_BASE = [
+        "AFAP", "ALAP", "RR", "SAC", "DDPG", "DDPG+PER", "TQC", 
+        "Online_MPC_NonAdaptive", "Online_MPC_Adaptive"
+    ]
+    
     THESIS_ALGORITHMS = {k: v for k, v in ALL_ALGORITHMS.items() if k in THESIS_ALGORITHMS_BASE}
+    
     return THESIS_ALGORITHMS if is_thesis_mode else ALL_ALGORITHMS
 
 def train_rl_models_if_requested(scenarios_to_test: List[str], selected_reward_func: Callable, algorithms_to_run: Dict, is_multi_scenario: bool, model_dir: str, selected_price_file_abs_path: Optional[str], steps_for_training: int, training_mode: str = 'single', curriculum_steps_per_level: int = 10000) -> None:

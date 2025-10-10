@@ -239,67 +239,67 @@ TQC represents a significant advancement over standard SAC by modeling the entir
 The TQC algorithm is leveraged from the \textbf{SB3-Contrib} library, a collection of community-contributed extensions to Stable-Baselines3. Using the library's standard \texttt{TQC} implementation allows the framework to benefit from this state-of-the-art distributional RL algorithm without requiring a custom implementation from scratch. The implementation maintains the entropy-regularized objective of SAC while incorporating the distributional critics and truncation mechanism that define TQC's superior performance characteristics.
 \noindent
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{A History-Based Adaptive Reward for Profit Maximization}
+\section{A History-Based Adaptive Reward for Profit Maximization}
 \label{sec:adaptive_reward}
 
 To guide the learning agent towards policies that are both highly profitable and operationally reliable, we designed a novel, history-based adaptive reward function, named \texttt{FastProfitAdaptiveReward}. This function departs from traditional approaches that use static weights for penalties. Instead, it introduces a dynamic feedback mechanism where the severity of penalties responds directly to the agent's recent performance. The core principle is to aggressively prioritize economic profit, while employing adaptive penalties as guardrails that tighten only when the agent begins to systematically violate operational constraints.
 
-The total reward at each timestep $t$, $R_t$, is formulated as the net economic profit $\Pi_t$ minus any active penalties for user dissatisfaction $P_t^{\text{sat}}$ or transformer overload $P_t^{\text{tr}}$.
+The total reward at each timestep $t$, $R_t$, is formulated as a scaled net economic profit $\Pi_t$ minus any active penalties for user dissatisfaction $P_t^{\text{sat}}$ or transformer overload $P_t^{\text{tr}}$.
 
 \begin{equation}
-    R_t = \Pi_t - P_t^{\text{sat}} - P_t^{\text{tr}}
+    R_t = \alpha_{\pi} \Pi_t - P_t^{\text{sat}} - P_t^{\text{tr}}
 \end{equation}
 
 \noindent
 The complete logic for this calculation at each timestep is detailed in Algorithm \ref{alg:adaptive_reward}. The components of this reward function are defined as follows:
 \begin{itemize}
     \item[$\Pi_t$] is the net economic profit at timestep $t$.
+    \item[$\alpha_{\pi}$] is a scaling factor for the profit component (set to 0.1 in the implementation).
     \item[$P_t^{\text{sat}}$] is the adaptive penalty for user dissatisfaction at timestep $t$.
     \item[$P_t^{\text{tr}}$] is the adaptive penalty for transformer overload at timestep $t$.
     \item[$\bar{S}_{hist}$] is the average user satisfaction score over a recent history window (e.g., 100 timesteps).
-    \item[$F_{hist}^{\text{tr}}$] is the frequency of transformer overload events over a recent history window.
+    \item[$F_{hist}^{\text{tr}}$] is the frequency of transformer overload events over the same history window.
     \item[$\lambda_t^{\text{sat}}$] and $\lambda_t^{\text{tr}}$ are the dynamically computed severity multipliers for the satisfaction and overload penalties, respectively.
 \end{itemize}
 
 \begin{algorithm}[H]
-\caption{History-Based Adaptive Reward Calculation}
+\caption{History-Based Adaptive Reward Calculation (\texttt{FastProfitAdaptiveReward})}
 \label{alg:adaptive_reward}
 \begin{algorithmic}[1]
 \State \textbf{Initialization:}
 \State Initialize satisfaction history queue $H_{sat}$ (e.g., maxlen=100).
 \State Initialize overload history queue $H_{tr}$ (e.g., maxlen=100).
-\State Define base multipliers $\lambda_{\text{base}}^{\text{sat}}, \lambda_{\text{base}}^{\text{tr}}$ and base overload penalty $P_{\text{base}}$.
+\State Define profit scale $\alpha_{\pi} \leftarrow 0.1$.
+\State Define base multipliers $\lambda_{\text{base}}^{\text{sat}} \leftarrow 200.0$, $\lambda_{\text{base}}^{\text{tr}} \leftarrow 50.0$.
+\State Define base overload penalty $P_{\text{base}}^{\text{tr}} \leftarrow 5.0$.
 
-\Function{CalculateReward}{current state $s_t$, action $a_t$}
-    \State \Comment{1. Calculate Economic Profit}
-    \State $\Pi_t \leftarrow \text{CalculateEconomicProfit}(s_t, a_t)$
-    \State $R_t \leftarrow \Pi_t$
+\Function{CalculateReward}{profit $\Pi_t$, satisfaction list $S_{\text{current}}$, overload amount $O_t$}
+    \State \Comment{1. Calculate Scaled Economic Profit}
+    \State $R_t \leftarrow \alpha_{\pi} \cdot \Pi_t$
     
     \State \Comment{2. Calculate Adaptive Satisfaction Penalty}
-    \State $\bar{S}_{hist} \leftarrow \text{Average}(H_{sat})$
+    \State $\bar{S}_{hist} \leftarrow \text{Average}(H_{sat})$ or 1.0 if empty.
     \State $\lambda_t^{\text{sat}} \leftarrow \lambda_{\text{base}}^{\text{sat}} \cdot (1 - \bar{S}_{hist})^2$
-    \State Let $\mathcal{E}_{\text{depart}}$ be the set of EVs departing at timestep $t$.
-    \If{$\mathcal{E}_{\text{depart}}$ is not empty}
-        \State $S_{min} \leftarrow \min_{k \in \mathcal{E}_{\text{depart}}} S_k$
-        \If{$S_{min} < 0.95$}
-            \State $P_t^{\text{sat}} \leftarrow \lambda_t^{\text{sat}} \cdot (1 - S_{min})$
+    \If{$S_{\text{current}}$ is not empty}
+        \State $S_{\min} \leftarrow \min(S_{\text{current}})$
+        \If{$S_{\min} < 0.95$}
+            \State $P_t^{\text{sat}} \leftarrow \lambda_t^{\text{sat}} \cdot (1 - S_{\min})$
             \State $R_t \leftarrow R_t - P_t^{\text{sat}}$
         \EndIf
     \EndIf
     
     \State \Comment{3. Calculate Adaptive Transformer Overload Penalty}
-    \State $F_{hist}^{\text{tr}} \leftarrow \text{Frequency of overloads in } H_{tr}$
-    \State $\lambda_t^{\text{tr}} \leftarrow \lambda_{\text{base}}^{\text{tr}} \cdot F_{hist}^{\text{tr}}$
-    \State $O_t \leftarrow \sum_{j=1}^{N_T} \max(0, P_j^{\text{total}}(t) - P_j^{\text{max}})$
     \If{$O_t > 0$}
-        \State $P_t^{\text{tr}} \leftarrow P_{\text{base}} + \lambda_t^{\text{tr}} \cdot O_t$
+        \State $F_{hist}^{\text{tr}} \leftarrow \text{Average}(H_{tr})$ or 0.0 if empty.
+        \State $\lambda_t^{\text{tr}} \leftarrow \lambda_{\text{base}}^{\text{tr}} \cdot F_{hist}^{\text{tr}}$
+        \State $P_t^{\text{tr}} \leftarrow P_{\text{base}}^{\text{tr}} + \lambda_t^{\text{tr}} \cdot O_t$
         \State $R_t \leftarrow R_t - P_t^{\text{tr}}$
     \EndIf
     
     \State \Comment{4. Update Historical Data}
-    \State $\bar{S}_{curr} \leftarrow \text{Average satisfaction of currently connected EVs}$
-    \State Append $\bar{S}_{curr}$ to $H_{sat}$
-    \State Append $(\mathbf{1} \text{ if } O_t > 0 \text{ else } 0)$ to $H_{tr}$
+    \State $\bar{S}_{\text{current}} \leftarrow \text{Average}(S_{\text{current}})$ or 1.0 if empty.
+    \State Append $\bar{S}_{\text{current}}$ to $H_{sat}$.
+    \State Append $(\mathbf{1} \text{ if } O_t > 0 \text{ else } 0)$ to $H_{tr}$.
     
     \State \Return $R_t$
 \EndFunction
@@ -307,24 +307,19 @@ The complete logic for this calculation at each timestep is detailed in Algorith
 \end{algorithm}
 
 \subsubsection{Economic Profit}
-The foundation of the reward signal is the direct, instantaneous economic profit, $\Pi_t$. This component provides an unambiguous incentive for the agent to exploit market dynamics by encouraging charging during low-price periods and discharging (V2G) during high-price periods.
-\begin{equation}
-    \Pi_t = \sum_{i=1}^{N_{ev}} \left( C_t^{\text{sell}} \cdot P_{i,t}^{\text{dis}} - C_t^{\text{buy}} \cdot P_{i,t}^{\text{ch}} \right) \Delta t
-\end{equation}
-\noindent
-where $N_{ev}$ is the number of connected EVs, $C_t^{\text{sell}}$ and $C_t^{\text{buy}}$ are the electricity selling and buying prices, and $P_{i,t}^{\text{dis}}$ and $P_{i,t}^{\text{ch}}$ are the discharging and charging powers for EV $i$ at timestep $t$.
+The foundation of the reward signal is the direct, instantaneous economic profit, $\Pi_t$, scaled by a factor $\alpha_{\pi}$. This component provides a clear incentive for the agent to exploit market dynamics by encouraging charging during low-price periods and discharging (V2G) during high-price periods. The scaling factor ensures that the profit signal does not completely dominate the penalty signals, maintaining a balance in the learning process.
 
 \subsubsection{Adaptive User Satisfaction Penalty}
-The penalty for failing to meet user charging demands, $P_t^{\text{sat}}$, adapts based on the system's recent performance. The environment maintains a short-term memory of user satisfaction, from which an average historical score, $\bar{S}_{hist}$, is calculated. A \textit{satisfaction severity multiplier}, $\lambda_t^{\text{sat}}$, is then computed, which grows quadratically as the historical average satisfaction drops. This ensures that as performance degrades, the consequences of new failures become substantially more severe.
+The penalty for failing to meet user charging demands, $P_t^{\text{sat}}$, adapts based on the system's recent performance. The environment maintains a short-term memory of user satisfaction scores in a queue, from which an average historical score, $\bar{S}_{hist}$, is calculated. A \textit{satisfaction severity multiplier}, $\lambda_t^{\text{sat}}$, is then computed, which grows quadratically as the historical average satisfaction drops. This ensures that as performance degrades, the consequences of new failures become substantially more severe.
 \begin{equation}
     \lambda_t^{\text{sat}} = \lambda_{\text{base}}^{\text{sat}} \cdot (1 - \bar{S}_{hist})^2
 \end{equation}
 \noindent
-where $\lambda_{\text{base}}^{\text{sat}}$ is a base scaling factor (e.g., 20.0). A penalty is only applied if the satisfaction score of any user, $S_k$, falls below a critical threshold (e.g., 95\%). The magnitude of the penalty is the product of the adaptive multiplier and the current satisfaction deficit.
+where $\lambda_{\text{base}}^{\text{sat}}$ is a base scaling factor (200.0). A penalty is only applied if the minimum satisfaction score among currently connected users, $S_{\min}$, falls below a critical threshold (95\%). The magnitude of the penalty is the product of the adaptive multiplier and the current satisfaction deficit.
 \begin{equation}
     P_t^{\text{sat}} = 
     \begin{cases} 
-      \lambda_t^{\text{sat}} \cdot (1 - \min_{k} S_k) & \text{if } \min_{k} S_k < 0.95 \\
+      \lambda_t^{\text{sat}} \cdot (1 - S_{\min}) & \text{if } S_{\min} < 0.95 \\
       0 & \text{otherwise}
     \end{cases}
 \end{equation}
@@ -332,20 +327,19 @@ where $\lambda_{\text{base}}^{\text{sat}}$ is a base scaling factor (e.g., 20.0)
 This mechanism establishes a powerful feedback loop: an isolated failure in a well-performing system results in a mild penalty, whereas persistent failures trigger rapidly escalating penalties that compel the agent to correct its policy.
 
 \subsubsection{Adaptive Transformer Overload Penalty}
-The transformer overload penalty, $P_t^{\text{tr}}$, operates on a similar adaptive principle, responding to the recent frequency of overloads, $F_{hist}^{\text{tr}}$. This frequency is tracked over the same historical window and directly drives the computation of a linear \textit{overload severity multiplier}, $\lambda_t^{\text{tr}}$.
+The transformer overload penalty, $P_t^{\text{tr}}$, operates on a similar adaptive principle, responding to the recent frequency of overloads, $F_{hist}^{\text{tr}}$. This frequency is tracked over the same historical window and directly drives the computation of a linear \textit{overload severity multiplier}. If the total power drawn, $O_t$, exceeds the transformer's limit, a penalty is applied. This penalty consists of a fixed base amount $P_{\text{base}}^{\text{tr}}$ plus an adaptive component, which scales with both the historical frequency of overloads and the magnitude of the current overload.
 \begin{equation}
-    \lambda_t^{\text{tr}} = \lambda_{\text{base}}^{\text{tr}} \cdot F_{hist}^{\text{tr}}
+    P_t^{\text{tr}} = 
+    \begin{cases} 
+      P_{\text{base}}^{\text{tr}} + (\lambda_{\text{base}}^{\text{tr}} \cdot F_{hist}^{\text{tr}}) \cdot O_t & \text{if } O_t > 0 \\
+      0 & \text{otherwise}
+    \end{cases}
 \end{equation}
 \noindent
-where $\lambda_{\text{base}}^{\text{tr}}$ is a base scaling factor (e.g., 50.0). If the total power drawn from any transformer $j$, $P_j^{\text{total}}(t)$, exceeds its limit, $P_j^{\text{max}}$, a penalty is applied. This penalty consists of a small, fixed base amount $P_{\text{base}}$ plus the adaptive component, which scales with the magnitude of the current overload.
-\begin{equation}
-    P_t^{\text{tr}} = P_{\text{base}} + \lambda_t^{\text{tr}} \cdot \sum_{j=1}^{N_T} \max(0, P_j^{\text{total}}(t) - P_j^{\text{max}})
-\end{equation}
-\noindent
-This structure enforces a critical lesson: while an occasional, minor overload might be tolerable in pursuit of high profit, habitual overloading becomes increasingly costly as penalties escalate, forcing the agent to respect physical constraints.
+where $\lambda_{\text{base}}^{\text{tr}}$ is a base scaling factor (50.0) and $P_{\text{base}}^{\text{tr}}$ is a constant base penalty (5.0). This structure enforces a critical lesson: while an occasional, minor overload might be tolerable in pursuit of high profit, habitual overloading becomes increasingly costly as penalties escalate, forcing the agent to respect physical constraints.
 
 \subsubsection{Rationale and Significance}
 This history-based adaptive reward function represents a significant departure from static or purely state-based approaches. By making penalty weights a function of recent performance, we provide a more sophisticated learning signal. The agent is not excessively punished for isolated, exploratory actions that might lead to minor constraint violations. Instead, it is strongly discouraged from developing policies that produce chronic system failures. This approach mirrors realistic management objectives: maintain high performance on average and react decisively only when performance trends begin to deteriorate. The resulting reward structure guides the agent to discover policies that balance economic objectives with operational reliability, achieving an intelligent equilibrium between profit ambition and system safety.
 
 \paragraph{Implementation Details}
-This reward function, along with a suite of other strategies, is implemented in the \texttt{ev2gym/rl\_agent/reward.py} module. The main experimentation script, \texttt{run\_experiments.py}, allows the user to dynamically select the reward function for any given training run. The \texttt{FastProfitAdaptiveReward} function uses \texttt{collections.deque} objects, attached to the environment instance at runtime, to efficiently maintain a sliding window of recent performance for both satisfaction and overload events. This method is computationally efficient, avoiding complex state-dependent calculations in favor of simple updates to the historical data queues.
+This reward function is implemented in the \texttt{reward.py} module. The \texttt{FastProfitAdaptiveReward} function uses \texttt{collections.deque} objects, attached to the environment instance at runtime, to efficiently maintain a sliding window of recent performance for both satisfaction and overload events. This method is computationally efficient, avoiding complex state-dependent calculations in favor of simple updates to the historical data queues.

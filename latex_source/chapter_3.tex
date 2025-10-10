@@ -49,7 +49,7 @@ The \texttt{run\_experiments.py} script serves as the central hub for all experi
 The key steps in the workflow include:
 
 \begin{itemize}
-    \item \textbf{Algorithm Selection:} The script dynamically defines the algorithms to be executed, which can include Deep Reinforcement Learning agents (e.g., SAC, DDPG+PER, TQC), classical optimization methods (Model Predictive Control), and heuristics (e.g., AFAP, ALAP).
+    \item \textbf{Algorithm Selection:} The script dynamically defines the algorithms to be executed, which can include Deep Reinforcement Learning agents (e.g., SAC,DDPG, DDPG+PER, TQC), classical optimization methods (Model Predictive Control), and heuristics (e.g., AFAP, ALAP).
     \item \textbf{Scenario and Reward Selection:} The user selects one or more \texttt{.yaml} configuration files and the desired reward function from the \texttt{reward.py} module.
     \item \textbf{Battery Calibration:} The option to run \texttt{Fit\_battery.py} is provided to calibrate the parameters of the battery degradation model, ensuring that simulations use the most up-to-date data.
 \end{itemize}
@@ -204,18 +204,11 @@ In addition to random selection, the workflow supports advanced strategies to en
 
 \subsection{MPC Integration and Approximation}
 
-The workflow integrates both classical MPC and its approximations:
+The workflow integrates a classical Linear MPC.
 
-\begin{itemize}
-    \item \textbf{Linear MPC:} The \texttt{run\_experiments.py} script utilizes an MPC based on a linear optimization model (\texttt{OnlineMPC\_Solver}).
-    \item \textbf{Approximate Explicit MPC:} The scripts \texttt{train\_mpc\_approximator.py} and \texttt{train\_mpc\_approximator\_nn.py} are dedicated to creating an \textbf{Approximate Explicit MPC}. This process:
-    \begin{enumerate}
-        \item Generates a dataset of samples (state, optimal action) by solving the MPC problem (the oracle) across a large number of random states in different scenarios.
-        \item Trains a Machine Learning model (Random Forest in \texttt{train\_mpc\_approximator.py} or a Neural Network in \texttt{train\_mpc\_approximator\_nn.py}) to map the state to the optimal action.
-    \end{enumerate}
-    This approach drastically reduces runtime computation, transforming a complex optimization problem into a simple model inference, making MPC suitable for real-time control and providing a high-speed performance baseline.
-\end{itemize}
-
+  \textbf{Linear MPC:} The \texttt{run\_experiments.py} script utilizes an MPC based on a linear optimization model (\texttt{OnlineMPC\_Solver}).
+    
+ 
 \subsection{Rigorous and Reproducible Benchmarking}
 
 The \texttt{run\_benchmark} function in \texttt{run\_experiments.py} is designed to ensure fair and rigorous evaluation:
@@ -229,7 +222,7 @@ The \texttt{run\_benchmark} function in \texttt{run\_experiments.py} is designed
         \item Peak Transformer Loading (\%)
         \item Total Battery Degradation (\%), with detail on cyclic loss and calendar loss.
     \end{itemize}
-    \item \textbf{Automatic Visualization:} Plotting functions (\texttt{plot\_performance\_metrics}, \texttt{plot\_degradation\_details}) automatically generate bar charts for the key metrics, grouping algorithms by category (heuristics, MPC, RL On-Policy, RL Off-Policy) for clear visual analysis.
+    \item \textbf{Automatic Visualization:} Plotting functions (\texttt{plot\_performance\_metrics}, \texttt{plot\_degradation\_details}) automatically generate bar charts for the key metrics, grouping algorithms by category (heuristics, MPC,  RL Off-Policy) for clear visual analysis.
 \end{itemize}
 %%%%%%%%%%%%%%%%%%%%%
 
@@ -244,7 +237,7 @@ The \texttt{run\_benchmark} function in \texttt{run\_experiments.py} is designed
 
 \subsection{Software Implementation and Project Structure}
 \label{sec:software_implementation}
-The practical implementation is organized within a modular Python package named \texttt{ev2gym}. This structure promotes code reusability and separation of concerns. High-level experimentation scripts, such as \texttt{run\_experiments.py} and \texttt{train\_mpc\_approximator.py}, reside in the project's root directory and orchestrate experiments by utilizing the core functionalities provided by the \texttt{ev2gym} package.
+The practical implementation is organized within a modular Python package named \texttt{ev2gym}. This structure promotes code reusability and separation of concerns. High-level experimentation scripts, such as \texttt{run\_experiments.py} , reside in the project's root directory and orchestrate experiments by utilizing the core functionalities provided by the \texttt{ev2gym} package.
 
 The key subdirectories within the \texttt{ev2gym} package are:
 \begin{itemize}
@@ -316,11 +309,7 @@ To ensure a fair and comprehensive comparison, all algorithms are evaluated agai
     \Pi_{\text{total}} = \sum_{t=0}^{T_{\text{sim}}} \sum_{i=1}^{N} \left( C_{\text{sell}}(t) P_{\text{dis},i}(t) - C_{\text{buy}}(t) P_{\text{ch},i}(t) \right) \Delta t
     \]
     
-    \item \textbf{Tracking Error (RMSE, kW):} For grid-balancing scenarios, this measures the root-mean-square error between the fleet's aggregated power and a target setpoint.
-    \[
-    E_{\text{track}} = \sqrt{\frac{1}{T_{\text{sim}}} \sum_{t=0}^{T_{\text{sim}}-1} \left( P_{\text{setpoint}}(t) - P_{\text{total}}(t) \right)^2}
-    \]
-    
+   
     \item \textbf{User Satisfaction (Average):} The fraction of energy delivered compared to what was requested by the user, averaged across all EV sessions. A score of 1 indicates perfect service.
     \[
     US_{\text{avg}} = \frac{1}{N_{\text{EVs}}} \sum_{k=1}^{N_{\text{EVs}}} \min \left(1, \frac{E_k(t_k^{\text{dep}})}{E_k^{\text{des}}} \right)
@@ -481,79 +470,54 @@ The class manages the high-level simulation flow.
 
 
 \section{Reinforcement Learning Formulation}
-The control problem is formalized as a Markov Decision Process (MDP), defined by the tuple $(S, A, P, R, \gamma)$.
+The control problem is formalized as a Markov Decision Process (MDP), defined by the tuple ($S, A, P, R, \gamma$).
 
-\subsection{State Space ($S$)}
-The state $s_t \in S$ is a feature vector providing a comprehensive snapshot of the environment at time $t$. The composition of this vector is crucial for the agent's performance, as it encapsulates all the information available for decision-making. The framework is designed to be flexible, allowing different state representations to be defined in the \texttt{ev2gym/rl\_agent/state.py} module. For the primary task of profit maximization under grid constraints, the \texttt{V2G\_profit\_max\_loads} function is used.
+\section{State Space ($S$)}
+The state $s_t \in S$ is a feature vector providing a comprehensive snapshot of the environment at time $t$. The framework uses the \texttt{V2G\_profit\_max\_loads} state representation, which is specifically designed to provide the agent with all necessary information for complex, forward-looking profit maximization strategies. It combines temporal information, market signals, grid constraints, and detailed data for each individual electric vehicle.
 
-The process of constructing this state vector at each timestep is formally described in Algorithm \ref{alg:state_construction}. It involves gathering temporal, historical, predictive, and physical information from the environment.
+The state vector $s_t$ is a flattened concatenation of several distinct components:
 
-\begin{algorithm}[H]
-\caption{State Vector Construction (\texttt{V2G\_profit\_max\_loads})}
-\label{alg:state_construction}
-\begin{algorithmic}[1]
-\Function{BuildStateVector}{environment $env$}
-    \State \textbf{Initialize:} Empty state list $S_{list} \leftarrow \emptyset$.
-    
-    \State \Comment{1. Add temporal and historical information}
-    \State Append current timestep $env.current\_step$ to $S_{list}$.
-    \State Append total power from previous step $env.current\_power\_usage[t-1]$ to $S_{list}$.
-    
-    \State \Comment{2. Add predictive market information}
-    \State Get future charge prices for horizon $H$: $\mathbf{c} \leftarrow env.charge\_prices[t : t+H]$.
-    \State Pad $\mathbf{c}$ with the last known value if horizon extends beyond simulation end.
-    \State Append $\mathbf{c}$ to $S_{list}$.
-    
-    \State \Comment{3. Add predictive physical constraints and loads for each transformer}
-    \For{each transformer $tr$ in $env.transformers$}
-        \State Get forecasts for horizon $H$: $\mathbf{L}, \mathbf{PV} \leftarrow tr.\text{get\_load\_pv\_forecast}(t, H)$.
-        \State Get future power limits for horizon $H$: $\mathbf{P}_{\text{lim}} \leftarrow tr.\text{get\_power\_limits}(t, H)$.
-        \State Append net load forecast $(\mathbf{L} - \mathbf{PV})$ to $S_{list}$.
-        \State Append power limits $\mathbf{P}_{\text{lim}}$ to $S_{list}$.
-        
-        \State \Comment{4. Add information for each connected EV}
-        \For{each charging station $cs$ connected to $tr$}
-            \For{each EV slot in $cs$}
-                \If{an EV is connected}
-                    \State SoC $\leftarrow$ EV.get\_soc().
-                    \State $t_{\text{rem}} \leftarrow$ EV.time\_of\_departure - $env.current\_step$.
-                    \State Append $[$SoC, $t_{\text{rem}}]$ to $S_{list}$.
-                \Else
-                    \State Append $[0, 0]$ to $S_{list}$ for padding.
-                \EndIf
-            \EndFor
-        \EndFor
-    \EndFor
-    
-    \State \Return Flatten($S_{list}$) into a single vector $s_t$.
-\EndFunction
-\end{algorithmic}
-\end{algorithm}
+\begin{equation}
+    s_t = [k_t \oplus P_{t-1}^{\text{total}} \oplus \mathbf{c}_{t \rightarrow t+H-1} \oplus (\bigoplus_{j=1}^{N_T} s_{t,j}^{\text{tr}}) \oplus (\bigoplus_{i=1}^{N_{CS}} s_{t,i}^{\text{ev}})]
+\end{equation}
+where $\oplus$ denotes vector concatenation, $H$ is the forecast horizon (e.g., 20 steps), $N_T$ is the number of transformers, and $N_{CS}$ is the total number of charging stations.
 
-The resulting state vector $s_t$ is a concatenation of these components, forming a high-dimensional representation suitable for a deep neural network policy. Mathematically, it can be expressed as:
-\[
- s_t = [t, P_{\text{total}}(t-1), \mathbf{c}(t, H), \mathbf{NL}_1(t, H), \mathbf{P}^{\text{lim}}_1(t, H), \dots, \mathbf{s}^{\text{EV}}_1(t), \dots, \mathbf{s}^{\text{EV}}_N(t)]^T
-\]
-where the components are:
+The components are defined as follows:
+
 \begin{itemize}
-    \item $t$: The current time step, providing temporal context.
-    \item $P_{\text{total}}(t-1)$: The aggregated power from the previous time step, serving as a feedback signal of the last action's outcome.
-    \item $\mathbf{c}(t, H)$: A vector of \textbf{predicted future} electricity prices over a horizon $H$ (e.g., 20 steps).
-    \item $\mathbf{NL}_j(t, H), \mathbf{P}^{\text{lim}}_j(t, H)$: Forecasts for the net inflexible loads (loads minus solar generation) and the power limits for each transformer $j$.
-    \item $\mathbf{s}^{\text{EV}}_i(t) = [\text{SoC}_i(t), t^{\text{rem}}_i]$: A sub-vector containing the most critical information for each EV $i$: its current State of Charge and its remaining time until departure ($t^{\text{dep}}_i - t$). If a charger is empty, this sub-vector is padded with zeros to maintain a fixed state size.
+    \item \textbf{Temporal and Power Information}: The initial part of the state vector grounds the agent in the current context.
+    \begin{itemize}
+        \item $k_t$: The current timestep of the simulation. This provides a sense of progression through the episode.
+        \item $P_{t-1}^{\text{total}}$: The total power consumed by all charging stations in the previous timestep, $t-1$. This gives the agent immediate feedback on the outcome of its last action.
+    \end{itemize}
+
+    \item \textbf{Market Forecast}: A vector of future electricity prices, providing the primary signal for economic optimization.
+    \begin{itemize}
+        \item $\mathbf{c}_{t \rightarrow t+H-1} \in \mathbb{R}^{H}$: A vector containing the forecast of electricity charging prices for the next $H$ timesteps. This is crucial for planning charge/discharge cycles to maximize profit.
+    \end{itemize}
+
+    \item \textbf{Grid Constraint Forecasts (per Transformer)}: For each transformer $j$, the state includes forecasts for local grid conditions. This is essential for preventing overloads and ensuring system stability.
+    \begin{itemize}
+        \item $\mathbf{P}_{j, t \rightarrow t+H-1}^{\text{netload}} \in \mathbb{R}^{H}$: A vector forecasting the net inflexible load for the next $H$ timesteps. This is calculated as (Inflexible Loads - PV Generation).
+        \item $\mathbf{P}_{j, t \rightarrow t+H-1}^{\text{limit}} \in \mathbb{R}^{H}$: A vector representing the transformer's maximum power limit over the next $H$ timesteps.
+    \end{itemize}
+
+    \item \textbf{EV Status (per Charging Station)}: For each charging station $i$, the state provides the critical information of the connected vehicle. If a station is empty, these values are replaced with zeros.
+    \begin{itemize}
+        \item $SoC_{i,t} \in [0, 1]$: The current State of Charge of the connected EV.
+        \item $\Delta t_{i,t}^{\text{dep}} \in \mathbb{Z}^+$: The remaining time until the EV's scheduled departure, measured in timesteps. This represents the window of opportunity for charging.
+    \end{itemize}
 \end{itemize}
-This state representation is deliberately rich, providing the agent with a multi-faceted view of the system. It combines temporal awareness, feedback from past actions, predictive information about market conditions and physical constraints, and the specific needs of each vehicle. This comprehensive view is essential for enabling the agent to learn sophisticated, forward-looking policies that can effectively balance immediate profit opportunities with long-term obligations to users and the grid.
+
+This rich state representation provides the agent with a multi-faceted view of the system, combining immediate feedback ($P_{t-1}^{\text{total}}$), predictive market and grid information ($\mathbf{c}$, $\mathbf{P}^{\text{netload}}$, $\mathbf{P}^{\text{limit}}$), and the specific needs and constraints of each vehicle ($SoC$, $\Delta t^{\text{dep}}$). This enables it to learn sophisticated, forward-looking policies that can anticipate future conditions to balance profitability with physical and user-defined constraints.
 
 \subsection{Action Space ($A$)}
-The action $a_t \in A$ is a continuous vector in $\mathbb{R}^N$, where $N$ is the number of chargers. For each charger $i$, the command $a_i(t) \in [-1, 1]$ is a normalized value that is translated into a power command:
-\begin{itemize}
-    \item If $a_i(t) > 0$, the EV is charging: $P_i(t) = a_i(t) \cdot P^{\text{max}}_{\text{charge}, i}$.
-    \item If $a_i(t) < 0$, the EV is discharging (V2G): $P_i(t) = a_i(t) \cdot P^{\text{max}}_{\text{discharge}, i}$.
-\end{itemize}
+The action $a_t \in A$ is a continuous vector in $\mathbb{R}^N$, where $N$ is the total number of charging ports. For each port $i$, the command $a_i(t) \in [-1, 1]$ is a normalized value that is translated into a physical pilot \textbf{current} signal by the charging station model. A positive value corresponds to charging, while a negative value corresponds to discharging (V2G).
 
 \subsection{Reward Function ($R$)}
-The reward function $R(t)$ encodes the objectives of the control agent. The framework allows for the selection of different reward functions from the \texttt{reward.py} module to suit various goals. 
+The reward function $R(t)$ encodes the objectives of the control agent. The framework allows for the selection of different reward functions from the \texttt{reward.py} module to suit various goals, such as maximizing profit, minimizing degradation, or a combination thereof.
 \input{Reinforcement_learning}
 
-
+\section{Model Predictive Control (MPC) Implementation}
+The framework includes a Model Predictive Control implementation in \texttt{pulp\_mpc.py}, which serves as a powerful classical optimization baseline.
 \input{pulp_mpc}
