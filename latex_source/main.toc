@@ -12,36 +12,36 @@
 \contentsline {section}{\numberline {2.1}The V2G Imperative: A Foundation of Europe's Green Transition}{13}{section.2.1}%
 \contentsline {section}{\numberline {2.2}The Optimizer's Trilemma: Navigating a Stochastic World}{17}{section.2.2}%
 \contentsline {subsection}{\numberline {2.2.1}Sources for Energy Price Data}{18}{subsection.2.2.1}%
-\contentsline {subsection}{\numberline {2.2.2}Buying vs. Selling: The Critical Retail-Wholesale Spread}{19}{subsection.2.2.2}%
+\contentsline {subsection}{\numberline {2.2.2}Buying vs. Selling: The Critical Retail-Wholesale Spread}{18}{subsection.2.2.2}%
 \contentsline {section}{\numberline {2.3}Modelling the V2G Ecosystem}{19}{section.2.3}%
 \contentsline {subsection}{\numberline {2.3.1}The Grid-Interactive EV as a Controllable Asset}{19}{subsection.2.3.1}%
-\contentsline {section}{\numberline {2.4}A New Paradigm for Control: Reinforcement Learning - Based on the work of Sutton \& Barto}{20}{section.2.4}%
+\contentsline {section}{\numberline {2.4}A New Paradigm for Control: Reinforcement Learning - Based on the work of Sutton \& Barto}{19}{section.2.4}%
 \contentsline {section}{\numberline {2.5}The Reinforcement Learning Problem}{20}{section.2.5}%
 \contentsline {subsection}{\numberline {2.5.1}The Agent-Environment Interface}{20}{subsection.2.5.1}%
-\contentsline {subsection}{\numberline {2.5.2}Goals, Rewards, and Returns}{21}{subsection.2.5.2}%
+\contentsline {subsection}{\numberline {2.5.2}Goals, Rewards, and Returns}{20}{subsection.2.5.2}%
 \contentsline {section}{\numberline {2.6}The Language of Learning: Markov Decision Processes}{21}{section.2.6}%
 \contentsline {subsection}{\numberline {2.6.1}The Markov Property}{22}{subsection.2.6.1}%
-\contentsline {subsection}{\numberline {2.6.2}Policies and Value Functions}{23}{subsection.2.6.2}%
+\contentsline {subsection}{\numberline {2.6.2}Policies and Value Functions}{22}{subsection.2.6.2}%
 \contentsline {section}{\numberline {2.7}The Bellman Equations}{23}{section.2.7}%
 \contentsline {subsection}{\numberline {2.7.1}The Bellman Expectation Equation}{23}{subsection.2.7.1}%
 \contentsline {subsection}{\numberline {2.7.2}The Bellman Optimality Equation}{23}{subsection.2.7.2}%
-\contentsline {subsection}{\numberline {2.7.3}Generalized Policy Iteration (GPI)}{24}{subsection.2.7.3}%
+\contentsline {subsection}{\numberline {2.7.3}Generalized Policy Iteration (GPI)}{23}{subsection.2.7.3}%
 \contentsline {section}{\numberline {2.8}Learning from Experience: MC and TD Methods}{24}{section.2.8}%
 \contentsline {subsection}{\numberline {2.8.1}Monte Carlo (MC) Methods}{24}{subsection.2.8.1}%
-\contentsline {subsection}{\numberline {2.8.2}Temporal-Difference (TD) Learning}{25}{subsection.2.8.2}%
+\contentsline {subsection}{\numberline {2.8.2}Temporal-Difference (TD) Learning}{24}{subsection.2.8.2}%
 \contentsline {section}{\numberline {2.9}Actor-Critic Architectures}{25}{section.2.9}%
 \contentsline {section}{\numberline {2.10}Reward Engineering: Shaping Agent Behavior}{25}{section.2.10}%
-\contentsline {subsection}{\numberline {2.10.1}Potential-Based Reward Shaping (PBRS)}{26}{subsection.2.10.1}%
+\contentsline {subsection}{\numberline {2.10.1}Potential-Based Reward Shaping (PBRS)}{25}{subsection.2.10.1}%
 \contentsline {subsection}{\numberline {2.10.2}Theoretical Foundation and Policy Invariance}{26}{subsection.2.10.2}%
 \contentsline {subsection}{\numberline {2.10.3}Practical Implications and Design Considerations}{27}{subsection.2.10.3}%
-\contentsline {section}{\numberline {2.11}Dynamic and Adaptive Rewards}{28}{section.2.11}%
+\contentsline {section}{\numberline {2.11}Dynamic and Adaptive Rewards}{27}{section.2.11}%
 \contentsline {subsection}{\numberline {2.11.1}Motivation and Mechanisms}{28}{subsection.2.11.1}%
-\contentsline {section}{\numberline {2.12}Curriculum Learning}{29}{section.2.12}%
+\contentsline {section}{\numberline {2.12}Curriculum Learning}{28}{section.2.12}%
 \contentsline {subsection}{\numberline {2.12.1}Specific Principles and Applications}{29}{subsection.2.12.1}%
-\contentsline {subsection}{\numberline {2.12.2}Curriculum Learning in V2G}{30}{subsection.2.12.2}%
+\contentsline {subsection}{\numberline {2.12.2}Curriculum Learning in V2G}{29}{subsection.2.12.2}%
 \contentsline {section}{\numberline {2.13}The Rise of Deep Reinforcement Learning for V2G Control}{30}{section.2.13}%
-\contentsline {subsection}{\numberline {2.13.1}Neural Networks as Function Approximators}{31}{subsection.2.13.1}%
-\contentsline {section}{\numberline {2.14}The Fundamental Role of DNNs in DRL}{32}{section.2.14}%
+\contentsline {subsection}{\numberline {2.13.1}Neural Networks as Function Approximators}{30}{subsection.2.13.1}%
+\contentsline {section}{\numberline {2.14}The Fundamental Role of DNNs in DRL}{31}{section.2.14}%
 \contentsline {subsubsection}{Deep Deterministic Policy Gradient (DDPG)}{33}{section*.5}%
 \contentsline {subsubsection}{Twin Delayed DDPG (TD3)}{34}{section*.6}%
 \contentsline {subsubsection}{SAC}{34}{section*.7}%
