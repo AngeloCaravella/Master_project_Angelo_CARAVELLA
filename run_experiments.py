@@ -24,8 +24,8 @@ from typing import List, Dict, Any, Tuple, Callable, Optional
 # --- Importazioni dalla libreria custom ev2gym ---
 from ev2gym.models.ev2gym_env import EV2Gym
 from ev2gym.baselines.heuristics import ChargeAsFastAsPossible, ChargeAsLateAsPossible, RoundRobin
-from ev2gym.baselines.pulp_mpc import   OptimalOfflineSolver, OnlineMPC_Solver
-from ev2gym.baselines.cvxpy_mpc_quadratic import OnlineMPC_Solver_Quadratic
+from ev2gym.baselines import pulp_mpc # Import the module
+
 from ev2gym.rl_agent.custom_algorithms import CustomDDPG
 from ev2gym.utilities.per_buffer import PrioritizedReplayBuffer
 from ev2gym.rl_agent import reward as reward_module
@@ -635,15 +635,15 @@ def get_algorithms(max_cs: int, is_thesis_mode: bool, mpc_type: str = 'linear') 
         "SAC": (None, SAC, {}), 
         "DDPG+PER": (None, CustomDDPG, {'replay_buffer_class': PrioritizedReplayBuffer}),
         "TQC": (None, TQC, {}),
-        "Optimal_Profit": (OptimalOfflineSolver, None, {'penalty_overload': 1e9}), # The deterministic optimal solver
        
     }
     mpc_algorithms = {
-        'linear': {"Online_MPC_Profit_Max": (OnlineMPC_Solver, None, {'prediction_horizon': 25, 'control_horizon': 'half'})},
-        'quadratic': {"Online_MPC_Quadratic": (OnlineMPC_Solver_Quadratic, None, {'control_horizon': 5})}
+        'linear': {
+            "Online_MPC_Profit_Max": (pulp_mpc.OnlineMPC_Solver, None, {'prediction_horizon': 25, 'control_horizon': 'half'})
+        }
     }
     ALL_ALGORITHMS = {**base_algorithms, **mpc_algorithms.get(mpc_type, {})}
-    THESIS_ALGORITHMS_BASE = ["AFAP", "ALAP", "RR", "SAC", "DDPG+PER", "TQC", "Online_MPC_Profit_Max", "Optimal_Profit", "Optimal_Feasibility"]
+    THESIS_ALGORITHMS_BASE = ["AFAP", "ALAP", "RR", "SAC", "DDPG", "DDPG+PER", "TQC", "Online_MPC_Profit_Max"]
     THESIS_ALGORITHMS = {k: v for k, v in ALL_ALGORITHMS.items() if k in THESIS_ALGORITHMS_BASE}
     return THESIS_ALGORITHMS if is_thesis_mode else ALL_ALGORITHMS
 

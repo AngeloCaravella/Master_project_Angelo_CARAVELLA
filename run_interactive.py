@@ -68,7 +68,7 @@ def main():
     print(f"\nRilevato un massimo di {MAX_CS} stazioni di ricarica tra tutti gli scenari.")
 
     # --- MPC Type ---
-    mpc_type_choice = get_interactive_input("Scegli il tipo di MPC: 'linear' o 'quadratic'", "linear")
+    mpc_type_choice = 'linear'
 
     # --- Get ALL available algorithms ---
     all_available_algorithms = get_algorithms(MAX_CS, is_thesis_mode, mpc_type_choice)
