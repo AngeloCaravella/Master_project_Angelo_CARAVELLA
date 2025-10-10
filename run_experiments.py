@@ -641,8 +641,8 @@ def get_algorithms(max_cs: int, is_thesis_mode: bool) -> Dict[str, Tuple[Any, An
        
     }
     mpc_algorithms = {
-        "Online_MPC_Profit_Max": (pulp_mpc.OnlineMPC_Solver, None, {'prediction_horizon': 25, 'control_horizon': 'half'}),
-        "Online_MPC_Lyapunov_Adaptive": (pulp_mpc.OnlineMPC_Solver, None, {'prediction_horizon': 25, 'control_horizon': 'half', 'lyapunov_adaptive': True}) # Placeholder for Lyapunov adaptive kwargs
+        "Online_MPC_Profit_Max": (pulp_mpc.OnlineMPC_Solver, None, {'prediction_horizon': 5, 'control_horizon': 1}),
+        "Online_MPC_Lyapunov_Adaptive": (pulp_mpc.OnlineMPC_Solver, None, {'prediction_horizon': 10, 'control_horizon': 5, 'lyapunov_adaptive': True}) # Placeholder for Lyapunov adaptive kwargs
     }
     ALL_ALGORITHMS = {**base_algorithms, **mpc_algorithms}
     THESIS_ALGORITHMS_BASE = ["AFAP", "ALAP", "RR", "SAC", "DDPG", "DDPG+PER", "TQC", "Online_MPC_Profit_Max", "Online_MPC_Lyapunov_Adaptive"]

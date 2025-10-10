@@ -20,9 +20,9 @@ class OnlineMPC_Solver:
                  mpc_desired_soc_factor=0.95, use_adaptive_horizon=False, 
                  h_min=2, h_max=5, lyapunov_alpha=0.1,
                  # --- PARAMETRI DI BILANCIAMENTO PER L'OBIETTIVO ---
-                 profit_weight=0.1,              # Riduce l'importanza del profitto
+                 profit_weight=0.01,              # Riduce l'importanza del profitto
                  penalty_overload=100.0,           # Penalità per ogni kW di sovraccarico del trasformatore
-                 penalty_user_satisfaction=1000.0, # Penalità elevata per ogni kWh mancante all'utente
+                 penalty_user_satisfaction=10000.0, # Penalità elevata per ogni kWh mancante all'utente
                  **kwargs):
         
         self.env = env

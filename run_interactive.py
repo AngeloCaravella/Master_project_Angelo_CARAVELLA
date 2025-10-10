@@ -99,18 +99,7 @@ def main():
         ddpg_per_kwargs = algorithms_to_run['DDPG+PER'][2]
         ddpg_per_kwargs['replay_buffer_kwargs'] = {'alpha': per_alpha, 'beta': per_beta}
 
-    online_mpc_keys_to_configure = [k for k in algorithms_to_run if 'MPC' in k and 'Approx' not in k]
-    if online_mpc_keys_to_configure:
-        print("\n--- Configurazione Parametri MPC Online ---")
-        pred_h = int(get_interactive_input("Inserisci l'orizzonte di predizione (Np)", "25"))
-        ctrl_h_input = get_interactive_input("Inserisci l'orizzonte di controllo (Nc) (es. 1, 3, o 'half')", "half")
-        ctrl_h = int(ctrl_h_input) if ctrl_h_input.isdigit() else ctrl_h_input
 
-        for key in online_mpc_keys_to_configure:
-            mpc_kwargs = algorithms_to_run[key][2]
-            mpc_kwargs['prediction_horizon'] = pred_h
-            mpc_kwargs['control_horizon'] = ctrl_h
-            print(f"MPC '{key}' aggiornato: Np={pred_h}, Nc={ctrl_h}")
 
     # --- Select Scenarios for Benchmark ---
     available_scenarios = sorted(glob(os.path.join(config_path, "*.yaml")))
