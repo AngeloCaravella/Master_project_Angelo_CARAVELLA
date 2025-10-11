@@ -1,17 +1,17 @@
 [0] Config.pm:328> INFO - This is Biber 2.21
 [1] Config.pm:331> INFO - Logfile is 'main.blg'
-[307] biber-MSWIN64:342> INFO - === 
-[408] Biber.pm:421> INFO - Reading 'main.bcf'
-[741] Biber.pm:1002> INFO - Found 52 citekeys in bib section 0
-[777] Biber.pm:4487> INFO - Processing section 0
-[814] Biber.pm:4678> INFO - Looking for bibtex file 'references.bib' for section 0
-[985] bibtex.pm:1713> INFO - LaTeX decoding ...
-[1153] bibtex.pm:1519> INFO - Found BibTeX data source 'references.bib'
-[2134] UCollate.pm:68> INFO - Overriding locale 'en-US' defaults 'normalization = NFD' with 'normalization = prenormalized'
-[2134] UCollate.pm:68> INFO - Overriding locale 'en-US' defaults 'variable = shifted' with 'variable = non-ignorable'
-[2135] Biber.pm:4307> INFO - Sorting list 'nty/global//global/global/global' of type 'entry' with template 'nty' and locale 'en-US'
-[2136] Biber.pm:4313> INFO - No sort tailoring available for locale 'en-US'
-[2282] bbl.pm:676> INFO - Writing 'main.bbl' with encoding 'UTF-8'
-[2379] bbl.pm:779> INFO - Output to main.bbl
-[2380] Biber.pm:132> WARN - legacy month field 'December' in entry 'Bemporad_Filippi' is not an integer - this will probably not sort properly.
-[2380] Biber.pm:134> INFO - WARNINGS: 1
+[702] biber-MSWIN64:342> INFO - === 
+[987] Biber.pm:421> INFO - Reading 'main.bcf'
+[1366] Biber.pm:1002> INFO - Found 52 citekeys in bib section 0
+[1413] Biber.pm:4487> INFO - Processing section 0
+[1493] Biber.pm:4678> INFO - Looking for bibtex file 'references.bib' for section 0
+[1635] bibtex.pm:1713> INFO - LaTeX decoding ...
+[1815] bibtex.pm:1519> INFO - Found BibTeX data source 'references.bib'
+[2997] UCollate.pm:68> INFO - Overriding locale 'en-US' defaults 'normalization = NFD' with 'normalization = prenormalized'
+[2997] UCollate.pm:68> INFO - Overriding locale 'en-US' defaults 'variable = shifted' with 'variable = non-ignorable'
+[2999] Biber.pm:4307> INFO - Sorting list 'nty/global//global/global/global' of type 'entry' with template 'nty' and locale 'en-US'
+[3000] Biber.pm:4313> INFO - No sort tailoring available for locale 'en-US'
+[3154] bbl.pm:676> INFO - Writing 'main.bbl' with encoding 'UTF-8'
+[3259] bbl.pm:779> INFO - Output to main.bbl
+[3261] Biber.pm:132> WARN - legacy month field 'December' in entry 'Bemporad_Filippi' is not an integer - this will probably not sort properly.
+[3261] Biber.pm:134> INFO - WARNINGS: 1
