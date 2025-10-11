@@ -1,11 +1,9 @@
-# --- INIZIO DEL FILE pulp_mpc.py ---
-
 import numpy as np
 import pulp
 
 class OnlineMPC_Solver:
     """
-    Risolve il problema MPC implementando STRETTAMENTE la formulazione matematica
+    Risolve il problema MPC implementando la formulazione matematica
     descritta nel paper di riferimento (equazioni 10-24).
     Utilizza il risolutore di default CBC.
     """
@@ -64,7 +62,7 @@ class OnlineMPC_Solver:
             cs = env.charging_stations[i]
             ev = next((ev for ev in cs.evs_connected if ev is not None), None)
             if ev:
-                # Assumiamo valori standard per tensione e fattore di potenza se non disponibili
+                # Assumiamo valori standard per tensione e fattore di potenza
                 V = getattr(cs, 'voltage', 230.0) / 1000.0 # in kV per coerenza con kW
                 phi = getattr(cs, 'power_factor', 1.0)
                 
@@ -213,4 +211,3 @@ class OnlineMPC_Solver:
 
         return np.zeros(num_cs)
 
-# --- FINE DEL FILE pulp_mpc.py ---
