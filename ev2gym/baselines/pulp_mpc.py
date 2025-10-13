@@ -210,4 +210,3 @@ class OnlineMPC_Solver:
             print(f"\n--- MPC WARNING (Strict): Stato non ottimale: {status} (Step: {current_step}) ---\n")
 
         return np.zeros(num_cs)
-

@@ -85,9 +85,37 @@ Net load is the total electricity demand minus variable renewable energy generat
 \textbf{User-Centric Management and Security:} For V2G to succeed, it must align with user needs and address concerns. This includes optimizing charging and discharging cycles to minimize \textbf{battery degradation}, thus preserving vehicle lifespan. Furthermore, as V2G involves financial transactions and data exchange, robust \textbf{cyber security} is paramount to protect user privacy and ensure transaction security, another key domain for intelligent management systems.
 \\
 \noindent
-This vision is being actively incorporated into European legal frameworks. The transformative \textbf{Alternative Fuels Infrastructure Regulation (AFIR, EU 2023/1804)} now mandates that new public charging infrastructure incorporate smart and bidirectional capabilities. This is supported by technical standards like \textbf{ISO 15118-20}, which specifies protocols for a "Vehicle-to-Grid Communication Interface" (V2GCI). With mandatory implementation scheduled for 2027, the necessary infrastructure is being systematically established, supported by pilot initiatives like the \textbf{'SCALE'} and \textbf{'V2G Balearic Islands'} projects.
-\\
+This vision is being actively incorporated into European legal frameworks. The transformative \textbf{Alternative Fuels Infrastructure Regulation (AFIR, EU 2023/1804)} now mandates that new public charging infrastructure incorporate smart and bidirectional capabilities. 
+
+\subsection{ISO 15118-20}
+This is supported by technical standards like \textbf{ISO 15118-20}, which specifies protocols for a "Vehicle-to-Grid Communication Interface" (V2GCI). With mandatory implementation scheduled for 2027, the necessary infrastructure is being systematically established, supported by pilot initiatives like the \textbf{'SCALE'} and \textbf{'V2G Balearic Islands'} projects.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\linewidth]{15118.png}
+    \caption{The protocol stack of ISO/IEC 15118 \cite{shin2016interoperability}}
+    \label{fig:15118}
+\end{figure}
+
+ISO 15118-20 is the latest part of the ISO 15118 family(In figure \ref{fig:15118} the protocol stack of ISO/IEC 15118) , defining the communication between an Electric Vehicle (EV) and the Electric Vehicle Supply Equipment (EVSE). It extends previous versions (like ISO 15118-2) by introducing new functions, enhanced security, and full support for bidirectional power transfer (V2G). The goal of the protocol is to create a standardized, secure, and automatic data exchange that allows an EV and the charging station to negotiate how, when, and how much energy to transfer.
 \noindent
+Communication is established over Power Line Communication (PLC), using a TCP/IP stack over IPv6. The protocol uses TLS encryption to protect confidentiality and authenticity of the session. Once the physical link is established, the EV and the EVSE start a handshake to exchange certificates and initialize the communication channel. The EV then sends a \textit{ServiceDiscovery} message to check which services the EVSE supports, such as AC charging, DC charging, or bidirectional energy flow. After service negotiation, the two parties exchange \textit{Authorization}, \textit{ChargeParameterDiscovery}, and \textit{PowerDelivery} messages to determine the charging profile, power limits, and time schedules.
+\noindent
+One of the main features of ISO 15118-20 is the \textit{Plug \& Charge} mechanism. This allows the EV to authenticate automatically using digital certificates issued by a trusted authority, removing the need for RFID cards or apps. Once authenticated, the EVSE can directly start charging and manage billing information securely. The protocol also supports \textit{Bidirectional Power Transfer}, enabling Vehicle-to-Grid (V2G) communication, where the EV can return energy to the grid under controlled conditions. All messages are encoded in XML or EXI format and structured according to strict data models to ensure interoperability.
+\noindent
+In addition, ISO 15118-20 defines methods for smart charging, tariff and schedule negotiation, and the exchange of metering data. It provides flexibility for different energy markets, supporting both local and remote authorization modes. Compared to previous standards, ISO 15118-20 introduces stricter cybersecurity requirements, mandatory TLS usage, improved message structures, and extended functionality for wireless and high-power DC charging. Overall, it forms the digital backbone for future intelligent energy management between vehicles and the grid, ensuring interoperability, efficiency, and secure automation in electric mobility.
+
+\subsection{V2G projects in deployment}
+
+The Mobility House, a solution provider for vehicle-to-grid services, has collected and categorised data on V2G projects across the globe, as illustrated in the map below \ref{fig:map}.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.7\linewidth]{map.png}
+    \caption{Map of research activities and pilot projects on V2G technology (2018)}
+    \label{fig:map}
+\end{figure}
+
+\subsection{V2G obstacles} 
 Despite this progress, substantial obstacles to widespread V2G deployment persist:
 
 \begin{itemize}
@@ -136,17 +164,31 @@ This dynamic, uncertain, and multifaceted operational environment renders static
 Access to reliable, real-time, and historical market data remains crucial for both control agent training in simulation environments and real-world deployment. Key public sources for European market data include:
 \\
 \noindent
- \textbf{ENTSO-E Transparency Platform:} The European Network of Transmission System Operators for Electricity maintains a mandatory, open-access platform serving as a comprehensive repository of pan-European electricity market data. This includes harmonised day-ahead prices, load forecasts, and generation data, serving as the primary source for academic research through both web portal access and free RESTful API services.
-    \\
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.9\linewidth]{entsoe.png}
+    \caption{https://transparency.entsoe.eu/ Entosoe website}
+    \label{fig:ent}
+\end{figure}
 \noindent
-    \textbf{National Transmission System Operators (TSOs):} Many national TSOs (including Terna in Italy, National Grid in the UK, and RTE in France) publish detailed market data covering real-time frequency and imbalance prices for their respective jurisdictions.
+ \textbf{ENTSO-E Transparency Platform:} \ref{fig:ent }The European Network of Transmission System Operators for Electricity maintains a mandatory, open-access platform serving as a comprehensive repository of pan-European electricity market data. This includes harmonised day-ahead prices, load forecasts, and generation data, serving as the primary source for academic research through both web portal access and free RESTful API services.
+    \\
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.3\linewidth]{terna.jpeg}
+    \caption{https://www.terna.it/it Terna}
+    \label{fig:ter}
+\end{figure}
+\noindent
+   \textbf{National Transmission System Operators (TSOs):} Many national TSOs (including \texbf{Terna} (Figure \ref{fig:ter}) in Italy, National Grid in the UK, and RTE in France) publish detailed market data covering real-time frequency and imbalance prices for their respective jurisdictions.
     \\
 \noindent
      \textbf{Power Exchanges:} Exchanges such as \textbf{EPEX SPOT} and \textbf{Nord Pool} constitute actual trading venues. While they represent direct price data sources, comprehensive real-time access typically requires commercial subscription services.
 
 
 \subsection{Buying vs. Selling: The Critical Retail-Wholesale Spread}
-
+\noindent
 A critical yet frequently overlooked aspect of V2G economics involves the distinction between EV owner charging costs and aggregator grid sales revenue.
 
 \begin{itemize}
@@ -604,6 +646,30 @@ While DRL represents the cutting edge, contextualizing it within the broader con
 \\
 \noindent
 Other methods, such as \textbf{meta-heuristic algorithms} (including genetic algorithms and particle swarm optimization), are sometimes proposed. However, these are typically employed for offline scheduling and lack the real-time, reactive responsiveness required for dynamic V2G control in rapidly changing environments.
+
+\subsection{Rule-Based Heuristic Baselines}
+\label{sec:heuristic_baselines}
+\noindent
+In addition to sophisticated optimization-based (MPC) and learning-based (DRL) controllers, it is crucial to benchmark performance against simple, rule-based heuristic algorithms. These heuristics serve as fundamental baselines to quantify the value added by more intelligent strategies. The \texttt{heuristics.py} module implements several such baseline controllers.
+
+\subsubsection{As-Fast-As-Possible (AFAP)}
+This is the most straightforward and intuitive charging strategy. The AFAP controller, implemented as \texttt{ChargeAsFastAsPossible}, commands all connected EVs to charge at their maximum permissible rate at all times, irrespective of electricity prices, grid constraints, or user needs beyond being ready by departure. Its objective is singular: minimize the time to reach full capacity. While simple, it often leads to undesirable outcomes such as high charging costs during peak price hours and contributing to grid congestion. A variation, \texttt{ChargeAsFastAsPossibleToDesiredCapacity}, stops charging once the user's specified desired SoC is met, rather than continuing to 100\%.
+
+\subsubsection{As-Late-As-Possible (ALAP)}
+The ALAP strategy, implemented in the \texttt{ChargeAsLateAsPossible} class, represents the opposite temporal extreme to AFAP. For each EV, it calculates the latest possible moment to initiate charging at maximum power to ensure the battery is full precisely at the scheduled departure time. This is achieved by determining the minimum number of time steps required to charge and deferring the start of the charging session until that point. This approach can shift load away from peak periods if those peaks occur early in the parking session, but it is inflexible and cannot respond to unexpected price drops or grid signals. It also carries the risk of failing to fully charge the vehicle if the departure time is earlier than expected. The \texttt{ChargeAsLateAsPossibleToDesiredCapacity} variant applies the same logic but targets the desired SoC.
+
+\subsubsection{Round Robin Schedulers}
+The \texttt{RoundRobin} family of heuristics attempts a more nuanced approach to meet a given power setpoint. The basic \texttt{RoundRobin} algorithm maintains a queue of connected EVs. To meet the power target, it calculates how many EVs need to be charged simultaneously (based on an average charging power) and activates that number of EVs from the front of the queue. In each time step, the EVs that were just charged are moved to the back of the queue, ensuring a fair distribution of charging opportunities over time.
+
+\noindent
+More advanced versions like \texttt{RoundRobin\_GF} (Grid-Friendly) are designed to track a power setpoint more precisely. Instead of activating a fixed number of EVs, it sequentially activates EVs and sums their potential power contribution until the setpoint is met or exceeded, providing a finer level of control.
+
+\subsubsection{Other Baselines}
+Two other trivial baselines are used for comparison:
+\begin{itemize}
+    \item \textbf{Do Nothing}: The \texttt{DoNothing} agent always outputs a zero action, resulting in no charging or discharging. It serves to quantify the baseline of no intervention.
+    \item \textbf{Random Agent}: The \texttt{RandomAgent} selects a random, valid action for each EV at every time step. It is a useful diagnostic tool to ensure that a sophisticated DRL agent is learning a policy that is meaningfully better than random chance.
+\end{itemize}
 \\
 \noindent
 Ultimately, DRL's singular advantage lies in its ability to learn and internalize the complex, non-linear trade-offs of multi-objective V2G problems directly from data, without requiring explicit models. This makes it uniquely suited to navigating the profound uncertainties of real-world operations. While other methods have their applications, DRL stands out as the most promising technology for deploying truly intelligent, autonomous, and scalable V2G management systems required to achieve the ambitious energy and climate objectives of the European Union.

@@ -11,3 +11,6 @@ sb3-contrib
 scikit-learn
 tqdm
 streamlit
+SALib
+joblib
+pyDOE

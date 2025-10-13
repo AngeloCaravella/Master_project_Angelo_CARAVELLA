@@ -222,6 +222,139 @@ class ShuffledMultiScenarioEnv(gym.Env):
     def close(self):
         if self.current_env: self.current_env.close()
 
+def set_nested_dict_value(d, path, value):
+    """Sets a value in a nested dictionary using a list of keys."""
+    for key in path[:-1]:
+        d = d.setdefault(key, {})
+    d[path[-1]] = value
+
+class RobustnessEnv(gym.Env):
+    """
+    A Gymnasium environment that dynamically randomizes environment parameters
+    at the start of each episode without creating a large number of static config files.
+    """
+    def __init__(self, base_config_file, reward_function, state_function, price_data_file=None):
+        super(RobustnessEnv, self).__init__()
+        self.base_config_file = base_config_file
+        self.reward_function = reward_function
+        self.state_function = state_function
+        self.price_data_file = price_data_file
+        self.current_env = None
+
+        # Define the parameter space for randomization
+        self.PREDEFINED_LEVELS = {
+            "Number of Charging Stations": [5, 15, 25, 50, 100],
+            "Transformer Max Power (kW)": [25, 50, 100, 200, 400],
+            "EV Spawn Multiplier": [1, 3, 5, 7, 10],
+            "EV Charge Efficiency": [0.80, 0.90, 0.95, 0.99],
+            "EV Discharge Efficiency": [0.70, 0.85, 0.90, 0.98],
+            "EV Desired Capacity (%)": [0.6, 0.75, 0.85, 0.95, 1.0],
+            "Discharge Price Factor": [0.5, 0.8, 1.0, 1.5, 2.0],
+            "Inflexible Loads Forecast Mean": [0, 15, 30, 45, 60],
+            "Solar Power Forecast Mean": [0, 20, 40, 60, 80],
+        }
+        self.KEY_PARAMETERS = {
+            "Number of Charging Stations": ['number_of_charging_stations'],
+            "Transformer Max Power (kW)": ['transformer', 'max_power'],
+            "EV Spawn Multiplier": ['spawn_multiplier'],
+            "EV Charge Efficiency": ['ev', 'charge_efficiency'],
+            "EV Discharge Efficiency": ['ev', 'discharge_efficiency'],
+            "EV Desired Capacity (%)": ['ev', 'desired_capacity'],
+            "Discharge Price Factor": ['discharge_price_factor'],
+            "Inflexible Loads Forecast Mean": ['inflexible_loads', 'forecast_mean'],
+            "Solar Power Forecast Mean": ['solar_power', 'forecast_mean'],
+        }
+        self.params_to_vary = list(self.PREDEFINED_LEVELS.keys())
+
+        self._sampled_max_cs_once = False
+        self._episode_count = 0
+
+        # Determine max observation and action shapes based on max number of stations
+        max_stations = max(self.PREDEFINED_LEVELS["Number of Charging Stations"])
+        
+        with open(self.base_config_file, 'r') as f:
+            temp_config = yaml.safe_load(f)
+        
+        # Temporarily set max stations to calculate shapes
+        set_nested_dict_value(temp_config, self.KEY_PARAMETERS["Number of Charging Stations"], max_stations)
+        
+        temp_path = 'temp_shape_calc_config.yaml'
+        with open(temp_path, 'w') as f:
+            yaml.dump(temp_config, f)
+
+        # Initialize a temporary environment to get the maximum space sizes
+        temp_env = EV2Gym(config_file=temp_path, reward_function=self.reward_function, state_function=self.state_function)
+        self.max_obs_shape = temp_env.observation_space.shape
+        self.max_action_shape = temp_env.action_space.shape
+        temp_env.close()
+        os.remove(temp_path)
+
+        # Define the environment's spaces based on the maximums
+        self.action_space = gym.spaces.Box(low=-1.0, high=1.0, shape=self.max_action_shape, dtype=np.float64)
+        self.observation_space = gym.spaces.Box(low=-np.inf, high=np.inf, shape=self.max_obs_shape, dtype=np.float64)
+        
+        self.temp_episode_config_path = 'temp_dynamic_episode_config.yaml'
+
+    def _pad_observation(self, obs):
+        padded_obs = np.zeros(self.max_obs_shape, dtype=np.float64)
+        if obs.shape[0] > padded_obs.shape[0]:
+             obs = obs[:padded_obs.shape[0]]
+        padded_obs[:obs.shape[0]] = obs
+        return padded_obs
+
+    def reset(self, *, seed=None, options=None):
+        if self.current_env:
+            self.current_env.close()
+
+        with open(self.base_config_file, 'r') as f:
+            config = yaml.safe_load(f)
+
+        # Randomly sample a value for each parameter for the new episode
+        for param_name in self.params_to_vary:
+            levels = self.PREDEFINED_LEVELS[param_name]
+            value = random.choice(levels)
+            
+            # --- New logic to ensure max CS is sampled at least once ---
+            if param_name == "Number of Charging Stations" and not self._sampled_max_cs_once:
+                if self._episode_count < 5: # Try to force it early, e.g., within the first 5 episodes
+                    value = max(levels)
+                    self._sampled_max_cs_once = True
+                    print(f"Forcing 'Number of Charging Stations' to maximum value: {value}")
+            # --- End new logic ---
+
+            param_path = self.KEY_PARAMETERS[param_name]
+            if param_name in ["Number of Charging Stations", "Transformer Max Power (kW)", "EV Spawn Multiplier", "Inflexible Loads Forecast Mean", "Solar Power Forecast Mean"]:
+                value = int(value)
+            set_nested_dict_value(config, param_path, value)
+        
+        self._episode_count += 1 # Increment episode count
+
+        # Create a single temporary config file for this episode
+        with open(self.temp_episode_config_path, 'w') as f:
+            yaml.dump(config, f)
+
+        # Create the underlying environment for the episode
+        self.current_env = EV2Gym(config_file=self.temp_episode_config_path, generate_rnd_game=True, reward_function=self.reward_function, state_function=self.state_function, price_data_file=self.price_data_file)
+        
+        obs, info = self.current_env.reset(seed=seed, options=options)
+        return self._pad_observation(obs), info
+
+    def step(self, action):
+        if self.current_env is None:
+            raise RuntimeError("reset() must be called before step().")
+        
+        action_size_needed = self.current_env.action_space.shape[0]
+        sliced_action = action[:action_size_needed]
+        
+        obs, reward, terminated, truncated, info = self.current_env.step(sliced_action)
+        return self._pad_observation(obs), reward, terminated, truncated, info
+
+    def close(self):
+        if self.current_env:
+            self.current_env.close()
+        if os.path.exists(self.temp_episode_config_path):
+            os.remove(self.temp_episode_config_path)
+
 class ProgressCallback(BaseCallback):
     def __init__(self, total_timesteps: int, check_freq: int = 1000, verbose: int = 1):
         super(ProgressCallback, self).__init__(verbose)
@@ -237,9 +370,10 @@ class ProgressCallback(BaseCallback):
         return True
 
 class TrainingPlotCallback(BaseCallback):
-    def __init__(self, model_name: str, save_plot: bool = True, verbose: int = 0):
+    def __init__(self, model_name: str, session_name: str, save_plot: bool = True, verbose: int = 0):
         super(TrainingPlotCallback, self).__init__(verbose)
         self.model_name = model_name
+        self.session_name = session_name
         self.save_plot = save_plot
         self.rewards = []
         self.steps = []
@@ -267,7 +401,7 @@ class TrainingPlotCallback(BaseCallback):
             plt.plot(rewards_df.steps, rolling_avg, 'r-', linewidth=2, label='Rolling Average')
             plt.xlabel("Timesteps")
             plt.ylabel("Reward")
-            plt.title(f"Training Progress for {self.model_name}")
+            plt.title(f"Training Progress for {self.model_name} ({self.session_name})")
             plt.grid(True)
             plt.legend()
             
@@ -275,7 +409,7 @@ class TrainingPlotCallback(BaseCallback):
             os.makedirs(plot_dir, exist_ok=True)
             
             timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
-            filename = f"{self.model_name}_{timestamp}.png"
+            filename = f"{self.model_name}_{self.session_name}_{timestamp}.png"
             plt.savefig(os.path.join(plot_dir, filename))
             plt.close()
             print(f"Training plot saved to {os.path.join(plot_dir, filename)}")
@@ -722,12 +856,15 @@ def get_algorithms(max_cs: int, is_thesis_mode: bool) -> Dict[str, Tuple[Any, An
     
     return THESIS_ALGORITHMS if is_thesis_mode else ALL_ALGORITHMS
 
-def train_rl_models_if_requested(scenarios_to_test: List[str], selected_reward_func: Callable, algorithms_to_run: Dict, is_multi_scenario: bool, model_dir: str, selected_price_file_abs_path: Optional[str], steps_for_training: int, training_mode: str = 'single', curriculum_steps_per_level: int = 10000) -> None:
+def train_rl_models_if_requested(scenarios_to_test: List[str], selected_reward_func: Callable, algorithms_to_run: Dict, is_multi_scenario: bool, model_dir: str, selected_price_file_abs_path: Optional[str], steps_for_training: int, training_mode: str = 'single', curriculum_steps_per_level: int = 10000, session_name: str = "") -> None:
     rl_models_to_run = {k: v for k, v in algorithms_to_run.items() if v[1] is not None}
     if not rl_models_to_run: return
     
     if training_mode == 'single':
         train_env = Monitor(gym.make('ev2gym.models.ev2gym_env:EV2Gym', config_file=scenarios_to_test[0], generate_rnd_game=True, reward_function=selected_reward_func, state_function=V2G_profit_max_loads, price_data_file=selected_price_file_abs_path))
+    elif training_mode == 'dynamic':
+        base_config_file = scenarios_to_test[0]
+        train_env = DummyVecEnv([lambda: Monitor(RobustnessEnv(base_config_file, selected_reward_func, V2G_profit_max_loads, price_data_file=selected_price_file_abs_path))])
     else:
         env_map = {'random': MultiScenarioEnv, 'curriculum': CurriculumEnv, 'shuffled': ShuffledMultiScenarioEnv}
         env_class = env_map.get(training_mode, MultiScenarioEnv)
@@ -737,7 +874,7 @@ def train_rl_models_if_requested(scenarios_to_test: List[str], selected_reward_f
     for name, (_, rl_class, kwargs) in rl_models_to_run.items():
         print(f"--- Training {name} ---")
         model = rl_class("MlpPolicy", train_env, verbose=0, device="cuda" if torch.cuda.is_available() else "cpu", **kwargs)
-        model.learn(total_timesteps=steps_for_training, callback=[ProgressCallback(steps_for_training), TrainingPlotCallback(name)])
+        model.learn(total_timesteps=steps_for_training, callback=[ProgressCallback(steps_for_training), TrainingPlotCallback(name, session_name)])
         model.save(os.path.join(model_dir, f'{name.lower().replace("+", "_")}_model.zip'))
 
     if is_multi_scenario:

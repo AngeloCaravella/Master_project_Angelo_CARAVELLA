@@ -1,1 +1,611 @@
-\chapter{Sensivity analysis}
+% ===================================================================
+% CHAPTER 4: Sensitivity Analysis of the V2G System
+% ===================================================================
+\chapter{Sensitivity Analysis of the V2G System}
+\label{chap:sensitivity_analysis}
+
+\section{Introduction}
+The performance of a Vehicle-to-Grid (V2G) system is governed by a complex interplay of physical, economic, and behavioral parameters. Understanding which of these parameters have the most significant impact on system outcomes is crucial for designing robust and effective control strategies. A controller optimized for one specific set of conditions may perform poorly under slightly different circumstances. Sensitivity Analysis (SA) is a systematic methodology used to quantify how the variation in the inputs of a model influences the variation in its outputs.
+\noindent
+This chapter presents a comprehensive sensitivity analysis of the EV2Gym simulation environment. The primary objectives are:
+\begin{itemize}
+    \item To identify the most critical parameters that drive system performance, particularly economic profitability and grid stability.
+    \item To understand how different control algorithms (heuristics, MPC, and RL) respond to variations in these parameters.
+    \item To gain insights that can guide the development of more robust and generalist control agents.
+\end{itemize}
+\noindent
+The analysis was conducted using the custom-built \texttt{sensitivity\_analysis.py} script,
+\\
+\noindent which automates the process of running large batches of simulations while systematically varying key input parameters.
+
+
+
+\section{Introduction to Global Sensitivity Analysis}
+
+In these sessions, the topic of global sensitivity analysis is discussed, which is presented as a very important method in uncertainty quantification. This method allows for a better understanding of the relationship between data, model, and prediction. There are many techniques for performing such global sensitivity analysis. However, before covering global sensitivity analysis, the speaker first discusses local sensitivity analysis.
+
+\section{Sensitivity Analysis (SA)}
+
+Sensitivity analysis is defined as a study where uncertain input parameters are varied to understand how that variation results in a change in some response of interest. This response of interest can be anything, such as a data variable or a prediction variable.
+
+\subsection{Definition}
+SA is the study of how variation of uncertain input parameters impacts the uncertainty of the response of interest.
+\noindent
+\textit{Note: There is no unique way of doing sensitivity analysis.}
+
+\subsection{Applications and Benefits of SA}
+In this context, sensitivity analysis allows for the reduction of uncertainty in predictions, as it facilitates the identification of input parameters that affect those predictions. This, in turn, can help identify what data needs to be acquired to reduce uncertainty on those parameters.
+
+\begin{itemize}
+    \item \textbf{SA can aid in reducing uncertainty in prediction} by identifying high-impact parameters. This can indicate which data to acquire to reduce uncertainty on said parameters.
+    \item \textbf{SA can indicate which parameters have little influence on the prediction.} This may help in reducing the complexity of the problem by either removing those parameters or setting those with little influence to some fixed value.
+    \item \textbf{SA can help in quantifying and understanding how the combined effect of parameters generates non-linear variations in responses (interactions).} When dealing with nonlinear systems or functions, as is common in uncertainty quantification problems and the forward models used, these nonlinear variations in responses are frequent. In such systems, a phenomenon known as "interactions" occurs. This concept will be covered in great detail.
+\end{itemize}
+\noindent
+As a side note, it is mentioned that there is no single, unique way of performing sensitivity analysis. Therefore, referring to "the" sensitivity analysis would actually point to a specific method. Each method allows for the study of different aspects, and it is important to understand which method is suitable for a given situation and application.
+
+\section{What Really Matters?}
+An example is provided for understanding the variation of radiation dose over time for individuals near nuclear repositories. Modeling this involves numerous processes like transport, flow, reactions, and geochemistry, resulting in an extremely complicated nonlinear system. The output, however, is a simple function over time. The goal of sensitivity analysis in this context is to understand which of the complex inputs truly matter and what interactions are necessary to comprehend the final performance measure.
+
+\section{Different Classes of Sensitivity Analysis}
+
+There are many different classes of sensitivity analysis, but for the purposes of this course, the discussion focuses on local sensitivity analysis and global sensitivity analysis.
+
+\subsection{Local SA}
+In local sensitivity analysis, the process starts from a base case. This could be the mean of the parameters, or a single model can be built based on the available information. Once such a model or base case is established, the effect of making perturbations to that model is evaluated. Perturbations can be implemented in various ways; for instance, one can calculate the partial derivatives of the forward response function, given that the analysis is in the base case scenario. It is also possible to have multiple base case scenarios and evaluate sensitivity on each of them.
+
+\begin{itemize}
+    \item Evaluates sensitivity for a single (deterministic) set of input parameters.
+    \item Often based on partial derivatives of the response with respect to the parameters. The sensitivity measure is only informative for the particular set of parameters.
+    \item Fast to compute ($N_p + 1$ model evaluations).
+\end{itemize}
+
+\subsection{Global SA (GSA)}
+In global sensitivity analysis, the base case scenario is disregarded. Instead, a Monte Carlo simulation is performed on the input parameters. The model is run many times with various input parameters drawn from a prior distribution. The models are then evaluated to understand the multivariate distribution of the output that is generated due to the variation of the input parameters.
+
+\begin{itemize}
+    \item Assesses the effect of large changes in the input parameters, which is more appropriate for uncertainty quantification.
+    \item Requires many model evaluations.
+\end{itemize}
+
+\section{Challenges}
+The challenges (very common in geosciences) or uncertainty quantification are:
+\begin{itemize}
+    \item \textbf{High dimensional problem:}
+    \begin{itemize}
+        \item Many uncertain input parameters.
+        \item Response may be high dimensional.
+    \end{itemize}
+    \item \textbf{Large computational time:} Evaluating responses such as forward models and making predictions involves large computational times.
+    \item \textbf{Non-linearity of the models:} The non-linearity of the problem is quite substantial.
+    \item \textbf{Spatial aspect of the models:} There is a spatial aspect, such as the spatial distribution of hydraulic conductivity, permeability, porosity, or layering, which needs to be taken into account as it may have a considerable influence on the response. The problem is how to quantify the influence of spatial variability (which is not a simple variable) on some kind of response.
+\end{itemize}
+
+\section{Screening Techniques}
+Two techniques are introduced: one-at-a-time (OAT) analysis and the Morris method. Both are simplified approaches. They are quite useful for "screening" because they require only a small number of model evaluations. However, it is very difficult to draw general conclusions from these methods, as there are several drawbacks when applying them to the kind of problems being addressed.
+
+\subsection{One-at-a-time (OAT)}
+One-at-a-time analysis involves taking a base case (e.g., the mean of all parameters), fixing all other parameters, and varying one parameter at a time (e.g., by 10\%) to observe its influence. Simulations are run for these perturbations, and the influence of that parameter is recorded. The parameters can then be ranked from the most to the least influential, often displayed in a tornado chart.
+
+\begin{itemize}
+    \item Most widely used screening method due to its simplicity.
+    \item Varies the input parameters one by one, keeping the other inputs fixed at a baseline \& monitors changes in the output.
+    \item Results often displayed in a Pareto chart (requires $2 \times N_p + 1$ simulations).
+    \item Similar to a local method.
+\end{itemize}
+
+A problem with this method is that by fixing parameters, interactions are not studied. Also, the assumption that the base case (average of parameters) gives an average response is not true for non-linear systems. It also does not handle discrete parameters well.
+
+\subsection{The Morris Method}
+The Morris method is an extension of the one-at-a-time (OAT) designs. Instead of a single base case, a randomization is performed over $L$ trajectories (or base cases).
+\begin{itemize}
+    \item Based on a replication of OAT designs.
+    \item Based on the calculation of elementary effects ($EE_n$).
+    \item Evaluated by perturbing the n-th parameter of a point $x = (x_1, \dots, x_{N_p})$ by $\Delta$.
+    
+    The elementary effect is calculated as:
+    \[ EE_n = \frac{f(x_1, \dots, x_n + \Delta, \dots, x_{N_p}) - f(x_1, \dots, x_n, \dots, x_{N_p})}{\Delta} \]
+    \item To avoid dependency on the initial point $x$, the $EE_n$ are computed for $L$ trajectories, which results in a distribution of $EE_n$.
+\end{itemize}
+
+From this distribution, the mean and variance of the elementary effects can be calculated.
+
+\begin{itemize}
+    \item The mean of the absolute values of the elementary effects, $\mu_n^*$, assesses the overall impact (influence) of the parameter on the response.
+    \[ \mu_n^* = \frac{1}{L} \sum_{l=1}^{L} |EE_n^{(l)}| \]
+    A large mean indicates large changes in the response when perturbing a parameter (an influential parameter).
+    
+    \item The standard deviation or variance, $\sigma_n^2$, is a measure of non-linear and/or interaction effects.
+    \[ \sigma_n^2 = \frac{1}{L-1} \sum_{l=1}^{L} (EE_n^{(l)} - \mu_n)^2 \]
+    A large value indicates that the elementary effects depend highly on the choice of the sample point at which it is computed. A small $\sigma_n^2$ indicates similar values in elementary effects for different sample points, implying that the effect of the parameter is independent of other parameter values.
+\end{itemize}
+
+By plotting $\sigma_n$ versus $\mu_n^*$, parameters can be classified into three groups:
+\begin{enumerate}
+    \item \textbf{Negligible effects:} small $\mu_n^*$ and small $\sigma_n$.
+    \item \textbf{Linear and additive effects:} large $\mu_n^*$ and small $\sigma_n$.
+    \item \textbf{Non-linear and/or interactions effects:} large $\mu_n^*$ and large $\sigma_n$.
+\end{enumerate}
+
+\section{Note on Interactions}
+Interactions are an often poorly understood concept. An example is given where a material (e.g., shale rock) is tested, and its strength (response Z) is evaluated based on two factors: temperature (X) and composition ratio (Y). A factorial design can be set up with high and low levels for each factor.
+\noindent
+An interaction means that the effect of one factor depends on the level of another factor. The main effects of X and Y, as well as the interaction effect XY, can be estimated. In many cases, the interaction effect (the combined effect of temperature and composition) can be the most significant factor, more so than either factor individually. This indicates a non-linear relationship where the whole is greater than the sum of its parts.
+
+\subsection{Summary of Screening Techniques}
+\begin{itemize}
+    \item Rapidly gives insight into parameter influence with a small number of model evaluations.
+    \item Only provides qualitative/subjective measures of sensitivity.
+    \item Does not evaluate or distinguish interactions from non-linear effects well.
+    \item Requires only a single response.
+    \item Cannot be applied to non-numerical input (e.g., scenarios).
+    \item Requires continuity in the response, which means it cannot be applied with spatial uncertainty.
+    \item As a precursor to GSA, the Morris method may identify parameters that can be removed from the study, simplifying the problem.
+\end{itemize}
+
+
+\section{Methodology for Sensitivity and Robustness Analysis}
+\label{sec:sa_methodology}
+\noindent
+To systematically investigate the V2G system's behavior and train robust control agents, this work employs a suite of increasingly sophisticated methodologies, all orchestrated through the \texttt{sensitivity\_analysis.py} and \texttt{run\_interactive.py} scripts. These methods range from classical sensitivity analysis techniques to advanced, dynamic training environments.
+
+\subsection{Parameter and Model-Output Space}
+\noindent
+The foundation for all analysis is a defined set of input parameters and output metrics. The input space consists of nine key parameters identified as having a potentially high impact on the system's operation. For each parameter, a set of discrete, realistic levels was established, as detailed in Table \ref{tab:sa_parameters_detailed}. The primary output metric, or Key Performance Indicator (KPI), used for evaluating sensitivity is the \textbf{Total Profit (€)} generated by a control agent over a full simulation run.
+
+\begin{table}[H]
+    \centering
+    \caption{Parameters and Levels for Sensitivity Analysis}
+    \label{tab:sa_parameters_detailed}
+    \begin{tabular}{|l|l|l|}
+        \hline
+        \textbf{Parameter} & \textbf{Baseline} & \textbf{Levels} \\ \hline
+        Number of Charging Stations & 25 & 5, 15, 25, 50, 100 \\ \hline
+        Transformer Max Power (kW) & 100 & 25, 50, 100, 200, 400 \\ \hline
+        EV Spawn Multiplier & 5 & 1, 3, 5, 7, 10 \\ \hline
+        EV Charge Efficiency & 0.95 & 0.80, 0.90, 0.95, 0.99 \\ \hline
+        EV Discharge Efficiency & 0.90 & 0.70, 0.85, 0.90, 0.98 \\ \hline
+        EV Desired Capacity (\%) & 1.0 & 0.6, 0.75, 0.85, 0.95, 1.0 \\ \hline
+        Discharge Price Factor & 1.0 & 0.5, 0.8, 1.0, 1.5, 2.0 \\ \hline
+        Inflexible Loads Forecast Mean & 30\% & 0, 15, 30, 45, 60 \\ \hline
+        Solar Power Forecast Mean & 20\% & 0, 20, 40, 60, 80 \\ \hline
+    \end{tabular}
+\end{table}
+
+\subsection{One-at-a-Time (OaaT) Sensitivity Analysis}
+\noindent
+The OaaT method is the most fundamental approach to sensitivity analysis. It operates by varying a single input parameter across its predefined levels while keeping all other parameters fixed at their baseline values. For example, to analyze the impact of the transformer capacity, simulations are run with the `Transformer Max Power (kW)` set to 25, 50, 100, 200, and 400, while the other eight parameters remain unchanged.
+\noindent
+The primary advantage of OaaT is its simplicity and the clarity of its results. It produces easy-to-interpret graphs showing the direct relationship between one input and one output. However, its major drawback is that it cannot detect interactions between parameters. The effect of changing the transformer power might be very different when the `EV Spawn Multiplier` is high compared to when it is low, and OaaT cannot capture this type of synergistic effect.
+
+\subsection{Global Sensitivity Analysis: The Morris Method}
+\noindent
+To overcome the limitations of OaaT, we employ the Morris method, a global sensitivity analysis technique proposed by Max D. Morris in 1991 for efficient parameter screening. It is a "one-at-a-time" method, but it is executed at many different points in the input parameter space, and the results are then averaged.
+
+\noindent
+The sampling process is organized into \textbf{trajectories}, where each trajectory represents a path through the high-dimensional input space. A key implementation choice is the use of \textbf{Optimal Trajectories}, a sophisticated sampling strategy designed to overcome the potential biases of purely random sampling.
+
+\noindent
+The concept is analogous to surveying a large area: instead of taking random paths, which might accidentally cluster in one region and miss others entirely, an optimal approach involves pre-planning the paths to ensure the entire area is covered as uniformly as possible. In the context of the Morris method, `SALib` selects a set of trajectories that are maximally "spread out" from each other. This ensures that the elementary effects are calculated in highly diverse regions of the parameter space (e.g., under conditions of both high and low solar power, high and low electricity prices, etc.). By guaranteeing a more systematic and uniform exploration, this optimal sampling strategy produces more robust and reliable sensitivity indices ($\mu^*$ and $\sigma$) for a given number of simulations, reducing the risk of drawing conclusions from an unrepresentative sample of the model's behavior.
+
+\noindent
+The core of the method is the calculation of "elementary effects." For a given input parameter $X_i$, an elementary effect is the finite difference in the model output $Y$ when $X_i$ is perturbed by a fixed amount $\Delta$, while all other inputs $X_j$ ($j \neq i$) are held constant.
+\begin{equation}
+    EE_i(\mathbf{X}) = \frac{Y(X_1, ..., X_i + \Delta, ..., X_k) - Y(\mathbf{X})}{\Delta}
+\end{equation}
+\noindent
+The Morris method generates $r$ different trajectories through the $k$-dimensional input space. For each trajectory, it computes the elementary effect for every parameter. The final output is a set of sensitivity indices for each parameter, derived from the distribution of these elementary effects:
+\begin{itemize}
+    \item $\mu^*$ (\textbf{mu-star}): The mean of the absolute values of the elementary effects. It is a measure of the parameter's overall influence on the output. A high $\mu^*$ indicates an important parameter.
+    \item $\sigma$ (\textbf{sigma}): The standard deviation of the elementary effects. It measures the extent of non-linear effects or interactions with other parameters. A high $\sigma$ suggests that the parameter's effect is not constant but depends on the values of other parameters in the model.
+\end{itemize}
+\noindent
+By plotting $\sigma$ versus $\mu^*$, we can visually classify parameters as either (a) having a large overall effect (high $\mu^*$), (b) being involved in significant interactions (high $\sigma$), or (c) being relatively non-influential (low $\mu^*$ and $\sigma$). This provides a global perspective on the model's sensitivities.
+
+\subsubsection{Implementation with SALib}
+To conduct the global sensitivity analysis using the Morris method, the Python library \texttt{SALib} was utilized. The process implemented in the \texttt{sensitivity\_analysis.py} script can be broken down into the following key steps:
+
+\begin{enumerate}
+    \item \textbf{Problem Definition:}
+    First, the sensitivity problem is defined. This is done by creating a Python dictionary that specifies the parameters to be analyzed, their names, and their bounds. This data structure, named \texttt{problem}, is a fundamental requirement for the \texttt{SALib} library.
+    
+    \begin{verbatim}
+problem = {
+    'num_vars': len(selected_param_names),
+    'names': selected_param_names,
+    'bounds': [[min_val_1, max_val_1],
+               [min_val_2, max_val_2],
+               ...]
+}
+    \end{verbatim}
+
+    \item \textbf{Sampling:}
+    Next, the Morris sampler provided by \texttt{SALib} is used to generate the input points to be evaluated. The function \texttt{morris\_sampler.sample()} takes the \texttt{problem} dictionary, the number of trajectories to generate (\texttt{N}), and the number of grid levels (\texttt{num\_levels}) as input. The function returns a NumPy array, \texttt{param\_values}, where each row represents a combination of input parameters on which to run the model.
+    
+    \begin{verbatim}
+from SALib.sample import morris as morris_sampler
+
+param_values = morris_sampler.sample(problem, 
+                                     N=num_trajectories, 
+                                     num_levels=num_levels)
+    \end{verbatim}
+
+    \item \textbf{Model Execution:}
+    The code then iterates over each row of the \texttt{param\_values} array. For each combination of parameters, a model simulation is executed (\texttt{run\_benchmark}), and the output of interest (e.g., \texttt{total\_profits}) is recorded. These results are stored in a NumPy array \texttt{Y}.
+
+    \item \textbf{Analysis of Results:}
+    Once the model has been run for all sampling points, the results are analyzed using the \texttt{morris\_analyzer.analyze()} function. This function calculates the Morris sensitivity indices, primarily:
+    \begin{itemize}
+        \item \textbf{$\mu^*$ (mu\_star):} An estimate of the mean absolute effect of a parameter on the output. A high value indicates an influential parameter.
+        \item \textbf{$\sigma$ (sigma):} The standard deviation of the elementary effects, which indicates non-linear effects or interactions with other parameters.
+    \end{itemize}
+    
+    \begin{verbatim}
+from SALib.analyze import morris as morris_analyzer
+
+Si = morris_analyzer.analyze(problem, 
+                             param_values, 
+                             Y, 
+                             conf_level=0.95)
+    \end{verbatim}
+    
+    The returned \texttt{Si} object contains the results of the analysis, which are then used to generate tables and plots to interpret the influence of each parameter.
+    
+\end{enumerate}
+
+\subsubsection{Interpreting the $\mu^*-\sigma$ Plot}
+The $\mu^*-\sigma$ plot is the primary visualization tool for the Morris method, offering a clear way to understand the role of each input parameter. Parameters are represented as points on a 2D plane, where the x-axis is $\mu^*$ and the y-axis is $\sigma$.
+\begin{figure}[H] % Posiziona la figura qui, se possibile
+    \centering % Centra l'immagine nella pagina
+	\begin{tikzpicture}[font=\small\sffamily] % <-- Font piccolo sans-serif
+
+    % === DEFINIZIONE COLORI ===
+    \definecolor{region1blue}{RGB}{215, 226, 245}
+    \definecolor{region2red}{RGB}{255, 220, 220}
+    \definecolor{region3gray}{RGB}{235, 235, 235}
+    \definecolor{region4green}{RGB}{225, 240, 225}
+    \definecolor{titleblue}{RGB}{180, 200, 220}
+
+    % === ASSI ===
+    \draw[-{Stealth[length=2mm]}] (0,0) -- (12,0)
+        node[below left, pos=0.95] {$\mu^*$ (Mean of elementary effects)};
+    \draw[-{Stealth[length=2mm]}] (0,0) -- (0,10)
+        node[midway, above, rotate=90, anchor=south] {$\sigma$ (Standard deviation of elementary effects)};
+
+    % === LINEE TRATTEGGIATE CENTRALI ===
+    \draw[dashed, gray] (6,0) -- (6,10);
+    \draw[dashed, gray] (0,5) -- (12,5);
+
+    % === ETICHETTE DEGLI ASSI ===
+    \node[anchor=north] at (6,-0.4) {Low $\rightarrow$ High};
+    \node[anchor=center, rotate=90] at (-0.8,5) {Low $\rightarrow$ High};
+
+    % === TITOLO ===
+    \node[fill=titleblue, rounded corners, anchor=south, inner sep=3pt] 
+        at (6,10.3) {\textbf{Morris Method Sensitivity Analysis}};
+
+    % === REGIONI ===
+    % Regione 1: High mu*, Low sigma
+    \node[fill=region1blue, rounded corners, text width=4.2cm, align=center, inner sep=4pt] 
+        at (8.9,2.5) {
+            \textbf{Region 1: High $\mu^*$, Low $\sigma$}\\
+            (Main Effect, Linear)\\
+            \textit{Strong, consistent, and mostly linear effect.}
+        };
+
+    % Regione 2: High mu*, High sigma
+    \node[fill=region2red, rounded corners, text width=4.2cm, align=center, inner sep=4pt] 
+        at (8.9,7.5) {
+            \textbf{Region 2: High $\mu^*$, High $\sigma$}\\
+            (Strong Influence, Non-linear/Interactive)\\
+            \textit{Critical parameters with significant, complex effects.}
+        };
+
+    % Regione 3: Low mu*, Low sigma
+    \node[fill=region3gray, rounded corners, text width=4.2cm, align=center, inner sep=4pt] 
+        at (3.1,2.5) {
+            \textbf{Region 3: Low $\mu^*$, Low $\sigma$}\\
+            (Negligible Influence)\\
+            \textit{Unimportant parameters, can often be fixed.}
+        };
+
+    % Regione 4: Low mu*, High sigma
+    \node[fill=region4green, rounded corners, text width=4.2cm, align=center, inner sep=4pt] 
+        at (3.1,7.5) {
+            \textbf{Region 4: Low $\mu^*$, High $\sigma$}\\
+            (Non-linear/Interactive but Small Overall Effect)\\
+            \textit{Interactive, but with limited individual impact.}
+        };
+\end{tikzpicture}
+    \caption{Conceptual Morris plot illustrating different parameter behaviors.}
+    \label{fig:morris_plot_interpretation}
+\end{figure}
+
+Figure 4.1 illustrates how parameters typically cluster in different regions of the plot, each indicating a distinct type of influence:
+\begin{itemize}
+    \item \textbf{Region 1: High $\mu^*$, Low $\sigma$ (Main Effect, Linear)}: Parameters in this region have a strong, consistent, and mostly linear effect on the model output. Their influence is largely independent of the values of other parameters. Examples might include fundamental physical constants or primary drivers of the system.
+    \item \textbf{Region 2: High $\mu^*$, High $\sigma$ (Strong Influence, Non-linear/Interactive)}: These are the most critical parameters. They have a significant overall impact, but their effect is highly dependent on the values of other parameters. This indicates strong non-linearities or interactions. \texttt{Discharge Price Factor} and \texttt{Transformer Max Power} often fall into this category in V2G systems, as their impact is heavily modulated by other conditions.
+    \item \textbf{Region 3: Low $\mu^*$, Low $\sigma$ (Negligible Influence)}: Parameters located here have little to no effect on the model output. They are generally unimportant and can often be fixed without significantly altering the model's behavior. \texttt{EV Charge Efficiency} might be an example if its variation range is small compared to other factors.
+    \item \textbf{Region 4: Low $\mu^*$, High $\sigma$ (Non-linear/Interactive but Small Overall Effect)}: These parameters exhibit strong interactions or non-linear effects, but their overall impact on the model output is relatively small. While they interact with other parameters, their individual contribution to the output variance is limited.
+
+\end{itemize}
+
+\subsubsection{Common Patterns in $\mu^*-\sigma$ Plots}
+Beyond these general regions, specific patterns in the distribution of parameters can provide further insights into the model's structure:
+\begin{itemize}
+    \item \textbf{Parameters along a Line (Linear Relationship)}: If several parameters align along a straight line originating from the origin, it often suggests a linear relationship between these parameters and the output, with varying degrees of influence. The slope of the line can indicate the strength of this linearity.
+    \item \textbf{Parameters forming a Hyperbola (Non-linear, Interaction-driven)}: A hyperbolic distribution, where parameters with higher $\mu^*$ also tend to have higher $\sigma$, is characteristic of models with significant non-linearities and interaction effects. This is common in complex systems where the effect of one parameter is heavily modulated by others.
+    \item \textbf{Cross-shaped Distribution (Mixed Effects)}: A cross-shaped pattern might emerge if some parameters primarily exhibit main effects (low $\sigma$) while others are dominated by interaction effects (high $\sigma$), with varying degrees of overall influence. This indicates a diverse set of parameter behaviors within the model.
+    \item \textbf{Clustered Parameters (Similar Behavior)}: Parameters that cluster closely together in any region of the plot suggest that they behave similarly in terms of their influence and interaction effects on the model output.
+\end{itemize}
+The Morris analysis is invaluable for model simplification and for focusing control strategy development. It tells us which parameters must be modeled with high fidelity and which ones are less critical.
+
+\subsection{Stochastic Sampling for Robustness Training}
+\noindent
+To train a single, robust "generalist" agent, the agent must be exposed to a wide variety of scenarios during its training phase. The goal is to create a dataset of configuration files that adequately covers the entire parameter space defined in Table \ref{tab:sa_parameters_detailed}.
+
+\subsubsection{Grid Search and its Limitations}
+\noindent
+The most exhaustive approach is a Grid Search, which involves creating a scenario for every single possible combination of the parameter levels. As calculated previously, for the nine parameters, this would result in:
+\begin{equation}
+    5 \times 5 \times 5 \times 4 \times 4 \times 5 \times 5 \times 5 \times 5 = 1,250,000
+\end{equation}
+\noindent
+Generating and storing over a million configuration files is computationally impractical and inefficient. Training on such a dataset would be extremely slow.
+
+
+\subsection{Dynamic Parameter Randomization}
+\noindent
+This is the most advanced and efficient methodology implemented in this work, selected as the final approach for training a robust agent. It completely eliminates the need for creating and storing static scenario files.
+
+\noindent
+This method uses a custom Gymnasium environment, \texttt{RobustnessEnv}, which wraps the core \texttt{EV2Gym} simulator. At the beginning of every single training episode, when the \texttt{reset()} function is called, this wrapper performs the following actions in memory:
+\begin{enumerate}
+    \item It randomly selects a value for each of the nine parameters from their respective lists of predefined levels.
+    \item It dynamically constructs a new configuration dictionary with this unique combination of parameters.
+    \item It initializes a new instance of the underlying \texttt{EV2Gym} environment for that episode using this dynamic configuration.
+\end{enumerate}
+\noindent
+This "on-the-fly" scenario generation ensures that the agent is exposed to a near-infinite variety of conditions, as every episode is unique. It is the most efficient method in terms of both disk space and computational overhead, as it removes the file I/O bottleneck entirely. The neural network architecture is fixed beforehand to handle the maximum possible dimensions (e.g., 100 charging stations), and padding is used dynamically for any episode that uses a smaller dimension, as explained in the previous chapter. This approach represents a state-of-the-art method for training highly robust and generalizable control agents.
+
+\section{Analysis of Results}
+
+\subsection{One-at-a-Time (OaaT) Results}
+\subsubsection{Analysis on the Number of Charging Stations}
+In this analysis, we vary the number of charging stations to observe its effect on system performance. The results are presented in the figures below.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{../sensitivity_analysis_results/sensitivity_Number_of_Charging_Stations_20251012_110213/sensitivity_Number_of_Charging_Stations_vs_average_transformer_loading_pct.png}
+    \caption{Sensitivity of Average Transformer Loading Pct to the Number of Charging Stations.}
+    \label{fig:sa_ncs_average_transformer_loading_pct}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{../sensitivity_analysis_results/sensitivity_Number_of_Charging_Stations_20251012_110213/sensitivity_Number_of_Charging_Stations_vs_average_user_satisfaction.png}
+    \caption{Sensitivity of Average User Satisfaction to the Number of Charging Stations.}
+    \label{fig:sa_ncs_average_user_satisfaction}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{../sensitivity_analysis_results/sensitivity_Number_of_Charging_Stations_20251012_110213/sensitivity_Number_of_Charging_Stations_vs_battery_degradation_calendar.png}
+    \caption{Sensitivity of Battery Degradation Calendar to the Number of Charging Stations.}
+    \label{fig:sa_ncs_battery_degradation_calendar}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{../sensitivity_analysis_results/sensitivity_Number_of_Charging_Stations_20251012_110213/sensitivity_Number_of_Charging_Stations_vs_battery_degradation_cycling.png}
+    \caption{Sensitivity of Battery Degradation Cycling to the Number of Charging Stations.}
+    \label{fig:sa_ncs_battery_degradation_cycling}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{../sensitivity_analysis_results/sensitivity_Number_of_Charging_Stations_20251012_110213/sensitivity_Number_of_Charging_Stations_vs_battery_degradation.png}
+    \caption{Sensitivity of Battery Degradation to the Number of Charging Stations.}
+    \label{fig:sa_ncs_battery_degradation}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{../sensitivity_analysis_results/sensitivity_Number_of_Charging_Stations_20251012_110213/sensitivity_Number_of_Charging_Stations_vs_calendar_degradation.png}
+    \caption{Sensitivity of Calendar Degradation to the Number of Charging Stations.}
+    \label{fig:sa_ncs_calendar_degradation}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{../sensitivity_analysis_results/sensitivity_Number_of_Charging_Stations_20251012_110213/sensitivity_Number_of_Charging_Stations_vs_cyclic_degradation.png}
+    \caption{Sensitivity of Cyclic Degradation to the Number of Charging Stations.}
+    \label{fig:sa_ncs_cyclic_degradation}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{../sensitivity_analysis_results/sensitivity_Number_of_Charging_Stations_20251012_110213/sensitivity_Number_of_Charging_Stations_vs_energy_tracking_error.png}
+    \caption{Sensitivity of Energy Tracking Error to the Number of Charging Stations.}
+    \label{fig:sa_ncs_energy_tracking_error}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{../sensitivity_analysis_results/sensitivity_Number_of_Charging_Stations_20251012_110213/sensitivity_Number_of_Charging_Stations_vs_energy_user_satisfaction.png}
+    \caption{Sensitivity of Energy User Satisfaction to the Number of Charging Stations.}
+    \label{fig:sa_ncs_energy_user_satisfaction}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{../sensitivity_analysis_results/sensitivity_Number_of_Charging_Stations_20251012_110213/sensitivity_Number_of_Charging_Stations_vs_execution_time.png}
+    \caption{Sensitivity of Execution Time to the Number of Charging Stations.}
+    \label{fig:sa_ncs_execution_time}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{../sensitivity_analysis_results/sensitivity_Number_of_Charging_Stations_20251012_110213/sensitivity_Number_of_Charging_Stations_vs_min_energy_user_satisfaction.png}
+    \caption{Sensitivity of Min Energy User Satisfaction to the Number of Charging Stations.}
+    \label{fig:sa_ncs_min_energy_user_satisfaction}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{../sensitivity_analysis_results/sensitivity_Number_of_Charging_Stations_20251012_110213/sensitivity_Number_of_Charging_Stations_vs_peak_transformer_loading_pct.png}
+    \caption{Sensitivity of Peak Transformer Loading Pct to the Number of Charging Stations.}
+    \label{fig:sa_ncs_peak_transformer_loading_pct}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{../sensitivity_analysis_results/sensitivity_Number_of_Charging_Stations_20251012_110213/sensitivity_Number_of_Charging_Stations_vs_power_tracker_violation.png}
+    \caption{Sensitivity of Power Tracker Violation to the Number of Charging Stations.}
+    \label{fig:sa_ncs_power_tracker_violation}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{../sensitivity_analysis_results/sensitivity_Number_of_Charging_Stations_20251012_110213/sensitivity_Number_of_Charging_Stations_vs_profit_per_ev.png}
+    \caption{Sensitivity of Profit Per Ev to the Number of Charging Stations.}
+    \label{fig:sa_ncs_profit_per_ev}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{../sensitivity_analysis_results/sensitivity_Number_of_Charging_Stations_20251012_110213/sensitivity_Number_of_Charging_Stations_vs_std_energy_user_satisfaction.png}
+    \caption{Sensitivity of Std Energy User Satisfaction to the Number of Charging Stations.}
+    \label{fig:sa_ncs_std_energy_user_satisfaction}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{../sensitivity_analysis_results/sensitivity_Number_of_Charging_Stations_20251012_110213/sensitivity_Number_of_Charging_Stations_vs_total_energy_charged.png}
+    \caption{Sensitivity of Total Energy Charged to the Number of Charging Stations.}
+    \label{fig:sa_ncs_total_energy_charged}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{../sensitivity_analysis_results/sensitivity_Number_of_Charging_Stations_20251012_110213/sensitivity_Number_of_Charging_Stations_vs_total_energy_discharged.png}
+    \caption{Sensitivity of Total Energy Discharged to the Number of Charging Stations.}
+    \label{fig:sa_ncs_total_energy_discharged}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{../sensitivity_analysis_results/sensitivity_Number_of_Charging_Stations_20251012_110213/sensitivity_Number_of_Charging_Stations_vs_total_profits.png}
+    \caption{Sensitivity of Total Profits to the Number of Charging Stations.}
+    \label{fig:sa_ncs_total_profits}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{../sensitivity_analysis_results/sensitivity_Number_of_Charging_Stations_20251012_110213/sensitivity_Number_of_Charging_Stations_vs_total_reward.png}
+    \caption{Sensitivity of Total Reward to the Number of Charging Stations.}
+    \label{fig:sa_ncs_total_reward}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{../sensitivity_analysis_results/sensitivity_Number_of_Charging_Stations_20251012_110213/sensitivity_Number_of_Charging_Stations_vs_total_steps_min_emergency_battery_capacity_violation.png}
+    \caption{Sensitivity of Total Steps Min Emergency Battery Capacity Violation to the Number of Charging Stations.}
+    \label{fig:sa_ncs_total_steps_min_emergency_battery_capacity_violation}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{../sensitivity_analysis_results/sensitivity_Number_of_Charging_Stations_20251012_110213/sensitivity_Number_of_Charging_Stations_vs_tracking_error.png}
+    \caption{Sensitivity of Tracking Error to the Number of Charging Stations.}
+    \label{fig:sa_ncs_tracking_error}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{../sensitivity_analysis_results/sensitivity_Number_of_Charging_Stations_20251012_110213/sensitivity_Number_of_Charging_Stations_vs_transformer_overload_kwh.png}
+    \caption{Sensitivity of Transformer Overload Kwh to the Number of Charging Stations.}
+    \label{fig:sa_ncs_transformer_overload_kwh}
+\end{figure}
+
+\subsection{Morris Method Global Analysis Results}
+The Morris method provides a higher-level view of the entire system's sensitivity. By analyzing the influence of multiple parameter changes simultaneously, it helps to identify not only the most influential parameters but also those that have strong non-linear effects or interactions. The following figures present the \(\mu^*-\sigma\) plots for each of the tested control algorithms.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{../sensitivity_analysis_results/morris_analysis_20251013_093108/AFAP/morris_analysis_plot_AFAP.png}
+    \caption{Morris method sensitivity plot for the AFAP algorithm.}
+    \label{fig:morris_afap}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{../sensitivity_analysis_results/morris_analysis_20251013_093108/ALAP/morris_analysis_plot_ALAP.png}
+    \caption{Morris method sensitivity plot for the ALAP algorithm.}
+    \label{fig:morris_alap}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{../sensitivity_analysis_results/morris_analysis_20251013_093108/DDPG/morris_analysis_plot_DDPG.png}
+    \caption{Morris method sensitivity plot for the DDPG algorithm.}
+    \label{fig:morris_ddpg}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{../sensitivity_analysis_results/morris_analysis_20251013_093108/DDPG+PER/morris_analysis_plot_DDPG+PER.png}
+    \caption{Morris method sensitivity plot for the DDPG+PER algorithm.}
+    \label{fig:morris_ddpg_per}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{../sensitivity_analysis_results/morris_analysis_20251013_093108/Online_MPC_Adaptive/morris_analysis_plot_Online_MPC_Adaptive.png}
+    \caption{Morris method sensitivity plot for the Online MPC Adaptive algorithm.}
+    \label{fig:morris_online_mpc_adaptive}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{../sensitivity_analysis_results/morris_analysis_20251013_093108/Online_MPC_NonAdaptive/morris_analysis_plot_Online_MPC_NonAdaptive.png}
+    \caption{Morris method sensitivity plot for the Online MPC NonAdaptive algorithm.}
+    \label{fig:morris_online_mpc_nonadaptive}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{../sensitivity_analysis_results/morris_analysis_20251013_093108/RR/morris_analysis_plot_RR.png}
+    \caption{Morris method sensitivity plot for the RR algorithm.}
+    \label{fig:morris_rr}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{../sensitivity_analysis_results/morris_analysis_20251013_093108/SAC/morris_analysis_plot_SAC.png}
+    \caption{Morris method sensitivity plot for the SAC algorithm.}
+    \label{fig:morris_sac}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{../sensitivity_analysis_results/morris_analysis_20251013_093108/TQC/morris_analysis_plot_TQC.png}
+    \caption{Morris method sensitivity plot for the TQC algorithm.}
+    \label{fig:morris_tqc}
+\end{figure}
+
+Based on this analysis, we can typically categorize the parameters:
+\begin{itemize}
+    \item \textbf{Highly Influential:} Parameters in the top-right quadrant (high \(\mu^*\), high \(\sigma\)) are the most critical. These would likely include \texttt{Discharge Price Factor} and \texttt{Transformer Max Power}, as they fundamentally define the economic incentives and physical limits of the system. Their high \(\sigma\) indicates that their effect is highly dependent on other system conditions.
+    \item \textbf{Influential with Low Interaction:} Parameters with high \(\mu^*\) but low \(\sigma\) have a strong, mostly linear effect on the output. \texttt{EV Spawn Multiplier} might fall into this category, as increasing the number of EVs generally increases total potential profit, but in a relatively predictable way.
+    \item \textbf{Non-Influential or Redundant:} Parameters in the bottom-left (low \(\mu^*\), low \(\sigma\)) have little impact on the output metric. For example, \texttt{EV Charge Efficiency} might be in this group if its range of variation (0.80-0.99) does not cause a significant enough change in total energy cost to affect the overall profit substantially compared to market price fluctuations.
+\end{itemize}
+
+The Morris analysis is invaluable for model simplification and for focusing control strategy development. It tells us which parameters must be modeled with high fidelity and which ones are less critical.
+
+\section{Conclusion}
+The sensitivity analysis performed in this chapter provides critical insights into the dynamics of the V2G control problem. The results clearly indicate that the system's performance is not equally sensitive to all parameters. Economic factors, such as the \texttt{Discharge Price Factor}, and hard physical constraints, like the \texttt{Transformer Max Power}, were identified as the most dominant drivers of profitability and grid stability.
+\noindent
+The analysis also highlighted the different responses of various control strategies to these parameter changes. While simple heuristics are brittle and perform poorly outside of their optimal operating conditions, advanced controllers like MPC and RL agents demonstrate greater resilience, although their performance is still heavily influenced by these key parameters.
+\noindent
+These findings have significant implications for the development of robust control agents. A successful generalist agent must be able to recognize the current parameter regime (e.g., a low-price-spread environment vs. a high-spread one) and adapt its strategy accordingly. The insights gained from this analysis directly inform the design of the reward functions and state representations for the reinforcement learning agents developed in the subsequent chapters.

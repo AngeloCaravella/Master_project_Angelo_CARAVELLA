@@ -5,6 +5,12 @@ import inspect
 from glob import glob
 import subprocess
 import time
+import yaml
+import itertools
+import numpy as np
+from pyDOE import lhs
+import gymnasium as gym
+from stable_baselines3.common.vec_env import DummyVecEnv
 
 # Import functions from run_experiments
 from run_experiments import (
@@ -14,6 +20,12 @@ from run_experiments import (
     run_benchmark
 )
 from ev2gym.rl_agent import reward as reward_module
+
+def set_nested_dict_value(d, path, value):
+    """Sets a value in a nested dictionary using a list of keys."""
+    for key in path[:-1]:
+        d = d.setdefault(key, {})
+    d[path[-1]] = value
 
 def get_interactive_input(prompt, default=None):
     """Helper function to get user input with a default value."""
@@ -64,8 +76,11 @@ def main():
 
     # --- Calculate MAX_CS ---
     config_path = "ev2gym/example_config_files/"
-    MAX_CS = calculate_max_cs(config_path)
-    print(f"\nRilevato un massimo di {MAX_CS} stazioni di ricarica tra tutti gli scenari.")
+    detected_max_cs = calculate_max_cs(config_path)
+    print(f"\nRilevato un massimo di {detected_max_cs} stazioni di ricarica tra tutti gli scenari.")
+    
+    user_max_cs = get_interactive_input(f"Inserisci il numero massimo di stazioni di ricarica per cui addestrare gli algoritmi RL (default: {detected_max_cs})", str(detected_max_cs))
+    MAX_CS = int(user_max_cs)
 
     # --- Get ALL available algorithms ---
     all_available_algorithms = get_algorithms(MAX_CS, is_thesis_mode)
@@ -143,8 +158,9 @@ def main():
                   "  '1' per Scenario Singolo\n"
                   "  '2' per Multi-Scenario Casuale (con reinserimento)\n"
                   "  '3' per Curriculum Learning\n"
-                  "  '4' per Casuale a Epoche (senza reinserimento)")
-        mode_choice = get_interactive_input(prompt, "2")
+                  "  '4' per Casuale a Epoche (senza reinserimento)\n"
+                  "  '5' per Addestramento a Parametri Dinamici")
+        mode_choice = get_interactive_input(prompt, "5")
         
         training_scenarios = []
         training_mode = 'random'
@@ -154,6 +170,13 @@ def main():
             training_mode = 'single'
             training_scenarios = [select_from_list(available_scenarios, "Seleziona lo scenario per l'addestramento:")]
             is_multi_scenario = False
+        elif mode_choice == '5':
+            training_mode = 'dynamic'
+            is_multi_scenario = True
+            print("\n--- Configurazione Addestramento a Parametri Dinamici ---")
+            print(f"NOTA: Questa modalità addestrerà i modelli con parametri variati dinamicamente, incluso il numero di stazioni di ricarica fino a 100 CS (valore massimo intrinseco). Si consiglia di impostare il MAX_CS a 100 per coerenza.")
+            base_scenario_path = select_from_list(available_scenarios, "Seleziona uno scenario di BASE per la randomizzazione dei parametri:")
+            training_scenarios = [base_scenario_path]
         else: # All other modes are multi-scenario
             is_multi_scenario = True
             if mode_choice == '2':
@@ -186,7 +209,8 @@ def main():
             selected_price_file_abs_path=selected_price_file_abs_path,
             steps_for_training=steps_for_training,
             training_mode=training_mode,
-            curriculum_steps_per_level=curriculum_steps_per_level
+            curriculum_steps_per_level=curriculum_steps_per_level,
+            session_name=session_name
         )
     else:
         saved_models_dir = './saved_models/'
@@ -209,7 +233,68 @@ def main():
         print(f"\nModelli selezionati da: {model_dir}")
         print("ATTENZIONE: Assicurati che gli scenari di benchmark siano compatibili con i modelli caricati.")
 
-    # --- Number of Simulations for Benchmark ---
+        # --- Read and display neural network dimensions ---
+        print("\n--- Dimensioni delle reti neurali dei modelli RL caricati ---")
+        
+        # Get the list of RL algorithms from all_available_algorithms
+        rl_algorithms_info = {k: v for k, v in all_available_algorithms.items() if v[1] is not None}
+
+        if not rl_algorithms_info:
+            print("Nessun algoritmo RL configurato per l'ispezione.")
+        else:
+            # Determine target shapes from metadata if available (for multi-scenario models)
+            target_obs_shape = None
+            target_action_shape = None
+            if is_multi_scenario and os.path.exists(metadata_path):
+                try:
+                    with open(metadata_path, 'r') as f:
+                        metadata = json.load(f)
+                    target_obs_shape = tuple(metadata["observation_space_shape"])
+                    target_action_shape = tuple(metadata["action_space_shape"])
+                    print(f"Dimensioni target dell'ambiente (da metadati): Osservazione={target_obs_shape}, Azione={target_action_shape}")
+                except Exception as e:
+                    print(f"ERRORE durante la lettura dei metadati del modello: {e}")
+                    target_obs_shape = None
+                    target_action_shape = None
+            elif not is_multi_scenario:
+                print("NOTA: Per i modelli addestrati su scenario singolo, le dimensioni della rete potrebbero non essere accurate senza l'ambiente di addestramento originale.")
+
+            for algo_name, (algo_class, rl_class, kwargs) in rl_algorithms_info.items():
+                model_file_name = f'{algo_name.lower().replace("+", "_")}_model.zip'
+                model_path = os.path.join(model_dir, model_file_name)
+
+                if os.path.exists(model_path):
+                    try:
+                        # Create a dummy environment if target shapes are known
+                        temp_env_for_load = None
+                        if target_obs_shape and target_action_shape:
+                            dummy_env_instance = gym.make("CartPole-v1") # Placeholder, will be replaced
+                            dummy_env_instance.observation_space = gym.spaces.Box(low=-np.inf, high=np.inf, shape=target_obs_shape, dtype=np.float64)
+                            dummy_env_instance.action_space = gym.spaces.Box(low=-1.0, high=1.0, shape=target_action_shape, dtype=np.float64)
+                            temp_env_for_load = DummyVecEnv([lambda: dummy_env_instance])
+                        
+                        model = rl_class.load(model_path, env=temp_env_for_load, device="cpu") # Load on CPU
+
+                        obs_dim = model.policy.observation_space.shape
+                        action_dim = model.policy.action_space.shape
+                        
+                        print(f"  - {algo_name}:")
+                        print(f"    Dimensione Input (Observation Space): {obs_dim}")
+                        print(f"    Dimensione Output (Action Space): {action_dim}")
+                        
+                        # Attempt to get hidden layer info if available
+                        if hasattr(model.policy, 'mlp_extractor'):
+                            print(f"    Architettura della rete (strati nascosti): Presente (dettagli specifici dipendono dall'implementazione).")
+                        
+                        if temp_env_for_load:
+                            temp_env_for_load.close()
+
+                    except Exception as e:
+                        print(f"  - ERRORE durante il caricamento o l'ispezione del modello {algo_name}: {e}")
+                else:
+                    print(f"  - Modello {algo_name} non trovato in {model_dir}")
+
+        # --- Number of Simulations for Benchmark ---
     num_sims = int(get_interactive_input("Quante simulazioni di valutazione per scenario?", "1"))
 
     # --- Run Final Benchmark ---

@@ -7,6 +7,38 @@ This online controller is implemented as the \texttt{OnlineMPC\_Solver} class wi
 
 A key characteristic of this implementation is that it strictly adheres to the mathematical formulation of a specific reference paper, including several equations that are physically unconventional. This is explicitly noted in the source code comments and reflected in the formulation below.
 
+\subsection{The CBC Solver and Branch and Cut Algorithm}
+\label{sec:cbc_branch_cut}
+
+The core of the online MPC controller is the CBC (COIN-OR Branch and Cut) solver, which is tasked with solving the Mixed-Integer Linear Program (MILP) formulated at each time step. CBC is a powerful, open-source solver that implements a sophisticated algorithm known as \textbf{Branch and Cut}, which is an exact method for solving MILPs. The algorithm is a hybrid of two powerful techniques: the Branch and Bound algorithm and the Cutting Plane method.
+
+\subsubsection{The Branch and Bound Method}
+The Branch and Bound algorithm is a systematic method for solving optimization problems with integer variables. It works by exploring a tree of subproblems, where each node in the tree represents a more constrained version of the original problem. The process can be summarized as follows:
+
+\begin{enumerate}
+    \item \textbf{Relaxation:} The algorithm starts by solving a "relaxed" version of the problem, where the integer constraints are ignored (i.e., integer variables are treated as continuous). This provides a fractional solution and an initial upper bound (for a maximization problem) on the optimal integer solution.
+    
+    \item \textbf{Branching:} If the solution to the relaxed problem contains fractional values for variables that should be integers, the algorithm "branches" on one of these fractional variables. For a variable $x$ with a fractional value (e.g., 2.5), it creates two new subproblems (branches): one with the added constraint $x \le 2$ and another with the constraint $x \ge 3$. This process effectively divides the problem space.
+    
+    \item \textbf{Bounding:} For each new subproblem, the relaxed version is solved. The solution provides a local upper bound for that branch. If this bound is worse than the best integer solution found so far (the "incumbent"), that entire branch can be "pruned" (discarded), as it cannot lead to a better solution.
+    
+    \item \textbf{Termination:} The algorithm continues to branch and prune until an integer solution is found that is proven to be optimal (i.e., all other active branches have been explored and yield no better solutions).
+\end{enumerate}
+
+\subsubsection{The Cutting Plane Method}
+The Cutting Plane method enhances the Branch and Bound process by adding new constraints, known as "cutting planes" or "cuts," to the problem. These cuts are carefully constructed to "cut off" parts of the feasible region of the relaxed problem that do not contain any integer solutions, without removing any valid integer solutions.
+
+The key idea is that by adding these cuts, the feasible region of the relaxed problem becomes a tighter approximation of the true integer feasible region (the convex hull of the integer solutions). This leads to several benefits:
+\begin{itemize}
+    \item The solutions to the relaxed problems are closer to being integer-feasible.
+    \item The upper bounds generated are tighter, allowing the algorithm to prune branches more effectively and converge faster.
+\end{itemize}
+
+\subsubsection{Branch and Cut in CBC for MPC}
+The Branch and Cut algorithm, as implemented in CBC, combines these two methods. At each node of the Branch and Bound tree, the solver may generate and add cutting planes to the subproblem before deciding whether to branch further. This synergy makes the solver highly efficient.
+
+In the context of the MPC for V2G scheduling, this is particularly important. The binary variables $\omega^{\text{ch}}_{i,t}$ and $\omega^{\text{dis}}_{i,t}$ (which decide whether to charge or discharge) make the problem a MILP. A naive exploration of all combinations would be computationally intractable, especially with a long prediction horizon and many EVs. The Branch and Cut algorithm allows CBC to intelligently navigate the vast search space, finding the optimal charging and discharging schedule that maximizes profit while respecting all physical and operational constraints, and doing so within a timeframe suitable for online control.
+
 \subsection{Mathematical Formulation}
 The optimization problem is a \textbf{Mixed-Integer Linear Program (MILP)} characterized by a linear objective function, linear constraints, and a mix of continuous and binary decision variables.
 

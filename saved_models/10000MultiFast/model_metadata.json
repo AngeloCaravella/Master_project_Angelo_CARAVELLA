@@ -1,8 +1,0 @@
-{
-    "observation_space_shape": [
-        112
-    ],
-    "action_space_shape": [
-        25
-    ]
-}
