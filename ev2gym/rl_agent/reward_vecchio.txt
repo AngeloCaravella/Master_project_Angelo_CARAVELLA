@@ -9,54 +9,41 @@ from copy import deepcopy
 
 def FastProfitAdaptiveReward(env, total_costs, user_satisfaction_list, *args):
     """
-    Una funzione di reward adattiva che bilancia dinamicamente il profitto con le penalità.
+    Una funzione di reward adattiva, ottimizzata per la velocità computazionale e la massimizzazione del profitto.
 
-    Privilegia il profitto economico quando le performance sono buone, ma lo riduce per
-    concentrarsi sulla risoluzione dei problemi (bassa soddisfazione, sovraccarico)
-    quando le performance peggiorano.
+    Privilegia in modo aggressivo il profitto economico, applicando penalità che si adattano
+    dinamicamente in base alla performance recente del sistema riguardo la soddisfazione dell'utente
+    e il sovraccarico del trasformatore.
     """
-    # Inizializza i tracker di stato se non esistono.
+    # Inizializza i tracker di stato se non esistono. Per una maggiore pulizia,
+    # questa logica andrebbe nella funzione __init__ o reset dell'ambiente.
     if not hasattr(env, 'satisfaction_history'):
         env.satisfaction_history = deque(maxlen=100)
     if not hasattr(env, 'overload_frequency'):
         env.overload_frequency = deque(maxlen=100)
 
-    # Calcola le metriche storiche
+    # La ricompensa principale è il profitto economico diretto, ma con meno importanza.
+    reward = total_costs * 0.1
+    reward_components = {'profit': reward}
+
+    # Penalità Adattiva per la Soddisfazione dell'Utente
     avg_satisfaction = sum(env.satisfaction_history) / len(env.satisfaction_history) if env.satisfaction_history else 1.0
-    overload_freq = sum(env.overload_frequency) / len(env.overload_frequency) if env.overload_frequency else 0.0
-
-    # --- NUOVA LOGICA: Moltiplicatore di Profitto Dinamico ---
-    base_profit_multiplier = 0.1
-    
-    # Calcola un "bonus" basato sulla soddisfazione (da 0 a 1 per soddisfazione tra 90% e 100%)
-    satisfaction_bonus = max(0, (avg_satisfaction - 0.9) / 0.1)
-    
-    # Calcola un "bonus" basato sull'assenza di sovraccarico (da 1 a 0 per frequenza tra 0% e 20%)
-    overload_bonus = max(0, 1 - (overload_freq / 0.2))
-    
-    # Combina i bonus per un moltiplicatore che va da 0.1 (performance scarse) a 1.0 (performance ottime)
-    # Il moltiplicatore massimo è 0.1 (base) + 0.9 * (1.0 * 1.0) = 1.0
-    max_bonus = 0.9 
-    profit_multiplier = base_profit_multiplier + (max_bonus * satisfaction_bonus * overload_bonus)
-    
-    # Applica il moltiplicatore dinamico al profitto
-    reward = total_costs * profit_multiplier
-    reward_components = {'profit': reward, 'profit_multiplier': profit_multiplier}
-    # --- FINE NUOVA LOGICA ---
-
-    # Penalità Adattiva per la Soddisfazione dell'Utente (invariata)
     satisfaction_severity_multiplier = 200.0 * (1 - avg_satisfaction)**2
+    
     current_satisfaction_penalty = 0
     if user_satisfaction_list:
         min_satisfaction = min(user_satisfaction_list)
         if min_satisfaction < 0.95:
             current_satisfaction_penalty = -satisfaction_severity_multiplier * (1 - min_satisfaction)
+    
     if current_satisfaction_penalty < 0:
         reward += current_satisfaction_penalty
         reward_components['satisfaction_penalty'] = current_satisfaction_penalty
 
-    # Penalità Adattiva per il Sovraccarico del Trasformatore (invariata)
+    # Penalità Adattiva per il Sovraccarico del Trasformatore
+    overload_freq = sum(env.overload_frequency) / len(env.overload_frequency) if env.overload_frequency else 0.0
     overload_severity_multiplier = 50.0 * overload_freq
+
     current_overload_amount = sum(tr.get_how_overloaded() for tr in env.transformers)
     if current_overload_amount > 0:
         overload_penalty = -5.0 - (overload_severity_multiplier * current_overload_amount)
