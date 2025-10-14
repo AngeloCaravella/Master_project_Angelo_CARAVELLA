@@ -768,7 +768,34 @@ def run_benchmark(config_files, reward_func, algorithms_to_run, num_simulations,
                         plot_overload_composition(scenario_save_path, scenario_name, name, power_data, timescale)
                         plot_individual_ev_sessions(scenario_save_path, scenario_name, name, env_instance.unwrapped.departed_evs, timescale)
 
-                    stats = env_instance.unwrapped.stats
+                    # BUG FIX: The 'transformer_overload_kwh' from env.stats is unreliable.
+                    # Recalculate it manually from raw power vectors to ensure consistency with plots.
+                    
+                    # --- Vecchio codice (commentato) ---
+                    # stats = env_instance.unwrapped.stats
+
+                    # --- Nuovo codice ---
+                    unwrapped_env = env_instance.unwrapped
+                    ev_load = np.sum(unwrapped_env.cs_power, axis=0)
+                    inflexible_load = np.sum(unwrapped_env.tr_inflexible_loads, axis=0)
+                    solar_power = np.sum(unwrapped_env.tr_solar_power, axis=0)
+                    limit = unwrapped_env.transformers[0].max_power
+                    timescale = unwrapped_env.timescale
+
+                    if isinstance(limit, (list, np.ndarray)):
+                        limit = limit[0]
+
+                    net_load = ev_load + inflexible_load - solar_power
+                    overload_power = np.maximum(0, net_load - limit)
+                    overload_kwh = np.sum(overload_power * (timescale / 60.0))
+
+                    # Prendi le altre statistiche dall'ambiente
+                    stats = unwrapped_env.stats
+                    
+                    # Sovrascrivi la metrica dell'overload con quella corretta
+                    stats['transformer_overload_kwh'] = overload_kwh
+                    # --- Fine nuovo codice ---
+
                     stats['execution_time'] = time.time() - start_time
                     if departed_evs := env_instance.unwrapped.departed_evs:
                         degradation_data = [ev.get_battery_degradation() for ev in departed_evs]
@@ -834,8 +861,8 @@ def get_algorithms(max_cs: int, is_thesis_mode: bool) -> Dict[str, Tuple[Any, An
     # MPC algorithms
     mpc_algorithms = {
         "Online_MPC_NonAdaptive": (pulp_mpc.OnlineMPC_Solver, None, {
-            'prediction_horizon': 10, 
-            'control_horizon': 5, 
+            'prediction_horizon': 5, 
+            'control_horizon': 1, 
             'use_adaptive_horizon': False,
         }),
         "Online_MPC_Adaptive": (pulp_mpc.OnlineMPC_Solver, None, {

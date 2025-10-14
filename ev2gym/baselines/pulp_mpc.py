@@ -79,7 +79,7 @@ class OnlineMPC_Solver:
                     'phi': phi,
                     'E_initial': ev.get_soc() * ev.battery_capacity,
                     'I_ch_bar': ev.max_ac_charge_power / V, # Corrente massima di carica
-                    'I_dis_bar': abs(ev.max_discharge_power) / V, # Corrente massima di scarica
+                    'I_dis_bar': ev.max_discharge_power / V, # Corrente massima di scarica
                 }
 
         # --- Definizione del problema di ottimizzazione ---
@@ -108,15 +108,23 @@ class OnlineMPC_Solver:
         # La potenza diventa quindi un'espressione lineare dipendente solo da I_ch/I_dis.
         
         # (10) Potenza di carica P_ch
-        P_ch = { (i, t): I_ch[i, t] * active_evs[i]['V'] * np.sqrt(active_evs[i]['phi']) * active_evs[i]['eta_ch'] 
-                 for i, t in indices }
+        #P_ch = { (i, t): I_ch[i, t] * active_evs[i]['V'] * np.sqrt(active_evs[i]['phi']) * active_evs[i]['eta_ch'] 
+        #         for i, t in indices }
 
         # (11) Potenza di scarica P_dis
         # NOTA: L'efficienza di scarica (eta_dis) dovrebbe dividere la potenza, non moltiplicarla.
         # Il paper la usa come moltiplicatore, e noi seguiamo strettamente quella formulazione.
-        P_dis = { (i, t): I_dis[i, t] * active_evs[i]['V'] * np.sqrt(active_evs[i]['phi']) * active_evs[i]['eta_dis']
-                  for i, t in indices }
+        #P_dis = { (i, t): I_dis[i, t] * active_evs[i]['V'] * np.sqrt(active_evs[i]['phi']) * active_evs[i]['eta_dis']
+        #          for i, t in indices }
 
+
+         # P_ch e P_dis rappresentano la potenza scambiata con la rete (o all'interfaccia elettrica) non ci dovrebbe stare * omega_ch[cs_id, t] e omega_dis[cs_id, t]
+        P_ch = { (i, t): I_ch[i, t] * active_evs[i]['V'] * np.sqrt(active_evs[i]['phi']) 
+                 for i, t in indices }
+
+        P_dis = { (i, t): I_dis[i, t] * active_evs[i]['V'] * np.sqrt(active_evs[i]['phi'])
+                  for i, t in indices }
+        
         # --- Funzione Obiettivo (Equazione 23) ---
         # max Σ (-P_ch * c_ch + P_dis * c_dis) * Δt
         objective = pulp.lpSum(
@@ -137,23 +145,33 @@ class OnlineMPC_Solver:
                 # (15) Limite superiore sulla corrente di carica
                 # Questo vincolo lega anche la corrente alla variabile binaria omega_ch
                 prob += I_ch[cs_id, t] <= active_evs[cs_id]['I_ch_bar'] * omega_ch[cs_id, t]
-
+                
+                
                 # (16) Limite sulla corrente di scarica
-                # NOTA: La formula I_dis >= I_dis_bar è probabilmente un errore di battitura.
-                # Implementiamo il vincolo più plausibile I_dis <= I_dis_bar.
-                prob += I_dis[cs_id, t] <= active_evs[cs_id]['I_dis_bar'] * omega_dis[cs_id, t]
+             
+                prob += I_dis[cs_id, t] >= active_evs[cs_id]['I_dis_bar'] * omega_dis[cs_id, t]
+            
 
                 # (13) Dinamica della batteria
-                # NOTA: La formula E_t = E_{t-1} + (P_ch + P_dis) * dt è fisicamente errata.
-                # La potenza di scarica (P_dis) dovrebbe essere sottratta.
-                # Seguiamo strettamente la formula del paper.
+              
                 E_prev = active_evs[cs_id]['E_initial'] if t == 0 else E[cs_id, t-1]
-                prob += E[cs_id, t] == E_prev + (P_ch[cs_id, t] + P_dis[cs_id, t]) * timescale_h
+                #prob += E[cs_id, t] == E_prev + (P_ch[cs_id, t] + P_dis[cs_id, t]) * timescale_h
+                prob += E[cs_id, t] == E_prev + (P_ch[cs_id, t] * eta_ch - P_dis[cs_id, t] / eta_dis) * timescale_h
                 
                 # (12) Limite superiore di capacità della batteria
                 prob += E[cs_id, t] <= ev.battery_capacity
-                # Aggiungiamo un limite inferiore implicito per evitare che la batteria si scarichi troppo
+                # Limite inferiore per evitare scariche eccessive
                 prob += E[cs_id, t] >= ev.min_battery_capacity
+
+                # Vincoli (17) e (18) sulla corrente totale della stazione di ricarica
+                # sono omessi perché il modello opera a livello di potenza aggregata sul trasformatore,
+                # e i limiti di corrente dei singoli EV sono già inclusi.
+    
+                # (17, 18) Vincolo sulla corrente massima della stazione di ricarica
+                #cs = env.charging_stations[cs_id]
+                # La potenza massima della stazione è in kW, la tensione in kV, quindi la corrente risultante è in Ampere
+                #max_cs_current = cs.get_max_power() / active_evs[cs_id]['V']
+                #prob += I_ch[cs_id, t] + I_dis[cs_id, t] <= max_cs_current
 
             # (24) Vincolo sull'energia desiderata alla partenza
             if 0 <= dep_step < prediction_horizon:
@@ -162,7 +180,7 @@ class OnlineMPC_Solver:
 
         for t in range(prediction_horizon):
             # (19) Potenza totale assorbita/erogata dagli EV
-            # NOTA: Anche qui, P_dis dovrebbe essere sottratta. Seguiamo la formula.
+      
             P_EVs_t = pulp.lpSum(P_ch.get((i, t), 0) + P_dis.get((i, t), 0) for i in active_evs.keys())
             
             # (20) Limite di potenza del trasformatore (vincolo rigido)
@@ -174,10 +192,7 @@ class OnlineMPC_Solver:
             
             prob += P_EVs_t + inflexible_load + pv_generation <= transformer_limit
 
-        # Vincoli (17) e (18) sulla corrente totale della stazione di ricarica
-        # sono omessi perché il modello opera a livello di potenza aggregata sul trasformatore,
-        # e i limiti di corrente dei singoli EV sono già inclusi.
-
+   
         
 
         prob.solve(pulp.PULP_CBC_CMD(msg=0))

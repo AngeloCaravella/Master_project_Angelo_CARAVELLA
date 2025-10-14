@@ -14,15 +14,15 @@ This chapter presents a comprehensive sensitivity analysis of the EV2Gym simulat
     \item To gain insights that can guide the development of more robust and generalist control agents.
 \end{itemize}
 \noindent
-The analysis was conducted using the custom-built \texttt{sensitivity\_analysis.py} script,
+The analysis was conducted using the custom-built \textbf{sensitivity\_analysis.py} script,
 \\
 \noindent which automates the process of running large batches of simulations while systematically varying key input parameters.
 
 
-
 \section{Introduction to Global Sensitivity Analysis}
 
-In these sessions, the topic of global sensitivity analysis is discussed, which is presented as a very important method in uncertainty quantification. This method allows for a better understanding of the relationship between data, model, and prediction. There are many techniques for performing such global sensitivity analysis. However, before covering global sensitivity analysis, the speaker first discusses local sensitivity analysis.
+In these sessions, the topic of global sensitivity analysis is discussed, which is presented as a very important method in uncertainty quantification.\noindent
+ This method allows for a better understanding of the relationship between data, model, and prediction. There are many techniques for performing such global sensitivity analysis. However, before covering global sensitivity analysis, the speaker first discusses local sensitivity analysis.
 
 \section{Sensitivity Analysis (SA)}
 
@@ -45,7 +45,8 @@ In this context, sensitivity analysis allows for the reduction of uncertainty in
 As a side note, it is mentioned that there is no single, unique way of performing sensitivity analysis. Therefore, referring to "the" sensitivity analysis would actually point to a specific method. Each method allows for the study of different aspects, and it is important to understand which method is suitable for a given situation and application.
 
 \section{What Really Matters?}
-An example is provided for understanding the variation of radiation dose over time for individuals near nuclear repositories. Modeling this involves numerous processes like transport, flow, reactions, and geochemistry, resulting in an extremely complicated nonlinear system. The output, however, is a simple function over time. The goal of sensitivity analysis in this context is to understand which of the complex inputs truly matter and what interactions are necessary to comprehend the final performance measure.
+An example is provided for understanding the variation of radiation dose over time for individuals near nuclear repositories. Modeling this involves numerous processes like transport, flow, reactions, and geochemistry, resulting in an extremely complicated nonlinear system. The output, however, is a simple function over time. \noindent
+The goal of sensitivity analysis in this context is to understand which of the complex inputs truly matter and what interactions are necessary to comprehend the final performance measure.
 
 \section{Different Classes of Sensitivity Analysis}
 
@@ -147,7 +148,7 @@ An interaction means that the effect of one factor depends on the level of anoth
 \section{Methodology for Sensitivity and Robustness Analysis}
 \label{sec:sa_methodology}
 \noindent
-To systematically investigate the V2G system's behavior and train robust control agents, this work employs a suite of increasingly sophisticated methodologies, all orchestrated through the \texttt{sensitivity\_analysis.py} and \texttt{run\_interactive.py} scripts. These methods range from classical sensitivity analysis techniques to advanced, dynamic training environments.
+To systematically investigate the V2G system's behavior and train robust control agents, this work employs a suite of increasingly sophisticated methodologies, all orchestrated through the \textbf{sensitivity\_analysis.py} and \textbf{run\_interactive.py} scripts. These methods range from classical sensitivity analysis techniques to advanced, dynamic training environments.
 
 \subsection{Parameter and Model-Output Space}
 \noindent
@@ -203,11 +204,17 @@ The Morris method generates $r$ different trajectories through the $k$-dimension
 By plotting $\sigma$ versus $\mu^*$, we can visually classify parameters as either (a) having a large overall effect (high $\mu^*$), (b) being involved in significant interactions (high $\sigma$), or (c) being relatively non-influential (low $\mu^*$ and $\sigma$). This provides a global perspective on the model's sensitivities.
 
 \subsubsection{Implementation with SALib}
-To conduct the global sensitivity analysis using the Morris method, the Python library \texttt{SALib} was utilized. The process implemented in the \texttt{sensitivity\_analysis.py} script can be broken down into the following key steps:
+To conduct the global sensitivity analysis using the Morris method, the Python library \textbf{SALib} was utilized. The process implemented in the
+\\
+\noindent
+ \textbf{sensitivity\_analysis.py} script can be broken down into the following key steps:
 
 \begin{enumerate}
     \item \textbf{Problem Definition:}
-    First, the sensitivity problem is defined. This is done by creating a Python dictionary that specifies the parameters to be analyzed, their names, and their bounds. This data structure, named \texttt{problem}, is a fundamental requirement for the \texttt{SALib} library.
+    First, the sensitivity problem is defined. This is done by creating a Python dictionary that specifies the parameters to be analyzed, their names, and their bounds. 
+\\
+\noindent
+This data structure, named \textbf{problem}, is a fundamental requirement for the \textbf{SALib} library.
     
     \begin{verbatim}
 problem = {
@@ -220,7 +227,13 @@ problem = {
     \end{verbatim}
 
     \item \textbf{Sampling:}
-    Next, the Morris sampler provided by \texttt{SALib} is used to generate the input points to be evaluated. The function \texttt{morris\_sampler.sample()} takes the \texttt{problem} dictionary, the number of trajectories to generate (\texttt{N}), and the number of grid levels (\texttt{num\_levels}) as input. The function returns a NumPy array, \texttt{param\_values}, where each row represents a combination of input parameters on which to run the model.
+    Next, the Morris sampler provided by \textbf{SALib} is used to generate the input points to be evaluated.
+\\
+\noindent
+ The function \textbf{morris\_sampler.sample()} takes the \textbf{problem} dictionary, the number of trajectories to generate (\textbf{N}), and the number of grid levels (\textbf{num\_levels}) as input.
+\\
+\noindent
+ The function returns a NumPy array, \textbf{param\_values}, where each row represents a combination of input parameters on which to run the model.
     
     \begin{verbatim}
 from SALib.sample import morris as morris_sampler
@@ -231,10 +244,13 @@ param_values = morris_sampler.sample(problem,
     \end{verbatim}
 
     \item \textbf{Model Execution:}
-    The code then iterates over each row of the \texttt{param\_values} array. For each combination of parameters, a model simulation is executed (\texttt{run\_benchmark}), and the output of interest (e.g., \texttt{total\_profits}) is recorded. These results are stored in a NumPy array \texttt{Y}.
+    The code then iterates over each row of the \textbf{param\_values} array. 
+\\\noindent
+For each combination of parameters, a model simulation is executed (\textbf{run\_benchmark}), and the output of interest (e.g., \textbf{total\_profits}) is recorded. These results are stored in a NumPy array \textbf{Y}.
 
     \item \textbf{Analysis of Results:}
-    Once the model has been run for all sampling points, the results are analyzed using the \texttt{morris\_analyzer.analyze()} function. This function calculates the Morris sensitivity indices, primarily:
+\noindent
+    Once the model has been run for all sampling points, the results are analyzed using the \textbf{morris\_analyzer.analyze()} function. This function calculates the Morris sensitivity indices, primarily:
     \begin{itemize}
         \item \textbf{$\mu^*$ (mu\_star):} An estimate of the mean absolute effect of a parameter on the output. A high value indicates an influential parameter.
         \item \textbf{$\sigma$ (sigma):} The standard deviation of the elementary effects, which indicates non-linear effects or interactions with other parameters.
@@ -249,7 +265,7 @@ Si = morris_analyzer.analyze(problem,
                              conf_level=0.95)
     \end{verbatim}
     
-    The returned \texttt{Si} object contains the results of the analysis, which are then used to generate tables and plots to interpret the influence of each parameter.
+    The returned \textbf{Si} object contains the results of the analysis, which are then used to generate tables and plots to interpret the influence of each parameter.
     
 \end{enumerate}
 
@@ -324,8 +340,8 @@ The $\mu^*-\sigma$ plot is the primary visualization tool for the Morris method,
 Figure 4.1 illustrates how parameters typically cluster in different regions of the plot, each indicating a distinct type of influence:
 \begin{itemize}
     \item \textbf{Region 1: High $\mu^*$, Low $\sigma$ (Main Effect, Linear)}: Parameters in this region have a strong, consistent, and mostly linear effect on the model output. Their influence is largely independent of the values of other parameters. Examples might include fundamental physical constants or primary drivers of the system.
-    \item \textbf{Region 2: High $\mu^*$, High $\sigma$ (Strong Influence, Non-linear/Interactive)}: These are the most critical parameters. They have a significant overall impact, but their effect is highly dependent on the values of other parameters. This indicates strong non-linearities or interactions. \texttt{Discharge Price Factor} and \texttt{Transformer Max Power} often fall into this category in V2G systems, as their impact is heavily modulated by other conditions.
-    \item \textbf{Region 3: Low $\mu^*$, Low $\sigma$ (Negligible Influence)}: Parameters located here have little to no effect on the model output. They are generally unimportant and can often be fixed without significantly altering the model's behavior. \texttt{EV Charge Efficiency} might be an example if its variation range is small compared to other factors.
+    \item \textbf{Region 2: High $\mu^*$, High $\sigma$ (Strong Influence, Non-linear/Interactive)}: These are the most critical parameters. They have a significant overall impact, but their effect is highly dependent on the values of other parameters. This indicates strong non-linearities or interactions. \textbf{Discharge Price Factor} and \textbf{Transformer Max Power} often fall into this category in V2G systems, as their impact is heavily modulated by other conditions.
+    \item \textbf{Region 3: Low $\mu^*$, Low $\sigma$ (Negligible Influence)}: Parameters located here have little to no effect on the model output. They are generally unimportant and can often be fixed without significantly altering the model's behavior. \textbf{EV Charge Efficiency} might be an example if its variation range is small compared to other factors.
     \item \textbf{Region 4: Low $\mu^*$, High $\sigma$ (Non-linear/Interactive but Small Overall Effect)}: These parameters exhibit strong interactions or non-linear effects, but their overall impact on the model output is relatively small. While they interact with other parameters, their individual contribution to the output variance is limited.
 
 \end{itemize}
@@ -359,11 +375,11 @@ Generating and storing over a million configuration files is computationally imp
 This is the most advanced and efficient methodology implemented in this work, selected as the final approach for training a robust agent. It completely eliminates the need for creating and storing static scenario files.
 
 \noindent
-This method uses a custom Gymnasium environment, \texttt{RobustnessEnv}, which wraps the core \texttt{EV2Gym} simulator. At the beginning of every single training episode, when the \texttt{reset()} function is called, this wrapper performs the following actions in memory:
+This method uses a custom Gymnasium environment, \textbf{RobustnessEnv}, which wraps the core \textbf{EV2Gym} simulator. At the beginning of every single training episode, when the \textbf{reset()} function is called, this wrapper performs the following actions in memory:
 \begin{enumerate}
     \item It randomly selects a value for each of the nine parameters from their respective lists of predefined levels.
     \item It dynamically constructs a new configuration dictionary with this unique combination of parameters.
-    \item It initializes a new instance of the underlying \texttt{EV2Gym} environment for that episode using this dynamic configuration.
+    \item It initializes a new instance of the underlying \textbf{EV2Gym} environment for that episode using this dynamic configuration.
 \end{enumerate}
 \noindent
 This "on-the-fly" scenario generation ensures that the agent is exposed to a near-infinite variety of conditions, as every episode is unique. It is the most efficient method in terms of both disk space and computational overhead, as it removes the file I/O bottleneck entirely. The neural network architecture is fixed beforehand to handle the maximum possible dimensions (e.g., 100 charging stations), and padding is used dynamically for any episode that uses a smaller dimension, as explained in the previous chapter. This approach represents a state-of-the-art method for training highly robust and generalizable control agents.
@@ -596,15 +612,15 @@ The Morris method provides a higher-level view of the entire system's sensitivit
 
 Based on this analysis, we can typically categorize the parameters:
 \begin{itemize}
-    \item \textbf{Highly Influential:} Parameters in the top-right quadrant (high \(\mu^*\), high \(\sigma\)) are the most critical. These would likely include \texttt{Discharge Price Factor} and \texttt{Transformer Max Power}, as they fundamentally define the economic incentives and physical limits of the system. Their high \(\sigma\) indicates that their effect is highly dependent on other system conditions.
-    \item \textbf{Influential with Low Interaction:} Parameters with high \(\mu^*\) but low \(\sigma\) have a strong, mostly linear effect on the output. \texttt{EV Spawn Multiplier} might fall into this category, as increasing the number of EVs generally increases total potential profit, but in a relatively predictable way.
-    \item \textbf{Non-Influential or Redundant:} Parameters in the bottom-left (low \(\mu^*\), low \(\sigma\)) have little impact on the output metric. For example, \texttt{EV Charge Efficiency} might be in this group if its range of variation (0.80-0.99) does not cause a significant enough change in total energy cost to affect the overall profit substantially compared to market price fluctuations.
+    \item \textbf{Highly Influential:} Parameters in the top-right quadrant (high \(\mu^*\), high \(\sigma\)) are the most critical. These would likely include \textbf{Discharge Price Factor} and \textbf{Transformer Max Power}, as they fundamentally define the economic incentives and physical limits of the system. Their high \(\sigma\) indicates that their effect is highly dependent on other system conditions.
+    \item \textbf{Influential with Low Interaction:} Parameters with high \(\mu^*\) but low \(\sigma\) have a strong, mostly linear effect on the output. \textbf{EV Spawn Multiplier} might fall into this category, as increasing the number of EVs generally increases total potential profit, but in a relatively predictable way.
+    \item \textbf{Non-Influential or Redundant:} Parameters in the bottom-left (low \(\mu^*\), low \(\sigma\)) have little impact on the output metric. For example, \textbf{EV Charge Efficiency} might be in this group if its range of variation (0.80-0.99) does not cause a significant enough change in total energy cost to affect the overall profit substantially compared to market price fluctuations.
 \end{itemize}
 
 The Morris analysis is invaluable for model simplification and for focusing control strategy development. It tells us which parameters must be modeled with high fidelity and which ones are less critical.
 
 \section{Conclusion}
-The sensitivity analysis performed in this chapter provides critical insights into the dynamics of the V2G control problem. The results clearly indicate that the system's performance is not equally sensitive to all parameters. Economic factors, such as the \texttt{Discharge Price Factor}, and hard physical constraints, like the \texttt{Transformer Max Power}, were identified as the most dominant drivers of profitability and grid stability.
+The sensitivity analysis performed in this chapter provides critical insights into the dynamics of the V2G control problem. The results clearly indicate that the system's performance is not equally sensitive to all parameters. Economic factors, such as the \textbf{Discharge Price Factor}, and hard physical constraints, like the \textbf{Transformer Max Power}, were identified as the most dominant drivers of profitability and grid stability.
 \noindent
 The analysis also highlighted the different responses of various control strategies to these parameter changes. While simple heuristics are brittle and perform poorly outside of their optimal operating conditions, advanced controllers like MPC and RL agents demonstrate greater resilience, although their performance is still heavily influenced by these key parameters.
 \noindent
