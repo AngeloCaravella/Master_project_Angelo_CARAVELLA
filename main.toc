@@ -99,114 +99,115 @@
 \contentsline {subsection}{\numberline {3.2.2}Scenario structure Yaml file}{61}{subsection.3.2.2}%
 \contentsline {section}{\numberline {3.3}Core Simulation Parameters}{62}{section.3.3}%
 \contentsline {section}{\numberline {3.4}Temporal and Contextual Settings}{62}{section.3.4}%
-\contentsline {section}{\numberline {3.5}Stochastic Demand Modeling}{63}{section.3.5}%
+\contentsline {section}{\numberline {3.5}Stochastic Demand Modeling}{62}{section.3.5}%
 \contentsline {section}{\numberline {3.6}Economic Framework}{63}{section.3.6}%
 \contentsline {section}{\numberline {3.7}Physical Infrastructure}{63}{section.3.7}%
 \contentsline {section}{\numberline {3.8}Exogenous Energy Events}{64}{section.3.8}%
 \contentsline {section}{\numberline {3.9}Electric Vehicle Fleet Specification}{64}{section.3.9}%
-\contentsline {subsection}{\numberline {3.9.1}Dual-Mode Training: Specialists and Generalists}{65}{subsection.3.9.1}%
+\contentsline {subsection}{\numberline {3.9.1}Dual-Mode Training: Specialists and Generalists}{64}{subsection.3.9.1}%
 \contentsline {subsubsection}{Advanced Multi-Scenario Training Strategies}{65}{section*.20}%
-\contentsline {subsection}{\numberline {3.9.2}MPC Integration and Approximation}{66}{subsection.3.9.2}%
-\contentsline {subsection}{\numberline {3.9.3}Rigorous and Reproducible Benchmarking}{66}{subsection.3.9.3}%
+\contentsline {subsection}{\numberline {3.9.2}MPC Integration and Approximation}{65}{subsection.3.9.2}%
+\contentsline {subsection}{\numberline {3.9.3}Rigorous and Reproducible Benchmarking}{65}{subsection.3.9.3}%
 \contentsline {subsection}{\numberline {3.9.4}Software Implementation and Project Structure}{66}{subsection.3.9.4}%
 \contentsline {section}{\numberline {3.10}Core Physical Models}{67}{section.3.10}%
-\contentsline {subsection}{\numberline {3.10.1}EV Model and Charging/Discharging Dynamics}{67}{subsection.3.10.1}%
-\contentsline {subsection}{\numberline {3.10.2}Battery Degradation Model}{67}{subsection.3.10.2}%
+\contentsline {subsection}{\numberline {3.10.1}EV Model and Charging/Discharging Dynamics}{68}{subsection.3.10.1}%
+\contentsline {subsection}{\numberline {3.10.2}Battery Degradation Model}{68}{subsection.3.10.2}%
 \contentsline {subsection}{\numberline {3.10.3}Reproducible Benchmarking and Evaluation}{68}{subsection.3.10.3}%
-\contentsline {subsection}{\numberline {3.10.4}Interactive Web-Based Dashboard}{68}{subsection.3.10.4}%
-\contentsline {subsubsection}{Simulation Orchestrator}{68}{section*.21}%
+\contentsline {subsection}{\numberline {3.10.4}Interactive Web-Based Dashboard}{69}{subsection.3.10.4}%
+\contentsline {subsubsection}{Simulation Orchestrator}{69}{section*.21}%
 \contentsline {subsubsection}{Results Visualizer}{69}{section*.22}%
 \contentsline {section}{\numberline {3.11}Evaluation Metrics}{69}{section.3.11}%
 \contentsline {section}{\numberline {3.12}Simulator Implementation Details}{70}{section.3.12}%
 \contentsline {subsubsection}{Vehicle Definition Modes}{70}{section*.23}%
-\contentsline {subsubsection}{Empirical Calibration of the Degradation Model}{70}{section*.24}%
+\contentsline {subsubsection}{Empirical Calibration of the Degradation Model}{71}{section*.24}%
 \contentsline {section}{\numberline {3.13}Simulation Framework Components}{71}{section.3.13}%
-\contentsline {subsection}{\numberline {3.13.1}Electric Vehicle Model (\texttt {ev.py})}{71}{subsection.3.13.1}%
-\contentsline {subsubsection}{State and Attribute Representation}{71}{section*.25}%
-\contentsline {subsubsection}{Charging and Discharging Dynamics}{71}{section*.26}%
-\contentsline {paragraph}{Two-Stage Charging Model (\texttt {\_charge} method).}{72}{section*.27}%
-\contentsline {paragraph}{Discharging Model (\texttt {\_discharge} method).}{72}{section*.28}%
-\contentsline {subsubsection}{User Satisfaction Metric}{72}{section*.29}%
-\contentsline {subsection}{\numberline {3.13.2}Charging Station Model (\texttt {ev\_charger.py})}{73}{subsection.3.13.2}%
+\contentsline {subsection}{\numberline {3.13.1}Electric Vehicle Model (\textbf {ev.py})}{71}{subsection.3.13.1}%
+\contentsline {subsubsection}{State and Attribute Representation}{72}{section*.25}%
+\contentsline {subsubsection}{Charging and Discharging Dynamics}{72}{section*.26}%
+\contentsline {paragraph}{Two-Stage Charging Model (\textbf {\_charge} method).}{72}{section*.27}%
+\contentsline {paragraph}{Discharging Model (\textbf {\_discharge} method).}{73}{section*.28}%
+\contentsline {subsubsection}{User Satisfaction Metric}{73}{section*.29}%
+\contentsline {subsection}{\numberline {3.13.2}Charging Station Model (\textbf {ev\_charger.py})}{73}{subsection.3.13.2}%
 \contentsline {subsubsection}{Role and Attributes}{73}{section*.30}%
-\contentsline {subsubsection}{Operational Logic (\texttt {step} method)}{73}{section*.31}%
-\contentsline {subsection}{\numberline {3.13.3}Transformer Model (\texttt {transformer.py})}{73}{subsection.3.13.3}%
+\contentsline {subsubsection}{Operational Logic (\textbf {step} method)}{73}{section*.31}%
+\contentsline {subsection}{\numberline {3.13.3}Transformer Model (\textbf {transformer.py})}{74}{subsection.3.13.3}%
 \contentsline {subsubsection}{Model Components}{74}{section*.32}%
 \contentsline {subsubsection}{Core Functionality}{74}{section*.33}%
 \contentsline {paragraph}{Load Aggregation.}{74}{section*.34}%
-\contentsline {paragraph}{Overload Detection.}{74}{section*.35}%
-\contentsline {paragraph}{Forecasting with Uncertainty.}{74}{section*.36}%
-\contentsline {subsection}{\numberline {3.13.4}Main Gym Environment (\texttt {ev2gym\_env.py})}{74}{subsection.3.13.4}%
-\contentsline {subsubsection}{Environment Structure and Main Loop}{74}{section*.37}%
-\contentsline {paragraph}{Initialization (\texttt {\__init__}).}{75}{section*.38}%
-\contentsline {paragraph}{Simulation Step (\texttt {step(actions)}).}{75}{section*.39}%
-\contentsline {paragraph}{Reset (\texttt {reset}).}{75}{section*.40}%
-\contentsline {section}{\numberline {3.14}Reinforcement Learning Formulation}{75}{section.3.14}%
+\contentsline {paragraph}{Overload Detection.}{75}{section*.35}%
+\contentsline {paragraph}{Forecasting with Uncertainty.}{75}{section*.36}%
+\contentsline {subsection}{\numberline {3.13.4}Main Gym Environment (\textbf {ev2gym\_env.py})}{75}{subsection.3.13.4}%
+\contentsline {subsubsection}{Environment Structure and Main Loop}{75}{section*.37}%
+\contentsline {paragraph}{Initialization (\textbf {\__init__}).}{75}{section*.38}%
+\contentsline {paragraph}{Simulation Step (\textbf {step(actions)}).}{75}{section*.39}%
+\contentsline {paragraph}{Reset (\textbf {reset}).}{76}{section*.40}%
+\contentsline {section}{\numberline {3.14}Reinforcement Learning Formulation}{76}{section.3.14}%
 \contentsline {section}{\numberline {3.15}State Space ($S$)}{76}{section.3.15}%
 \contentsline {subsection}{\numberline {3.15.1}Action Space ($A$)}{77}{subsection.3.15.1}%
 \contentsline {subsection}{\numberline {3.15.2}Reward Function ($R$)}{77}{subsection.3.15.2}%
-\contentsline {section}{\numberline {3.16}Reinforcement Learning Algorithms}{77}{section.3.16}%
-\contentsline {subsubsection}{Soft Actor-Critic (SAC)}{77}{section*.41}%
-\contentsline {paragraph}{Implementation Details}{79}{section*.42}%
-\contentsline {subsubsection}{Deep Deterministic Policy Gradient + PER (DDPG+PER)}{80}{section*.43}%
-\contentsline {paragraph}{Implementation Details}{82}{section*.44}%
-\contentsline {subsubsection}{Truncated Quantile Critics (TQC)}{82}{section*.45}%
-\contentsline {paragraph}{Implementation Details}{84}{section*.46}%
-\contentsline {section}{\numberline {3.17}A History-Based Adaptive Reward for Profit Maximization}{84}{section.3.17}%
-\contentsline {subsubsection}{Economic Profit}{86}{section*.47}%
-\contentsline {subsubsection}{Adaptive User Satisfaction Penalty}{87}{section*.48}%
-\contentsline {subsubsection}{Adaptive Transformer Overload Penalty}{87}{section*.49}%
-\contentsline {subsubsection}{Rationale and Significance}{87}{section*.50}%
-\contentsline {paragraph}{Implementation Details}{88}{section*.51}%
+\contentsline {section}{\numberline {3.16}Reinforcement Learning Algorithms}{78}{section.3.16}%
+\contentsline {subsubsection}{Soft Actor-Critic (SAC)}{78}{section*.41}%
+\contentsline {paragraph}{Implementation Details}{80}{section*.42}%
+\contentsline {subsubsection}{Deep Deterministic Policy Gradient + PER (DDPG+PER)}{81}{section*.43}%
+\contentsline {paragraph}{Implementation Details}{83}{section*.44}%
+\contentsline {subsubsection}{Truncated Quantile Critics (TQC)}{83}{section*.45}%
+\contentsline {paragraph}{Implementation Details}{85}{section*.46}%
+\contentsline {section}{\numberline {3.17}A History-Based Adaptive Reward for Profit Maximization}{85}{section.3.17}%
+\contentsline {subsubsection}{Dynamic Economic Profit}{87}{section*.47}%
+\contentsline {subsubsection}{Adaptive User Satisfaction Penalty}{88}{section*.48}%
+\contentsline {subsubsection}{Adaptive Transformer Overload Penalty}{88}{section*.49}%
 \contentsline {section}{\numberline {3.18}Model Predictive Control (MPC) Implementation}{88}{section.3.18}%
 \contentsline {section}{\numberline {3.19}Online MPC Formulation (PuLP Implementation)}{88}{section.3.19}%
-\contentsline {paragraph}{Implementation Details}{88}{section*.52}%
+\contentsline {paragraph}{Implementation Details}{89}{section*.50}%
 \contentsline {subsection}{\numberline {3.19.1}The CBC Solver and Branch and Cut Algorithm}{89}{subsection.3.19.1}%
-\contentsline {subsubsection}{The Branch and Bound Method}{89}{section*.53}%
-\contentsline {subsubsection}{The Cutting Plane Method}{89}{section*.54}%
-\contentsline {subsubsection}{Branch and Cut in CBC for MPC}{90}{section*.55}%
-\contentsline {subsection}{\numberline {3.19.2}Mathematical Formulation}{90}{subsection.3.19.2}%
-\contentsline {subsubsection}{Objective Function}{91}{section*.56}%
-\contentsline {subsubsection}{Constraints}{91}{section*.57}%
-\contentsline {section}{\numberline {3.20}Lyapunov-based Adaptive Horizon MPC}{92}{section.3.20}%
-\contentsline {section}{\numberline {3.21}Benchmark Results and Algorithm Comparison}{93}{section.3.21}%
-\contentsline {subsection}{\numberline {3.21.1}Scenario 1: Critical Case (High Demand & High Price Volatility)}{94}{subsection.3.21.1}%
-\contentsline {subsubsection}{Scenario Conditions}{94}{section*.58}%
-\contentsline {subsubsection}{Overall Performance Summary}{95}{section*.59}%
-\contentsline {subsubsection}{Grid Impact Analysis}{98}{section*.60}%
-\contentsline {subsubsection}{Individual EV Charging Profiles}{102}{section*.61}%
-\contentsline {subsection}{\numberline {3.21.2}Scenario 2: Realistic Case}{104}{subsection.3.21.2}%
-\contentsline {subsection}{\numberline {3.21.3}Scenario 3: Realistic Load Case}{104}{subsection.3.21.3}%
-\contentsline {subsection}{\numberline {3.21.4}Scenario 4: V2G Profit Maximization}{104}{subsection.3.21.4}%
-\contentsline {subsection}{\numberline {3.21.5}Scenario 5: V2G Profit with Load Balancing}{104}{subsection.3.21.5}%
-\contentsline {chapter}{\numberline {4}Sensitivity Analysis of the V2G System}{105}{chapter.4}%
-\contentsline {section}{\numberline {4.1}Introduction}{105}{section.4.1}%
-\contentsline {section}{\numberline {4.2}Introduction to Global Sensitivity Analysis}{105}{section.4.2}%
-\contentsline {section}{\numberline {4.3}Sensitivity Analysis (SA)}{106}{section.4.3}%
-\contentsline {subsection}{\numberline {4.3.1}Definition}{106}{subsection.4.3.1}%
-\contentsline {subsection}{\numberline {4.3.2}Applications and Benefits of SA}{106}{subsection.4.3.2}%
-\contentsline {section}{\numberline {4.4}What Really Matters?}{107}{section.4.4}%
-\contentsline {section}{\numberline {4.5}Different Classes of Sensitivity Analysis}{107}{section.4.5}%
-\contentsline {subsection}{\numberline {4.5.1}Local SA}{107}{subsection.4.5.1}%
-\contentsline {subsection}{\numberline {4.5.2}Global SA (GSA)}{107}{subsection.4.5.2}%
-\contentsline {section}{\numberline {4.6}Challenges}{108}{section.4.6}%
-\contentsline {section}{\numberline {4.7}Screening Techniques}{108}{section.4.7}%
-\contentsline {subsection}{\numberline {4.7.1}One-at-a-time (OAT)}{108}{subsection.4.7.1}%
-\contentsline {subsection}{\numberline {4.7.2}The Morris Method}{109}{subsection.4.7.2}%
-\contentsline {section}{\numberline {4.8}Note on Interactions}{110}{section.4.8}%
-\contentsline {subsection}{\numberline {4.8.1}Summary of Screening Techniques}{110}{subsection.4.8.1}%
-\contentsline {section}{\numberline {4.9}Methodology for Sensitivity and Robustness Analysis}{110}{section.4.9}%
-\contentsline {subsection}{\numberline {4.9.1}Parameter and Model-Output Space}{111}{subsection.4.9.1}%
-\contentsline {subsection}{\numberline {4.9.2}One-at-a-Time (OaaT) Sensitivity Analysis}{111}{subsection.4.9.2}%
-\contentsline {subsection}{\numberline {4.9.3}Global Sensitivity Analysis: The Morris Method}{112}{subsection.4.9.3}%
-\contentsline {subsubsection}{Implementation with SALib}{113}{section*.62}%
-\contentsline {subsubsection}{Interpreting the $\mu ^*-\sigma $ Plot}{114}{section*.63}%
-\contentsline {subsubsection}{Common Patterns in $\mu ^*-\sigma $ Plots}{116}{section*.64}%
-\contentsline {subsection}{\numberline {4.9.4}Stochastic Sampling for Robustness Training}{116}{subsection.4.9.4}%
-\contentsline {subsubsection}{Grid Search and its Limitations}{116}{section*.65}%
-\contentsline {subsection}{\numberline {4.9.5}Dynamic Parameter Randomization}{117}{subsection.4.9.5}%
-\contentsline {section}{\numberline {4.10}Analysis of Results}{117}{section.4.10}%
-\contentsline {subsection}{\numberline {4.10.1}One-at-a-Time (OaaT) Results}{117}{subsection.4.10.1}%
-\contentsline {subsubsection}{Analysis on the Number of Charging Stations}{117}{section*.66}%
-\contentsline {subsection}{\numberline {4.10.2}Morris Method Global Analysis Results}{128}{subsection.4.10.2}%
-\contentsline {section}{\numberline {4.11}Conclusion}{130}{section.4.11}%
+\contentsline {subsubsection}{The Branch and Bound Method}{89}{section*.51}%
+\contentsline {subsubsection}{The Cutting Plane Method}{89}{section*.52}%
+\contentsline {subsubsection}{Branch and Cut in CBC for MPC}{90}{section*.53}%
+\contentsline {subsection}{\numberline {3.19.2}Mathematical Formulation and Linearization}{90}{subsection.3.19.2}%
+\contentsline {subsubsection}{The Original Problem: A Complex MINLP}{90}{section*.54}%
+\contentsline {subsubsection}{The Linearization Strategy: Transforming the MINLP into a MILP}{92}{section*.55}%
+\contentsline {paragraph}{Simplification of Equations (10), (11), and (17)}{93}{section*.56}%
+\contentsline {paragraph}{The Key Role of Constraints (15) and (16)}{93}{section*.57}%
+\contentsline {subsubsection}{Omissions and Adherence to the Theoretical Formulation}{93}{section*.58}%
+\contentsline {section}{\numberline {3.20}Lyapunov-based Adaptive Horizon MPC}{93}{section.3.20}%
+\contentsline {section}{\numberline {3.21}Benchmark Results and Algorithm Comparison}{95}{section.3.21}%
+\contentsline {subsection}{\numberline {3.21.1}Scenario 1: Critical Case (High Demand & High Price Volatility)}{96}{subsection.3.21.1}%
+\contentsline {subsubsection}{Scenario Conditions}{96}{section*.59}%
+\contentsline {subsubsection}{Overall Performance Summary}{97}{section*.60}%
+\contentsline {subsubsection}{Grid Impact Analysis}{100}{section*.61}%
+\contentsline {subsubsection}{Individual EV Charging Profiles}{104}{section*.62}%
+\contentsline {subsection}{\numberline {3.21.2}Scenario 2: Realistic Case}{106}{subsection.3.21.2}%
+\contentsline {subsection}{\numberline {3.21.3}Scenario 3: Realistic Load Case}{106}{subsection.3.21.3}%
+\contentsline {subsection}{\numberline {3.21.4}Scenario 4: V2G Profit Maximization}{106}{subsection.3.21.4}%
+\contentsline {subsection}{\numberline {3.21.5}Scenario 5: V2G Profit with Load Balancing}{106}{subsection.3.21.5}%
+\contentsline {chapter}{\numberline {4}Sensitivity Analysis of the V2G System}{107}{chapter.4}%
+\contentsline {section}{\numberline {4.1}Introduction}{107}{section.4.1}%
+\contentsline {section}{\numberline {4.2}Introduction to Global Sensitivity Analysis}{107}{section.4.2}%
+\contentsline {section}{\numberline {4.3}Sensitivity Analysis (SA)}{108}{section.4.3}%
+\contentsline {subsection}{\numberline {4.3.1}Definition}{108}{subsection.4.3.1}%
+\contentsline {subsection}{\numberline {4.3.2}Applications and Benefits of SA}{108}{subsection.4.3.2}%
+\contentsline {section}{\numberline {4.4}What Really Matters?}{108}{section.4.4}%
+\contentsline {section}{\numberline {4.5}Different Classes of Sensitivity Analysis}{109}{section.4.5}%
+\contentsline {subsection}{\numberline {4.5.1}Local SA}{109}{subsection.4.5.1}%
+\contentsline {subsection}{\numberline {4.5.2}Global SA (GSA)}{109}{subsection.4.5.2}%
+\contentsline {section}{\numberline {4.6}Challenges}{110}{section.4.6}%
+\contentsline {section}{\numberline {4.7}Screening Techniques}{110}{section.4.7}%
+\contentsline {subsection}{\numberline {4.7.1}One-at-a-time (OAT)}{110}{subsection.4.7.1}%
+\contentsline {subsection}{\numberline {4.7.2}The Morris Method}{111}{subsection.4.7.2}%
+\contentsline {section}{\numberline {4.8}Note on Interactions}{112}{section.4.8}%
+\contentsline {subsection}{\numberline {4.8.1}Summary of Screening Techniques}{112}{subsection.4.8.1}%
+\contentsline {section}{\numberline {4.9}Methodology for Sensitivity and Robustness Analysis}{112}{section.4.9}%
+\contentsline {subsection}{\numberline {4.9.1}Parameter and Model-Output Space}{112}{subsection.4.9.1}%
+\contentsline {subsection}{\numberline {4.9.2}One-at-a-Time (OaaT) Sensitivity Analysis}{113}{subsection.4.9.2}%
+\contentsline {subsection}{\numberline {4.9.3}Global Sensitivity Analysis: The Morris Method}{113}{subsection.4.9.3}%
+\contentsline {subsubsection}{Implementation with SALib}{114}{section*.63}%
+\contentsline {subsubsection}{Interpreting the $\mu ^*-\sigma $ Plot}{116}{section*.64}%
+\contentsline {subsubsection}{Common Patterns in $\mu ^*-\sigma $ Plots}{117}{section*.65}%
+\contentsline {subsection}{\numberline {4.9.4}Stochastic Sampling for Robustness Training}{117}{subsection.4.9.4}%
+\contentsline {subsubsection}{Grid Search and its Limitations}{118}{section*.66}%
+\contentsline {subsection}{\numberline {4.9.5}Dynamic Parameter Randomization}{118}{subsection.4.9.5}%
+\contentsline {section}{\numberline {4.10}Analysis of Results}{118}{section.4.10}%
+\contentsline {subsection}{\numberline {4.10.1}One-at-a-Time (OaaT) Results}{118}{subsection.4.10.1}%
+\contentsline {subsubsection}{Analysis on the Number of Charging Stations}{118}{section*.67}%
+\contentsline {subsection}{\numberline {4.10.2}Morris Method Global Analysis Results}{129}{subsection.4.10.2}%
+\contentsline {section}{\numberline {4.11}Conclusion}{134}{section.4.11}%

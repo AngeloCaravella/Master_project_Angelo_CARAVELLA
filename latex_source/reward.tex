@@ -57,46 +57,16 @@ Since the $\Phi(s)$ term is added uniformly to all Q-values for a given state $s
 \]
 This theoretical guarantee is a cornerstone of PBRS, distinguishing it from other heuristic shaping methods that might inadvertently alter the optimal policy.
 
+
 \subsection{Practical Implications and Design Considerations}
 
-The policy invariance property of PBRS offers significant practical advantages:
-\begin{itemize}
-    \item \textbf{Accelerated Learning:} By providing immediate rewards for progress towards desirable states (e.g., states closer to a goal), PBRS can drastically reduce the sparsity of the reward signal, making exploration more efficient and accelerating convergence, especially in environments with delayed rewards.
-    \item \textbf{Reduced Exploration Risk:} Agents are less likely to get stuck in local optima or exhibit undesirable behaviors during early training phases, as the shaping guides them towards more promising regions of the state space.
-    \item \textbf{Expert Knowledge Integration:} The potential function $\Phi(s)$ can be designed using expert knowledge about the task. For instance, in a navigation task, $\Phi(s)$ could be inversely proportional to the distance to the goal, providing a positive shaping reward for moving closer to the target. In the V2G context, $\Phi(s)$ could reflect the desirability of states with high battery charge, low grid congestion, or high market prices.
-\end{itemize}
+PBRS offers several practical advantages due to its policy invariance. It accelerates learning by providing immediate shaping rewards, reducing reward sparsity and speeding up convergence, particularly in tasks with delayed rewards. Exploration is safer, as the agent is guided toward promising states, decreasing the likelihood of undesirable behaviors or local optima during early training. Expert knowledge can be integrated through the potential function $\Phi(s)$, which may encode task-specific insights such as distance to a goal in navigation tasks or battery/grid considerations in V2G applications. Effective design of $\Phi(s)$ is crucial and can follow strategies such as distance-based potentials, subgoal-based rewards for intermediate objectives, or feature-based functions capturing relevant state characteristics.
+\\
 \noindent
-Designing an effective potential function $\Phi(s)$ is key to successful PBRS. Common strategies include:
-\begin{itemize}
-    \item \textbf{Distance-based Potentials:} For tasks with a clear goal, $\Phi(s)$ can be defined based on the agent's proximity to the goal state (e.g., negative Manhattan distance or Euclidean distance).
-    \item \textbf{Subgoal-based Potentials:} In tasks requiring a sequence of steps or subgoals, $\Phi(s)$ can be constructed to provide positive potential for achieving intermediate objectives.
-    \item \textbf{Feature-based Potentials:} For complex state spaces, $\Phi(s)$ can be a linear or non-linear function of relevant state features, allowing for more nuanced guidance.
-\end{itemize}
-The choice of $\Phi(s)$ should reflect the designer's intuition about what constitutes "progress" or "desirable states" without explicitly dictating the optimal actions.
+Dynamic or adaptive reward functions evolve during training to address shifting objectives or environmental changes. They help agents manage multi-objective tasks by initially emphasizing simpler goals, gradually introducing more complex objectives as proficiency improves. Conflicting goals can be mitigated by prioritizing certain objectives early on, while adaptive mechanisms, including time-varying weights, curiosity-driven rewards, reward scaling, or meta-learning approaches, allow the reward function to adjust based on agent performance and environmental conditions. In V2G, for instance, an agent may initially be rewarded for connecting to the grid and maintaining minimum charge, while later rewards emphasize grid stability or profitable energy transactions, guiding learning toward comprehensive V2G management.
 
-\section{Dynamic and Adaptive Rewards}
-\label{sec:dynamic_rewards}
 
-In contrast to PBRS, which typically employs a static potential function throughout training, dynamic or adaptive reward functions are designed to evolve over time. This approach is particularly valuable for complex problems where the relative importance of different objectives may shift as the agent's competency develops, or as the environment itself changes.
 
-\subsection{Motivation and Mechanisms}
-
-Dynamic reward functions offer several advantages:
-\begin{itemize}
-    \item \textbf{Addressing Evolving Objectives:} In multi-objective problems like V2G, an agent might initially struggle with basic tasks (e.g., maintaining EV charge). As it masters these, the reward function can adapt to emphasize more advanced objectives (e.g., optimizing V2G service provision while avoiding grid overloads).
-    \item \textbf{Mitigating Conflicting Goals:} Early in training, conflicting objectives can hinder learning. Dynamic rewards can prioritize certain objectives initially, gradually introducing others as the agent becomes more capable.
-    \item \textbf{Responding to Environmental Changes:} In non-stationary environments, an adaptive reward function can adjust its weighting of different components to reflect current conditions (e.g., higher penalty for grid overload during peak demand).
-\end{itemize}
-\noindent
-Mechanisms for implementing dynamic rewards include:
-\begin{itemize}
-    \item \textbf{Time-Varying Weights:} The weights assigned to different components of a composite reward function can be adjusted based on training epochs, agent performance metrics, or predefined schedules.
-    \item \textbf{Curiosity-Driven Rewards:} Intrinsic rewards, such as those based on novelty or prediction error, can be dynamically added or removed to encourage exploration in early stages and then faded out as the agent becomes proficient.
-    \item \textbf{Adaptive Scaling:} Reward magnitudes can be scaled dynamically to maintain appropriate learning signals as the agent's performance improves or as the range of possible rewards changes.
-    \item \textbf{Meta-Learning for Rewards:} More advanced techniques involve meta-learning algorithms that learn to generate or adapt reward functions based on observed agent behavior and task progress.
-\end{itemize}
-\noindent
-In the V2G context, an agent might initially receive a high reward for simply connecting to the grid and maintaining a minimum charge level. As training progresses, the reward function could dynamically incorporate larger penalties for grid instability events or higher incentives for profitable energy transactions, thereby guiding the agent towards more sophisticated and holistic V2G management strategies.
 
 \section{Curriculum Learning}
 \label{sec:curriculum_learning}

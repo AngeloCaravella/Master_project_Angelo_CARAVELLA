@@ -355,6 +355,15 @@ Most RL algorithms can be understood within the framework of \textbf{Generalized
 \end{itemize}
 \noindent
 These two processes compete in the short term (improving the policy makes the value function inaccurate) but cooperate in the long term to converge to the optimal policy and optimal value function. \textbf{Dynamic Programming (DP)} methods like policy iteration and value iteration are classic examples of GPI, assuming a perfect model of the environment.
+\noindent
+In addition to \textbf{Dynamic Programming} methods based on a perfect model of the environment, there are also \textbf{value-based} techniques that fit within the GPI framework but do not require complete knowledge of the dynamics of the environment.
+
+\begin{itemize}
+\item \textbf{Value-Based Methods}: In these methods, the focus is primarily on learning the value function (such as $v_\pi$ or $q_\pi$), and the policy is implicitly derived from it, usually by making it \textit{greedy} with respect to the learned value function. Typical examples include \textbf{Q-Learning} and \textbf{SARSA}. These algorithms iteratively update value estimates based on experiences gathered from interacting with the environment, without the need for a complete model.
+\item \textbf{Policy-Based vs. Value-Based}: The main distinction is that in \textit{policy-based} methods, the policy is directly parameterized and optimized via gradient or other optimization methods (e.g., \textit{REINFORCE}, \textit{Actor-Critic}), while in \textit{value-based} methods, the policy is derived from the value function. In other words, value-based methods use value as an intermediary to improve the policy, while policy-based methods update the policy directly.
+\end{itemize}
+
+Overall, GPI offers a unifying framework: whether using a perfect model (DP) or learning from model-free data (value-based or policy-based), the interplay between policy evaluation and policy improvement remains the guiding principle. It is precisely this flexibility that makes GPI fundamental to understanding most modern reinforcement learning algorithms.
 
 \section{Learning from Experience: MC and TD Methods}
 When a model of the environment is not available, we must learn from sampled experience. Chapters 5 and 6 of \cite{Sutton2018} introduce two primary model-free approaches.
@@ -377,6 +386,10 @@ TD learning is a central and novel idea in RL, combining ideas from both MC and 
     \item \textbf{Properties}: TD methods \textit{bootstrap}:they update a guess from a guess. This introduces bias but often leads to lower variance and faster learning. They are naturally implemented in an online, fully incremental fashion.
 \end{itemize}
 
+In practice,\textbf{most RL algorithms prefer TD methods over Monte Carlo methods}. This is because TD allows incremental step-by-step updates, without having to wait for the end of the episode, and is therefore suitable for both long episodic and continuous tasks. Furthermore, bootstrapping reduces variance and makes learning more sample-efficient, combining the advantages of DP and real-world learning.
+\noindent
+A classic example is Q-Learning, which directly learns the optimal function $Q^*(s,a)$ via TD updates without knowing the dynamics of the environment. While Monte Carlo is useful for obtaining bias-free estimates, TD methods are the heart of modern practical RL algorithms.
+
 \section{Actor-Critic Architectures}
 The \textbf{Actor-Critic} architecture provides a powerful and widely adopted method for solving RL problems, particularly in continuous action spaces. It explicitly represents both the policy and the value function using two distinct function approximators (e.g., neural networks).
 
@@ -389,10 +402,11 @@ The \textbf{Actor-Critic} architecture provides a powerful and widely adopted me
 \end{itemize}
 \noindent
 This separation of concerns allows for direct policy optimization in continuous or large action spaces while leveraging the stable learning dynamics of TD-based value estimation.
+
 % ===================================================================
 % REWARD SHAPING SECTION
 % ===================================================================
- \input{reward}
+\input{reward}
 
 
 \section{The Rise of Deep Reinforcement Learning for V2G Control}
@@ -418,7 +432,10 @@ Here, $y$ represents the neuron's output, $x_i$ are the inputs, which are multip
     \label{fig:nn}
 \end{figure}
 \noindent
-A neural network is constructed with an input layer \ref{fig:nn}, which receives the raw data, one or more \textit{hidden layers} where the computation occurs, and an output layer that produces the final prediction or decision. \textbf{When a network contains multiple hidden layers, it is termed a \textit{deep neural network} }(DNN). This depth allows the network to learn a hierarchical representation of features from the data, where each layer learns to identify progressively more complex patterns.
+A neural network is constructed with an input layer \ref{fig:nn}, which receives the raw data, one or more \textit{hidden layers} where the computation occurs, and an output layer that produces the final prediction or decision. 
+\\
+\noindent
+\textbf{When a network contains multiple hidden layers, it is termed a \textit{deep neural network} }(DNN). This depth allows the network to learn a hierarchical representation of features from the data, where each layer learns to identify progressively more complex patterns.
 
 \section{The Fundamental Role of DNNs in DRL}
 
@@ -441,178 +458,8 @@ Here, the gradient of the objective function is calculated as the expectation of
 \\
 \noindent
 The integration of deep neural networks has thus marked a significant leap in the quality and capability of reinforcement learning. By enabling agents to learn from high-dimensional raw data and generalize across vast state spaces, DRL has unlocked solutions to complex control problems previously considered out of reach, and it now stands as a critical tool for advancing research in V2G control systems.\cite{Qiu2022}
-\\
-\noindent
-The convergence of RL with the substantial representational capabilities of deep neural networks has given rise to \textbf{Deep Reinforcement Learning (DRL)}, which currently represents the leading edge of V2G control research. The development of DRL algorithms has yielded a comprehensive toolkit, primarily divided into two main families: off-policy and on-policy methods, each exhibiting distinct operational characteristics.
-The following figure illustrates the evolutionary relationships between the algorithms that  will be discussed, highlighting how newer ideas were built to overcome the limitations of their predecessors.
 
-\begin{figure}[H]
-\centering
-\begin{forest}
-for tree={
-  grow=east,
-  parent anchor=east,
-  child anchor=west,
-  edge path={
-    \noexpand\path [draw, thick, \forestoption{edge}]
-      (!u.parent anchor) -- +(-0.5pt,0) |- (.child anchor);
-  },
-  draw,
-  rounded corners,
-  align=center,
-  l sep=8pt,
-  s sep=6pt,
-  minimum height=0.5cm,
-  inner sep=2pt,
-  anchor=west,
-  font=\sffamily\small,
-}
-[RL Methods, fill=blue!20, edge=blue!60
-    [On-Policy, fill=green!20, edge=green!60
-        [Policy Gradient, fill=green!10, edge=green!40
-            [A2C, fill=yellow!15, edge=green!50]
-            [TRPO\\(Theoretical Stability), fill=yellow!15, edge=green!50]
-            [PPO\\(Practical Simplification), fill=yellow!15, edge=green!50]
-        ]
-        [Gradient-Free, fill=teal!15, edge=teal!50
-            [ARS\\(Random Search), fill=yellow!15, edge=teal!50]
-        ]
-    ]
-    [Off-Policy, fill=red!20, edge=red!60
-        [DDPG\\(Fundamental), fill=red!10, edge=red!50
-            [DDPG+PER\\(Improve Sampling), fill=orange!15, edge=red!50]
-            [TD3\\(Resolve Overestimation), fill=orange!15, edge=red!50]
-            [SAC\\(Add Entropy), fill=orange!15, edge=red!50]
-            [TQC\\(Distributional Approach), fill=orange!15, edge=red!50]
-        ]
-    ]
-]
-\end{forest}
-\caption{Hierarchical classification of Reinforcement Learning methods.}
-\label{fig:rl_methods}
-\end{figure}
-
-
-Off-policy algorithms distinguish themselves through their capacity to learn optimal policies from data generated by different, often more exploratory, behavioral policies. \textbf{This enables them to reuse historical experiences stored in large \textit{replay buffers}}, breaking temporal correlation between experiences and achieving high sample efficiency.
-\\
-\noindent
-A pivotal question in this domain is how to balance the exploration of new actions with the exploitation of known good actions. Off-policy methods, by their nature, are well-suited to this challenge.
-
-\begin{flushright}
- Can an agent learn about the optimal way to behave while behaving sub-optimally?
- \end{flushright}
-\noindent
- The development of algorithms like Soft Actor-Critic (SAC) \cite{haarnoja2018soft} provides a compelling, falsifiable hypothesis: that by explicitly encouraging policy entropy,a measure of randomness,an agent can be guided to explore more broadly and avoid collapsing into a narrow, locally optimal policy. This work builds on that premise, testing whether such an approach can robustly discover profitable and stable V2G control strategies in the face of profound uncertainty.
-
-\subsubsection{Deep Deterministic Policy Gradient (DDPG)}
-
-A foundational algorithm that successfully extended Deep Q-Networks (DQN) to high-dimensional, continuous action spaces, DDPG represented a significant breakthrough for control problems including V2G \cite{lillicrap2015continuous}. It employs an actor-critic architecture where the actor deterministically maps states to actions. However, practical applications often encounter substantial training instability and systematic vulnerability to \textbf{overestimation bias}, where critic networks systematically overestimate Q-values, resulting in suboptimal policy learning \cite{orfanoudakis2024ev2gym, alfaverh2022optima}.
-\\
-\noindent
-Despite these limitations, the foundational concepts of DDPG have been successfully applied and extended in various V2G contexts. For instance, Wang et al. \cite{wang2022electrical} propose a DDPG-based system for demand response management, demonstrating its potential to reduce charging costs.
-\\
-\noindent
- But can such an approach scale to large, complex systems? 
-\\
-\noindent
-Zhang et al. \cite{Zhang2023} tackle this question by introducing a transfer learning framework built on DDPG, aiming to coordinate large-scale V2G operations with renewable energy sources. Their work puts forth a testable hypothesis: that knowledge learned in a small-scale environment can be effectively transferred to a large-scale one, thus mitigating the sample inefficiency of DRL. This thesis will implicitly test this hypothesis by evaluating the performance of DRL agents in scenarios of varying complexity.
-
-
-
-\subsubsection{Twin Delayed DDPG (TD3)}
-
-Developed as a direct successor to address DDPG's instabilities, TD3 introduces three key innovations that have become standard in contemporary DRL \cite{fujimoto2018addressing}. It incorporates (1) 	\textbf{clipped double Q-learning}, utilizing paired critic networks and selecting minimum estimates to mitigate overestimation bias; (2)\textbf{ delayed policy updates}, updating actors less frequently than critics for enhanced stability; and (3) \textbf{target policy smoothing}, adding noise to target actions for learning regularization. These enhancements establish TD3 as a more robust and reliable baseline for complex V2G applications \cite{Ding, wang2022multi}.
-\\
-\noindent
-The effectiveness of TD3 in V2G scheduling has been explored by multiple researchers. For example, Dou et al. \cite{Dou} apply a TD3-based approach to the optimal scheduling of EV charging and discharging, demonstrating its ability to find profitable strategies. But can this profitability be achieved without negatively impacting the grid? Ding et al. \cite{Ding} investigate this by using TD3 for charging scheduling while considering distribution network voltage stability. Their work provides a clear, falsifiable test of the hypothesis that a DRL agent can learn to balance its own economic incentives with the physical constraints of the power grid. This thesis builds upon this line of inquiry by incorporating explicit penalties for transformer overloads into the reward function, directly testing the agent's ability to learn this trade-off.
-
-\subsubsection{SAC}
-SAC represents a state-of-the-art off-policy algorithm for continuous control, \textbf{recognized for superior sample efficiency and stability} \cite{haarnoja2019soft}. Its fundamental innovation involves the \textbf{maximum entropy framework}. The agent's objective is modified to maximize both expected reward and policy entropy. This entropy bonus encourages agents to act as randomly as possible while maintaining task success, promoting broader exploration, improved noise robustness, and reduced risk of poor local optima convergence.
-\\
-\noindent
-The principle of maximum entropy, while powerful, raises a critical question: 
-\\
-\noindent
-\textbf{Does encouraging random behavior compromise the safety and reliability of the system?}
-\\
-\noindent
- Gu et al. \cite{gu2025optimization} directly confront this by proposing a safe reinforcement learning approach that considers battery health. Their work tests the hypothesis that one can achieve the exploration benefits of SAC while simultaneously satisfying hard constraints related to battery degradation. This is a crucial step towards making DRL a viable technology for real-world V2G deployment, and it underscores the importance of the multi-objective reward functions explored in this thesis.
-
-\subsubsection{Truncated Quantile Critics (TQC)}
-
-TQC addresses overestimation bias through a distributional RL approach \cite{kuznetsov2020controlling}. Rather than learning single expected returns (Q-values), its critic \textbf{learns complete return probability distributions using quantile regression}.
-\\
-\noindent
-Digression on Quantile regression:
-\\
-\noindent
-Quantile regression is an extension of the classical linear regression model, 
-which estimates the conditional mean of a response variable. 
-Instead of focusing only on the mean, quantile regression estimates the conditional 
-quantiles of the response distribution, providing a more complete statistical view.
-\noindent
-Formally, given data $\{(x_i, y_i)\}_{i=1}^n$ with predictors $x_i \in \mathbb{R}^p$ 
-and response $y_i \in \mathbb{R}$, the $\tau$-th conditional quantile 
-($0 < \tau < 1$) of $Y$ given $X = x$ is modeled as
-
-\[
-Q_Y(\tau \mid X = x) = x^\top \beta_\tau,
-\]
-\noindent
-where $\beta_\tau$ are the regression coefficients associated with the quantile $\tau$.
-\noindent
-The quantile regression estimator is obtained by solving the optimization problem:
-
-\[
-\hat{\beta}_\tau = \underset{\beta \in \mathbb{R}^p}{\arg\min} 
-\sum_{i=1}^n \rho_\tau \big( y_i - x_i^\top \beta \big),
-\]
-\noindent
-where $\rho_\tau(u)$ is the so-called "check function," defined as
-
-\[
-\rho_\tau(u) = u \cdot \big( \tau - \mathbf{1}_{\{u < 0\}} \big).
-\]
-\noindent
-This asymmetric loss function penalizes underestimation and overestimation differently, 
-depending on the chosen quantile $\tau$. 
-For example, $\tau = 0.5$ corresponds to the conditional median regression.
-\\
-\noindent 
-After learned this can be affirmed that: learning multiple return distribution quantiles and truncating the most optimistic quantile estimates before averaging, it provides a more \textbf{principled and effective method for removing primary overestimation bias sources}, frequently achieving superior performance.
-
-\subsubsection{Enhancement: Prioritized Experience Replay (PER)}
-
-This represents not a standalone algorithm but a crucial orthogonal modification for off-policy methods. Standard replay buffers sample past transitions uniformly. PER samples transitions based on their "importance," typically proportional to TD error magnitude \cite{schaul2015prioritized}. This focuses learning processes on surprising or informative experiences, significantly accelerating convergence and improving final performance.
-
-\subsection{On-Policy Methods: Stability through Cautious Updates}
-
-On-policy methods learn exclusively from data generated by current policies being optimized. Once data is used for updates, it is discarded. While this makes them inherently less sample-efficient than off-policy counterparts, their updates often demonstrate greater stability and reduced divergence risk.
-
-\subsubsection{Advantage Actor-Critic (A2C/A3C)}
-
-A2C represents a foundational synchronous, on-policy Actor-Critic algorithm. Its powerful extension, \textbf{Asynchronous Advantage Actor-Critic (A3C)}, was a landmark contribution demonstrating parallelism benefits \cite{mnih2016asynchronous}. A3C utilizes multiple parallel workers, each with individual model and environment copies. These workers interact with their environments independently, and collected gradients update a global model asynchronously. This decorrelates data streams and provides powerful stabilizing effects on learning processes.
-\\
-\noindent
-While often considered less sample-efficient than their off-policy counterparts, on-policy methods like A2C and its variants are still actively explored in the V2G domain. For example, Chifu et al. \cite{chifu2024deep} propose a Deep Q-Learning based approach for smart scheduling of EVs for demand response, which shares some of the on-policy characteristics. Their work raises the question:
-\\
-\noindent
-Can the stability and reliability of on-policy training outweigh the sample efficiency of off-policy methods in a problem where the environment is highly stochastic? This thesis provides a direct comparison by benchmarking several state-of-the-art off-policy agents against on-policy baselines, allowing for an empirical test of this long-standing hypothesis in the DRL community.
-
-\subsubsection{Trust Region Policy Optimization (TRPO)}
-
-TRPO was the first algorithm to formalize policy update size constraints for guaranteed monotonic policy improvement \cite{schulman2020trust}. It maximizes a "surrogate" objective function subject to policy change constraints, measured by Kullback-Leibler (KL) divergence. This creates a "trust region" within which new policies are guaranteed to improve upon previous ones, preventing catastrophic updates that can permanently derail learning. However, implementation complexity arises from second-order optimization requirements.
-
-\subsubsection{Proximal Policy Optimization (PPO)}
-
-PPO achieves TRPO's stability benefits and reliable performance using only first-order optimization, making it far simpler to implement and more broadly applicable \cite{schulman2017proximal}. It employs a novel \textbf{clipping} mechanism in its objective function to discourage large policy updates that would move new policies too far from previous ones, effectively creating "soft" trust regions. Due to its excellent balance of performance, stability, and implementation simplicity, PPO has become a default choice for many on-policy applications.
-
-\subsection{Gradient-Free Methods: An Alternative Path}
-
-\subsubsection{Augmented Random Search (ARS)}
-
-As a counterpoint to dominant gradient-based methods, ARS represents a gradient-free approach that optimizes policies directly in parameter space \cite{mania2018simple}. It operates by exploring random policy parameter perturbations and updating central policy parameter vectors based on observed performance of these perturbations. While often less sample-efficient for complex, high-dimensional problems, its extreme simplicity, scalability, and robustness to noisy rewards can make it competitive in certain domains.
-
+\input{off_on.tex}
 \input{mpc.tex}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -647,129 +494,17 @@ While DRL represents the cutting edge, contextualizing it within the broader con
 \noindent
 Other methods, such as \textbf{meta-heuristic algorithms} (including genetic algorithms and particle swarm optimization), are sometimes proposed. However, these are typically employed for offline scheduling and lack the real-time, reactive responsiveness required for dynamic V2G control in rapidly changing environments.
 
-\subsection{Rule-Based Heuristic Baselines}
-\label{sec:heuristic_baselines}
-\noindent
-In addition to sophisticated optimization-based (MPC) and learning-based (DRL) controllers, it is crucial to benchmark performance against simple, rule-based heuristic algorithms. These heuristics serve as fundamental baselines to quantify the value added by more intelligent strategies. The \texttt{heuristics.py} module implements several such baseline controllers.
+% ===================================================================
+% HEURISTIC
+% ===================================================================
 
-\subsubsection{As-Fast-As-Possible (AFAP)}
-This is the most straightforward and intuitive charging strategy. The AFAP controller, implemented as \texttt{ChargeAsFastAsPossible}, commands all connected EVs to charge at their maximum permissible rate at all times, irrespective of electricity prices, grid constraints, or user needs beyond being ready by departure. Its objective is singular: minimize the time to reach full capacity. While simple, it often leads to undesirable outcomes such as high charging costs during peak price hours and contributing to grid congestion. A variation, \texttt{ChargeAsFastAsPossibleToDesiredCapacity}, stops charging once the user's specified desired SoC is met, rather than continuing to 100\%.
-
-\subsubsection{As-Late-As-Possible (ALAP)}
-The ALAP strategy, implemented in the \texttt{ChargeAsLateAsPossible} class, represents the opposite temporal extreme to AFAP. For each EV, it calculates the latest possible moment to initiate charging at maximum power to ensure the battery is full precisely at the scheduled departure time. This is achieved by determining the minimum number of time steps required to charge and deferring the start of the charging session until that point. This approach can shift load away from peak periods if those peaks occur early in the parking session, but it is inflexible and cannot respond to unexpected price drops or grid signals. It also carries the risk of failing to fully charge the vehicle if the departure time is earlier than expected. The \texttt{ChargeAsLateAsPossibleToDesiredCapacity} variant applies the same logic but targets the desired SoC.
-
-\subsubsection{Round Robin Schedulers}
-The \texttt{RoundRobin} family of heuristics attempts a more nuanced approach to meet a given power setpoint. The basic \texttt{RoundRobin} algorithm maintains a queue of connected EVs. To meet the power target, it calculates how many EVs need to be charged simultaneously (based on an average charging power) and activates that number of EVs from the front of the queue. In each time step, the EVs that were just charged are moved to the back of the queue, ensuring a fair distribution of charging opportunities over time.
-
-\noindent
-More advanced versions like \texttt{RoundRobin\_GF} (Grid-Friendly) are designed to track a power setpoint more precisely. Instead of activating a fixed number of EVs, it sequentially activates EVs and sums their potential power contribution until the setpoint is met or exceeded, providing a finer level of control.
-
-\subsubsection{Other Baselines}
-Two other trivial baselines are used for comparison:
-\begin{itemize}
-    \item \textbf{Do Nothing}: The \texttt{DoNothing} agent always outputs a zero action, resulting in no charging or discharging. It serves to quantify the baseline of no intervention.
-    \item \textbf{Random Agent}: The \texttt{RandomAgent} selects a random, valid action for each EV at every time step. It is a useful diagnostic tool to ensure that a sophisticated DRL agent is learning a policy that is meaningfully better than random chance.
-\end{itemize}
-\\
-\noindent
-Ultimately, DRL's singular advantage lies in its ability to learn and internalize the complex, non-linear trade-offs of multi-objective V2G problems directly from data, without requiring explicit models. This makes it uniquely suited to navigating the profound uncertainties of real-world operations. While other methods have their applications, DRL stands out as the most promising technology for deploying truly intelligent, autonomous, and scalable V2G management systems required to achieve the ambitious energy and climate objectives of the European Union.
+\input{Heuristics.tex}
 
 
-\section{A Primer on Lithium-Ion Battery Chemistries and Degradation}
 
-The effectiveness, safety, and economic viability of any V2G strategy remain fundamentally constrained by the physical and chemical characteristics of vehicle batteries. Battery chemistry selection dictates EV operational envelopes, influencing energy density, power capabilities, lifespan, and safety profiles. Clear understanding of these trade-offs proves essential for developing robust, realistic, and responsible control algorithms.
-\subsection{Fundamental Concepts and Degradation Mechanisms}
-Battery degradation is a complex and irreversible process that gradually reduces a cell’s ability to store and deliver energy. It manifests primarily as capacity loss (energy fade) and as an increase in internal resistance (power fade). These phenomena are usually attributed to two categories of mechanisms: \textit{calendar aging} and \textit{cyclic aging} \cite{birkl2017degradation}.
-\noindent   
-\\
-\textbf{Calendar aging} occurs while the battery is at rest, regardless of whether it is fully charged or nearly empty. The main mechanism behind this process is the slow growth of the \textbf{Solid Electrolyte Interphase (SEI)} layer on the graphite anode. While a thin and stable SEI layer is necessary for battery operation, its continuous thickening consumes both active lithium and electrolyte, resulting in irreversible capacity loss. The rate of SEI growth is particularly sensitive to operating conditions. High temperatures accelerate chemical reaction rates, including parasitic ones, making storage in hot environments detrimental. Similarly, high states of charge (SoC) correspond to low anode potentials, which increase the reactivity of graphite with the electrolyte and foster faster SEI growth \cite{vetter2005ageing}. For this reason, leaving electric vehicles stored for long periods at 100\% SoC is generally discouraged.
-\noindent   
-\\
-\textbf{Cyclic aging}, in contrast, results from the processes that take place during charging and discharging. This form of degradation is of particular importance for V2G applications, which inherently involve frequent cycling. Several mechanisms contribute to cyclic aging. The repeated intercalation and de-intercalation of lithium ions induce mechanical stress due to the expansion and contraction of electrode materials. Over time, this stress may generate micro-cracks in electrode particles, leading to a loss of electrical contact and a reduction of active material, effects that become more severe with larger \textbf{Depths of Discharge (DoD)}. Mechanical volume changes can also compromise the integrity of the SEI layer, causing cracks that expose fresh anode surface to the electrolyte and trigger renewed SEI growth. In addition, under demanding conditions,such as very high charging rates (high C-rates) or low temperatures,lithium ions may deposit as metallic lithium on the anode surface rather than intercalating properly. This phenomenon, known as lithium plating, is particularly harmful: it leads to rapid capacity loss and may produce dendritic structures capable of piercing the separator, thereby creating internal short circuits and serious safety hazards \cite{birkl2017degradation}.
-\noindent   
-\\
-Both calendar and cyclic aging are unavoidable, the latter is especially critical for V2G systems. Since these applications require frequent and sometimes deep cycling, understanding and mitigating cyclic degradation is paramount to guarantee long-term system viability.
+% ===================================================================
+% BATTERY
+% ===================================================================
 
 
-\subsection{Key Automotive Chemistries}
-
-The EV market is dominated by several key lithium-ion battery families, primarily distinguished by cathode materials. Each chemistry presents different balances of performance characteristics.
-
-\begin{itemize}
-    \item \textbf{Lithium Nickel Manganese Cobalt Oxide (NMC):} For years, this has been the most popular choice due to its excellent balance of energy density, power, and cycle life. The ratio of Nickel, Manganese, and Cobalt can be adjusted (such as NMC111, NMC532, NMC811) to prioritize either energy density (high Nickel) or safety and longevity (lower Nickel).
-    
-    \item \textbf{Lithium Nickel Cobalt Aluminum Oxide (NCA):} Offers very high specific energy (energy density by weight), enabling longer vehicle range. However, it typically comes at the cost of slightly lower cycle life and narrower safety margins compared to NMC, requiring more sophisticated thermal management.
-    
-    \item \textbf{Lithium Iron Phosphate (LFP):} Is rapidly gaining market share, particularly in standard-range vehicles, due to lower cost (no cobalt, an expensive and ethically contentious material) and superior safety. LFP batteries offer exceptional cycle life (often 3-4 times that of NMC/NCA) and are considered the safest common Li-ion chemistry due to high thermal stability. Their main drawback involves lower energy density.
-    
-    \item \textbf{Lithium Titanate Oxide (LTO):} This represents a more niche chemistry using titanate-based anodes instead of graphite. This provides exceptional safety (virtually no thermal runaway risk), extremely long cycle life (>10,000 cycles), and excellent low-temperature performance. However, very low energy density and high cost currently limit its use to specialized applications.
-\end{itemize}
-
-\subsection{Voltage Profiles and the Challenge of SoC Estimation}
-
-The relationship between battery open-circuit voltage and SoC represents a critical, non-linear function unique to each chemistry. The derivative of cell voltage with respect to DoD, $\frac{dV_{cell}}{d(DoD)}$, constitutes a key parameter for Battery Management Systems (BMS). Steep, monotonic slopes allow BMS to accurately infer SoC from simple voltage measurements. Conversely, flat slopes make this estimation extremely difficult.
-
-\begin{figure}[H]
-    \centering
-    \begin{tikzpicture}
-        \begin{axis}[
-            title={Discharge Voltage Curves of Li-ion Chemistries},
-            xlabel={Depth of Discharge (DoD) [\%]},
-            ylabel={Cell Voltage (V)},
-            xmin=0, xmax=100,
-            ymin=2.0, ymax=4.5,
-            grid=major,
-            legend pos=south west,
-            width=\textwidth,
-            height=7.5cm,
-        ]
-        \addplot[smooth, thick, red] coordinates { (0, 4.2) (10, 4.0) (20, 3.8) (50, 3.6) (80, 3.4) (95, 3.2) (100, 2.5) };
-        \addlegendentry{NCA/NMC811}
-
-        \addplot[smooth, thick, blue] coordinates { (0, 4.2) (10, 4.05) (20, 3.9) (50, 3.7) (80, 3.5) (95, 3.3) (100, 2.7) };
-        \addlegendentry{NMC}
-
-        \addplot[smooth, thick, green!60!black] coordinates { (0, 3.65) (5, 3.4) (10, 3.3) (20, 3.25) (80, 3.2) (90, 3.0) (95, 2.8) (100, 2.5) };
-        \addlegendentry{LFP}
-        
-        \addplot[smooth, thick, orange] coordinates { (0, 2.8) (10, 2.5) (20, 2.4) (80, 2.2) (90, 2.0) (100, 1.8) };
-        \addlegendentry{LTO}
-
-        \draw[dashed, thick, gray] (axis cs:15,3.28) -- (axis cs:85,3.22);
-        \node[pin=135:{\parbox{2.5cm}{\centering \small LFP Voltage Plateau: \\ $\frac{dV_{cell}}{d(DoD)} \approx 0$ \\ Difficult SoC Estimation}}] at (axis cs:50,3.25) {};
-        \end{axis}
-    \end{tikzpicture}
-    \caption{Typical discharge voltage curves for various lithium-ion chemistries. The extremely flat profile of LFP makes accurate SoC estimation challenging based on voltage alone, necessitating more complex estimation techniques like Coulomb counting and periodic recalibration.}
-    \label{fig:voltage_curves_detailed}
-\end{figure}
-\noindent
-As shown in Figure \ref{fig:voltage_curves_detailed}, LFP's remarkably flat voltage plateau makes it nearly impossible for BMS to determine precise SoC in the central operating range (from approximately 20\% to 80\%) using voltage alone. This necessitates more complex estimation techniques, such as Coulomb counting (integrating current over time), which can suffer from drift. To correct this drift, LFP-equipped vehicles require periodic full charges to 100\% for BMS recalibration. This represents an important operational constraint that V2G control strategies must consider.
-
-\subsection{Comparative Analysis and Safety Considerations}
-
-The trade-offs between chemistries are summarized in Table \ref{tab:chem_comparison_detailed}. Safety remains paramount, with the primary risk being thermal runaway,a dangerous, self-sustaining exothermic reaction. This risk relates directly to cathode material chemical and thermal stability. Higher energy density generally means more energy packed into smaller mass, which can be released violently if cells are compromised. Consequently, critical temperatures for initiating thermal runaway are generally lower for higher energy density chemistries. LFP's stable phosphate-based structure makes it far more resistant to thermal runaway than nickel-based counterparts, a key reason for its growing popularity.
-
-\begin{table}[H]
-\centering
-\small
-\caption{Comparative analysis of key automotive battery chemistries, highlighting the trade-offs between performance and safety.}
-\label{tab:chem_comparison_detailed}
-\begin{tabularx}{\textwidth}{
-  @{}
-  >{\bfseries\RaggedRight}X
-  *{5}{>{\centering\arraybackslash}X}
-  @{}
-}
-\toprule
-Metric & NCA & NMC & LFP & LTO & LCO \\
-\midrule
-Energy Density (Wh/kg) & 200 - 260 (Highest) & 150 - 220 (High) & 90 - 160 (Moderate) & 60 - 110 (Low) & 150-200 (High) \\
-\addlinespace
-Cycle Life & 1000 - 2000 & 1000 - 2500 & 2000 - 5000+ & $>$10,000 & 500 - 1000 \\
-\addlinespace
-Safety & Good & Very Good & Excellent & Excellent & Poor \\
-\addlinespace
-Thermal Runaway Temp ($^{\circ}$C) & $\sim$150 - 180 & $\sim$180 - 210 & $\sim$220 - 270 & $>$ 250 & $\sim$150 \\
-\bottomrule
-\end{tabularx}
-\end{table}
+\input{battery.tex}

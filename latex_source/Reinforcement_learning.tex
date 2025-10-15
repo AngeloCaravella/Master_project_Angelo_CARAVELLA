@@ -3,7 +3,7 @@ This work benchmarks several state-of-the-art Deep Reinforcement Learning algori
 \noindent
 
 \subsubsection{Soft Actor-Critic (SAC)}
-SAC is an off-policy actor-critic algorithm designed for continuous action spaces that optimizes a stochastic policy. Its distinguishing feature is the explicit incorporation of entropy maximization into the objective function, which promotes exploration and yields policies that are more robust to model inaccuracies and environmental perturbations. Unlike traditional RL algorithms that focus solely on reward maximization, SAC aims to maximize both the expected cumulative reward and the entropy of the policy distribution.
+SAC is an off-policy actor-critic algorithm designed for \textbf{continuous action spaces} that optimizes a stochastic policy. Its distinguishing feature is the explicit incorporation of entropy maximization into the objective function, which promotes exploration and yields policies that are more robust to model inaccuracies and environmental perturbations. Unlike traditional RL algorithms that focus solely on reward maximization, SAC aims to maximize both the expected cumulative reward and the entropy of the policy distribution.
 \noindent
 
 \begin{figure}[H]
@@ -237,85 +237,4 @@ TQC represents a significant advancement over standard SAC by modeling the entir
 
 \paragraph{Implementation Details}
 The TQC algorithm is leveraged from the \textbf{SB3-Contrib} library, a collection of community-contributed extensions to Stable-Baselines3. Using the library's standard \texttt{TQC} implementation allows the framework to benefit from this state-of-the-art distributional RL algorithm without requiring a custom implementation from scratch. The implementation maintains the entropy-regularized objective of SAC while incorporating the distributional critics and truncation mechanism that define TQC's superior performance characteristics.
-\noindent
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{A History-Based Adaptive Reward for Profit Maximization}
-\label{sec:adaptive_reward}
 
-To guide the learning agent towards policies that are both highly profitable and operationally reliable, we designed a novel, history-based adaptive reward function, named \texttt{FastProfitAdaptiveReward}. This function dynamically balances its objectives, shifting focus between profit maximization and constraint satisfaction based on the agent's recent performance. The core principle is to allow aggressive profit-seeking when the system is stable and user satisfaction is high, but to automatically curtail this ambition to focus on stability and service quality when performance degrades.
-
-The total reward at each timestep $t$, $R_t$, is formulated as a dynamically scaled net economic profit $\Pi_t$ minus any active penalties for user dissatisfaction $P_t^{\text{sat}}$ or transformer overload $P_t^{\text{tr}}$.
-
-\begin{equation}
-    R_t = (\mu_p \cdot \Pi_t) - P_t^{\text{sat}} - P_t^{\text{tr}}
-\end{equation}
-
-\noindent
-The complete logic for this calculation is detailed in Algorithm \ref{alg:adaptive_reward}. The key components are:
-\begin{itemize}
-    \item[$\Pi_t$] is the net economic profit at timestep $t$.
-    \item[$\mu_p$] is the \textbf{dynamic profit multiplier}, which scales based on historical performance.
-    \item[$P_t^{\text{sat}}$] and $P_t^{\text{tr}}$ are the adaptive penalties for user dissatisfaction and transformer overload.
-    \item[$\bar{s}_{hist}$] and $\bar{f}_{ov}$ are the average user satisfaction and overload frequency over a recent history window.
-\end{itemize}
-
-\begin{algorithm}[H]
-\caption{Dynamic & History-Based Adaptive Reward (\texttt{FastProfitAdaptiveReward})}
-\label{alg:adaptive_reward}
-\begin{algorithmic}[1]
-\State \textbf{Input:} Current profit/cost $C_t$, user satisfaction list $S_t$, overload amount $O_t$
-\State \textbf{State:} History queues $H_{sat}$ (satisfaction), $H_{ov}$ (overload frequency)
-
-\Function{CalculateReward}{$C_t, S_t, O_t$}
-    \State \Comment{1. Calculate historical performance metrics}
-    \State $\bar{s} \leftarrow \text{Average}(H_{sat})$ or 1.0 if empty.
-    \State $\bar{f}_{ov} \leftarrow \text{Average}(H_{ov})$ or 0.0 if empty.
-
-    \State \Comment{2. Calculate Dynamic Profit Multiplier}
-    \State $\mu_{base} \leftarrow 0.1$, $\mu_{max\_bonus} \leftarrow 0.9$
-    \State $b_{sat} \leftarrow \max(0, (\bar{s} - 0.9) / 0.1)$ \Comment{Bonus for high satisfaction}
-    \State $b_{ov} \leftarrow \max(0, 1 - (\bar{f}_{ov} / 0.2))$ \Comment{Bonus for low overload freq.}
-    \State $\mu_p \leftarrow \mu_{base} + (\mu_{max\_bonus} \cdot b_{sat} \cdot b_{ov})$
-    \State $R_{profit} \leftarrow C_t \cdot \mu_p$
-
-    \State \Comment{3. Calculate Adaptive Satisfaction Penalty}
-    \State $\sigma_{sat} \leftarrow 200.0 \cdot (1 - \bar{s})^2$ \Comment{Severity grows quadratically}
-    \State $P_{sat} \leftarrow 0$
-    \If{$S_t$ is not empty and $\min(S_t) < 0.95$}
-        \State $P_{sat} \leftarrow \sigma_{sat} \cdot (1 - \min(S_t))$
-    \EndIf
-
-    \State \Comment{4. Calculate Adaptive Overload Penalty}
-    \State $P_{ov} \leftarrow 0$
-    \If{$O_t > 0$}
-        \State $\sigma_{ov} \leftarrow 50.0 \cdot \bar{f}_{ov}$ \Comment{Severity grows linearly}
-        \State $P_{ov} \leftarrow 5.0 + (\sigma_{ov} \cdot O_t)$
-    \EndIf
-
-    \State \Comment{5. Calculate final reward and update histories}
-    \State $R_t \leftarrow R_{profit} - P_{sat} - P_{ov}$
-    \State Append current average satisfaction to $H_{sat}$.
-    \State Append current overload status (1 or 0) to $H_{ov}$.
-    \State \Return $R_t$
-\EndFunction
-\end{algorithmic}
-\end{algorithm}
-
-\subsubsection{Dynamic Economic Profit}
-The foundation of the reward is the economic profit $\Pi_t$, but its contribution is scaled by a dynamic multiplier, $\mu_p$. This multiplier is designed to increase the agent's focus on profit only when it is performing well on other key metrics. It is calculated based on a base value ($"\mu_{\text{base}} = 0.1"$) plus a bonus that depends on historical satisfaction ($"\bar{s}_{hist}"$) and overload frequency ($"\bar{f}_{ov}"$). The agent is maximally rewarded for profit ($"\mu_p \to 1.0"$) only when satisfaction is near-perfect and overloads are rare. If performance on either metric degrades, the multiplier automatically decreases, reducing the incentive for profit-seeking and forcing the agent to prioritize correcting its behavior.
-
-\subsubsection{Adaptive User Satisfaction Penalty}
-The penalty for failing to meet user charging demands, $P_t^{\text{sat}}$, adapts based on the system's recent performance. The environment maintains a short-term memory of user satisfaction scores, from which an average historical score, $\bar{s}_{hist}$, is calculated. A \textit{satisfaction severity multiplier}, $\sigma_{sat}$, is then computed, which grows quadratically as the historical average satisfaction drops. This ensures that as performance degrades, the consequences of new failures become substantially more severe.
-\begin{equation}
-    \sigma_{sat} = 200.0 \cdot (1 - \bar{s}_{hist})^2
-\end{equation}
-\noindent
-A penalty is only applied if the minimum satisfaction score among currently connected users, $S_{\min}$, falls below a critical threshold (95\%). The magnitude of the penalty is the product of the adaptive multiplier and the current satisfaction deficit.
-
-\subsubsection{Adaptive Transformer Overload Penalty}
-The transformer overload penalty, $P_t^{\text{tr}}$, operates on a similar adaptive principle, responding to the recent frequency of overloads, $F_{hist}^{\text{tr}}$. If the total power drawn, $O_t$, exceeds the transformer's limit, a penalty is applied. This penalty consists of a fixed base amount plus an adaptive component, which scales with both the historical frequency of overloads and the magnitude of the current overload.
-\begin{equation}
-    P_t^{\text{tr}} = 5.0 + (50.0 \cdot F_{hist}^{\text{tr}}) \cdot O_t, \quad \text{if } O_t > 0
-\end{equation}
-\noindent
-This structure enforces a critical lesson: while an occasional, minor overload might be tolerable, habitual overloading becomes increasingly costly as penalties escalate, forcing the agent to respect physical constraints.

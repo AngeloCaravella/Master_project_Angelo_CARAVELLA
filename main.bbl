@@ -64,8 +64,30 @@
       \field{title}{A Review of Bidirectional Charging Grid Support Applications and Control}
       \field{volume}{17}
       \field{year}{2024}
-      \field{pages}{1320}
-      \range{pages}{1}
+    \endentry
+    \entry{Xie2025}{article}{}{}
+      \name{author}{1}{}{%
+        {{hash=4124ecdf7f8997d325186ba3639a5e09}{%
+           family={al.},
+           familyi={a\bibinitperiod},
+           given={Hongbin\bibnamedelimb Xie\bibnamedelima Et},
+           giveni={H\bibinitperiod\bibinitdelim X\bibinitperiod\bibinitdelim E\bibinitperiod}}}%
+      }
+      \strng{namehash}{4124ecdf7f8997d325186ba3639a5e09}
+      \strng{fullhash}{4124ecdf7f8997d325186ba3639a5e09}
+      \strng{fullhashraw}{4124ecdf7f8997d325186ba3639a5e09}
+      \strng{bibnamehash}{4124ecdf7f8997d325186ba3639a5e09}
+      \strng{authorbibnamehash}{4124ecdf7f8997d325186ba3639a5e09}
+      \strng{authornamehash}{4124ecdf7f8997d325186ba3639a5e09}
+      \strng{authorfullhash}{4124ecdf7f8997d325186ba3639a5e09}
+      \strng{authorfullhashraw}{4124ecdf7f8997d325186ba3639a5e09}
+      \field{sortinit}{a}
+      \field{sortinithash}{2f401846e2029bad6b3ecc16d50031e2}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{ScienceDirect}
+      \field{title}{Reinforcement learning for vehicle-to-grid: A review}
+      \field{year}{2025}
     \endentry
     \entry{alfaverh2022optima}{article}{}{}
       \name{author}{3}{}{%
@@ -102,10 +124,7 @@
       \field{labeltitlesource}{title}
       \field{journaltitle}{Applied Energy}
       \field{title}{Optimal vehicle-to-grid control for supplementary frequency regulation using deep reinforcement learning}
-      \field{volume}{325}
       \field{year}{2022}
-      \field{pages}{119881}
-      \range{pages}{1}
     \endentry
     \entry{Dou}{article}{}{}
       \name{author}{3}{}{%
@@ -144,8 +163,6 @@
       \field{title}{Optimal scheduling for charging and discharging of electric vehicles based on deep reinforcement learning}
       \field{volume}{11}
       \field{year}{2023}
-      \field{pages}{1273820}
-      \range{pages}{1}
     \endentry
     \entry{bemporad2013explicit}{article}{}{}
       \name{author}{1}{}{%
@@ -173,8 +190,6 @@
       \field{journaltitle}{Springer Handbook of Automation}
       \field{title}{Explicit Model Predictive Control}
       \field{year}{2013}
-      \field{pages}{883\bibrangedash 898}
-      \range{pages}{16}
     \endentry
     \entry{Bemporad_Filippi}{article}{}{}
       \name{author}{2}{}{%
@@ -205,8 +220,6 @@
       \field{month}{12}
       \field{title}{Suboptimal Explicit MPC via Approximate Multiparametric Quadratic Programming}
       \field{year}{2001}
-      \field{pages}{4851\bibrangedash 4856}
-      \range{pages}{6}
     \endentry
     \entry{birkl2017degradation}{article}{}{}
       \name{author}{4}{}{%
@@ -247,8 +260,6 @@
       \field{title}{Degradation diagnostics for lithium ion cells}
       \field{volume}{341}
       \field{year}{2017}
-      \field{pages}{373\bibrangedash 386}
-      \range{pages}{14}
     \endentry
     \entry{Bisetto_Francesca}{thesis}{}{}
       \name{author}{1}{}{%
@@ -675,8 +686,6 @@
       \field{title}{Optimization of Electric Vehicle Charging and Discharging Strategies Considering Battery Health State: A Safe Reinforcement Learning Approach}
       \field{volume}{16}
       \field{year}{2025}
-      \field{pages}{286}
-      \range{pages}{1}
     \endentry
     \entry{haarnoja2019soft}{article}{}{}
       \name{author}{4}{}{%
@@ -760,8 +769,6 @@
       \field{booktitle}{International Conference on Machine Learning}
       \field{title}{Soft actor-critic: Off-policy maximum entropy deep reinforcement learning with a stochastic actor}
       \field{year}{2018}
-      \field{pages}{1861\bibrangedash 1870}
-      \range{pages}{10}
     \endentry
     \entry{ibrahim2024comprehensive}{article}{}{}
       \name{author}{5}{}{%
@@ -808,8 +815,6 @@
       \field{title}{Comprehensive Overview of Reward Engineering and Shaping in Advancing Reinforcement Learning Applications}
       \field{volume}{PP}
       \field{year}{2024}
-      \field{pages}{1\bibrangedash 1}
-      \range{pages}{1}
     \endentry
     \entry{karg2020efficient}{article}{}{}
       \name{author}{2}{}{%
@@ -841,8 +846,6 @@
       \field{title}{Efficient representation and approximation of model predictive control laws via deep learning}
       \field{volume}{50}
       \field{year}{2020}
-      \field{pages}{3866\bibrangedash 3878}
-      \range{pages}{13}
     \endentry
     \entry{krener2016adaptive}{article}{}{}
       \name{author}{1}{}{%
@@ -1014,8 +1017,6 @@
       \field{title}{Deep reinforcement learning for charging scheduling of electric vehicles considering distribution network voltage stability}
       \field{volume}{23}
       \field{year}{2023}
-      \field{pages}{1618}
-      \range{pages}{1}
     \endentry
     \entry{mania2018simple}{article}{}{}
       \name{author}{3}{}{%
@@ -1094,8 +1095,6 @@
       \field{title}{Constrained model predictive control: Stability and optimality}
       \field{volume}{36}
       \field{year}{2000}
-      \field{pages}{789\bibrangedash 814}
-      \range{pages}{26}
     \endentry
     \entry{minchala2025systematic}{article}{}{}
       \name{author}{3}{}{%
@@ -1135,8 +1134,6 @@
       \field{title}{A Systematic Review of Model Predictive Control for Robust and Efficient Energy Management in Electric Vehicle Integration and V2G Applications}
       \field{volume}{6}
       \field{year}{2025}
-      \field{pages}{20}
-      \range{pages}{1}
     \endentry
     \entry{mnih2016asynchronous}{inproceedings}{}{}
       \name{author}{8}{}{%
@@ -1196,8 +1193,6 @@
       \field{booktitle}{Proceedings of the 33rd International Conference on Machine Learning (ICML)}
       \field{title}{Asynchronous Methods for Deep Reinforcement Learning}
       \field{year}{2016}
-      \field{pages}{1928\bibrangedash 1937}
-      \range{pages}{10}
     \endentry
     \entry{ng1999policy}{article}{}{}
       \name{author}{3}{}{%
@@ -1370,8 +1365,6 @@
       \field{title}{Reinforcement learning for vehicle-to-grid: A review}
       \field{volume}{167}
       \field{year}{2022}
-      \field{pages}{112702}
-      \range{pages}{1}
     \endentry
     \entry{Qiu2023}{article}{}{}
       \name{author}{4}{}{%
@@ -1413,8 +1406,6 @@
       \field{title}{Reinforcement learning for electric vehicle applications in energy management: A review}
       \field{volume}{163}
       \field{year}{2023}
-      \field{pages}{112443}
-      \range{pages}{1}
     \endentry
     \entry{Richalet1978ModelPH}{article}{}{}
       \name{author}{4}{}{%
@@ -1459,8 +1450,6 @@
       \field{title}{Model predictive heuristic control: Applications to industrial processes}
       \field{volume}{14}
       \field{year}{1978}
-      \field{pages}{413\bibrangedash 428}
-      \range{pages}{16}
     \endentry
     \entry{sadeghi2022deep}{article}{}{}
       \name{author}{1}{}{%
@@ -1539,8 +1528,6 @@
       \field{title}{Electric Vehicles Energy Management with V2G/G2V Multifactor Optimization of Smart Grids}
       \field{volume}{13}
       \field{year}{2020}
-      \field{pages}{1191}
-      \range{pages}{1}
     \endentry
     \entry{schaul2015prioritized}{article}{}{}
       \name{author}{4}{}{%
@@ -1625,8 +1612,6 @@
       \field{booktitle}{Proceedings of the 34th International Conference on Machine Learning (ICML)}
       \field{title}{Proximal Policy Optimization Algorithms}
       \field{year}{2017}
-      \field{pages}{3371\bibrangedash 3380}
-      \range{pages}{10}
     \endentry
     \entry{schulman2020trust}{article}{}{}
       \name{author}{5}{}{%
@@ -1676,8 +1661,6 @@
       \field{title}{Trust Region Policy Optimization}
       \field{volume}{37}
       \field{year}{2015}
-      \field{pages}{1889\bibrangedash 1897}
-      \range{pages}{9}
     \endentry
     \entry{shin2016interoperability}{article}{}{}
       \name{author}{4}{}{%
@@ -1768,8 +1751,6 @@
       \field{title}{Integration of electric vehicle into smart grid: a meta heuristic algorithm for energy management between V2G and G2V}
       \field{volume}{12}
       \field{year}{2024}
-      \field{pages}{1357863}
-      \range{pages}{1}
     \endentry
     \entry{Sutton2018}{book}{}{}
       \name{author}{2}{}{%
@@ -1853,12 +1834,8 @@
       \field{labelnamesource}{author}
       \field{labeltitlesource}{title}
       \field{journaltitle}{IET Energy Systems Integration}
-      \field{number}{3}
       \field{title}{Impacts of grid integration of solar PV and electric vehicle on grid stability, power quality and energy economics: a review}
-      \field{volume}{2}
-      \field{year}{2020}
-      \field{pages}{233\bibrangedash 245}
-      \range{pages}{13}
+      \field{year}{2019}
     \endentry
     \entry{vetter2005ageing}{article}{}{}
       \name{author}{10}{}{%
@@ -1933,8 +1910,6 @@
       \field{title}{Ageing mechanisms in lithium-ion batteries}
       \field{volume}{147}
       \field{year}{2005}
-      \field{pages}{269\bibrangedash 281}
-      \range{pages}{13}
     \endentry
     \entry{Mnih2015}{article}{}{}
       \name{author}{1}{}{%
@@ -1966,8 +1941,6 @@
       \field{title}{Human-level control through deep reinforcement learning}
       \field{volume}{518}
       \field{year}{2015}
-      \field{pages}{529\bibrangedash 533}
-      \range{pages}{5}
     \endentry
     \entry{wang2022multi}{article}{}{}
       \name{author}{7}{}{%
@@ -2067,8 +2040,6 @@
       \field{title}{An electrical vehicle-assisted demand response management system: A reinforcement learning method}
       \field{volume}{10}
       \field{year}{2022}
-      \field{pages}{1071948}
-      \range{pages}{1}
     \endentry
     \entry{white2011vehicle}{article}{}{}
       \name{author}{2}{}{%
@@ -2103,32 +2074,6 @@
       \field{title}{Using vehicle-to-grid technology for frequency regulation and peak-load reduction}
       \field{volume}{196}
       \field{year}{2011}
-      \field{pages}{3972\bibrangedash 3980}
-      \range{pages}{9}
-    \endentry
-    \entry{Xie2025}{article}{}{}
-      \name{author}{1}{}{%
-        {{hash=ae0426ede5160de73b69701588443a78}{%
-           family={Xie},
-           familyi={X\bibinitperiod},
-           given={H.},
-           giveni={H\bibinitperiod}}}%
-      }
-      \strng{namehash}{ae0426ede5160de73b69701588443a78}
-      \strng{fullhash}{ae0426ede5160de73b69701588443a78}
-      \strng{fullhashraw}{ae0426ede5160de73b69701588443a78}
-      \strng{bibnamehash}{ae0426ede5160de73b69701588443a78}
-      \strng{authorbibnamehash}{ae0426ede5160de73b69701588443a78}
-      \strng{authornamehash}{ae0426ede5160de73b69701588443a78}
-      \strng{authorfullhash}{ae0426ede5160de73b69701588443a78}
-      \strng{authorfullhashraw}{ae0426ede5160de73b69701588443a78}
-      \field{sortinit}{X}
-      \field{sortinithash}{1965c258adceecf23ce3d67b05113442}
-      \field{labelnamesource}{author}
-      \field{labeltitlesource}{title}
-      \field{journaltitle}{ScienceDirect}
-      \field{title}{Reinforcement learning for vehicle-to-grid: A review}
-      \field{year}{2025}
     \endentry
     \entry{NaXu}{article}{}{}
       \name{author}{5}{}{%
@@ -2178,8 +2123,6 @@
       \field{title}{A Review of Smart Grid Evolution and Reinforcement Learning: Applications, Challenges and Future Directions}
       \field{volume}{18}
       \field{year}{2024}
-      \field{pages}{1837}
-      \range{pages}{1}
     \endentry
     \entry{Zhang2023}{article}{}{}
       \name{author}{3}{}{%
