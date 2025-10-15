@@ -1,18 +1,18 @@
 [0] Config.pm:328> INFO - This is Biber 2.21
-[2] Config.pm:331> INFO - Logfile is '..\main.blg'
-[199] biber-MSWIN64:342> INFO - === 
-[270] Biber.pm:421> INFO - Reading 'main.bcf'
-[639] Biber.pm:1002> INFO - Found 53 citekeys in bib section 0
-[692] Biber.pm:4487> INFO - Processing section 0
-[715] Biber.pm:4678> INFO - Looking for bibtex file 'references.bib' for section 0
-[859] bibtex.pm:1713> INFO - LaTeX decoding ...
-[968] bibtex.pm:1519> INFO - Found BibTeX data source 'references.bib'
-[1735] UCollate.pm:68> INFO - Overriding locale 'en-US' defaults 'variable = shifted' with 'variable = non-ignorable'
-[1736] UCollate.pm:68> INFO - Overriding locale 'en-US' defaults 'normalization = NFD' with 'normalization = prenormalized'
-[1737] Biber.pm:4307> INFO - Sorting list 'nty/global//global/global/global' of type 'entry' with template 'nty' and locale 'en-US'
-[1737] Biber.pm:4313> INFO - No sort tailoring available for locale 'en-US'
-[1819] bbl.pm:676> INFO - Writing '..\main.bbl' with encoding 'UTF-8'
-[1911] bbl.pm:779> INFO - Output to ..\main.bbl
-[1912] Biber.pm:132> WARN - Duplicate entry key: 'alfaverh2022optima' in file 'references.bib', skipping ...
-[1913] Biber.pm:132> WARN - legacy month field 'December' in entry 'Bemporad_Filippi' is not an integer - this will probably not sort properly.
-[1913] Biber.pm:134> INFO - WARNINGS: 2
+[1] Config.pm:331> INFO - Logfile is '..\main.blg'
+[128] biber-MSWIN64:342> INFO - === 
+[183] Biber.pm:421> INFO - Reading 'main.bcf'
+[305] Biber.pm:1002> INFO - Found 53 citekeys in bib section 0
+[319] Biber.pm:4487> INFO - Processing section 0
+[333] Biber.pm:4678> INFO - Looking for bibtex file 'references.bib' for section 0
+[425] bibtex.pm:1713> INFO - LaTeX decoding ...
+[486] bibtex.pm:1519> INFO - Found BibTeX data source 'references.bib'
+[859] UCollate.pm:68> INFO - Overriding locale 'en-US' defaults 'variable = shifted' with 'variable = non-ignorable'
+[859] UCollate.pm:68> INFO - Overriding locale 'en-US' defaults 'normalization = NFD' with 'normalization = prenormalized'
+[860] Biber.pm:4307> INFO - Sorting list 'nty/global//global/global/global' of type 'entry' with template 'nty' and locale 'en-US'
+[860] Biber.pm:4313> INFO - No sort tailoring available for locale 'en-US'
+[912] bbl.pm:676> INFO - Writing '..\main.bbl' with encoding 'UTF-8'
+[952] bbl.pm:779> INFO - Output to ..\main.bbl
+[953] Biber.pm:132> WARN - Duplicate entry key: 'alfaverh2022optima' in file 'references.bib', skipping ...
+[953] Biber.pm:132> WARN - legacy month field 'December' in entry 'Bemporad_Filippi' is not an integer - this will probably not sort properly.
+[954] Biber.pm:134> INFO - WARNINGS: 2
