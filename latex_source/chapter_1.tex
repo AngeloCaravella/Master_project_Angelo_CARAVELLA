@@ -10,6 +10,22 @@ The global strategy for decarbonizing transport heavily relies on the shift towa
     \caption{Expected growth of EV sales in the coming years (Image from: \cite{Tavakoli2019})}
     \label{fig:growth}
 \end{figure}
+The chart \cite{Tavakoli2019} breaks down this growth into several categories:
+\\
+\noindent
+HEV (hybrid electric vehicle)
+\\
+\noindent
+PHEV (plug-in hybrid electric vehicle)
+\\
+\noindent
+EV (electric vehicle)
+\\
+\noindent
+Commercial (truck and bus)
+\\
+\noindent
+The visual representation in the chart indicates that total sales are expected to surpass 25 million units in the period forecasted. The text also states, "EVs are growing very fast in the car market, and it is predicted to take a significant market share shortly."
 
 \subsection{Background and Relevance of Electric Vehicles and Vehicle-to-Grid}
 
@@ -56,12 +72,11 @@ More than a simple review of existing literature, this work focuses on the pract
 \begin{itemize}
     \item \textbf{Enhancement of a V2G Simulation Architecture:} A key contribution is the systematic testing, validation, and enhancement of the \textbf{EV2Gym} simulation framework. This work solidifies its role as a robust platform for benchmarking control algorithms and includes the development of an interactive data application using \textbf{Streamlit} for results visualization and scenario analysis.
 
-    \item \textbf{Development of a Battery Degradation Calibration Algorithm:} A novel algorithm for calibrating the battery degradation model is presented. This contribution ensures that the simulation's battery health predictions are grounded in realistic parameters, increasing the fidelity of the economic and physical assessments of V2G strategies.
 
     \item \textbf{Exploration of Novel Reinforcement Learning Perspectives:} The validated simulation environment is used to investigate and implement advanced training methodologies for RL agents. A key focus is placed on techniques like \textbf{adaptive reward shaping}, where the reward function dynamically evolves during training to guide the agent towards a more holistic and robust control policy.
 
-    \item \textbf{Practical Implementation and Comparison of Advanced MPC Formulations:} The thesis details the development and implementation of multiple advanced model-based controllers. This includes a classic \textbf{implicit MPC}, and a novel \textbf{Adaptive Horizon Model Predictive Control (AHMPC)}, all formulated in PuLP. These are benchmarked against the theoretical offline optimal controller to rigorously analyze the trade-offs inherent in real-world, online deployment with limited future information.
-\end{itemize}
+
+    \item \textbf{Practical Implementation and Comparison of MPC Formulations:} The thesis details the development and implementation of multiple model-based controllers. This includes a classic \textbf{implicit MPC}, and a novel \textbf{Adaptive Horizon Model Predictive Control (AHMPC)}, all formulated in PuLP. \end{itemize}
 
 \subsection{Research Methodology}
 The research was guided by a central question: how can the economic profit of Vehicle-to-Grid (V2G) operations be maximized without imposing undue costs in terms of battery degradation or creating instability by overloading local grid infrastructure?
