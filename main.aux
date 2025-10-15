@@ -476,152 +476,147 @@
 \@writefile{toc}{\contentsline {section}{\numberline {3.21}Benchmark Results and Algorithm Comparison}{92}{section.3.21}\protected@file@percent }
 \newlabel{sec:benchmark_results}{{3.21}{92}{Benchmark Results and Algorithm Comparison}{section.3.21}{}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {3.21.1}Scenario 1: Critical Case (High Demand & High Price Volatility)}{93}{subsection.3.21.1}\protected@file@percent }
-\newlabel{subsec:critic_scenario}{{3.21.1}{93}{Scenario 1: Critical Case (High Demand & High Price Volatility)}{subsection.3.21.1}{}}
 \@writefile{toc}{\contentsline {subsubsection}{Scenario Conditions}{93}{section*.58}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {3.5}{\ignorespaces Electricity price profile for the Critical scenario. The high volatility, with significant peaks and troughs, creates a challenging environment that rewards effective charge/discharge scheduling.}}{93}{figure.3.5}\protected@file@percent }
-\newlabel{fig:critic_prices}{{3.5}{93}{Electricity price profile for the Critical scenario. The high volatility, with significant peaks and troughs, creates a challenging environment that rewards effective charge/discharge scheduling}{figure.3.5}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {3.5}{\ignorespaces Electricity price profile for the Critic_2al scenario. The high volatility, with significant peaks and troughs, creates a challenging environment that rewards effective charge/discharge scheduling.}}{93}{figure.3.5}\protected@file@percent }
+\newlabel{fig:Critic_2_prices}{{3.5}{93}{Electricity price profile for the Critic_2al scenario. The high volatility, with significant peaks and troughs, creates a challenging environment that rewards effective charge/discharge scheduling}{figure.3.5}{}}
 \@writefile{lof}{\contentsline {figure}{\numberline {3.6}{\ignorespaces Number of EVs present at the charging station over time. The scenario simulates a high-density environment, leading to significant aggregate demand for power.}}{94}{figure.3.6}\protected@file@percent }
-\newlabel{fig:critic_ev_presence}{{3.6}{94}{Number of EVs present at the charging station over time. The scenario simulates a high-density environment, leading to significant aggregate demand for power}{figure.3.6}{}}
+\newlabel{fig:Critic_2_ev_presence}{{3.6}{94}{Number of EVs present at the charging station over time. The scenario simulates a high-density environment, leading to significant aggregate demand for power}{figure.3.6}{}}
 \@writefile{toc}{\contentsline {subsubsection}{Overall Performance Summary}{94}{section*.59}\protected@file@percent }
 \@writefile{lof}{\contentsline {figure}{\numberline {3.7}{\ignorespaces Overall performance summary comparing all algorithms across key metrics. In this high-stress scenario, the advanced RL agents (SAC, TQC) and the adaptive MPC demonstrate superior profitability, effectively leveraging V2G. Heuristic methods like AFAP and ALAP result in significant economic losses and grid overloads.}}{94}{figure.3.7}\protected@file@percent }
-\newlabel{fig:critic_perf_summary}{{3.7}{94}{Overall performance summary comparing all algorithms across key metrics. In this high-stress scenario, the advanced RL agents (SAC, TQC) and the adaptive MPC demonstrate superior profitability, effectively leveraging V2G. Heuristic methods like AFAP and ALAP result in significant economic losses and grid overloads}{figure.3.7}{}}
+\newlabel{fig:Critic_2_perf_summary}{{3.7}{94}{Overall performance summary comparing all algorithms across key metrics. In this high-stress scenario, the advanced RL agents (SAC, TQC) and the adaptive MPC demonstrate superior profitability, effectively leveraging V2G. Heuristic methods like AFAP and ALAP result in significant economic losses and grid overloads}{figure.3.7}{}}
 \@writefile{lof}{\contentsline {figure}{\numberline {3.8}{\ignorespaces Tabular summary of performance metrics. This table provides the precise numerical data for Total Profit, User Satisfaction, Grid Overload, and Battery Degradation, confirming the visual insights from the bar chart.}}{95}{figure.3.8}\protected@file@percent }
-\newlabel{fig:critic_summary_table}{{3.8}{95}{Tabular summary of performance metrics. This table provides the precise numerical data for Total Profit, User Satisfaction, Grid Overload, and Battery Degradation, confirming the visual insights from the bar chart}{figure.3.8}{}}
+\newlabel{fig:Critic_2_summary_table}{{3.8}{95}{Tabular summary of performance metrics. This table provides the precise numerical data for Total Profit, User Satisfaction, Grid Overload, and Battery Degradation, confirming the visual insights from the bar chart}{figure.3.8}{}}
 \@writefile{lof}{\contentsline {figure}{\numberline {3.9}{\ignorespaces Average profit generated per EV. This metric normalizes the total profit by the number of vehicles served, highlighting the economic efficiency of each control strategy on a per-user basis.}}{95}{figure.3.9}\protected@file@percent }
-\newlabel{fig:critic_profit_per_ev}{{3.9}{95}{Average profit generated per EV. This metric normalizes the total profit by the number of vehicles served, highlighting the economic efficiency of each control strategy on a per-user basis}{figure.3.9}{}}
+\newlabel{fig:Critic_2_profit_per_ev}{{3.9}{95}{Average profit generated per EV. This metric normalizes the total profit by the number of vehicles served, highlighting the economic efficiency of each control strategy on a per-user basis}{figure.3.9}{}}
 \@writefile{lof}{\contentsline {figure}{\numberline {3.10}{\ignorespaces Average State of Charge (SoC) of all connected EVs over time. RL and MPC agents maintain a lower average SoC during low-price periods to prepare for charging, while heuristics like AFAP charge aggressively upon arrival.}}{96}{figure.3.10}\protected@file@percent }
-\newlabel{fig:critic_avg_soc}{{3.10}{96}{Average State of Charge (SoC) of all connected EVs over time. RL and MPC agents maintain a lower average SoC during low-price periods to prepare for charging, while heuristics like AFAP charge aggressively upon arrival}{figure.3.10}{}}
+\newlabel{fig:Critic_2_avg_soc}{{3.10}{96}{Average State of Charge (SoC) of all connected EVs over time. RL and MPC agents maintain a lower average SoC during low-price periods to prepare for charging, while heuristics like AFAP charge aggressively upon arrival}{figure.3.10}{}}
 \@writefile{toc}{\contentsline {subsubsection}{Grid Impact Analysis}{97}{section*.60}\protected@file@percent }
 \@writefile{lof}{\contentsline {figure}{\numberline {3.11}{\ignorespaces AFAP}}{97}{figure.3.11}\protected@file@percent }
 \@writefile{lof}{\contentsline {figure}{\numberline {3.12}{\ignorespaces ALAP}}{97}{figure.3.12}\protected@file@percent }
 \@writefile{lof}{\contentsline {figure}{\numberline {3.13}{\ignorespaces Grid load for heuristic algorithms. Both AFAP and ALAP show significant and prolonged periods of transformer overload, as they do not coordinate charging to respect grid limits.}}{97}{figure.3.13}\protected@file@percent }
-\newlabel{fig:critic_overload_heuristics}{{3.13}{97}{Grid load for heuristic algorithms. Both AFAP and ALAP show significant and prolonged periods of transformer overload, as they do not coordinate charging to respect grid limits}{figure.3.13}{}}
+\newlabel{fig:Critic_2_overload_heuristics}{{3.13}{97}{Grid load for heuristic algorithms. Both AFAP and ALAP show significant and prolonged periods of transformer overload, as they do not coordinate charging to respect grid limits}{figure.3.13}{}}
 \@writefile{lof}{\contentsline {figure}{\numberline {3.14}{\ignorespaces MPC Non-Adaptive}}{98}{figure.3.14}\protected@file@percent }
 \@writefile{lof}{\contentsline {figure}{\numberline {3.15}{\ignorespaces MPC Adaptive}}{98}{figure.3.15}\protected@file@percent }
 \@writefile{lof}{\contentsline {figure}{\numberline {3.16}{\ignorespaces Grid load for MPC algorithms. The MPC controllers are highly effective at preventing overloads, keeping the total load just below the transformer's maximum capacity.}}{98}{figure.3.16}\protected@file@percent }
-\newlabel{fig:critic_overload_mpc}{{3.16}{98}{Grid load for MPC algorithms. The MPC controllers are highly effective at preventing overloads, keeping the total load just below the transformer's maximum capacity}{figure.3.16}{}}
+\newlabel{fig:Critic_2_overload_mpc}{{3.16}{98}{Grid load for MPC algorithms. The MPC controllers are highly effective at preventing overloads, keeping the total load just below the transformer's maximum capacity}{figure.3.16}{}}
 \@writefile{lof}{\contentsline {figure}{\numberline {3.17}{\ignorespaces SAC}}{99}{figure.3.17}\protected@file@percent }
 \@writefile{lof}{\contentsline {figure}{\numberline {3.18}{\ignorespaces TQC}}{99}{figure.3.18}\protected@file@percent }
 \@writefile{lof}{\contentsline {figure}{\numberline {3.19}{\ignorespaces Grid load for SAC and TQC RL algorithms. The agents learn to respect the grid constraints, successfully avoiding overloads while maximizing their objective function.}}{99}{figure.3.19}\protected@file@percent }
-\newlabel{fig:critic_overload_rl1}{{3.19}{99}{Grid load for SAC and TQC RL algorithms. The agents learn to respect the grid constraints, successfully avoiding overloads while maximizing their objective function}{figure.3.19}{}}
+\newlabel{fig:Critic_2_overload_rl1}{{3.19}{99}{Grid load for SAC and TQC RL algorithms. The agents learn to respect the grid constraints, successfully avoiding overloads while maximizing their objective function}{figure.3.19}{}}
 \@writefile{lof}{\contentsline {figure}{\numberline {3.20}{\ignorespaces DDPG}}{100}{figure.3.20}\protected@file@percent }
 \@writefile{lof}{\contentsline {figure}{\numberline {3.21}{\ignorespaces DDPG+PER}}{100}{figure.3.21}\protected@file@percent }
 \@writefile{lof}{\contentsline {figure}{\numberline {3.22}{\ignorespaces Grid load for DDPG-based RL algorithms. These agents also learn to avoid overloads, though some minor spikes can occasionally be seen during the learning process.}}{100}{figure.3.22}\protected@file@percent }
-\newlabel{fig:critic_overload_rl2}{{3.22}{100}{Grid load for DDPG-based RL algorithms. These agents also learn to avoid overloads, though some minor spikes can occasionally be seen during the learning process}{figure.3.22}{}}
+\newlabel{fig:Critic_2_overload_rl2}{{3.22}{100}{Grid load for DDPG-based RL algorithms. These agents also learn to avoid overloads, though some minor spikes can occasionally be seen during the learning process}{figure.3.22}{}}
 \@writefile{toc}{\contentsline {subsubsection}{Individual EV Charging Profiles}{101}{section*.61}\protected@file@percent }
 \@writefile{lof}{\contentsline {figure}{\numberline {3.23}{\ignorespaces AFAP}}{101}{figure.3.23}\protected@file@percent }
 \@writefile{lof}{\contentsline {figure}{\numberline {3.24}{\ignorespaces ALAP}}{101}{figure.3.24}\protected@file@percent }
 \@writefile{lof}{\contentsline {figure}{\numberline {3.25}{\ignorespaces Individual EV profiles for heuristic algorithms. AFAP charges immediately upon arrival, while ALAP waits until the last possible moment. Neither strategy responds to price signals.}}{101}{figure.3.25}\protected@file@percent }
-\newlabel{fig:critic_profiles_heuristics}{{3.25}{101}{Individual EV profiles for heuristic algorithms. AFAP charges immediately upon arrival, while ALAP waits until the last possible moment. Neither strategy responds to price signals}{figure.3.25}{}}
+\newlabel{fig:Critic_2_profiles_heuristics}{{3.25}{101}{Individual EV profiles for heuristic algorithms. AFAP charges immediately upon arrival, while ALAP waits until the last possible moment. Neither strategy responds to price signals}{figure.3.25}{}}
 \@writefile{lof}{\contentsline {figure}{\numberline {3.26}{\ignorespaces MPC Adaptive}}{102}{figure.3.26}\protected@file@percent }
 \@writefile{lof}{\contentsline {figure}{\numberline {3.27}{\ignorespaces SAC}}{102}{figure.3.27}\protected@file@percent }
 \@writefile{lof}{\contentsline {figure}{\numberline {3.28}{\ignorespaces Individual EV profiles for advanced controllers. Both the MPC and SAC agents demonstrate intelligent V2G behavior: charging during low-price periods and discharging during high-price periods to generate profit.}}{102}{figure.3.28}\protected@file@percent }
-\newlabel{fig:critic_profiles_advanced}{{3.28}{102}{Individual EV profiles for advanced controllers. Both the MPC and SAC agents demonstrate intelligent V2G behavior: charging during low-price periods and discharging during high-price periods to generate profit}{figure.3.28}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.21.2}Scenario 2: Realistic Case}{103}{subsection.3.21.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.21.3}Scenario 3: Realistic Load Case}{103}{subsection.3.21.3}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.21.4}Scenario 4: V2G Profit Maximization}{103}{subsection.3.21.4}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.21.5}Scenario 5: V2G Profit with Load Balancing}{103}{subsection.3.21.5}\protected@file@percent }
-\@writefile{toc}{\contentsline {chapter}{\numberline {4}Sensitivity Analysis of the V2G System}{104}{chapter.4}\protected@file@percent }
+\newlabel{fig:Critic_2_profiles_advanced}{{3.28}{102}{Individual EV profiles for advanced controllers. Both the MPC and SAC agents demonstrate intelligent V2G behavior: charging during low-price periods and discharging during high-price periods to generate profit}{figure.3.28}{}}
+\@writefile{toc}{\contentsline {chapter}{\numberline {4}Sensitivity Analysis of the V2G System}{103}{chapter.4}\protected@file@percent }
 \@writefile{lof}{\addvspace {10\p@ }}
 \@writefile{lot}{\addvspace {10\p@ }}
-\newlabel{chap:sensitivity_analysis}{{4}{104}{Sensitivity Analysis of the V2G System}{chapter.4}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {4.1}Introduction}{104}{section.4.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {4.2}Introduction to Global Sensitivity Analysis}{104}{section.4.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {4.3}Sensitivity Analysis (SA)}{105}{section.4.3}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.3.1}Definition}{105}{subsection.4.3.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.3.2}Applications and Benefits of SA}{105}{subsection.4.3.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {4.4}What Really Matters?}{105}{section.4.4}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {4.5}Different Classes of Sensitivity Analysis}{106}{section.4.5}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.5.1}Local SA}{106}{subsection.4.5.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.5.2}Global SA (GSA)}{106}{subsection.4.5.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {4.6}Challenges}{107}{section.4.6}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {4.7}Screening Techniques}{107}{section.4.7}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.7.1}One-at-a-time (OAT)}{107}{subsection.4.7.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.7.2}The Morris Method}{108}{subsection.4.7.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {4.8}Note on Interactions}{109}{section.4.8}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.8.1}Summary of Screening Techniques}{109}{subsection.4.8.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {4.9}Methodology for Sensitivity and Robustness Analysis}{109}{section.4.9}\protected@file@percent }
-\newlabel{sec:sa_methodology}{{4.9}{109}{Methodology for Sensitivity and Robustness Analysis}{section.4.9}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.9.1}Parameter and Model-Output Space}{109}{subsection.4.9.1}\protected@file@percent }
-\@writefile{lot}{\contentsline {table}{\numberline {4.1}{\ignorespaces Parameters and Levels for Sensitivity Analysis}}{110}{table.4.1}\protected@file@percent }
-\newlabel{tab:sa_parameters_detailed}{{4.1}{110}{Parameters and Levels for Sensitivity Analysis}{table.4.1}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.9.2}One-at-a-Time (OaaT) Sensitivity Analysis}{110}{subsection.4.9.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.9.3}Global Sensitivity Analysis: The Morris Method}{110}{subsection.4.9.3}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{Implementation with SALib}{111}{section*.62}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{Interpreting the $\mu ^*-\sigma $ Plot}{113}{section*.63}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {4.1}{\ignorespaces Conceptual Morris plot illustrating different parameter behaviors.}}{113}{figure.4.1}\protected@file@percent }
-\newlabel{fig:morris_plot_interpretation}{{4.1}{113}{Conceptual Morris plot illustrating different parameter behaviors}{figure.4.1}{}}
-\@writefile{toc}{\contentsline {subsubsection}{Common Patterns in $\mu ^*-\sigma $ Plots}{114}{section*.64}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.9.4}Stochastic Sampling for Robustness Training}{114}{subsection.4.9.4}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{Grid Search and its Limitations}{115}{section*.65}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.9.5}Dynamic Parameter Randomization}{115}{subsection.4.9.5}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {4.10}Analysis of Results}{115}{section.4.10}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.10.1}One-at-a-Time (OaaT) Results}{115}{subsection.4.10.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{Analysis on the Number of Charging Stations}{115}{section*.66}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {4.2}{\ignorespaces Sensitivity of Average Transformer Loading Pct to the Number of Charging Stations.}}{116}{figure.4.2}\protected@file@percent }
-\newlabel{fig:sa_ncs_average_transformer_loading_pct}{{4.2}{116}{Sensitivity of Average Transformer Loading Pct to the Number of Charging Stations}{figure.4.2}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {4.3}{\ignorespaces Sensitivity of Average User Satisfaction to the Number of Charging Stations.}}{116}{figure.4.3}\protected@file@percent }
-\newlabel{fig:sa_ncs_average_user_satisfaction}{{4.3}{116}{Sensitivity of Average User Satisfaction to the Number of Charging Stations}{figure.4.3}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {4.4}{\ignorespaces Sensitivity of Battery Degradation Calendar to the Number of Charging Stations.}}{117}{figure.4.4}\protected@file@percent }
-\newlabel{fig:sa_ncs_battery_degradation_calendar}{{4.4}{117}{Sensitivity of Battery Degradation Calendar to the Number of Charging Stations}{figure.4.4}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {4.5}{\ignorespaces Sensitivity of Battery Degradation Cycling to the Number of Charging Stations.}}{117}{figure.4.5}\protected@file@percent }
-\newlabel{fig:sa_ncs_battery_degradation_cycling}{{4.5}{117}{Sensitivity of Battery Degradation Cycling to the Number of Charging Stations}{figure.4.5}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {4.6}{\ignorespaces Sensitivity of Battery Degradation to the Number of Charging Stations.}}{118}{figure.4.6}\protected@file@percent }
-\newlabel{fig:sa_ncs_battery_degradation}{{4.6}{118}{Sensitivity of Battery Degradation to the Number of Charging Stations}{figure.4.6}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {4.7}{\ignorespaces Sensitivity of Calendar Degradation to the Number of Charging Stations.}}{118}{figure.4.7}\protected@file@percent }
-\newlabel{fig:sa_ncs_calendar_degradation}{{4.7}{118}{Sensitivity of Calendar Degradation to the Number of Charging Stations}{figure.4.7}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {4.8}{\ignorespaces Sensitivity of Cyclic Degradation to the Number of Charging Stations.}}{119}{figure.4.8}\protected@file@percent }
-\newlabel{fig:sa_ncs_cyclic_degradation}{{4.8}{119}{Sensitivity of Cyclic Degradation to the Number of Charging Stations}{figure.4.8}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {4.9}{\ignorespaces Sensitivity of Energy Tracking Error to the Number of Charging Stations.}}{119}{figure.4.9}\protected@file@percent }
-\newlabel{fig:sa_ncs_energy_tracking_error}{{4.9}{119}{Sensitivity of Energy Tracking Error to the Number of Charging Stations}{figure.4.9}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {4.10}{\ignorespaces Sensitivity of Energy User Satisfaction to the Number of Charging Stations.}}{120}{figure.4.10}\protected@file@percent }
-\newlabel{fig:sa_ncs_energy_user_satisfaction}{{4.10}{120}{Sensitivity of Energy User Satisfaction to the Number of Charging Stations}{figure.4.10}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {4.11}{\ignorespaces Sensitivity of Execution Time to the Number of Charging Stations.}}{120}{figure.4.11}\protected@file@percent }
-\newlabel{fig:sa_ncs_execution_time}{{4.11}{120}{Sensitivity of Execution Time to the Number of Charging Stations}{figure.4.11}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {4.12}{\ignorespaces Sensitivity of Min Energy User Satisfaction to the Number of Charging Stations.}}{121}{figure.4.12}\protected@file@percent }
-\newlabel{fig:sa_ncs_min_energy_user_satisfaction}{{4.12}{121}{Sensitivity of Min Energy User Satisfaction to the Number of Charging Stations}{figure.4.12}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {4.13}{\ignorespaces Sensitivity of Peak Transformer Loading Pct to the Number of Charging Stations.}}{121}{figure.4.13}\protected@file@percent }
-\newlabel{fig:sa_ncs_peak_transformer_loading_pct}{{4.13}{121}{Sensitivity of Peak Transformer Loading Pct to the Number of Charging Stations}{figure.4.13}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {4.14}{\ignorespaces Sensitivity of Power Tracker Violation to the Number of Charging Stations.}}{122}{figure.4.14}\protected@file@percent }
-\newlabel{fig:sa_ncs_power_tracker_violation}{{4.14}{122}{Sensitivity of Power Tracker Violation to the Number of Charging Stations}{figure.4.14}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {4.15}{\ignorespaces Sensitivity of Profit Per Ev to the Number of Charging Stations.}}{122}{figure.4.15}\protected@file@percent }
-\newlabel{fig:sa_ncs_profit_per_ev}{{4.15}{122}{Sensitivity of Profit Per Ev to the Number of Charging Stations}{figure.4.15}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {4.16}{\ignorespaces Sensitivity of Std Energy User Satisfaction to the Number of Charging Stations.}}{123}{figure.4.16}\protected@file@percent }
-\newlabel{fig:sa_ncs_std_energy_user_satisfaction}{{4.16}{123}{Sensitivity of Std Energy User Satisfaction to the Number of Charging Stations}{figure.4.16}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {4.17}{\ignorespaces Sensitivity of Total Energy Charged to the Number of Charging Stations.}}{123}{figure.4.17}\protected@file@percent }
-\newlabel{fig:sa_ncs_total_energy_charged}{{4.17}{123}{Sensitivity of Total Energy Charged to the Number of Charging Stations}{figure.4.17}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {4.18}{\ignorespaces Sensitivity of Total Energy Discharged to the Number of Charging Stations.}}{124}{figure.4.18}\protected@file@percent }
-\newlabel{fig:sa_ncs_total_energy_discharged}{{4.18}{124}{Sensitivity of Total Energy Discharged to the Number of Charging Stations}{figure.4.18}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {4.19}{\ignorespaces Sensitivity of Total Profits to the Number of Charging Stations.}}{124}{figure.4.19}\protected@file@percent }
-\newlabel{fig:sa_ncs_total_profits}{{4.19}{124}{Sensitivity of Total Profits to the Number of Charging Stations}{figure.4.19}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {4.20}{\ignorespaces Sensitivity of Total Reward to the Number of Charging Stations.}}{125}{figure.4.20}\protected@file@percent }
-\newlabel{fig:sa_ncs_total_reward}{{4.20}{125}{Sensitivity of Total Reward to the Number of Charging Stations}{figure.4.20}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {4.21}{\ignorespaces Sensitivity of Total Steps Min Emergency Battery Capacity Violation to the Number of Charging Stations.}}{125}{figure.4.21}\protected@file@percent }
-\newlabel{fig:sa_ncs_total_steps_min_emergency_battery_capacity_violation}{{4.21}{125}{Sensitivity of Total Steps Min Emergency Battery Capacity Violation to the Number of Charging Stations}{figure.4.21}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {4.22}{\ignorespaces Sensitivity of Tracking Error to the Number of Charging Stations.}}{126}{figure.4.22}\protected@file@percent }
-\newlabel{fig:sa_ncs_tracking_error}{{4.22}{126}{Sensitivity of Tracking Error to the Number of Charging Stations}{figure.4.22}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {4.23}{\ignorespaces Sensitivity of Transformer Overload Kwh to the Number of Charging Stations.}}{126}{figure.4.23}\protected@file@percent }
-\newlabel{fig:sa_ncs_transformer_overload_kwh}{{4.23}{126}{Sensitivity of Transformer Overload Kwh to the Number of Charging Stations}{figure.4.23}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.10.2}Morris Method Global Analysis Results}{126}{subsection.4.10.2}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {4.24}{\ignorespaces Morris method sensitivity plot for the AFAP algorithm.}}{127}{figure.4.24}\protected@file@percent }
-\newlabel{fig:morris_afap}{{4.24}{127}{Morris method sensitivity plot for the AFAP algorithm}{figure.4.24}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {4.25}{\ignorespaces Morris method sensitivity plot for the ALAP algorithm.}}{127}{figure.4.25}\protected@file@percent }
-\newlabel{fig:morris_alap}{{4.25}{127}{Morris method sensitivity plot for the ALAP algorithm}{figure.4.25}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {4.26}{\ignorespaces Morris method sensitivity plot for the DDPG algorithm.}}{128}{figure.4.26}\protected@file@percent }
-\newlabel{fig:morris_ddpg}{{4.26}{128}{Morris method sensitivity plot for the DDPG algorithm}{figure.4.26}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {4.27}{\ignorespaces Morris method sensitivity plot for the DDPG+PER algorithm.}}{128}{figure.4.27}\protected@file@percent }
-\newlabel{fig:morris_ddpg_per}{{4.27}{128}{Morris method sensitivity plot for the DDPG+PER algorithm}{figure.4.27}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {4.28}{\ignorespaces Morris method sensitivity plot for the Online MPC Adaptive algorithm.}}{129}{figure.4.28}\protected@file@percent }
-\newlabel{fig:morris_online_mpc_adaptive}{{4.28}{129}{Morris method sensitivity plot for the Online MPC Adaptive algorithm}{figure.4.28}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {4.29}{\ignorespaces Morris method sensitivity plot for the Online MPC NonAdaptive algorithm.}}{129}{figure.4.29}\protected@file@percent }
-\newlabel{fig:morris_online_mpc_nonadaptive}{{4.29}{129}{Morris method sensitivity plot for the Online MPC NonAdaptive algorithm}{figure.4.29}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {4.30}{\ignorespaces Morris method sensitivity plot for the RR algorithm.}}{130}{figure.4.30}\protected@file@percent }
-\newlabel{fig:morris_rr}{{4.30}{130}{Morris method sensitivity plot for the RR algorithm}{figure.4.30}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {4.31}{\ignorespaces Morris method sensitivity plot for the SAC algorithm.}}{130}{figure.4.31}\protected@file@percent }
-\newlabel{fig:morris_sac}{{4.31}{130}{Morris method sensitivity plot for the SAC algorithm}{figure.4.31}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {4.32}{\ignorespaces Morris method sensitivity plot for the TQC algorithm.}}{131}{figure.4.32}\protected@file@percent }
-\newlabel{fig:morris_tqc}{{4.32}{131}{Morris method sensitivity plot for the TQC algorithm}{figure.4.32}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {4.11}Conclusion}{131}{section.4.11}\protected@file@percent }
+\newlabel{chap:sensitivity_analysis}{{4}{103}{Sensitivity Analysis of the V2G System}{chapter.4}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {4.1}Introduction}{103}{section.4.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {4.2}Introduction to Global Sensitivity Analysis}{103}{section.4.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {4.3}Sensitivity Analysis (SA)}{104}{section.4.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.3.1}Definition}{104}{subsection.4.3.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.3.2}Applications and Benefits of SA}{104}{subsection.4.3.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {4.4}What Really Matters?}{104}{section.4.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {4.5}Different Classes of Sensitivity Analysis}{105}{section.4.5}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.5.1}Local SA}{105}{subsection.4.5.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.5.2}Global SA (GSA)}{105}{subsection.4.5.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {4.6}Challenges}{106}{section.4.6}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {4.7}Screening Techniques}{106}{section.4.7}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.7.1}One-at-a-time (OAT)}{106}{subsection.4.7.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.7.2}The Morris Method}{107}{subsection.4.7.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {4.8}Note on Interactions}{108}{section.4.8}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.8.1}Summary of Screening Techniques}{108}{subsection.4.8.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {4.9}Methodology for Sensitivity and Robustness Analysis}{108}{section.4.9}\protected@file@percent }
+\newlabel{sec:sa_methodology}{{4.9}{108}{Methodology for Sensitivity and Robustness Analysis}{section.4.9}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.9.1}Parameter and Model-Output Space}{108}{subsection.4.9.1}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {4.1}{\ignorespaces Parameters and Levels for Sensitivity Analysis}}{109}{table.4.1}\protected@file@percent }
+\newlabel{tab:sa_parameters_detailed}{{4.1}{109}{Parameters and Levels for Sensitivity Analysis}{table.4.1}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.9.2}One-at-a-Time (OaaT) Sensitivity Analysis}{109}{subsection.4.9.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.9.3}Global Sensitivity Analysis: The Morris Method}{109}{subsection.4.9.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{Implementation with SALib}{110}{section*.62}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{Interpreting the $\mu ^*-\sigma $ Plot}{112}{section*.63}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {4.1}{\ignorespaces Conceptual Morris plot illustrating different parameter behaviors.}}{112}{figure.4.1}\protected@file@percent }
+\newlabel{fig:morris_plot_interpretation}{{4.1}{112}{Conceptual Morris plot illustrating different parameter behaviors}{figure.4.1}{}}
+\@writefile{toc}{\contentsline {subsubsection}{Common Patterns in $\mu ^*-\sigma $ Plots}{113}{section*.64}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.9.4}Stochastic Sampling for Robustness Training}{113}{subsection.4.9.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{Grid Search and its Limitations}{114}{section*.65}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.9.5}Dynamic Parameter Randomization}{114}{subsection.4.9.5}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {4.10}Analysis of Results}{114}{section.4.10}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.10.1}One-at-a-Time (OaaT) Results}{114}{subsection.4.10.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{Analysis on the Number of Charging Stations}{114}{section*.66}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {4.2}{\ignorespaces Sensitivity of Average Transformer Loading Pct to the Number of Charging Stations.}}{115}{figure.4.2}\protected@file@percent }
+\newlabel{fig:sa_ncs_average_transformer_loading_pct}{{4.2}{115}{Sensitivity of Average Transformer Loading Pct to the Number of Charging Stations}{figure.4.2}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {4.3}{\ignorespaces Sensitivity of Average User Satisfaction to the Number of Charging Stations.}}{115}{figure.4.3}\protected@file@percent }
+\newlabel{fig:sa_ncs_average_user_satisfaction}{{4.3}{115}{Sensitivity of Average User Satisfaction to the Number of Charging Stations}{figure.4.3}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {4.4}{\ignorespaces Sensitivity of Battery Degradation Calendar to the Number of Charging Stations.}}{116}{figure.4.4}\protected@file@percent }
+\newlabel{fig:sa_ncs_battery_degradation_calendar}{{4.4}{116}{Sensitivity of Battery Degradation Calendar to the Number of Charging Stations}{figure.4.4}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {4.5}{\ignorespaces Sensitivity of Battery Degradation Cycling to the Number of Charging Stations.}}{116}{figure.4.5}\protected@file@percent }
+\newlabel{fig:sa_ncs_battery_degradation_cycling}{{4.5}{116}{Sensitivity of Battery Degradation Cycling to the Number of Charging Stations}{figure.4.5}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {4.6}{\ignorespaces Sensitivity of Battery Degradation to the Number of Charging Stations.}}{117}{figure.4.6}\protected@file@percent }
+\newlabel{fig:sa_ncs_battery_degradation}{{4.6}{117}{Sensitivity of Battery Degradation to the Number of Charging Stations}{figure.4.6}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {4.7}{\ignorespaces Sensitivity of Calendar Degradation to the Number of Charging Stations.}}{117}{figure.4.7}\protected@file@percent }
+\newlabel{fig:sa_ncs_calendar_degradation}{{4.7}{117}{Sensitivity of Calendar Degradation to the Number of Charging Stations}{figure.4.7}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {4.8}{\ignorespaces Sensitivity of Cyclic Degradation to the Number of Charging Stations.}}{118}{figure.4.8}\protected@file@percent }
+\newlabel{fig:sa_ncs_cyclic_degradation}{{4.8}{118}{Sensitivity of Cyclic Degradation to the Number of Charging Stations}{figure.4.8}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {4.9}{\ignorespaces Sensitivity of Energy Tracking Error to the Number of Charging Stations.}}{118}{figure.4.9}\protected@file@percent }
+\newlabel{fig:sa_ncs_energy_tracking_error}{{4.9}{118}{Sensitivity of Energy Tracking Error to the Number of Charging Stations}{figure.4.9}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {4.10}{\ignorespaces Sensitivity of Energy User Satisfaction to the Number of Charging Stations.}}{119}{figure.4.10}\protected@file@percent }
+\newlabel{fig:sa_ncs_energy_user_satisfaction}{{4.10}{119}{Sensitivity of Energy User Satisfaction to the Number of Charging Stations}{figure.4.10}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {4.11}{\ignorespaces Sensitivity of Execution Time to the Number of Charging Stations.}}{119}{figure.4.11}\protected@file@percent }
+\newlabel{fig:sa_ncs_execution_time}{{4.11}{119}{Sensitivity of Execution Time to the Number of Charging Stations}{figure.4.11}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {4.12}{\ignorespaces Sensitivity of Min Energy User Satisfaction to the Number of Charging Stations.}}{120}{figure.4.12}\protected@file@percent }
+\newlabel{fig:sa_ncs_min_energy_user_satisfaction}{{4.12}{120}{Sensitivity of Min Energy User Satisfaction to the Number of Charging Stations}{figure.4.12}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {4.13}{\ignorespaces Sensitivity of Peak Transformer Loading Pct to the Number of Charging Stations.}}{120}{figure.4.13}\protected@file@percent }
+\newlabel{fig:sa_ncs_peak_transformer_loading_pct}{{4.13}{120}{Sensitivity of Peak Transformer Loading Pct to the Number of Charging Stations}{figure.4.13}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {4.14}{\ignorespaces Sensitivity of Power Tracker Violation to the Number of Charging Stations.}}{121}{figure.4.14}\protected@file@percent }
+\newlabel{fig:sa_ncs_power_tracker_violation}{{4.14}{121}{Sensitivity of Power Tracker Violation to the Number of Charging Stations}{figure.4.14}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {4.15}{\ignorespaces Sensitivity of Profit Per Ev to the Number of Charging Stations.}}{121}{figure.4.15}\protected@file@percent }
+\newlabel{fig:sa_ncs_profit_per_ev}{{4.15}{121}{Sensitivity of Profit Per Ev to the Number of Charging Stations}{figure.4.15}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {4.16}{\ignorespaces Sensitivity of Std Energy User Satisfaction to the Number of Charging Stations.}}{122}{figure.4.16}\protected@file@percent }
+\newlabel{fig:sa_ncs_std_energy_user_satisfaction}{{4.16}{122}{Sensitivity of Std Energy User Satisfaction to the Number of Charging Stations}{figure.4.16}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {4.17}{\ignorespaces Sensitivity of Total Energy Charged to the Number of Charging Stations.}}{122}{figure.4.17}\protected@file@percent }
+\newlabel{fig:sa_ncs_total_energy_charged}{{4.17}{122}{Sensitivity of Total Energy Charged to the Number of Charging Stations}{figure.4.17}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {4.18}{\ignorespaces Sensitivity of Total Energy Discharged to the Number of Charging Stations.}}{123}{figure.4.18}\protected@file@percent }
+\newlabel{fig:sa_ncs_total_energy_discharged}{{4.18}{123}{Sensitivity of Total Energy Discharged to the Number of Charging Stations}{figure.4.18}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {4.19}{\ignorespaces Sensitivity of Total Profits to the Number of Charging Stations.}}{123}{figure.4.19}\protected@file@percent }
+\newlabel{fig:sa_ncs_total_profits}{{4.19}{123}{Sensitivity of Total Profits to the Number of Charging Stations}{figure.4.19}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {4.20}{\ignorespaces Sensitivity of Total Reward to the Number of Charging Stations.}}{124}{figure.4.20}\protected@file@percent }
+\newlabel{fig:sa_ncs_total_reward}{{4.20}{124}{Sensitivity of Total Reward to the Number of Charging Stations}{figure.4.20}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {4.21}{\ignorespaces Sensitivity of Total Steps Min Emergency Battery Capacity Violation to the Number of Charging Stations.}}{124}{figure.4.21}\protected@file@percent }
+\newlabel{fig:sa_ncs_total_steps_min_emergency_battery_capacity_violation}{{4.21}{124}{Sensitivity of Total Steps Min Emergency Battery Capacity Violation to the Number of Charging Stations}{figure.4.21}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {4.22}{\ignorespaces Sensitivity of Tracking Error to the Number of Charging Stations.}}{125}{figure.4.22}\protected@file@percent }
+\newlabel{fig:sa_ncs_tracking_error}{{4.22}{125}{Sensitivity of Tracking Error to the Number of Charging Stations}{figure.4.22}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {4.23}{\ignorespaces Sensitivity of Transformer Overload Kwh to the Number of Charging Stations.}}{125}{figure.4.23}\protected@file@percent }
+\newlabel{fig:sa_ncs_transformer_overload_kwh}{{4.23}{125}{Sensitivity of Transformer Overload Kwh to the Number of Charging Stations}{figure.4.23}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.10.2}Morris Method Global Analysis Results}{125}{subsection.4.10.2}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {4.24}{\ignorespaces Morris method sensitivity plot for the AFAP algorithm.}}{126}{figure.4.24}\protected@file@percent }
+\newlabel{fig:morris_afap}{{4.24}{126}{Morris method sensitivity plot for the AFAP algorithm}{figure.4.24}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {4.25}{\ignorespaces Morris method sensitivity plot for the ALAP algorithm.}}{126}{figure.4.25}\protected@file@percent }
+\newlabel{fig:morris_alap}{{4.25}{126}{Morris method sensitivity plot for the ALAP algorithm}{figure.4.25}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {4.26}{\ignorespaces Morris method sensitivity plot for the DDPG algorithm.}}{127}{figure.4.26}\protected@file@percent }
+\newlabel{fig:morris_ddpg}{{4.26}{127}{Morris method sensitivity plot for the DDPG algorithm}{figure.4.26}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {4.27}{\ignorespaces Morris method sensitivity plot for the DDPG+PER algorithm.}}{127}{figure.4.27}\protected@file@percent }
+\newlabel{fig:morris_ddpg_per}{{4.27}{127}{Morris method sensitivity plot for the DDPG+PER algorithm}{figure.4.27}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {4.28}{\ignorespaces Morris method sensitivity plot for the Online MPC Adaptive algorithm.}}{128}{figure.4.28}\protected@file@percent }
+\newlabel{fig:morris_online_mpc_adaptive}{{4.28}{128}{Morris method sensitivity plot for the Online MPC Adaptive algorithm}{figure.4.28}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {4.29}{\ignorespaces Morris method sensitivity plot for the Online MPC NonAdaptive algorithm.}}{128}{figure.4.29}\protected@file@percent }
+\newlabel{fig:morris_online_mpc_nonadaptive}{{4.29}{128}{Morris method sensitivity plot for the Online MPC NonAdaptive algorithm}{figure.4.29}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {4.30}{\ignorespaces Morris method sensitivity plot for the RR algorithm.}}{129}{figure.4.30}\protected@file@percent }
+\newlabel{fig:morris_rr}{{4.30}{129}{Morris method sensitivity plot for the RR algorithm}{figure.4.30}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {4.31}{\ignorespaces Morris method sensitivity plot for the SAC algorithm.}}{129}{figure.4.31}\protected@file@percent }
+\newlabel{fig:morris_sac}{{4.31}{129}{Morris method sensitivity plot for the SAC algorithm}{figure.4.31}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {4.32}{\ignorespaces Morris method sensitivity plot for the TQC algorithm.}}{130}{figure.4.32}\protected@file@percent }
+\newlabel{fig:morris_tqc}{{4.32}{130}{Morris method sensitivity plot for the TQC algorithm}{figure.4.32}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {4.11}Conclusion}{130}{section.4.11}\protected@file@percent }
 \abx@aux@lbx@loadrequest{italian}
 \abx@aux@lbx@loadrequest{italian}
 \abx@aux@read@bbl@mdfivesum{5FFCE5608F964B834D5535476A62FB03}
@@ -678,4 +673,4 @@
 \abx@aux@defaultrefcontext{0}{white2011vehicle}{nty/global//global/global/global}
 \abx@aux@defaultrefcontext{0}{NaXu}{nty/global//global/global/global}
 \abx@aux@defaultrefcontext{0}{Zhang2023}{nty/global//global/global/global}
-\gdef \@abspage@last{137}
+\gdef \@abspage@last{136}
