@@ -33,7 +33,7 @@ The text also states, "EVs are growing very fast in the car market, and it is pr
 
 \subsection{Background and Relevance of Electric Vehicles and Vehicle-to-Grid}
 
-The rapidly expanding Electric Vehicle market is reshaping modern mobility, offering a path to reduced carbon emissions and enhanced energy efficiency \cite{orfanoudakis2024ev2gym}. This transition is fundamental to environmental sustainability, as it lessens dependence on fossil fuels, mitigates climate change by cutting greenhouse gas emissions, and improves urban air quality. However, integrating millions of EVs into the power system is a significant challenge, threatening to intensify peak demand, strain transmission and distribution networks, and cause technical issues like voltage irregularities or line losses \cite{orfanoudakis2024ev2gym, salvatti2020electric}.
+The rapidly expanding EV market is reshaping modern mobility, offering a path to reduced carbon emissions and enhanced energy efficiency \cite{orfanoudakis2024ev2gym}. This transition is fundamental to environmental sustainability, as it lessens dependence on fossil fuels, mitigates climate change by cutting greenhouse gas emissions, and improves urban air quality. However, integrating millions of EVs into the power system is a significant challenge, threatening to intensify peak demand, strain transmission and distribution networks, and cause technical issues like voltage irregularities or line losses \cite{orfanoudakis2024ev2gym, salvatti2020electric}.
 \\
 \noindent
 This challenge raises a critical question: 
@@ -82,23 +82,7 @@ More than a simple review of existing literature, this work focuses on the pract
 
     \item \textbf{Practical Implementation and Comparison of MPC Formulations:} The thesis details the development and implementation of multiple model-based controllers. This includes a classic \textbf{implicit MPC}, and a novel \textbf{Adaptive Horizon Model Predictive Control (AHMPC)}, all formulated in PuLP. \end{itemize}
 
-\subsection{Research Methodology}
-The research was guided by a central question: how can the economic profit of Vehicle-to-Grid (V2G) operations be maximized without imposing undue costs in terms of battery degradation or creating instability by overloading local grid infrastructure?
-\\
-The initial phase involved an extensive literature review using Google Scholar to identify state-of-the-art V2G control strategies and their inherent trade-offs. This was followed by an empirical phase centered on the simulation framework detailed in Chapter 3. The significance of results from various control agents was continuously evaluated through a multi-faceted validation process, including comparative analysis against published benchmarks, heuristic evaluation based on acquired expertise, and grounding empirical findings in the foundational knowledge from the literature review.
-\\
-\noindent
-To further systematize the literature review, a quantitative analysis was performed on the collected papers using a custom Python script. This analysis produced a key visualization: a weighted word cloud (Figure \ref{fig:pagerank_wordcloud}), was generated from titles and abstracts, with word size corresponding to its \textbf{PageRank} score within a citation graph.
 
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.8\textwidth]{Page_rank.png}
-    \caption{Weighted word cloud generated from the literature review, highlighting key research themes. The size of each word corresponds to its frequency and importance, derived from the PageRank analysis.}
-    \label{fig:pagerank_wordcloud}
-\end{figure}
-
-\noindent
-This visualization confirms the research focus, with primary terms like \textbf{Energy}, \textbf{Power}, \textbf{Grid}, and \textbf{EVs} setting the context. The equal prominence of \textbf{Learning} and \textbf{Control}, alongside strong secondary terms like \textbf{Reinforcement}, \textbf{Agent}, and \textbf{Policy}, firmly anchors the methodology in Reinforcement Learning. The inclusion of \textbf{MPC} (Model Predictive Control) highlights the central dialogue between model-free and model-based approaches explored in this thesis.
 
 \subsection{Thesis Structure}
 The remainder of this thesis is organized as follows:

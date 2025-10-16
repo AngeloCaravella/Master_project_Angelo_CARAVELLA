@@ -1,3 +1,4 @@
+
 import os
 import yaml
 import numpy as np
@@ -42,7 +43,7 @@ def select_multiple_from_list(items, prompt):
     for i, item in enumerate(items):
         print(f"  {i+1}. {item}")
     print(f"  {len(items)+1}. ALL")
-    choices_str = get_user_input(f"Enter the numbers of your choices (comma-separated), or '{len(items)+1}' for ALL", str(len(items)+1))
+    choices_str = get_user_input(f"Enter the numbers of your choices (comma-separated), or '{len(items)+1}' for ALL", str(len(items)+1)) 
     
     if choices_str == str(len(items)+1):
         return items
@@ -79,17 +80,305 @@ def select_model_directory():
     print(f"\nModelli selezionati da: {model_dir}")
     return model_dir, is_multi_scenario
 
+# --- Analysis-specific Functions ---
+
+def _setup_common_simulation_parameters(config_path):
+    """Handles the common setup steps for any analysis type."""
+    master_seed = 42
+    print(f"\n--- Using Master Seed: {master_seed} for simulations to ensure EV population is fixed (if num_simulations=1). ---")
+    
+    is_thesis_mode = True
+    MAX_CS = calculate_max_cs(config_path)
+    all_available_algorithms = get_algorithms(MAX_CS, is_thesis_mode)
+
+    selected_algo_names = select_multiple_from_list(
+        list(all_available_algorithms.keys()), 
+        "Select the algorithm(s) for the analysis:"
+    )
+    algorithms_to_run = {name: all_available_algorithms[name] for name in selected_algo_names}
+    print(f"\nWill run analysis for the following algorithms: {list(algorithms_to_run.keys())}")
+
+    reward_func = reward_module.FastProfitAdaptiveReward
+    num_simulations = int(get_user_input("Enter number of simulations per run", 1))
+    
+    model_dir, is_multi_scenario = select_model_directory()
+    
+    price_data_file = './ev2gym/data/Netherlands_day-ahead-2015-2024.csv'
+    
+    return (algorithms_to_run, reward_func, model_dir, is_multi_scenario, 
+            price_data_file, num_simulations, master_seed)
+
+def run_scenario_comparison_analysis(config_path, key_parameters):
+    """Runs a comparison across different scenario files."""
+    print("\n--- Scenario Comparison Analysis ---")
+
+    # 1. Setup common parameters
+    (algorithms_to_run, reward_func, model_dir, is_multi_scenario, 
+     price_data_file, num_simulations, master_seed) = _setup_common_simulation_parameters(config_path)
+
+    if model_dir is None:
+        return
+
+    # 2. Select scenarios to compare
+    available_scenarios = sorted(glob(os.path.join(config_path, "*.yaml")))
+    selected_scenarios_names = select_multiple_from_list(
+        [os.path.basename(s) for s in available_scenarios],
+        "Select the scenarios to compare:"
+    )
+    selected_scenario_paths = [os.path.join(config_path, s) for s in selected_scenarios_names]
+
+    # 3. Run Analysis
+    base_results_path = f'C:/Users/angel/OneDrive/Desktop/Project_Master/sensitivity_analysis_results/scenario_comparison_{datetime.now().strftime("%Y%m%d_%H%M%S")}'
+    os.makedirs(base_results_path, exist_ok=True)
+    
+    all_results_summary = []
+
+    for scenario_path in selected_scenario_paths:
+        scenario_name = os.path.basename(scenario_path).replace('.yaml', '')
+        print(f"\n{'='*80}")
+        print(f"--- Running Scenario: {scenario_name} ---")
+        print(f"{'='*80}")
+
+        aggregated_stats = run_benchmark(
+            config_files=[scenario_path],
+            reward_func=reward_func,
+            algorithms_to_run=algorithms_to_run,
+            num_simulations=num_simulations,
+            model_dir=model_dir,
+            is_multi_scenario=is_multi_scenario,
+            price_data_file=price_data_file,
+            generate_plots=False,
+            seed=master_seed 
+        )
+
+        # 4. Collect Results
+        for algo_name, stats in aggregated_stats.items():
+            row = {
+                'Algorithm': algo_name,
+                'scenario_name': scenario_name
+            }
+            for metric, mean_val in stats.get('mean', {}).items():
+                std_val = stats.get('std', {}).get(metric, 0)
+                row[f"{metric}_mean"] = mean_val
+                row[f"{metric}_std"] = std_val
+            all_results_summary.append(row)
+
+    # 5. Aggregate and Plot Results
+    if not all_results_summary:
+        print("\nNo results were generated. Exiting analysis.")
+        return
+
+    final_df = pd.DataFrame(all_results_summary)
+    summary_csv_path = os.path.join(base_results_path, "scenario_comparison_summary.csv")
+    final_df.to_csv(summary_csv_path, index=False)
+    
+    print(f"\n{'='*80}")
+    print(f"--- Scenario Comparison Complete ---")
+    print(f"Full summary saved to: {summary_csv_path}")
+    print(f"{'='*80}")
+
+    metrics_to_plot = [col.replace('_mean', '') for col in final_df.columns if col.endswith('_mean')]
+
+    for metric in metrics_to_plot:
+        mean_col = f"{metric}_mean"
+        if mean_col not in final_df.columns:
+            continue
+
+        try:
+            pivot_df = final_df.pivot(index='scenario_name', columns='Algorithm', values=mean_col)
+            
+            ax = pivot_df.plot(kind='bar', figsize=(14, 7), width=0.8, 
+                               title=f"Comparison of '{metric}' across Scenarios",
+                               grid=True)
+            
+            ax.set_ylabel(metric)
+            ax.set_xlabel("Scenario")
+            ax.set_xticklabels(ax.get_xticklabels(), rotation=45, ha='right')
+            ax.grid(axis='y', linestyle='--', alpha=0.7)
+            plt.legend(title='Algorithm')
+            plt.tight_layout()
+            
+            plot_filename = os.path.join(base_results_path, f"comparison_vs_{metric}.png")
+            plt.savefig(plot_filename)
+            plt.close()
+            print(f"Plot saved to: {plot_filename}")
+        except Exception as e:
+            print(f"Could not generate plot for metric '{metric}'. Error: {e}")
+
+def run_oat_analysis(config_path, key_parameters, PREDEFINED_LEVELS, base_scenario_full_path):
+    """Runs the One-at-a-Time sensitivity analysis."""
+    print("\n--- One-at-a-Time Sensitivity Analysis ---")
+    
+    param_name = select_from_list(
+        list(PREDEFINED_LEVELS.keys()), 
+        "Select the parameter for sensitivity analysis:"
+    )
+    param_path = key_parameters[param_name]
+    param_range = PREDEFINED_LEVELS[param_name]
+    steps = len(param_range)
+
+    print(f"\nAnalysis will run for '{param_name}' with predefined levels.")
+    print(f"Levels: {param_range}")
+
+    # Setup common parameters
+    (algorithms_to_run, reward_func, model_dir, is_multi_scenario, 
+     price_data_file, num_simulations, master_seed) = _setup_common_simulation_parameters(config_path)
+
+    if model_dir is None:
+        return
+
+    # Run Analysis
+    base_results_path = f'C:/Users/angel/OneDrive/Desktop/Project_Master/sensitivity_analysis_results/sensitivity_{param_name.replace(" ", "_")}_{datetime.now().strftime("%Y%m%d_%H%M%S")}'
+    os.makedirs(base_results_path, exist_ok=True)
+    
+    all_results_summary = []
+
+    for i, value in enumerate(param_range):
+        print(f"\n{'='*80}")
+        print(f"--- Running Step {i+1}/{steps}: {param_name} = {value:.4f} ---")
+        print(f"{'='*80}")
+
+        with open(base_scenario_full_path, 'r') as f:
+            config = yaml.safe_load(f)
+        
+        final_value = int(value) if np.issubdtype(type(value), np.integer) else float(value)
+        set_nested_dict_value(config, param_path, final_value)
+
+        # --- DEBUG PRINT: Show key parameters for this run ---
+        print("\n--- DEBUG: Current Parameter Values for this Run ---")
+        for p_name, p_path in key_parameters.items():
+            try:
+                current_val = config
+                for key in p_path:
+                    current_val = current_val[key]
+                print(f"  - {p_name}: {current_val}")
+            except KeyError:
+                print(f"  - {p_name}: Not Found in Config")
+        print("--------------------------------------------------\n")
+        # --- END DEBUG PRINT ---
+
+        temp_config_path = 'temp_sensitivity_config.yaml'
+        with open(temp_config_path, 'w') as f:
+            yaml.dump(config, f)
+
+        aggregated_stats = run_benchmark(
+            config_files=[temp_config_path],
+            reward_func=reward_func,
+            algorithms_to_run=algorithms_to_run,
+            num_simulations=num_simulations,
+            model_dir=model_dir,
+            is_multi_scenario=is_multi_scenario,
+            price_data_file=price_data_file,
+            generate_plots=False,
+            seed=master_seed
+        )
+
+        # Collect Results
+        for algo_name, stats in aggregated_stats.items():
+            row = {
+                'Algorithm': algo_name,
+                'parameter_name': param_name,
+                'parameter_value': value
+            }
+            for metric, mean_val in stats.get('mean', {}).items():
+                std_val = stats.get('std', {}).get(metric, 0)
+                row[f"{metric}_mean"] = mean_val
+                row[f"{metric}_std"] = std_val
+            all_results_summary.append(row)
+
+    # Aggregate and Plot Results
+    if os.path.exists(temp_config_path):
+        os.remove(temp_config_path)
+
+    if not all_results_summary:
+        print("\nNo results were generated. Exiting analysis.")
+        return
+
+    final_df = pd.DataFrame(all_results_summary)
+    final_df.to_csv(os.path.join(base_results_path, "sensitivity_analysis_summary.csv"), index=False)
+    
+    print(f"\n{'='*80}")
+    print(f"--- Sensitivity Analysis Complete ---")
+    print(f"Full summary saved to: {os.path.join(base_results_path, 'sensitivity_analysis_summary.csv')}")
+    print(f"{'='*80}")
+
+    metrics_to_plot = [col.replace('_mean', '') for col in final_df.columns if col.endswith('_mean')]
+    algorithms = final_df['Algorithm'].unique()
+
+    for metric in metrics_to_plot:
+        plt.figure(figsize=(12, 8))
+        for algo in algorithms:
+            algo_df = final_df[final_df['Algorithm'] == algo]
+            mean_col = f"{metric}_mean"
+            std_col = f"{metric}_std"
+            
+            if mean_col in algo_df.columns:
+                sorted_df = algo_df.sort_values(by='parameter_value')
+                plt.plot(sorted_df['parameter_value'], sorted_df[mean_col], marker='o', linestyle='-', label=algo)
+                if std_col in sorted_df.columns and num_simulations > 1:
+                    plt.fill_between(sorted_df['parameter_value'], 
+                                     sorted_df[mean_col] - sorted_df[std_col], 
+                                     sorted_df[mean_col] + sorted_df[std_col], 
+                                     alpha=0.2)
+
+        plt.title(f"Sensitivity of '{metric}' to '{param_name}'")
+        plt.xlabel(param_name)
+        plt.ylabel(metric)
+        plt.grid(True, which='both', linestyle='--')
+        plt.legend()
+        
+        plot_filename = os.path.join(base_results_path, f"sensitivity_{param_name.replace(' ', '_')}_vs_{metric.replace(' ', '_')}.png")
+        plt.savefig(plot_filename)
+        plt.close()
+        print(f"Plot saved to: {plot_filename}")
+
+    # Special plot for Discharge Price Factor
+    if param_name == "Discharge Price Factor":
+        print(f"\nGenerating special plot for '{param_name}'...")
+        try:
+            price_df = pd.read_csv(price_data_file)
+            original_prices = price_df['Price (EUR/MWhe)'].head(48)
+            hours = np.arange(len(original_prices))
+
+            plt.figure(figsize=(15, 8))
+            plt.plot(hours, original_prices, label='Charge Price (Original / Factor = 1.0)', color='blue', linestyle='--', linewidth=2.5)
+
+            for factor in param_range:
+                if factor == 1.0:
+                    continue
+                discharge_prices = original_prices * factor
+                plt.plot(hours, discharge_prices, label=f'Discharge Price (Factor: {factor:.2f})', marker='.', linestyle='-')
+
+            plt.title("Effect of 'Discharge Price Factor' on Price Curves (First 48 Hours)")
+            plt.xlabel("Hour")
+            plt.ylabel("Price (EUR/MWh)")
+            plt.legend()
+            plt.grid(True, which='both', linestyle='--')
+
+            plot_filename = os.path.join(base_results_path, "price_curves_vs_discharge_factor.png")
+            plt.savefig(plot_filename)
+            plt.close()
+            print(f"Price curve comparison plot saved to: {plot_filename}")
+
+        except FileNotFoundError:
+            print(f"\nWARNING: Price data file not found at '{price_data_file}'. Skipping price curve plot.")
+        except KeyError:
+            print(f"\nWARNING: Could not find 'Price (EUR/MWhe)' column in '{price_data_file}'. Skipping price curve plot.")
+
 def run_morris_analysis(base_scenario_full_path, key_parameters, config_path, PREDEFINED_LEVELS):
+    # This function remains largely unchanged but could be refactored to use 
+    # _setup_common_simulation_parameters if needed in the future.
     """Guides user through Morris analysis setup and execution for each selected algorithm."""
     print("\n--- Morris Sensitivity Analysis Configuration ---")
 
-    # 1. Select multiple parameters
+    # ... (rest of the original morris analysis code)
+    # Note: This part is kept as is, since it has a more complex setup loop
+    # that doesn't fit the new common setup function directly.
     selected_param_names = select_multiple_from_list(
         list(key_parameters.keys()),
         "Select parameters for Morris analysis:"
     )
 
-    # 2. Define bounds for each parameter
     bounds = []
     for param_name in selected_param_names:
         if param_name in PREDEFINED_LEVELS:
@@ -103,22 +392,18 @@ def run_morris_analysis(base_scenario_full_path, key_parameters, config_path, PR
             max_val = float(get_user_input(f"Enter MAX value", 1))
             bounds.append([min_val, max_val])
 
-    # 3. Get Morris-specific parameters
     num_trajectories = int(get_user_input("\nEnter the number of trajectories (e.g., 10)", 10))
     num_levels = int(get_user_input("Enter the number of levels (e.g., 4 or 6, preferably an even number)", 4))
 
-    # 4. Define SALib Problem
     problem = {
         'num_vars': len(selected_param_names),
         'names': selected_param_names,
         'bounds': bounds
     }
 
-    # 5. Generate samples
     print(f"Generating {num_trajectories} trajectories for Morris analysis...")
     param_values = morris_sampler.sample(problem, N=num_trajectories, num_levels=num_levels)
 
-    # 6. Setup other simulation parameters
     is_thesis_mode = True
     MAX_CS = calculate_max_cs(config_path)
     all_available_algorithms = get_algorithms(MAX_CS, is_thesis_mode)
@@ -138,18 +423,15 @@ def run_morris_analysis(base_scenario_full_path, key_parameters, config_path, PR
     price_data_file = './ev2gym/data/Netherlands_day-ahead-2015-2024.csv'
     output_metric = 'total_profits'
 
-    # --- Create a base directory for this analysis run ---
     base_results_path = f'C:/Users/angel/OneDrive/Desktop/Project_Master/sensitivity_analysis_results/morris_analysis_{datetime.now().strftime("%Y%m%d_%H%M%S")}'
     os.makedirs(base_results_path, exist_ok=True)
     print(f"\nSaving all results for this run in: {base_results_path}")
 
-    # --- Loop over each selected algorithm ---
     for algo_name, algo_details in algorithms_to_run.items():
         print(f"\n{'='*80}")
         print(f"--- Starting Morris Analysis for Algorithm: {algo_name} ---")
         print(f"{'='*80}")
 
-        # Create a specific directory for this algorithm's results
         algo_results_path = os.path.join(base_results_path, algo_name)
         os.makedirs(algo_results_path, exist_ok=True)
 
@@ -173,7 +455,6 @@ def run_morris_analysis(base_scenario_full_path, key_parameters, config_path, PR
                 set_nested_dict_value(config, param_path, final_value)
                 print(f"  {param_name_iter}: {final_value:.4f}")
 
-            # Sanitize the algorithm name to create a valid filename
             sanitized_algo_name = algo_name.replace('+', '_').replace('.', '_')
             temp_config_path = f'temp_morris_config_{sanitized_algo_name}.yaml'
             with open(temp_config_path, 'w') as f:
@@ -182,7 +463,7 @@ def run_morris_analysis(base_scenario_full_path, key_parameters, config_path, PR
             aggregated_stats = run_benchmark(
                 config_files=[temp_config_path],
                 reward_func=reward_func,
-                algorithms_to_run={algo_name: algo_details},
+                algorithms_to_run={{algo_name: algo_details}},
                 num_simulations=num_simulations,
                 model_dir=model_dir,
                 is_multi_scenario=is_multi_scenario,
@@ -193,7 +474,6 @@ def run_morris_analysis(base_scenario_full_path, key_parameters, config_path, PR
             Y[i] = aggregated_stats[algo_name]['mean'].get(output_metric, 0)
             print(f"  Result ({output_metric}): {Y[i]:.2f}")
 
-        # Perform Morris Analysis for the current algorithm
         Si = morris_analyzer.analyze(problem, param_values, Y, conf_level=0.95)
         
         print(f"\n--- Morris Analysis Results for {algo_name} ---")
@@ -204,7 +484,6 @@ def run_morris_analysis(base_scenario_full_path, key_parameters, config_path, PR
         results_df.to_csv(csv_path)
         print(f"Morris analysis results for {algo_name} saved to {csv_path}")
 
-        # Plot Morris Results for the current algorithm
         fig, ax = plt.subplots(figsize=(12, 8))
         ax.scatter(Si['mu_star'], Si['sigma'], c=Si['mu_star'], cmap='viridis', s=120, alpha=0.8)
         
@@ -216,9 +495,7 @@ def run_morris_analysis(base_scenario_full_path, key_parameters, config_path, PR
             from adjustText import adjust_text
             adjust_text(texts, arrowprops=dict(arrowstyle='-', color='black'))
         except ImportError:
-            # If adjustText is not installed, fallback to default annotation
             print("Consider installing `adjustText` for better label placement: `pip install adjustText`")
-            # Clear the texts added before
             for t in texts:
                 t.set_visible(False)
             for i, txt in enumerate(Si['names']):
@@ -249,8 +526,6 @@ def run_morris_analysis(base_scenario_full_path, key_parameters, config_path, PR
 
 def run_sensitivity_analysis():
     """Main function to configure and run the sensitivity analysis."""
-    
-    # --- 1. Define Key Parameters for Analysis ---
     key_parameters = {
         "Number of Charging Stations": ['number_of_charging_stations'],
         "Transformer Max Power (kW)": ['transformer', 'max_power'],
@@ -262,9 +537,6 @@ def run_sensitivity_analysis():
         "Inflexible Loads Forecast Mean": ['inflexible_loads', 'forecast_mean'],
         "Solar Power Forecast Mean": ['solar_power', 'forecast_mean'],
     }
-
-    # --- 2. User Configuration ---
-    print("--- Sensitivity Analysis Configuration ---")
 
     PREDEFINED_LEVELS = {
         "Number of Charging Stations": [5, 15, 25, 50, 100],
@@ -278,179 +550,25 @@ def run_sensitivity_analysis():
         "Solar Power Forecast Mean": [0, 20, 40, 60, 80],
     }
 
-    # Select base scenario
     config_path = "ev2gym/example_config_files/"
+    
+    print("--- Sensitivity Analysis Configuration ---")
+    analysis_methods = ['One-at-a-Time (Predefined Levels)', 'Morris', 'Scenario Comparison']
+    selected_analysis = select_from_list(analysis_methods, "Select the analysis method:")
+
+    if selected_analysis == 'Scenario Comparison':
+        run_scenario_comparison_analysis(config_path, key_parameters)
+        return
+
+    # Common for OAT and Morris
     available_scenarios = sorted(glob(os.path.join(config_path, "*.yaml")))
     base_scenario_path = select_from_list([os.path.basename(s) for s in available_scenarios], "Select the BASE scenario file to modify:")
     base_scenario_full_path = os.path.join(config_path, base_scenario_path)
 
-    analysis_methods = ['One-at-a-Time (Predefined Levels)', 'Morris']
-    selected_analysis = select_from_list(analysis_methods, "Select the analysis method:")
-
     if selected_analysis == 'Morris':
         run_morris_analysis(base_scenario_full_path, key_parameters, config_path, PREDEFINED_LEVELS)
-        return
-
-    # --- One-at-a-Time Analysis with Predefined Levels ---
-    print("\n--- One-at-a-Time Sensitivity Analysis ---")
-    
-    param_name = select_from_list(
-        list(PREDEFINED_LEVELS.keys()), 
-        "Select the parameter for sensitivity analysis:"
-    )
-    param_path = key_parameters[param_name]
-    param_range = PREDEFINED_LEVELS[param_name]
-    steps = len(param_range)
-
-    print(f"\nAnalysis will run for '{param_name}' with predefined levels.")
-    print(f"Levels: {param_range}")
-
-    # --- 3. Setup Simulation Parameters ---
-    is_thesis_mode = True # Set to False to get all algorithms
-    MAX_CS = calculate_max_cs(config_path)
-    all_available_algorithms = get_algorithms(MAX_CS, is_thesis_mode)
-
-    selected_algo_names = select_multiple_from_list(
-        list(all_available_algorithms.keys()), 
-        "Select the algorithm(s) for the analysis:"
-    )
-    algorithms_to_run = {name: all_available_algorithms[name] for name in selected_algo_names}
-    print(f"\nWill run analysis for the following algorithms: {list(algorithms_to_run.keys())}")
-
-    reward_func = reward_module.FastProfitAdaptiveReward
-    num_simulations = 1
-    
-    model_dir, is_multi_scenario = select_model_directory()
-    if model_dir is None:
-        return # Exit if no model directory is selected
-
-    price_data_file = './ev2gym/data/Netherlands_day-ahead-2015-2024.csv'
-
-    # --- 4. Run Analysis ---
-    base_results_path = f'C:/Users/angel/OneDrive/Desktop/Project_Master/sensitivity_analysis_results/sensitivity_{param_name.replace(" ", "_")}_{datetime.now().strftime("%Y%m%d_%H%M%S")}'
-    os.makedirs(base_results_path, exist_ok=True)
-    
-    all_results_summary = []
-
-    for i, value in enumerate(param_range):
-        print(f"\n{'='*80}")
-        print(f"--- Running Step {i+1}/{steps}: {param_name} = {value:.4f} ---")
-        print(f"{'='*80}")
-
-        with open(base_scenario_full_path, 'r') as f:
-            config = yaml.safe_load(f)
-        
-        final_value = int(value) if np.issubdtype(type(value), np.integer) else float(value)
-        set_nested_dict_value(config, param_path, final_value)
-
-        temp_config_path = 'temp_sensitivity_config.yaml'
-        with open(temp_config_path, 'w') as f:
-            yaml.dump(config, f)
-
-        aggregated_stats = run_benchmark(
-            config_files=[temp_config_path],
-            reward_func=reward_func,
-            algorithms_to_run=algorithms_to_run,
-            num_simulations=num_simulations,
-            model_dir=model_dir,
-            is_multi_scenario=is_multi_scenario,
-            price_data_file=price_data_file,
-            generate_plots=False
-        )
-
-        # --- 5. Collect Results ---
-        for algo_name, stats in aggregated_stats.items():
-            row = {
-                'Algorithm': algo_name,
-                'parameter_name': param_name,
-                'parameter_value': value
-            }
-            for metric, mean_val in stats.get('mean', {}).items():
-                std_val = stats.get('std', {}).get(metric, 0)
-                row[f"{metric}_mean"] = mean_val
-                row[f"{metric}_std"] = std_val
-            all_results_summary.append(row)
-
-    # --- 6. Aggregate and Plot Results ---
-    if os.path.exists(temp_config_path):
-        os.remove(temp_config_path)
-
-    if not all_results_summary:
-        print("\nNo results were generated. Exiting analysis.")
-        return
-
-    final_df = pd.DataFrame(all_results_summary)
-    final_df.to_csv(os.path.join(base_results_path, "sensitivity_analysis_summary.csv"), index=False)
-    
-    print(f"\n{'='*80}")
-    print(f"--- Sensitivity Analysis Complete ---")
-    print(f"Full summary saved to: {os.path.join(base_results_path, 'sensitivity_analysis_summary.csv')}")
-    print(f"{'='*80}")
-
-    metrics_to_plot = [col.replace('_mean', '') for col in final_df.columns if col.endswith('_mean')]
-    algorithms = final_df['Algorithm'].unique()
-
-    for metric in metrics_to_plot:
-        plt.figure(figsize=(12, 8))
-        for algo in algorithms:
-            algo_df = final_df[final_df['Algorithm'] == algo]
-            mean_col = f"{metric}_mean"
-            std_col = f"{metric}_std"
-            
-            if mean_col in algo_df.columns:
-                # Sort values for plotting
-                sorted_df = algo_df.sort_values(by='parameter_value')
-                plt.plot(sorted_df['parameter_value'], sorted_df[mean_col], marker='o', linestyle='-', label=algo)
-                if std_col in sorted_df.columns:
-                    plt.fill_between(sorted_df['parameter_value'], 
-                                     sorted_df[mean_col] - sorted_df[std_col], 
-                                     sorted_df[mean_col] + sorted_df[std_col], 
-                                     alpha=0.2)
-
-        plt.title(f"Sensitivity of '{metric}' to '{param_name}'")
-        plt.xlabel(param_name)
-        plt.ylabel(metric)
-        plt.grid(True, which='both', linestyle='--')
-        plt.legend()
-        
-        plot_filename = os.path.join(base_results_path, f"sensitivity_{param_name.replace(' ', '_')}_vs_{metric.replace(' ', '_')}.png")
-        plt.savefig(plot_filename)
-        plt.close()
-        print(f"Plot saved to: {plot_filename}")
-
-    # --- 7. Generate Specific Plots based on Parameter ---
-    if param_name == "Discharge Price Factor":
-        print(f"\nGenerating special plot for '{param_name}'...")
-        try:
-            price_df = pd.read_csv(price_data_file)
-            original_prices = price_df['Price (EUR/MWhe)'].head(48)
-            hours = np.arange(len(original_prices))
-
-            plt.figure(figsize=(15, 8))
-
-            # Plot the base charging price
-            plt.plot(hours, original_prices, label='Charge Price (Original)', color='blue', linestyle='--', linewidth=2)
-
-            # Plot the discharge price for each factor level
-            for factor in param_range:
-                discharge_prices = original_prices * factor
-                plt.plot(hours, discharge_prices, label=f'Discharge Price (Factor: {factor:.2f})', marker='.', linestyle='-')
-
-            plt.title("Effect of 'Discharge Price Factor' on Price Curves (First 48 Hours)")
-            plt.xlabel("Hour")
-            plt.ylabel("Price (EUR/MWh)")
-            plt.legend()
-            plt.grid(True, which='both', linestyle='--')
-
-            plot_filename = os.path.join(base_results_path, "price_curves_vs_discharge_factor.png")
-            plt.savefig(plot_filename)
-            plt.close()
-            print(f"Price curve comparison plot saved to: {plot_filename}")
-
-        except FileNotFoundError:
-            print(f"\nWARNING: Price data file not found at '{price_data_file}'. Skipping price curve plot.")
-        except KeyError:
-            print(f"\nWARNING: Could not find 'Price (EUR/MWhe)' column in '{price_data_file}'. Skipping price curve plot.")
+    else: # Default to OAT
+        run_oat_analysis(config_path, key_parameters, PREDEFINED_LEVELS, base_scenario_full_path)
 
 if __name__ == "__main__":
     run_sensitivity_analysis()

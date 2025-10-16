@@ -661,7 +661,7 @@ def generate_summary_outputs(stats_collection, save_path, scenario_name, num_sim
 # =====================================================================================
 # --- FUNZIONE DI BENCHMARK ---
 # =====================================================================================
-def run_benchmark(config_files, reward_func, algorithms_to_run, num_simulations, model_dir, is_multi_scenario, price_data_file=None, generate_plots=True):
+def run_benchmark(config_files, reward_func, algorithms_to_run, num_simulations, model_dir, is_multi_scenario, price_data_file=None, generate_plots=True, seed=None):
     overall_save_path = f'./results/benchmark_{datetime.datetime.now().strftime("%Y%m%d_%H%M%S")}/'
     if generate_plots:
         os.makedirs(overall_save_path, exist_ok=True)
@@ -688,7 +688,7 @@ def run_benchmark(config_files, reward_func, algorithms_to_run, num_simulations,
         all_sim_stats = defaultdict(lambda: defaultdict(list))
         soc_over_time_by_algo = defaultdict(list)
 
-        presence_env = EV2Gym(config_file=config_file, generate_rnd_game=True)
+        presence_env = EV2Gym(config_file=config_file, generate_rnd_game=True, seed=seed)
         if generate_plots:
             print_desired_soc_summary(presence_env)
         total_evs = len(presence_env.EVs_profiles)
@@ -708,7 +708,7 @@ def run_benchmark(config_files, reward_func, algorithms_to_run, num_simulations,
         for sim_num in range(num_simulations):
             if generate_plots:
                 print(f"\n--- Simulation {sim_num + 1}/{num_simulations} ---")
-            env_replay = EV2Gym(config_file=config_file, generate_rnd_game=True, save_replay=True, price_data_file=price_data_file)
+            env_replay = EV2Gym(config_file=config_file, generate_rnd_game=True, save_replay=True, price_data_file=price_data_file, seed=seed)
             replay_path = f"replay/replay_{env_replay.sim_name}.pkl"
             while not env_replay.step(np.zeros(env_replay.action_space.shape[0]))[2]: pass
             env_replay.close()

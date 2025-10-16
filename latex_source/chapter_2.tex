@@ -1,7 +1,21 @@
 
 \chapter{Foundations and State of the Art in Intelligent Control for Vehicle-to-Grid Systems}
-\vspace*{0.5cm} % vertical space before the quote
 
+\section{Introduction}
+To systematize the literature review, a quantitative analysis was performed on the collected papers using a custom Python script. This analysis produced a key visualization: a weighted word cloud (Figure \ref{fig:pagerank_wordcloud}), was generated from titles and abstracts, with word size corresponding to its \textbf{PageRank} score within a citation graph.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.8\textwidth]{Page_rank.png}
+    \caption{Weighted word cloud generated from the literature review, highlighting key research themes. The size of each word corresponds to its frequency and importance, derived from the PageRank analysis.}
+    \label{fig:pagerank_wordcloud}
+\end{figure}
+
+\noindent
+This visualization confirms the research focus, with primary terms like \textbf{Energy}, \textbf{Power}, \textbf{Grid}, and \textbf{EVs} setting the context. The equal prominence of \textbf{Learning} and \textbf{Control}, alongside strong secondary terms like \textbf{Reinforcement}, \textbf{Agent}, and \textbf{Policy}, firmly anchors the methodology in Reinforcement Learning. The inclusion of \textbf{MPC} (Model Predictive Control) highlights the central dialogue between model-free and model-based approaches explored in this thesis.
+
+\section{The V2G Imperative: A Foundation of Europe's Green Transition}
+\vspace*{0.5cm} % vertical space before the quote
 \begin{center}
   \begin{minipage}{0.8\textwidth}
     \begin{displayquote}
@@ -19,7 +33,7 @@
   --- \textsc{Ursula von der Leyen}
 \end{flushright}
 
-\section{The V2G Imperative: A Foundation of Europe's Green Transition}
+
 \noindent
 Europe finds itself at the confluence of two unprecedented and deeply interlinked transformations reshaping its technological, economic, and societal landscape: the large-scale electrification of transport and a comprehensive restructuring of its energy systems. These parallel transitions involve a radical shift from internal combustion engines to battery electric vehicles and a simultaneous integration of renewable generation, grid modernization, and the deployment of advanced storage and demand-side management solutions.
 \noindent

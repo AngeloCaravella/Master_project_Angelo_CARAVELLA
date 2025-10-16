@@ -73,6 +73,7 @@ def get_statistics(env) -> Dict:
         total_steps_min_emergency_battery_capacity_violation += ev.min_emergency_battery_capacity_metric
 
     stats = {'total_ev_served': total_ev_served,
+             'total_evs_spawned': env.total_evs_spawned,
              'total_profits': total_profits,
              'total_energy_charged': total_energy_charged,
              'total_energy_discharged': total_energy_discharged,

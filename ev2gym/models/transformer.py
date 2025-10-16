@@ -193,8 +193,10 @@ class Transformer():
         if env.config['solar_power']['include']:
             mult = env.config['solar_power']['solar_power_capacity_multiplier_mean']
             mult = env.tr_rng.normal(mult, 0.1)
-            self.solar_power = -self.solar_power * \
-                mult * max(self.max_power)
+            # BUG: The line below incorrectly couples the solar power with the transformer's max_power, breaking sensitivity analysis.
+            # self.solar_power = -self.solar_power * \
+            #     mult * max(self.max_power)
+            self.solar_power = -self.solar_power * mult
 
     def generate_pv_generation_forecast(self, env) -> None:
         '''
@@ -221,9 +223,11 @@ class Transformer():
             mult = env.tr_rng.normal(mult, 0.1)
 
             # scale up the data to match the max_power of the transformers
-            self.inflexible_load = self.inflexible_load * \
-                mult * (max(self.max_power) /
-                        self.inflexible_load.max()+0.0000001)
+            # BUG: The line below incorrectly couples the inflexible load with the transformer's max_power, breaking sensitivity analysis.
+            # self.inflexible_load = self.inflexible_load * \
+            #     mult * (max(self.max_power) /
+            #             self.inflexible_load.max()+0.0000001)
+            self.inflexible_load = self.inflexible_load * mult
             # for each step
             for j in range(env.simulation_length):
                 if self.inflexible_load[j] > self.max_power[j]:

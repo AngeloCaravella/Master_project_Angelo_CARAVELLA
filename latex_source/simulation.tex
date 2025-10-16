@@ -13,46 +13,46 @@ This scenario represents a critical, high-stress condition designed to test the 
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.9\linewidth]{../results/benchmark_20251014_183226/Critic_2/electricity_prices_Critic_2.png}
-    \caption{Electricity price profile for the Critic_2al scenario. The high volatility, with significant peaks and troughs, creates a challenging environment that rewards effective charge/discharge scheduling.}
-    \label{fig:Critic_2_prices}
+    \includegraphics[width=0.9\linewidth]{../results/benchmark_20251015_215905/Critic/electricity_prices_Critic.png}
+    \caption{Electricity price profile for the Critical scenario. The high volatility, with significant peaks and troughs, creates a challenging environment that rewards effective charge/discharge scheduling.}
+    \label{fig:Critic_prices}
 \end{figure}
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.9\linewidth]{../results/benchmark_20251014_183226/Critic_2/ev_presence_Critic_2.png}
+    \includegraphics[width=0.9\linewidth]{../results/benchmark_20251015_215905/Critic/ev_presence_Critic.png}
     \caption{Number of EVs present at the charging station over time. The scenario simulates a high-density environment, leading to significant aggregate demand for power.}
-    \label{fig:Critic_2_ev_presence}
+    \label{fig:Critic_ev_presence}
 \end{figure}
 
 \subsubsection{Overall Performance Summary}
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=\textwidth]{../results/benchmark_20251014_183226/Critic_2/performance_summary_Critic_2.png}
-    \caption{Overall performance summary comparing all algorithms across key metrics. In this high-stress scenario, the advanced RL agents (SAC, TQC) and the adaptive MPC demonstrate superior profitability, effectively leveraging V2G. Heuristic methods like AFAP and ALAP result in significant economic losses and grid overloads.}
-    \label{fig:Critic_2_perf_summary}
+    \includegraphics[width=\textwidth]{../results/benchmark_20251015_215905/Critic/performance_summary_Critic.png}
+    \caption{Overall performance summary comparing all algorithms across key metrics. In this high-stress scenario, the advanced RL agents (SAC, TQC) and the adaptive MPC demonstrate superior profitability, effectively leveraging V2G, but DDPG goes better in the overall metrics better managing the trasformer overload. Heuristic methods like AFAP and ALAP result in significant economic losses and grid overloads.}
+    \label{fig:Critic_perf_summary}
 \end{figure}
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=\textwidth]{../results/benchmark_20251014_183226/Critic_2/summary_table_Critic_2.png}
+    \includegraphics[width=\textwidth]{../results/benchmark_20251015_215905/Critic/summary_table_Critic.png}
     \caption{Tabular summary of performance metrics. This table provides the precise numerical data for Total Profit, User Satisfaction, Grid Overload, and Battery Degradation, confirming the visual insights from the bar chart.}
-    \label{fig:Critic_2_summary_table}
+    \label{fig:Critic_summary_table}
 \end{figure}
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.9\linewidth]{../results/benchmark_20251014_183226/Critic_2/profit_per_ev_Critic_2.png}
+    \includegraphics[width=0.9\linewidth]{../results/benchmark_20251015_215905/Critic/profit_per_ev_Critic.png}
     \caption{Average profit generated per EV. This metric normalizes the total profit by the number of vehicles served, highlighting the economic efficiency of each control strategy on a per-user basis.}
-    \label{fig:Critic_2_profit_per_ev}
+    \label{fig:Critic_profit_per_ev}
 \end{figure}
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.9\linewidth]{../results/benchmark_20251014_183226/Critic_2/average_soc_over_time_Critic_2.png}
+    \includegraphics[width=0.9\linewidth]{../results/benchmark_20251015_215905/Critic/average_soc_over_time_Critic.png}
     \caption{Average State of Charge (SoC) of all connected EVs over time. RL and MPC agents maintain a lower average SoC during low-price periods to prepare for charging, while heuristics like AFAP charge aggressively upon arrival.}
-    \label{fig:Critic_2_avg_soc}
+    \label{fig:Critic_avg_soc}
 \end{figure}
 
 \clearpage
@@ -62,61 +62,62 @@ This subsection analyzes the impact of each algorithm on the grid, focusing on t
 \begin{figure}[H]
     \centering
     \begin{subfigure}{0.49\textwidth}
-        \includegraphics[width=\linewidth]{../results/benchmark_20251014_183226/Critic_2/overload_composition_Critic_2_AFAP.png}
+        \includegraphics[width=\linewidth]{../results/benchmark_20251015_215905/Critic/overload_composition_Critic_AFAP.png}
         \caption{AFAP}
     \end{subfigure}
     \hfill
     \begin{subfigure}{0.49\textwidth}
-        \includegraphics[width=\linewidth]{../results/benchmark_20251014_183226/Critic_2/overload_composition_Critic_2_ALAP.png}
+        \includegraphics[width=\linewidth]{../results/benchmark_20251015_215905/Critic/overload_composition_Critic_ALAP.png}
         \caption{ALAP}
     \end{subfigure}
     \caption{Grid load for heuristic algorithms. Both AFAP and ALAP show significant and prolonged periods of transformer overload, as they do not coordinate charging to respect grid limits.}
-    \label{fig:Critic_2_overload_heuristics}
+    \label{fig:Critic_overload_heuristics}
 \end{figure}
 
 \begin{figure}[H]
     \centering
     \begin{subfigure}{0.49\textwidth}
-        \includegraphics[width=\linewidth]{../results/benchmark_20251014_183226/Critic_2/overload_composition_Critic_2_Online_MPC_NonAdaptive.png}
+        \includegraphics[width=\linewidth]{../results/benchmark_20251015_215905/Critic/overload_composition_Critic_Online_MPC_NonAdaptive.png}
         \caption{MPC Non-Adaptive}
     \end{subfigure}
     \hfill
     \begin{subfigure}{0.49\textwidth}
-        \includegraphics[width=\linewidth]{../results/benchmark_20251014_183226/Critic_2/overload_composition_Critic_2_Online_MPC_Adaptive.png}
+        \includegraphics[width=\linewidth]{../results/benchmark_20251015_215905/Critic/overload_composition_Critic_Online_MPC_Adaptive.png}
         \caption{MPC Adaptive}
     \end{subfigure}
-    \caption{Grid load for MPC algorithms. The MPC controllers are highly effective at preventing overloads, keeping the total load just below the transformer's maximum capacity.}
-    \label{fig:Critic_2_overload_mpc}
+    \caption{Grid load for MPC algorithms. The MPC controllers are enough effective at preventing overloads, keeping the total load just below the transformer's maximum capacity.}
+    \label{fig:Critic_overload_mpc}
 \end{figure}
 
 \begin{figure}[H]
     \centering
     \begin{subfigure}{0.49\textwidth}
-        \includegraphics[width=\linewidth]{../results/benchmark_20251014_183226/Critic_2/overload_composition_Critic_2_SAC.png}
+        \includegraphics[width=\linewidth]{../results/benchmark_20251015_215905/Critic/overload_composition_Critic_SAC.png}
         \caption{SAC}
     \end{subfigure}
     \hfill
     \begin{subfigure}{0.49\textwidth}
-        \includegraphics[width=\linewidth]{../results/benchmark_20251014_183226/Critic_2/overload_composition_Critic_2_TQC.png}
+        \includegraphics[width=\linewidth]{../results/benchmark_20251015_215905/Critic/overload_composition_Critic_TQC.png}
         \caption{TQC}
     \end{subfigure}
-    \caption{Grid load for SAC and TQC RL algorithms. The agents learn to respect the grid constraints, successfully avoiding overloads while maximizing their objective function.}
-    \label{fig:Critic_2_overload_rl1}
+    \caption{Grid load for SAC and TQC RL algorithms. The SAC agents learn to respect the grid constraints better than TQC}
+    \label{fig:Critic_overload_rl1}
 \end{figure}
 
 \begin{figure}[H]
     \centering
     \begin{subfigure}{0.49\textwidth}
-        \includegraphics[width=\linewidth]{../results/benchmark_20251014_183226/Critic_2/overload_composition_Critic_2_DDPG.png}
+        \includegraphics[width=\linewidth]{../results/benchmark_20251015_215905/Critic/overload_composition_Critic_DDPG.png}
         \caption{DDPG}
     \end{subfigure}
     \hfill
     \begin{subfigure}{0.49\textwidth}
-        \includegraphics[width=\linewidth]{../results/benchmark_20251014_183226/Critic_2/overload_composition_Critic_2_DDPGPER.png}
+        \includegraphics[width=\linewidth]{../results/benchmark_20251015_215905/Critic/overload_composition_Critic_DDPGPER.png}
         \caption{DDPG+PER}
     \end{subfigure}
-    \caption{Grid load for DDPG-based RL algorithms. These agents also learn to avoid overloads, though some minor spikes can occasionally be seen during the learning process.}
-    \label{fig:Critic_2_overload_rl2}
+    \caption{Grid load for DDPG-based RL algorithms. These agents also learn to avoid overloads,
+ though some minor spikes can occasionally be seen during the learning process.}
+    \label{fig:Critic_overload_rl2}
 \end{figure}
 
 \clearpage
@@ -126,31 +127,31 @@ The following plots show the detailed charging and discharging behavior for a sa
 \begin{figure}[H]
     \centering
     \begin{subfigure}{0.49\textwidth}
-        \includegraphics[width=\linewidth]{../results/benchmark_20251014_183226/Critic_2/individual_ev_profiles_Critic_2_AFAP.png}
+        \includegraphics[width=\linewidth]{../results/benchmark_20251015_215905/Critic/individual_ev_profiles_Critic_AFAP.png}
         \caption{AFAP}
     \end{subfigure}
     \hfill
     \begin{subfigure}{0.49\textwidth}
-        \includegraphics[width=\linewidth]{../results/benchmark_20251014_183226/Critic_2/individual_ev_profiles_Critic_2_ALAP.png}
+        \includegraphics[width=\linewidth]{../results/benchmark_20251015_215905/Critic/individual_ev_profiles_Critic_ALAP.png}
         \caption{ALAP}
     \end{subfigure}
     \caption{Individual EV profiles for heuristic algorithms. AFAP charges immediately upon arrival, while ALAP waits until the last possible moment. Neither strategy responds to price signals.}
-    \label{fig:Critic_2_profiles_heuristics}
+    \label{fig:Critic_profiles_heuristics}
 \end{figure}
 
 \begin{figure}[H]
     \centering
     \begin{subfigure}{0.49\textwidth}
-        \includegraphics[width=\linewidth]{../results/benchmark_20251014_183226/Critic_2/individual_ev_profiles_Critic_2_Online_MPC_Adaptive.png}
-        \caption{MPC Adaptive}
+        \includegraphics[width=\linewidth]{../results/benchmark_20251015_215905/Critic/individual_ev_profiles_Critic_Online_MPC_Adaptive.png}
+        \caption{MPC Adaptive: it behaves charging a little bit and then sometimes there is a negative ramp}
     \end{subfigure}
     \hfill
     \begin{subfigure}{0.49\textwidth}
-        \includegraphics[width=\linewidth]{../results/benchmark_20251014_183226/Critic_2/individual_ev_profiles_Critic_2_SAC.png}
+        \includegraphics[width=\linewidth]{../results/benchmark_20251015_215905/Critic/individual_ev_profiles_Critic_SAC.png}
         \caption{SAC}
     \end{subfigure}
-    \caption{Individual EV profiles for advanced controllers. Both the MPC and SAC agents demonstrate intelligent V2G behavior: charging during low-price periods and discharging during high-price periods to generate profit.}
-    \label{fig:Critic_2_profiles_advanced}
+    \caption{SAC:it behaves charging full some Evs and leaving others not being completely charge focused, instead others are used to gain profit }
+    \label{fig:Critic_profiles_advanced}
 \end{figure}
 
 % --- Placeholders for other scenarios ---
