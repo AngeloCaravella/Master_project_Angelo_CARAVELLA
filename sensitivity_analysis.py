@@ -418,5 +418,39 @@ def run_sensitivity_analysis():
         plt.close()
         print(f"Plot saved to: {plot_filename}")
 
+    # --- 7. Generate Specific Plots based on Parameter ---
+    if param_name == "Discharge Price Factor":
+        print(f"\nGenerating special plot for '{param_name}'...")
+        try:
+            price_df = pd.read_csv(price_data_file)
+            original_prices = price_df['Price (EUR/MWhe)'].head(48)
+            hours = np.arange(len(original_prices))
+
+            plt.figure(figsize=(15, 8))
+
+            # Plot the base charging price
+            plt.plot(hours, original_prices, label='Charge Price (Original)', color='blue', linestyle='--', linewidth=2)
+
+            # Plot the discharge price for each factor level
+            for factor in param_range:
+                discharge_prices = original_prices * factor
+                plt.plot(hours, discharge_prices, label=f'Discharge Price (Factor: {factor:.2f})', marker='.', linestyle='-')
+
+            plt.title("Effect of 'Discharge Price Factor' on Price Curves (First 48 Hours)")
+            plt.xlabel("Hour")
+            plt.ylabel("Price (EUR/MWh)")
+            plt.legend()
+            plt.grid(True, which='both', linestyle='--')
+
+            plot_filename = os.path.join(base_results_path, "price_curves_vs_discharge_factor.png")
+            plt.savefig(plot_filename)
+            plt.close()
+            print(f"Price curve comparison plot saved to: {plot_filename}")
+
+        except FileNotFoundError:
+            print(f"\nWARNING: Price data file not found at '{price_data_file}'. Skipping price curve plot.")
+        except KeyError:
+            print(f"\nWARNING: Could not find 'Price (EUR/MWhe)' column in '{price_data_file}'. Skipping price curve plot.")
+
 if __name__ == "__main__":
     run_sensitivity_analysis()
