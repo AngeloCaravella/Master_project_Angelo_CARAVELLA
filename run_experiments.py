@@ -867,7 +867,7 @@ def get_algorithms(max_cs: int, is_thesis_mode: bool) -> Dict[str, Tuple[Any, An
         }),
         "Online_MPC_Adaptive": (pulp_mpc.OnlineMPC_Solver, None, {
             'use_adaptive_horizon': True,
-            'h_max': 15,
+            'h_max': 5,
             'control_horizon': 5,
         })
     }

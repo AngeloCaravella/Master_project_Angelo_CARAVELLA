@@ -64,12 +64,7 @@ Solving a MINLP is a computationally very arduous task. It requires specialized,
 \Require Environment with transformer, charging stations, EVs; prediction horizon $H_p$; control horizon $H_c$; timescale $\Delta t$
 \Ensure Optimal charging/discharging action vector $\mathbf{a}$ at each time step
 \State Initialize parameters:
-    \If{adaptive horizon enabled}
-        \State Set $H \leftarrow H_{max}$
-    \Else
-        \State Set $H \leftarrow H_p$
-    \EndIf
-    \State Compute $N_c = \max(1, \lfloor H / 2 \rfloor)$ if control horizon is ``half''
+      \State Compute $N_c = \max(1, \lfloor H / 2 \rfloor)$ if control horizon is ``half''
 \For{each simulation step $k$}
     \State Determine effective horizon: $H_{eff} = \min(H, T_{sim} - k)$
     \If{$H_{eff} \le 0$}
@@ -90,7 +85,7 @@ Solving a MINLP is a computationally very arduous task. It requires specialized,
     \begin{align*}
         & \omega^{ch}_{i,t} + \omega^{dis}_{i,t} \le 1 && \text{(No simultaneous charge/discharge)} \\
         & I^{ch}_{i,t} \le I^{ch}_{i,\max} \omega^{ch}_{i,t} && \text{(Charging current limit)} \\
-        & I^{dis}_{i,t} \ge I^{dis}_{i,\max} \omega^{dis}_{i,t} && \text{(Discharging current limit)} \\
+        & I^{dis}_{i,t} \le I^{dis}_{i,\max} \omega^{dis}_{i,t} && \text{(Discharging current limit)} \\
         & E_{i,t} = E_{i,t-1} + (P^{ch}_{i,t} \eta_{ch,i} - \tfrac{P^{dis}_{i,t}}{\eta_{dis,i}})\Delta t && \text{(Battery dynamics)} \\
         & E_i^{\min} \le E_{i,t} \le E_i^{\max} && \text{(Energy limits)} \\
         & E_{i,t_{dep}} \ge E_i^{des} && \text{(Desired departure energy)} \\
@@ -116,7 +111,7 @@ The multiplication by $\omega$ is removed from the power and current definitions
 The "on/off" logic is entirely delegated to the current limit constraints, which are modified to include the $\omega$ variable. Our code implements:
 \begin{align}
     I^{\text{ch}}_{i,t} &\le \bar{I}^{\text{ch}}_{i} \cdot \omega^{\text{ch}}_{i,t} \label{eq:lin_ich_limit_new} \\
-    I^{\text{dis}}_{i,t} &\ge \bar{I}^{\text{dis}}_{i} \cdot \omega^{\text{dis}}_{i,t} \label{eq:lin_idis_limit_new}
+    I^{\text{dis}}_{i,t} &\le \bar{I}^{\text{dis}}_{i} \cdot \omega^{\text{dis}}_{i,t} \label{eq:lin_idis_limit_new}
 \end{align}
 This approach ensures that if the optimizer sets $\omega^{\text{ch}}=0$, the constraint forces the current $I^{\text{ch}}$ to zero, effectively turning off the power. If $\omega^{\text{ch}}=1$, the current is free to flow up to its maximum. The same logic applies to the discharge constraint.
 
@@ -128,7 +123,7 @@ In addition to linearization, the implementation in \textbf{pulp\_mpc.py} makes 
     \item \textbf{Omission of Non-Linearity:} As described, the main "omission" is the non-linear formulation itself, which is replaced by its efficient, linear counterpart.
     \item \textbf{Correction of Battery Dynamics (Eq. 13):} The original formulation sometimes states $E_{t} = E_{t-1} + (P^{\text{ch}} + P^{\text{dis}})\Delta t$, which is physically incorrect. Our implementation corrects this dynamic to $E_{t} = E_{t-1} + (P^{\text{ch}}\eta^{\text{ch}} - P^{\text{dis}}/\eta^{\text{dis}})\Delta t$, correctly modeling the accumulation and consumption of energy.
     \item \textbf{Correction of Transformer Load (Eq. 19):} Similarly, the total EV load on the transformer is calculated as $P^{\text{ch}} - P^{\text{dis}}$, correctly subtracting the power injected into the grid during discharge.
-    \item \textbf{Adherence to Discharge Constraint (Eq. 16):} The implementation strictly follows the original paper's formulation $I^{\text{dis}} \ge \bar{I}^{\text{dis}}$. This choice is based on the convention of defining $\bar{I}^{\text{dis}}$ as a negative value while the discharge current variable $I^{\text{dis}}$ is positive.
+
 \end{itemize}
 
 In conclusion, the \textbf{pulp\_mpc.py} code is not a simple translation of the theoretical formula, but an engineered implementation that (a) transforms an intractable MINLP into an efficient MILP, and (b) corrects certain physical inaccuracies to achieve a more realistic and reliable model behavior.
