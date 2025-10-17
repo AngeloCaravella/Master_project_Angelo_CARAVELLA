@@ -9,7 +9,8 @@ This online controller is implemented as the \textbf{OnlineMPC\_Solver} class wi
 \subsection{The CBC Solver and Branch and Cut Algorithm}
 \label{sec:cbc_branch_cut}
 
-The core of the online MPC controller is the CBC (COIN-OR Branch and Cut) solver, which is tasked with solving the Mixed-Integer Linear Program (MILP) formulated at each time step. CBC is a powerful, open-source solver that implements a sophisticated algorithm known as \textbf{Branch and Cut}, which is an exact method for solving MILPs. The algorithm is a hybrid of two powerful techniques:\textbf{the Branch and Bound algorithm and the Cutting Plane method}.
+The core of the online MPC controller is the CBC (COIN-OR Branch and Cut) solver, which is tasked with solving the Mixed-Integer Linear Program (MILP) formulated at each time step. CBC is a powerful, open-source solver that implements a sophisticated algorithm known as \textbf{Branch and Cut}; which is an exact method for solving MILPs,is an improved version of the Branch-and-Bound
+algorithm. The algorithm is a hybrid of two powerful techniques:\textbf{the Branch and Bound algorithm and the Cutting Plane method}.
 
 \subsubsection{The Branch and Bound Method}
 The Branch and Bound algorithm is a systematic method for solving optimization problems with integer variables. It works by exploring a tree of subproblems, where each node in the tree represents a more constrained version of the original problem. The process can be summarized as follows:
@@ -17,7 +18,8 @@ The Branch and Bound algorithm is a systematic method for solving optimization p
 \begin{enumerate}
     \item \textbf{Relaxation:} The algorithm starts by solving a "relaxed" version of the problem, where the integer constraints are ignored (i.e., integer variables are treated as continuous). This provides a fractional solution and an initial upper bound (for a maximization problem) on the optimal integer solution.
     
-    \item \textbf{Branching:} If the solution to the relaxed problem contains fractional values for variables that should be integers, the algorithm "branches" on one of these fractional variables. For a variable $x$ with a fractional value (e.g., 2.5), it creates two new subproblems (branches): one with the added constraint $x \le 2$ and another with the constraint $x \ge 3$. This process effectively divides the problem space.
+    \item \textbf{Branching:} If the solution to the relaxed problem contains fractional values for variables that should be integers, the algorithm "branches" on one of these fractional variables(As in
+the B\&B). For a variable $x$ with a fractional value (e.g., 2.5), it creates two new subproblems (branches): one with the added constraint $x \le 2$ and another with the constraint $x \ge 3$. This process effectively divides the problem space.
     
     \item \textbf{Bounding:} For each new subproblem, the relaxed version is solved. The solution provides a local upper bound for that branch. If this bound is worse than the best integer solution found so far (the "incumbent"), that entire branch can be "pruned" (discarded), as it cannot lead to a better solution.
     

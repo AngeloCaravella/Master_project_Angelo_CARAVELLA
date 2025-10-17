@@ -435,12 +435,14 @@ def plot_performance_metrics(stats_collection, save_path, scenario_name, algorit
     metrics_map = {
         'total_profits': f'Total Profit (€) for {total_evs} EVs',
         'average_user_satisfaction': 'Average User Satisfaction (%)',
-        'peak_transformer_loading_pct': 'Peak Transformer Loading (%)'
+        'peak_transformer_loading_pct': 'Peak Transformer Loading (%)',
+        'execution_time': 'Execution Time (s)',
+        'training_time': 'Training Time (s)'
     }
     model_names = [name for name in algorithms_to_plot if name in stats_collection]
     if not model_names: return
     algo_categories, category_colors, legend_elements = get_color_map_and_legend(model_names)
-    fig, axes = plt.subplots(1, 3, figsize=(24, 8)); axes = axes.flatten()
+    fig, axes = plt.subplots(1, 5, figsize=(40, 8)); axes = axes.flatten()
     fig.suptitle(f'Aggregated Performance Metrics - Scenario: {scenario_name}\n'
                  f'({num_charging_points} charging points, {transformer_limit} kW transformer limit)', fontsize=22)
     for i, (metric, title) in enumerate(metrics_map.items()):
@@ -979,9 +981,9 @@ def get_algorithms(max_cs: int, is_thesis_mode: bool) -> Dict[str, Tuple[Any, An
     
     return THESIS_ALGORITHMS if is_thesis_mode else ALL_ALGORITHMS
 
-def train_rl_models_if_requested(scenarios_to_test: List[str], selected_reward_func: Callable, algorithms_to_run: Dict, is_multi_scenario: bool, model_dir: str, selected_price_file_abs_path: Optional[str], steps_for_training: int, training_mode: str = 'single', curriculum_steps_per_level: int = 10000, session_name: str = "") -> None:
+def train_rl_models_if_requested(scenarios_to_test: List[str], selected_reward_func: Callable, algorithms_to_run: Dict, is_multi_scenario: bool, model_dir: str, selected_price_file_abs_path: Optional[str], steps_for_training: int, training_mode: str = 'single', curriculum_steps_per_level: int = 10000, session_name: str = "") -> Dict[str, float]:
     rl_models_to_run = {k: v for k, v in algorithms_to_run.items() if v[1] is not None}
-    if not rl_models_to_run: return
+    if not rl_models_to_run: return {}
     
     if training_mode == 'single':
         train_env = Monitor(gym.make('ev2gym.models.ev2gym_env:EV2Gym', config_file=scenarios_to_test[0], generate_rnd_game=True, reward_function=selected_reward_func, state_function=V2G_profit_max_loads, price_data_file=selected_price_file_abs_path))
@@ -994,13 +996,18 @@ def train_rl_models_if_requested(scenarios_to_test: List[str], selected_reward_f
         kwargs = {'steps_per_level': curriculum_steps_per_level} if training_mode == 'curriculum' else {}
         train_env = DummyVecEnv([lambda: Monitor(env_class(scenarios_to_test, selected_reward_func, V2G_profit_max_loads, **kwargs))])
 
+    training_times = {}
     for name, (_, rl_class, kwargs) in rl_models_to_run.items():
         print(f"--- Training {name} ---")
+        start_time = time.time()
         model = rl_class("MlpPolicy", train_env, verbose=0, device="cuda" if torch.cuda.is_available() else "cpu", **kwargs)
         model.learn(total_timesteps=steps_for_training, callback=[ProgressCallback(steps_for_training), TrainingPlotCallback(name, session_name)])
+        end_time = time.time()
+        training_times[name] = end_time - start_time
         model.save(os.path.join(model_dir, f'{name.lower().replace("+", "_")}_model.zip'))
 
     if is_multi_scenario:
         with open(os.path.join(model_dir, 'model_metadata.json'), 'w') as f:
             json.dump({"observation_space_shape": list(train_env.observation_space.shape), "action_space_shape": list(train_env.action_space.shape)}, f, indent=4)
     train_env.close()
+    return training_times

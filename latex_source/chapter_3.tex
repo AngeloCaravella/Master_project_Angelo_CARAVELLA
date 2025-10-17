@@ -548,47 +548,51 @@ The complete logic for this calculation is detailed in Algorithm \ref{alg:adapti
     \item[$\bar{s}_{hist}$] and $\bar{f}_{ov}$ are the average user satisfaction and overload frequency over a recent history window.
 \end{itemize}
 
+
 \begin{algorithm}[H]
-\caption{Dynamic & History-Based Adaptive Reward (\texttt{FastProfitAdaptiveReward})}
+\caption{Dynamic \& History-Based Adaptive Reward (\texttt{FastProfitAdaptiveReward})}
 \label{alg:adaptive_reward}
+{\small
 \begin{algorithmic}[1]
-\State \textbf{Input:} Current profit/cost $C_t$, user satisfaction list $S_t$, overload amount $O_t$
-\State \textbf{State:} History queues $H_{sat}$ (satisfaction), $H_{ov}$ (overload frequency)
-
+\Require Current profit/cost $C_t$, user satisfaction list $S_t$, overload amount $O_t$; 
+         history queues $H_{sat}$ (satisfaction) and $H_{ov}$ (overload frequency)
+\Ensure Adaptive reward value $R_t$
+\State Initialize base parameters: $\mu_{base} = 0.1$, $\mu_{max\_bonus} = 0.9$
 \Function{CalculateReward}{$C_t, S_t, O_t$}
-    \State \Comment{1. Calculate historical performance metrics}
-    \State $\bar{s} \leftarrow \text{Average}(H_{sat})$ or 1.0 if empty.
-    \State $\bar{f}_{ov} \leftarrow \text{Average}(H_{ov})$ or 0.0 if empty.
+    \State \textbf{1. Historical performance metrics}
+    \State Compute average satisfaction $\bar{s} = \text{Average}(H_{sat})$ (default $1.0$ if empty)
+    \State Compute average overload frequency $\bar{f}_{ov} = \text{Average}(H_{ov})$ (default $0.0$ if empty)
 
-    \State \Comment{2. Calculate Dynamic Profit Multiplier}
-    \State $\mu_{base} \leftarrow 0.1$, $\mu_{max\_bonus} \leftarrow 0.9$
-    \State $b_{sat} \leftarrow \max(0, (\bar{s} - 0.9) / 0.1)$ \Comment{Bonus for high satisfaction}
-    \State $b_{ov} \leftarrow \max(0, 1 - (\bar{f}_{ov} / 0.2))$ \Comment{Bonus for low overload freq.}
-    \State $\mu_p \leftarrow \mu_{base} + (\mu_{max\_bonus} \cdot b_{sat} \cdot b_{ov})$
-    \State $R_{profit} \leftarrow C_t \cdot \mu_p$
+    \State \textbf{2. Dynamic profit multiplier}
+    \State $b_{sat} = \max(0, (\bar{s} - 0.9)/0.1)$ \Comment{Bonus for high satisfaction}
+    \State $b_{ov} = \max(0, 1 - (\bar{f}_{ov}/0.2))$ \Comment{Bonus for low overload frequency}
+    \State $\mu_p = \mu_{base} + (\mu_{max\_bonus} \cdot b_{sat} \cdot b_{ov})$
+    \State Compute profit component: $R_{profit} = C_t \cdot \mu_p$
 
-    \State \Comment{3. Calculate Adaptive Satisfaction Penalty}
-    \State $\sigma_{sat} \leftarrow 200.0 \cdot (1 - \bar{s})^2$ \Comment{Severity grows quadratically}
-    \State $P_{sat} \leftarrow 0$
-    \If{$S_t$ is not empty and $\min(S_t) < 0.95$}
-        \State $P_{sat} \leftarrow \sigma_{sat} \cdot (1 - \min(S_t))$
+    \State \textbf{3. Adaptive satisfaction penalty}
+    \State $\sigma_{sat} = 200.0 \cdot (1 - \bar{s})^2$ \Comment{Quadratic penalty growth}
+    \State $P_{sat} \gets 0$
+    \If{$S_t$ not empty and $\min(S_t) < 0.95$}
+        \State $P_{sat} = \sigma_{sat} \cdot (1 - \min(S_t))$
     \EndIf
 
-    \State \Comment{4. Calculate Adaptive Overload Penalty}
-    \State $P_{ov} \leftarrow 0$
+    \State \textbf{4. Adaptive overload penalty}
+    \State $P_{ov} \gets 0$
     \If{$O_t > 0$}
-        \State $\sigma_{ov} \leftarrow 50.0 \cdot \bar{f}_{ov}$ \Comment{Severity grows linearly}
-        \State $P_{ov} \leftarrow 5.0 + (\sigma_{ov} \cdot O_t)$
+        \State $\sigma_{ov} = 50.0 \cdot \bar{f}_{ov}$ \Comment{Penalty grows linearly with overload frequency}
+        \State $P_{ov} = 5.0 + (\sigma_{ov} \cdot O_t)$
     \EndIf
 
-    \State \Comment{5. Calculate final reward and update histories}
-    \State $R_t \leftarrow R_{profit} - P_{sat} - P_{ov}$
-    \State Append current average satisfaction to $H_{sat}$.
-    \State Append current overload status (1 or 0) to $H_{ov}$.
+    \State \textbf{5. Final reward computation and history update}
+    \State $R_t = R_{profit} - P_{sat} - P_{ov}$
+    \State Append $\text{Average}(S_t)$ to $H_{sat}$
+    \State Append $(1 \text{ if } O_t > 0 \text{ else } 0)$ to $H_{ov}$
     \State \Return $R_t$
 \EndFunction
 \end{algorithmic}
+}
 \end{algorithm}
+
 
 \subsubsection{Dynamic Economic Profit}
 The foundation of the reward is the economic profit $\Pi_t$, but its contribution is scaled by a dynamic multiplier, $\mu_p$. This multiplier is designed to increase the agent's focus on profit only when it is performing well on other key metrics. It is calculated based on a base value ($"\mu_{\text{base}} = 0.1"$) plus a bonus that depends on historical satisfaction ($"\bar{s}_{hist}"$) and overload frequency ($"\bar{f}_{ov}"$). The agent is maximally rewarded for profit ($"\mu_p \to 1.0"$) only when satisfaction is near-perfect and overloads are rare. If performance on either metric degrades, the multiplier automatically decreases, reducing the incentive for profit-seeking and forcing the agent to prioritize correcting its behavior.
