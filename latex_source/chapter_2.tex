@@ -2,7 +2,7 @@
 \chapter{Foundations and State of the Art in Intelligent Control for Vehicle-to-Grid Systems}
 
 \section{Introduction}
-To systematize the literature review, a quantitative analysis was performed on the collected papers using a custom Python script. This analysis produced a key visualization: a weighted word cloud (Figure \ref{fig:pagerank_wordcloud}), was generated from titles and abstracts, with word size corresponding to its \textbf{PageRank} score within a citation graph.
+In order to provide an overview of the research domain, the literature review was complemented by a quantitative analysis of the papers collected for this thesis. Using a custom Python script, a citation graph was constructed, and the relevance of key terms was evaluated through PageRank scores. The outcome of this process is shown in Figure \ref{fig:pagerank_wordcloud}, which presents a weighted word cloud derived from the titles and abstracts of the reviewed works. In this visualization, the size of each word reflects its relative importance within the citation network.
 
 \begin{figure}[H]
     \centering
@@ -12,7 +12,7 @@ To systematize the literature review, a quantitative analysis was performed on t
 \end{figure}
 
 \noindent
-This visualization confirms the research focus, with primary terms like \textbf{Energy}, \textbf{Power}, \textbf{Grid}, and \textbf{EVs} setting the context. The equal prominence of \textbf{Learning} and \textbf{Control}, alongside strong secondary terms like \textbf{Reinforcement}, \textbf{Agent}, and \textbf{Policy}, firmly anchors the methodology in Reinforcement Learning. The inclusion of \textbf{MPC} (Model Predictive Control) highlights the central dialogue between model-free and model-based approaches explored in this thesis.
+This visualization confirms the research focus, with primary terms like \textbf{Energy}, \textbf{Power}, \textbf{Grid}, and \textbf{EVs} setting the context. The similar prominence of \textbf{Learning} and \textbf{Control}, alongside strong secondary terms like \textbf{Reinforcement}, \textbf{Agent}, and \textbf{Policy}, firmly anchors the methodology in Reinforcement Learning. The inclusion of \textbf{MPC} (Model Predictive Control) highlights the central dialogue between model-free and model-based approaches explored in this thesis.
 
 \section{The V2G Imperative: A Foundation of Europe's Green Transition}
 \vspace*{0.5cm} % vertical space before the quote
@@ -35,7 +35,7 @@ This visualization confirms the research focus, with primary terms like \textbf{
 
 
 \noindent
-Europe finds itself at the confluence of two unprecedented and deeply interlinked transformations reshaping its technological, economic, and societal landscape: the large-scale electrification of transport and a comprehensive restructuring of its energy systems. These parallel transitions involve a radical shift from internal combustion engines to battery electric vehicles and a simultaneous integration of renewable generation, grid modernization, and the deployment of advanced storage and demand-side management solutions.
+Europe finds itself at the confluence of two unprecedented and deeply interlinked transformations reshaping its technological, economic, and societal landscape: the large-scale electrification of transport and a comprehensive restructuring of its energy systems. These parallel transitions involve a radical shift from internal combustion engines to battery EVs and a simultaneous integration of renewable generation, grid modernization, and the deployment of advanced storage and demand-side management solutions.
 \noindent
 \\
 These transformations are not merely aspirational targets but constitute binding legal obligations established under the \textbf{European Green Deal} and the detailed \textbf{"Fit for 55"} legislative package. These frameworks translate climate ambitions into enforceable measures aimed at reducing net greenhouse gas emissions by 55\% by 2030 \cite{european_commission_2021_fit_for_55}. This policy architecture necessitates the rapid phase-out of fossil-fuelled vehicles alongside a dramatic expansion of renewable energy capacity, a goal further reinforced by the revised \textbf{Renewable Energy Directive (RED III)}, as detailed in Figure \ref{fig:RED3}.
@@ -48,12 +48,12 @@ These transformations are not merely aspirational targets but constitute binding
 \end{figure}
 
 \noindent
-Electric Vehicles (EVs) occupy a central position in this transition, simultaneously driving decarbonisation efforts while presenting complex challenges for grid stability. The initial response to mass EV adoption was characterised by concern within the power sector, viewing millions of new EVs as vast, correlated loads threatening to overwhelm distribution networks. This perspective has undergone a fundamental reassessment. EVs are now recognised not as burdens to be managed, but as essential, flexible assets for achieving Europe's energy objectives.
+EVs occupy a central position in this transition, simultaneously driving decarbonisation efforts while presenting complex challenges for grid stability. The initial response to mass EV adoption was characterised by concern within the power sector, viewing millions of new EVs as vast, correlated loads threatening to overwhelm distribution networks. This perspective has undergone a fundamental reassessment. EVs are now recognised not as burdens to be managed, but as essential, flexible assets for achieving Europe's energy objectives.
 \\
-This conceptual shift finds its most concrete expression in \textbf{Vehicle-to-Grid (V2G)} technology, which fundamentally reimagines the role of electric vehicles within the energy system.
+This conceptual shift finds its most concrete expression in the \textbf{Vehicle-to-Grid (V2G)} technology, which fundamentally reimagines the role of EVs within the energy system.
 \\
 \noindent
-V2G technology transforms previously passive, unidirectional energy consumers into active, distributed, and intelligent grid resources. The underlying opportunity is substantial: private vehicles spend approximately 96\% of their operational lifetime parked \cite{Englberger2021}, representing an enormous, geographically distributed, and currently underutilised repository of mobile energy storage.
+The V2G technology transforms previously passive, unidirectional energy consumers into active, distributed, and intelligent grid resources. The underlying opportunity is substantial: private vehicles spend approximately 96\% of their operational lifetime parked \cite{Englberger2021}, representing an enormous, geographically distributed, and currently underutilised repository of mobile energy storage.
 \\
 \noindent
 The transformative potential of V2G becomes apparent when individual vehicles are coordinated through centrally managed aggregation. While a single EV's contribution is modest, an orchestrated fleet can function as a unified \textbf{Virtual Power Plant (VPP)}. These software-defined power plants aggregate the collective capacity of numerous distributed energy resources, delivering grid services at scales comparable to conventional generation facilities. The rapid response characteristics of contemporary battery inverters, operating at millisecond timescales, enable these aggregated fleets to provide a comprehensive range of critical grid services. This capability is a prerequisite for maintaining stability in grids increasingly dependent on variable wind and solar generation, thereby enabling the technical and economic viability of the EU's ambitious renewable energy targets \cite{Tavakoli2019}.
@@ -110,7 +110,7 @@ This is supported by technical standards like \textbf{ISO 15118-20}, which speci
     \label{fig:15118}
 \end{figure}
 
-ISO 15118-20 is the latest part of the ISO 15118 family(In figure \ref{fig:15118} the protocol stack of ISO/IEC 15118) , defining the communication between an Electric Vehicle (EV) and the Electric Vehicle Supply Equipment (EVSE). It extends previous versions (like ISO 15118-2) by introducing new functions, enhanced security, and full support for bidirectional power transfer (V2G). The goal of the protocol is to create a standardized, secure, and automatic data exchange that allows an EV and the charging station to negotiate how, when, and how much energy to transfer.
+ISO 15118-20 is the latest part of the ISO 15118 family(In figure \ref{fig:15118} the protocol stack of ISO/IEC 15118) , defining the communication between an EV and the Electric Vehicle Supply Equipment (EVSE). It extends previous versions (like ISO 15118-2) by introducing new functions, enhanced security, and full support for bidirectional power transfer (V2G). The goal of the protocol is to create a standardized, secure, and automatic data exchange that allows an EV and the charging station to negotiate how, when, and how much energy to transfer.
 \noindent
 Communication is established over Power Line Communication (PLC), using a TCP/IP stack over IPv6. The protocol uses TLS encryption to protect confidentiality and authenticity of the session. Once the physical link is established, the EV and the EVSE start a handshake to exchange certificates and initialize the communication channel. The EV then sends a \textit{ServiceDiscovery} message to check which services the EVSE supports, such as AC charging, DC charging, or bidirectional energy flow. After service negotiation, the two parties exchange \textit{Authorization}, \textit{ChargeParameterDiscovery}, and \textit{PowerDelivery} messages to determine the charging profile, power limits, and time schedules.
 \noindent
@@ -218,7 +218,7 @@ Before examining control algorithms, establishing clear, high-fidelity models of
 
 
 \noindent
-From a power grid perspective, electric vehicles represent sophisticated mobile energy storage devices. For V2G applications, EVs can be characterised through several key state variables and parameters:
+From a power grid perspective, EV represent sophisticated mobile energy storage devices. For V2G applications, EVs can be characterised through several key state variables and parameters:
 \\
 \noindent
     \textbf{The Battery:} The core grid asset component, defined by \textbf{nominal energy capacity} (in kWh), current \textbf{State of Charge (SoC)}, and \textbf{State of Health (SoH)} representing degradation over time. Operation is constrained by \textbf{power limits} (in kW) dictating maximum charge or discharge rates, and charging/discharging \textbf{efficiencies} accounting for energy losses.
