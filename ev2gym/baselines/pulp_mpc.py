@@ -147,7 +147,7 @@ class OnlineMPC_Solver:
                 # (12) Limite superiore di capacità della batteria
                 prob += E[cs_id, t] <= ev.battery_capacity
                 # Limite inferiore per evitare scariche eccessive
-                prob += E[cs_id, t] >= ev.min_battery_capacity
+                prob += E[cs_id, t] >= ev.min_battery_capacity+15
 
             
             # (24) Vincolo sull'energia desiderata alla partenza

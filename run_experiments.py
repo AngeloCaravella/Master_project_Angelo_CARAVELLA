@@ -487,6 +487,42 @@ def plot_profit_per_ev(stats_collection, save_path, scenario_name, algorithms_to
     plt.savefig(os.path.join(save_path, f"profit_per_ev_{scenario_name}.png"))
     plt.close(fig)
 
+def plot_v2g_metrics(stats_collection, save_path, scenario_name, algorithms_to_plot):
+    if not stats_collection: return
+    
+    metrics_map = {
+        'v2g_time_percentage': 'V2G Active Time (%)',
+        'average_v2g_power': 'Average V2G Power (kW)'
+    }
+    
+    model_names = [name for name in algorithms_to_plot if name in stats_collection]
+    if not model_names: return
+    
+    algo_categories, category_colors, legend_elements = get_color_map_and_legend(model_names)
+    
+    fig, axes = plt.subplots(1, 2, figsize=(16, 7))
+    axes = axes.flatten()
+    
+    fig.suptitle(f'V2G Performance Metrics - Scenario: {scenario_name}', fontsize=18)
+    
+    for i, (metric, title) in enumerate(metrics_map.items()):
+        ax = axes[i]
+        means = [stats_collection[name]['mean'].get(metric, 0) for name in model_names]
+        stds = [stats_collection[name]['std'].get(metric, 0) for name in model_names]
+        
+        colors = [category_colors.get(algo_categories.get(name, "default"), category_colors["default"]) for name in model_names]
+        
+        ax.bar(model_names, means, yerr=stds, color=colors, capsize=5)
+        ax.set_title(title, fontsize=14)
+        ax.tick_params(axis='x', rotation=45)
+        ax.grid(True, linestyle='--', alpha=0.6)
+        
+    fig.legend(handles=legend_elements, loc='lower center', ncol=len(legend_elements), bbox_to_anchor=(0.5, -0.1))
+    plt.tight_layout(rect=[0, 0, 1, 0.95])
+    plt.savefig(os.path.join(save_path, f"v2g_summary_{scenario_name}.png"))
+    plt.close(fig)
+
+
 def plot_ev_presence(save_path, scenario_name, ev_counts, timescale):
     fig, ax = plt.subplots(figsize=(12, 6))
     time_hours = np.arange(len(ev_counts)) * timescale / 60
@@ -574,6 +610,29 @@ def plot_individual_ev_sessions(save_path, scenario_name, algorithm_name, depart
     plt.savefig(plot_filename)
     plt.close(fig)
     print(f"Individual profiles plot saved to: {os.path.basename(plot_filename)}")
+
+def plot_power_over_time(save_path, scenario_name, algorithm_name, power_history, timescale):
+    fig, ax = plt.subplots(figsize=(18, 9))
+    
+    time_hours = np.arange(len(power_history)) * timescale / 60
+    
+    ax.plot(time_hours, power_history, label='Net Power', color='#3498db', linewidth=2)
+    
+    # Color areas for charge and discharge
+    ax.fill_between(time_hours, 0, power_history, where=power_history > 0, facecolor='green', alpha=0.3, interpolate=True, label='Charging')
+    ax.fill_between(time_hours, 0, power_history, where=power_history < 0, facecolor='red', alpha=0.3, interpolate=True, label='Discharging (V2G)')
+
+    ax.axhline(y=0, color='black', linewidth=0.5)
+    ax.set_xlabel("Time (hours)")
+    ax.set_ylabel("Power (kW)")
+    ax.set_title(f'Net Charging Power Over Time - {scenario_name} - Algorithm: {algorithm_name}', fontsize=16)
+    ax.legend()
+    ax.grid(True, linestyle='--', alpha=0.6)
+    
+    plt.tight_layout()
+    safe_algo_name = "".join(c for c in algorithm_name if c.isalnum() or c in ('_', '-')).rstrip()
+    plt.savefig(os.path.join(save_path, f"power_over_time_{scenario_name}_{safe_algo_name}.png"))
+    plt.close(fig)
 
 def plot_overload_composition(save_path, scenario_name, algorithm_name, power_data, timescale):
     ev_load = power_data.get('ev_load', [])
@@ -750,8 +809,27 @@ def run_benchmark(config_files, reward_func, algorithms_to_run, num_simulations,
                     obs, _ = env_instance.reset()
                     done = False
                     current_run_soc_over_time = []
+                    
+                    # V2G analysis variables
+                    v2g_step_count = 0
+                    connected_step_count = 0
+
                     while not done:
+                        action_mask = np.zeros(env_instance.action_space.shape[0])
+                        port_idx = 0
+                        for cs in env_instance.unwrapped.charging_stations:
+                            for i in range(cs.n_ports):
+                                if cs.evs_connected[i] is not None:
+                                    action_mask[port_idx] = 1
+                                port_idx += 1
+                        
+                        connected_step_count += np.sum(action_mask)
+
                         action = model.predict(obs, deterministic=True)[0] if is_rl_model else model.get_action(env_instance.unwrapped)
+                        
+                        v2g_mask = (action < 0) & (action_mask > 0)
+                        v2g_step_count += np.sum(v2g_mask)
+
                         obs, _, done, _, _ = env_instance.step(action)
                         connected_evs = [ev for cs in env_instance.unwrapped.charging_stations for ev in cs.evs_connected if ev is not None]
                         current_run_soc_over_time.append(np.mean([ev.get_soc() for ev in connected_evs]) if connected_evs else 0)
@@ -767,6 +845,10 @@ def run_benchmark(config_files, reward_func, algorithms_to_run, num_simulations,
                         }
                         plot_overload_composition(scenario_save_path, scenario_name, name, power_data, timescale)
                         plot_individual_ev_sessions(scenario_save_path, scenario_name, name, env_instance.unwrapped.departed_evs, timescale)
+
+                        # Plot net power over time
+                        power_history = env_instance.unwrapped.current_power_usage
+                        plot_power_over_time(scenario_save_path, scenario_name, name, power_history, timescale)
 
                     # BUG FIX: The 'transformer_overload_kwh' from env.stats is unreliable.
                     # Recalculate it manually from raw power vectors to ensure consistency with plots.
@@ -797,6 +879,19 @@ def run_benchmark(config_files, reward_func, algorithms_to_run, num_simulations,
                     # --- Fine nuovo codice ---
 
                     stats['execution_time'] = time.time() - start_time
+
+                    # V2G Metrics Calculation
+                    total_energy_discharged = stats['total_energy_discharged']
+                    if connected_step_count > 0:
+                        stats['v2g_time_percentage'] = (v2g_step_count / connected_step_count) * 100
+                    else:
+                        stats['v2g_time_percentage'] = 0
+                    
+                    v2g_time_hours = v2g_step_count * (env_instance.unwrapped.timescale / 60.0)
+                    if v2g_time_hours > 0:
+                        stats['average_v2g_power'] = total_energy_discharged / v2g_time_hours
+                    else:
+                        stats['average_v2g_power'] = 0
                     if departed_evs := env_instance.unwrapped.departed_evs:
                         degradation_data = [ev.get_battery_degradation() for ev in departed_evs]
                         stats['calendar_degradation'] = np.mean([d[0] for d in degradation_data])
@@ -828,6 +923,7 @@ def run_benchmark(config_files, reward_func, algorithms_to_run, num_simulations,
                 plot_ev_presence(scenario_save_path, scenario_name, ev_counts_over_time, timescale)
                 plot_average_soc_over_time(scenario_save_path, scenario_name, soc_over_time_by_algo, timescale)
                 plot_electricity_prices(scenario_save_path, scenario_name, charge_prices, discharge_prices, timescale)
+                plot_v2g_metrics(aggregated_stats, scenario_save_path, scenario_name, list(algorithms_to_run.keys()))
                 generate_summary_outputs(aggregated_stats, scenario_save_path, scenario_name, num_simulations)
 
     if generate_plots:

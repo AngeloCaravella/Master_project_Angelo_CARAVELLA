@@ -65,17 +65,17 @@ can play, orchestrated by an aggregator using RL. Key operations include gridsta
 (bidding and pricing strategies), and user-centric management (energy storage,
 battery health). The objectives range from reducing electricity costs and enhancing
 grid flexibility to ensuring data privacy and transaction security, showcasing the
-complexity of optimizing V2G operations
+complexity of optimizing V2G operations.
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.9\linewidth]{Reinforcement_learning_V2G_operations.png}
-    \caption{Reinforcement learning (RL) applications in V2G from the perspective of participating entities.}
+    \caption{RL applications in V2G from the perspective of participating entities.}
     \label{fig:rl_v2g_ops}
 \end{figure}
 
 \noindent
-The grid services enabled by V2G technology, many of which are illustrated in Figure \ref{fig:rl_v2g_ops}, form the technical foundation for the smart, resilient, and decarbonised electricity system required for Europe's energy future:
+The grid services enabled by the V2G technology, many of which are illustrated in Figure \ref{fig:rl_v2g_ops}, form the technical foundation for the smart, resilient, and decarbonised electricity system required for Europe's energy future:
 \\
 \noindent
 \textbf{Frequency Regulation:} Grid stability depends on maintaining a precise equilibrium between electricity supply and demand, manifested as a stable grid frequency (50 Hz in Europe). Deviations signal imbalances that can trigger cascading failures. V2G fleets, with their rapid-response inverters, can participate in ancillary service markets like Frequency Containment Reserve (FCR) and automatic Frequency Restoration Reserve (aFRR), injecting or absorbing power within seconds to counteract deviations and prevent blackouts \cite{alfaverh2022optima, white2011vehicle}.
@@ -111,7 +111,7 @@ This is supported by technical standards like \textbf{ISO 15118-20}, which speci
     \caption{The protocol stack of ISO/IEC 15118 \cite{shin2016interoperability}}
     \label{fig:15118}
 \end{figure}
-
+\noindent
 ISO 15118-20 is the latest part of the ISO 15118 family(In figure \ref{fig:15118} the protocol stack of ISO/IEC 15118) , defining the communication between an EV and the Electric Vehicle Supply Equipment (EVSE). It extends previous versions (like ISO 15118-2) by introducing new functions, enhanced security, and full support for bidirectional power transfer (V2G). The goal of the protocol is to create a standardized, secure, and automatic data exchange that allows an EV and the charging station to negotiate how, when, and how much energy to transfer.
 \noindent
 Communication is established over Power Line Communication (PLC), using a TCP/IP stack over IPv6. The protocol uses TLS encryption to protect confidentiality and authenticity of the session. Once the physical link is established, the EV and the EVSE start a handshake to exchange certificates and initialize the communication channel. The EV then sends a \textit{ServiceDiscovery} message to check which services the EVSE supports, such as AC charging, DC charging, or bidirectional energy flow. After service negotiation, the two parties exchange \textit{Authorization}, \textit{ChargeParameterDiscovery}, and \textit{PowerDelivery} messages to determine the charging profile, power limits, and time schedules.
