@@ -195,9 +195,39 @@ class OnlineMPC_Solver:
    
         
 
+        V_current = 0
+        if self.use_adaptive_horizon:
+            for cs_id in active_evs.keys():
+                ev = active_evs[cs_id]['ev']
+                if current_step < ev.time_of_departure:
+                    E_current = active_evs[cs_id]['E_initial']
+                    E_des = ev.desired_capacity
+                    V_current += (E_current - E_des)**2
+
         prob.solve(pulp.PULP_CBC_CMD(msg=0))
 
         status = pulp.LpStatus[prob.status]
+
+        if self.use_adaptive_horizon:
+            if status == 'Optimal':
+                V_next = 0
+                for cs_id in active_evs.keys():
+                    ev = active_evs[cs_id]['ev']
+                    if current_step < ev.time_of_departure:
+                        E_next_planned = pulp.value(E[cs_id, 0])
+                        E_des = ev.desired_capacity
+                        V_next += (E_next_planned - E_des)**2
+                
+                # Lyapunov stability condition from algorithm
+                if V_next <= V_current - self.lyapunov_alpha * V_current:
+                    # System is converging, decrease horizon
+                    self.current_H = max(self.h_min, self.current_H - 1)
+                else:
+                    # System is not converging fast enough, increase horizon
+                    self.current_H = min(self.h_max, self.current_H + 1)
+            else:
+                # Solver failed, increase horizon as a safeguard
+                self.current_H = min(self.h_max, self.current_H + 1)
 
 
         if status == 'Optimal':

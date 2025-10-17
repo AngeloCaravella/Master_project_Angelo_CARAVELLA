@@ -463,7 +463,7 @@ def run_morris_analysis(base_scenario_full_path, key_parameters, config_path, PR
             aggregated_stats = run_benchmark(
                 config_files=[temp_config_path],
                 reward_func=reward_func,
-                algorithms_to_run={{algo_name: algo_details}},
+                algorithms_to_run={algo_name: algo_details},
                 num_simulations=num_simulations,
                 model_dir=model_dir,
                 is_multi_scenario=is_multi_scenario,
