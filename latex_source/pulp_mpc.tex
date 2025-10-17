@@ -89,7 +89,7 @@ Solving a MINLP is a computationally very arduous task. It requires specialized,
         & E_{i,t} = E_{i,t-1} + (P^{ch}_{i,t} \eta_{ch,i} - \tfrac{P^{dis}_{i,t}}{\eta_{dis,i}})\Delta t && \text{(Battery dynamics)} \\
         & E_i^{\min} \le E_{i,t} \le E_i^{\max} && \text{(Energy limits)} \\
         & E_{i,t_{dep}} \ge E_i^{des} && \text{(Desired departure energy)} \\
-        & \sum_i (P^{ch}_{i,t} + P^{dis}_{i,t}) + P_L(t) + P_{PV}(t) \le P^{\text{tr}}_{max}(t) && \text{(Transformer limit)}
+        & \sum_i (P^{ch}_{i,t} - P^{dis}_{i,t}) + P_L(t) + P_{PV}(t) \le P^{\text{tr}}_{max}(t) && \text{(Transformer limit)}
     \end{align*}
     \State Solve MILP using CBC solver
     \If{optimal solution found}

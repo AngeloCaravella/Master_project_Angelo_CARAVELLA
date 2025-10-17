@@ -78,10 +78,11 @@ class OnlineMPC_Solver:
                     'V': V,
                     'phi': phi,
                     'E_initial': ev.get_soc() * ev.battery_capacity,
+                    'E_des' :ev.get_soc() *ev.desired_capacity,
                     #'I_ch_bar': ev.max_ac_charge_power / V, # Corrente massima di carica
                     #'I_dis_bar': abs(ev.max_discharge_power) / V, # Corrente massima di scarica
-		    'I_ch_bar': 32,
-		    'I_dis_bar': 32
+		    'I_ch_bar': 56,
+		    'I_dis_bar': 56
                 }
 
         # --- Definizione del problema di ottimizzazione ---
@@ -146,7 +147,7 @@ class OnlineMPC_Solver:
                 # (12) Limite superiore di capacità della batteria
                 prob += E[cs_id, t] <= ev.battery_capacity
                 # Limite inferiore per evitare scariche eccessive
-                prob += E[cs_id, t] >= ev.min_battery_capacity
+                prob += E[cs_id, t] >= ev.min_battery_capacity+10
 
             
             # (24) Vincolo sull'energia desiderata alla partenza
@@ -157,7 +158,7 @@ class OnlineMPC_Solver:
         for t in range(prediction_horizon):
             # (19) Potenza totale assorbita/erogata dagli EV
       
-            P_EVs_t = pulp.lpSum(P_ch.get((i, t), 0) + P_dis.get((i, t), 0) for i in active_evs.keys())
+            P_EVs_t = pulp.lpSum(P_ch.get((i, t), 0) - P_dis.get((i, t), 0) for i in active_evs.keys())
             
             # (20) Limite di potenza del trasformatore (vincolo rigido)
            
@@ -176,7 +177,7 @@ class OnlineMPC_Solver:
                 ev = active_evs[cs_id]['ev']
                 if current_step < ev.time_of_departure:
                     E_current = active_evs[cs_id]['E_initial']
-                    E_des = ev.desired_capacity
+                    E_des = active_evs[cs_id]['E_des']
                     V_current += (E_current - E_des)**2
 
         prob.solve(pulp.PULP_CBC_CMD(msg=0))
@@ -190,7 +191,7 @@ class OnlineMPC_Solver:
                     ev = active_evs[cs_id]['ev']
                     if current_step < ev.time_of_departure:
                         E_next_planned = pulp.value(E[cs_id, 0])
-                        E_des = ev.desired_capacity
+                        E_des =active_evs[cs_id]['E_des']
                         V_next += (E_next_planned - E_des)**2
                 
                 # Lyapunov stability condition from algorithm
