@@ -72,9 +72,10 @@ This represents not a standalone algorithm but a crucial orthogonal modification
 
 
 \subsubsection{Truncated Quantile Critics (TQC)}
-
-Truncated Quantile Critics (TQC) \cite{kuznetsov2020controlling} addresses overestimation bias through a distributional RL approach. Instead of learning only expected returns, TQC estimates \textbf{full return distributions using quantile\footnote{A quantile is a value that divides a data distribution into equal parts.} regression}. 
-
+Truncated Quantile Critics (TQC)  addresses overestimation bias through a distributional RL approach \cite{kuznetsov2020controlling}. Instead of learning only expected returns, TQC estimates full return distributions using quantile regression.
+A quantile is a statistical value that divides a probability distribution into equally sized intervals (e.g., the median is the 0.5 quantile, splitting the data into two halves).
+In quantile regression, the agent learns to predict several quantiles of the return distribution, rather than a single mean value. This allows TQC to model the entire distribution of possible returns and reduce overestimation by truncating the highest quantiles during target computation.
+\\
 \noindent
 Quantile regression extends classical linear regression by estimating conditional quantiles rather than only the mean. Formally, given data $\{(x_i, y_i)\}_{i=1}^n$ with predictors $x_i \in \mathbb{R}^p$ and response $y_i \in \mathbb{R}$, the $\tau$-th conditional quantile ($0 < \tau < 1$) of $Y$ given $X=x$ is:
 \[

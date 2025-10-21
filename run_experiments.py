@@ -436,7 +436,6 @@ def plot_performance_metrics(stats_collection, save_path, scenario_name, algorit
         'total_profits': f'Total Profit (€) for {total_evs} EVs',
         'average_user_satisfaction': 'Average User Satisfaction (%)',
         'peak_transformer_loading_pct': 'Peak Transformer Loading (%)',
-        'execution_time': 'Execution Time (s)',
         'training_time': 'Training Time (s)'
     }
     model_names = [name for name in algorithms_to_plot if name in stats_collection]
@@ -728,6 +727,8 @@ def run_benchmark(config_files, reward_func, algorithms_to_run, num_simulations,
     if generate_plots:
         os.makedirs(overall_save_path, exist_ok=True)
 
+    aggregated_stats = {} # Initialize aggregated_stats here
+
     max_obs_shape, max_action_shape = (0,), (0,)
     if is_multi_scenario:
         metadata_path = os.path.join(model_dir, 'model_metadata.json')
@@ -1003,10 +1004,10 @@ def train_rl_models_if_requested(scenarios_to_test: List[str], selected_reward_f
     training_times = {}
     for name, (_, rl_class, kwargs) in rl_models_to_run.items():
         print(f"--- Training {name} ---")
-        start_time = time.time()
+        start_time = time.process_time()
         model = rl_class("MlpPolicy", train_env, verbose=0, device="cuda" if torch.cuda.is_available() else "cpu", **kwargs)
         model.learn(total_timesteps=steps_for_training, callback=[ProgressCallback(steps_for_training), TrainingPlotCallback(name, session_name)])
-        end_time = time.time()
+        end_time = time.process_time()
         training_times[name] = end_time - start_time
         model.save(os.path.join(model_dir, f'{name.lower().replace("+", "_")}_model.zip'))
 

@@ -197,8 +197,7 @@ This substantial gap between retail purchasing prices and wholesale selling pric
 \label{sec:ev_and_scenario}
 
 Before examining control algorithms, establishing clear, high-fidelity models of system core components becomes essential: the EVs as a controllable cyber-physical asset, and the operational environment or "scenario". The interaction between these elements defines the V2G optimisation task boundaries and objectives.
-
-\subsection{The Grid-Interactive EV as a Controllable Asset}
+\\
 \noindent
 From a power grid perspective, EV represent sophisticated mobile energy storage devices. For the V2G applications, EVs can be characterised through several key state variables and parameters:
 \\
@@ -237,12 +236,9 @@ Combined with vehicle availability patterns—arrival and departure times plus u
 
 \noindent
 To address the complexities of uncertainty, multi-objective trade-offs, and dynamic systems, this work employs RL as a core methodology, in addition to Model Predictive Control (MPC) methods, which are presented in another part of this work. RL is a machine learning paradigm that learns optimal sequential decision-making policies through trial-and-error interaction with an environment. Unlike traditional optimal control methods, which rely on an explicit and accurate model of the system dynamics, this model-free approach offers significant robustness against uncertainty and unmodeled behaviors, enabling adaptive control in complex and dynamic environments.
-\\
-\noindent
-As shown in the Figure \ref{fig:rl_loop} the problem of RL is formalized as the interaction between a learning \textbf{agent} and its \textbf{environment}. This interaction unfolds over a sequence of discrete time steps, $t = 0, 1, 2, \dots$.
 
 \subsection{The Agent-Environment Interface}
-At each time step $t$, the agent receives a representation of the environment's \textbf{state}, $S_t \in \mathcal{S}$, and on that basis selects an \textbf{action}, $A_t \in \mathcal{A}(S_t)$. One time step later, as a consequence of its action, the agent receives a numerical \textbf{reward}, $R_{t+1} \in \mathcal{R}$, and finds itself in a new state, $S_{t+1}$. This interaction loop forms the foundational framework of the RL problem.
+As shown in the Figure \ref{fig:rl_loop} the problem of RL is formalized as the interaction between a learning \textbf{agent} and its \textbf{environment}. This interaction unfolds over a sequence of discrete time steps, $t = 0, 1, 2, \dots$. At each time step $t$, the agent receives a representation of the environment's \textbf{state}, $S_t \in \mathcal{S}$, and on that basis selects an \textbf{action}, $A_t \in \mathcal{A}(S_t)$. One time step later, as a consequence of its action, the agent receives a numerical \textbf{reward}, $R_{t+1} \in \mathcal{R}$, and finds itself in a new state, $S_{t+1}$. This interaction loop forms the foundational framework of the RL problem.
 
 \begin{figure}[H]
     \centering
@@ -256,7 +252,7 @@ At each time step $t$, the agent receives a representation of the environment's 
 The agent's objective is formalized by the \textbf{reward hypothesis}: that all goals and purposes can be framed as the maximization of the expected cumulative reward. The agent's goal is not to maximize the immediate reward, $R_{t+1}$, but the cumulative reward in the long run. This cumulative reward is known as the \textbf{return}, denoted $G_t$.
 \\
 \noindent
-For \textit{episodic tasks} that terminate, the return is the finite sum of future rewards. For \textit{continuing tasks} that do not terminate, the return is defined as the discounted sum of future rewards:
+For \textit{episodic tasks} that terminate, the return is the finite sum of future rewards. For \textit{continuing tasks} that do not terminate, the return is defined as the infinite discounted sum of future rewards:
 \begin{equation}
     G_t \doteq \sum_{k=0}^{\infty} \gamma^k R_{t+k+1}
 \end{equation}
@@ -274,6 +270,15 @@ An MDP is formally defined as a tuple \( \langle S, A, P, R \rangle \), where:
     \item \(P\) is the state transition probability function, \(P(s'|s, a)\), which represents the probability of transitioning to state \(s'\) from state \(s\) after taking action \(a\).
     \item \(R\) is the reward function, \(R(s, a, s')\), which is the immediate reward received after transitioning from state \(s\) to state \(s'\) as a result of action \(a\).
 \end{itemize}
+
+\\
+\noindent
+The future is independent of the past given the present. A state signal $S_t$ is said to have the \textbf{Markov Property} if the environment's response at time $t+1$ depends only on the state and action at time $t$. The probability of transitioning to state $s'$ and receiving reward $r$ is independent of all previous states and actions:
+\begin{equation}
+    p(s', r | s, a) \doteq \Pr\{S_{t+1}=s', R_{t+1}=r | S_t=s, A_t=a\}
+\end{equation}
+This property is fundamental as it allows decisions to be made based solely on the current state, without needing the complete history of interaction.
+\\
 \noindent
 A key assumption in an MDP is that the environment is fully observable, meaning the agent knows its current state with certainty. However, in many real-world scenarios, the agent may not have complete information about its state. This is where the \textbf{Partially Observable Markov Decision Process (POMDP)} comes into play.
 \\
@@ -291,16 +296,10 @@ A POMDP extends the MDP framework to situations where the agent's observations o
     \label{fig:mdp}
 \end{figure}
 \noindent
-The fundamental difference between an MDP and a POMDP lies in the agent's perception of the environment's state. In an MDP, the agent directly observes the state \(s\). In a POMDP, the agent receives an observation \(o\) and must infer a belief, which is a probability distribution over the possible states, to make a decision. As discussed in Sadeghi's work, this partial observability in POMDPs introduces a significant layer of complexity because the agent must act based on a belief state rather than a certain state\cite{sadeghi2022deep}.
+As shown in Figure  \ref{fig:mdp} the fundamental difference between an MDP and a POMDP lies in the agent's perception of the environment's state. In an MDP, the agent directly observes the state \(s\). In a POMDP, the agent receives an observation \(o\) and must infer a belief, which is a probability distribution over the possible states, to make a decision. As discussed in Sadeghi's work, this partial observability in POMDPs introduces a significant layer of complexity because the agent must act based on a belief state rather than a certain state \cite{sadeghi2022deep}.
 \\
 \noindent
-In our current discussion, we will focus on the MDP framework, assuming that the state of the environment is fully observable to the agent.
-\subsection*{The Markov Property}
-The future is independent of the past given the present. A state signal $S_t$ is said to have the \textbf{Markov Property} if the environment's response at time $t+1$ depends only on the state and action at time $t$. The probability of transitioning to state $s'$ and receiving reward $r$ is independent of all previous states and actions:
-\begin{equation}
-    p(s', r | s, a) \doteq \Pr\{S_{t+1}=s', R_{t+1}=r | S_t=s, A_t=a\}
-\end{equation}
-This property is fundamental as it allows decisions to be made based solely on the current state, without needing the complete history of interaction.
+In our current thesis, we will focus on the MDP framework, assuming that the state of the environment is fully observable to the agent.
 
 \subsection{Policies and Value Functions}
 The agent's learning objective is to find a good \textbf{policy}, $\pi(a|s)$, which is a mapping from states to probabilities of selecting each possible action. The goodness of a policy is assessed by its \textbf{value functions}.
@@ -316,23 +315,17 @@ The agent's learning objective is to find a good \textbf{policy}, $\pi(a|s)$, wh
 \end{itemize}
 
 \subsection{The Bellman Equations}
-The Bellman equations provide a recursive decomposition that is foundational to solving MDPs. They express the value of a state in terms of the values of its successor states.
-
-\subsection*{The Bellman Expectation Equation}
-For a given policy $\pi$, the state-value function must satisfy a self-consistency condition. The value of a state equals the expected immediate reward plus the discounted expected value of the next state:
+The Bellman equations provide a recursive decomposition that is foundational to solving MDPs. They express the value of a state in terms of the values of its successor states. For a given policy $\pi$, the state-value function must satisfy a self-consistency condition. The value of a state equals the expected immediate reward plus the discounted expected value of the next state:
 \begin{equation}
     v_\pi(s) = \sum_a \pi(a|s) \sum_{s', r} p(s', r | s, a) [r + \gamma v_\pi(s')]
 \end{equation}
-This is the \textbf{Bellman expectation equation} for $v_\pi$. It forms the basis for policy evaluation algorithms.
-
-\subsection*{The Bellman Optimality Equation}
-The ultimate goal is to find an \textbf{optimal policy}, $\pi_*$, which is a policy that achieves a higher or equal expected return than all other policies from all states. All optimal policies share the same optimal value functions, $v_*(s)$ and $q_*(s, a)$. The optimal value function for a state is the maximum expected return achievable from that state:
-\begin{equation}
+This is the \textbf{Bellman expectation equation} for $v_\pi$. It forms the basis for policy evaluation algorithms. The ultimate goal is to find an \textbf{optimal policy}, $\pi_*$, which is a policy that achieves a higher or equal expected return than all other policies from all states. All optimal policies share the same optimal value functions, $v_*(s)$ and $q_*(s, a)$. The optimal value function for a state is the maximum expected return achievable from that state:
+\begin{equation} \label{eq:bellman-optimal}
     v_*(s) = \max_a \mathbb{E}[R_{t+1} + \gamma v_*(S_{t+1}) | S_t=s, A_t=a] = \max_a \sum_{s', r} p(s', r | s, a) [r + \gamma v_*(s')]
 \end{equation}
 This is the \textbf{Bellman optimality equation}. Solving it means finding the optimal policy.
 
-\subsection*{Generalized Policy Iteration (GPI)}
+\subsection{Generalized Policy Iteration (GPI)}
 Most RL algorithms can be understood within the framework of \textbf{Generalized Policy Iteration (GPI)}, as described in Chapter 4 of the book: \cite{Sutton2018}. GPI refers to the general idea of letting two interacting processes, policy evaluation and policy improvement, work towards a common optimal solution.
 
 \begin{itemize}
@@ -342,47 +335,48 @@ Most RL algorithms can be understood within the framework of \textbf{Generalized
 \noindent
 These two processes compete in the short term (improving the policy makes the value function inaccurate) but cooperate in the long term to converge to the optimal policy and optimal value function. \textbf{Dynamic Programming (DP)} methods like policy iteration and value iteration are classic examples of GPI, assuming a perfect model of the environment.
 \noindent
-In addition to \textbf{Dynamic Programming} methods based on a perfect model of the environment, there are also \textbf{value-based} techniques that fit within the GPI framework but do not require complete knowledge of the dynamics of the environment.
+In addition to DP methods based on a perfect model of the environment, there are also \textbf{value-based} techniques that fit within the GPI framework but do not require complete knowledge of the dynamics of the environment.
+\\
+\noindent
+In these methods, the focus is primarily on learning the value function (such as $v_\pi$ or $q_\pi$), and the policy is implicitly derived from it, usually by making it \textit{greedy} with respect to the learned value function. Typical examples include \textbf{Q-Learning} and \textbf{SARSA}. These algorithms iteratively update value estimates based on experiences gathered from interacting with the environment, without the need for a complete model.
+\\
+\noindent
+The main distinction between Policy-Based and Value-Based is that in \textit{policy-based} methods, the policy is directly parameterized and optimized via gradient or other optimization methods (e.g., \textit{REINFORCE}, \textit{Actor-Critic}), while in \textit{value-based} methods, the policy is derived from the value function. In other words, value-based methods use value as an intermediary to improve the policy, while policy-based methods update the policy directly.
 
-\begin{itemize}
-\item \textbf{Value-Based Methods}: In these methods, the focus is primarily on learning the value function (such as $v_\pi$ or $q_\pi$), and the policy is implicitly derived from it, usually by making it \textit{greedy} with respect to the learned value function. Typical examples include \textbf{Q-Learning} and \textbf{SARSA}. These algorithms iteratively update value estimates based on experiences gathered from interacting with the environment, without the need for a complete model.
-\item \textbf{Policy-Based vs. Value-Based}: The main distinction is that in \textit{policy-based} methods, the policy is directly parameterized and optimized via gradient or other optimization methods (e.g., \textit{REINFORCE}, \textit{Actor-Critic}), while in \textit{value-based} methods, the policy is derived from the value function. In other words, value-based methods use value as an intermediary to improve the policy, while policy-based methods update the policy directly.
-\end{itemize}
 
-Overall, GPI offers a unifying framework: whether using a perfect model (DP) or learning from model-free data (value-based or policy-based), the interplay between policy evaluation and policy improvement remains the guiding principle. It is precisely this flexibility that makes GPI fundamental to understanding most modern RL algorithms.
 
-\subsection{Learning from Experience: MC and TD Methods}
+\subsection{Learning from Experience: Monte Carlo (MC) and Temporal-Difference (TD) Methods}
 When a model of the environment is not available, we must learn from sampled experience. Chapters 5 and 6 of the book \cite{Sutton2018} introduce two primary model-free approaches.
 
-\subsection*{Monte Carlo (MC) Methods}
+\subsection*{MC Methods}
 MC methods learn value functions by averaging the returns from sample episodes.
 \begin{itemize}
     \item \textbf{Principle}: An update to $V(S_t)$ is made only at the end of an episode.
     \item \textbf{Update Target}: The target for the update is the actual, complete return $G_t$.
     \item \textbf{Update Rule} (Constant-$\alpha$): $V(S_t) \leftarrow V(S_t) + \alpha [G_t - V(S_t)]$
-    \item \textbf{Properties}: MC methods are unbiased but can have high variance and are only applicable to episodic tasks. They do not \textit{bootstrap} \footnote{It means that MC updates only from complete sampled returns.}.
+    \item \textbf{Properties}: MC methods are unbiased but can have high variance and are only applicable to episodic tasks. They do not \textit{bootstrap}: the updates comes from only complete sampled returns.
 \end{itemize}
 
-\subsection*{Temporal-Difference (TD) Learning}
+\subsection*{TD Learning}
 TD learning is a central and novel idea in RL, combining ideas from both MC and DP.
 \begin{itemize}
     \item \textbf{Principle}: TD methods update the value estimate for a state based on the observed reward and the estimated value of the successor state. They learn from incomplete episodes.
     \item \textbf{Update Target}: The target is an estimate of the return, called the TD Target: $R_{t+1} + \gamma V(S_{t+1})$.
-    \item \textbf{Update Rule} (TD(0)): $V(S_t) \leftarrow V(S_t) + \alpha [R_{t+1} + \gamma V(S_{t+1}) - V(S_t)]$
-    \item \textbf{Properties}: TD methods \textit{bootstrap}:they update a guess from a guess. This introduces bias but often leads to lower variance and faster learning. They are naturally implemented in an online, fully incremental fashion.
+    \item \textbf{Update Rule}: $V(S_t) \leftarrow V(S_t) + \alpha [R_{t+1} + \gamma V(S_{t+1}) - V(S_t)]$
+    \item \textbf{Properties}: TD methods \textit{bootstrap}: they update a guess from a guess. This introduces bias but often leads to lower variance and faster learning. They are naturally implemented in an online, fully incremental fashion.
 \end{itemize}
-
-In practice,\textbf{most RL algorithms prefer TD methods over Monte Carlo methods}. This is because TD allows incremental step-by-step updates, without having to wait for the end of the episode, and is therefore suitable for both long episodic and continuous tasks. Furthermore, bootstrapping reduces variance and makes learning more sample-efficient, combining the advantages of DP and real-world learning.
+\\
 \noindent
-A classic example is Q-Learning, which directly learns the optimal function $Q^*(s,a)$ via TD updates without knowing the dynamics of the environment. While Monte Carlo is useful for obtaining bias-free estimates, TD methods are the heart of modern practical RL algorithms.
+In practice,\textbf{most RL algorithms prefer TD methods over MC methods}. This is because TD allows incremental step-by-step updates, without having to wait for the end of the episode, and is therefore suitable for both long episodic and continuous tasks. Furthermore, bootstrapping reduces variance and makes learning more sample-efficient, combining the advantages of DP and real-world learning.
+
 
 \subsection{Q-Learning: Off-Policy TD Control}
 \label{sec:q_learning}
 
 \noindent
-Building directly upon the principles of Temporal-Difference (TD) learning, Q-Learning stands as one of the most foundational and influential algorithms in RL. It is an \textbf{off-policy} TD control algorithm that directly learns the optimal action-value function, $q_*(s, a)$, independent of the policy being followed during exploration. This separation of the policy being learned from the policy used to generate experience is a hallmark of off-policy methods and allows for more flexible exploration strategies.
+Building directly upon the principles of TD learning, Q-Learning stands as one of the most foundational and influential algorithms in RL. It is an \textbf{off-policy} TD control algorithm that directly learns the optimal action-value function, $q_*(s, a)$, independent of the policy being followed during exploration. This separation of the policy being learned from the policy used to generate experience is a hallmark of off-policy methods and allows for more flexible exploration strategies.
 \\ \noindent
-For environments with discrete state and action spaces, Q-Learning maintains a table of Q-values, often referred to as the Q-table, with an entry for every state-action pair. The learning process involves iteratively updating these Q-values using the Bellman Optimality Equation as a foundation, but in a model-free context. After the agent takes an action $A_t$ in state $S_t$ and observes the reward $R_{t+1}$ and the next state $S_{t+1}$, the Q-value is updated according to the following rule:
+For environments with discrete state and action spaces, Q-Learning maintains a table of Q-values, often referred to as the Q-table, with an entry for every state-action pair. The learning process involves iteratively updating these Q-values using the Bellman Optimality Equation \ref{eq:bellman-optimal} as a foundation, but in a model-free context. After the agent takes an action $A_t$ in state $S_t$ and observes the reward $R_{t+1}$ and the next state $S_{t+1}$, the Q-value is updated according to the following rule:
 \\ \noindent
 \begin{equation}
     Q(S_t, A_t) \leftarrow Q(S_t, A_t) + \alpha \left[ R_{t+1} + \gamma \max_{a} Q(S_{t+1}, a) - Q(S_t, A_t) \right]
@@ -391,7 +385,7 @@ For environments with discrete state and action spaces, Q-Learning maintains a t
 \\ \noindent
 Here, $\alpha$ is the learning rate, which determines how much the new information overrides the old estimate. The core of the update is the TD error, calculated from the TD target $R_{t+1} + \gamma \max_{a} Q(S_{t+1}, a)$. The term $\max_{a} Q(S_{t+1}, a)$ represents the agent's current best estimate of the optimal future value from the next state $S_{t+1}$. By always using the maximum Q-value of the next state, the algorithm learns a greedy, optimal policy, regardless of what exploratory action is actually taken next.
 \\ \noindent
-The primary limitation of tabular Q-Learning, however, is its inability to scale to problems with large or continuous state spaces, a problem often called the "curse of dimensionality." Storing and updating a massive Q-table becomes computationally and memory-prohibitive. This challenge directly motivates the use of function approximators, such as neural networks, to estimate the Q-function, leading to the development of Deep Q-Networks (DQN).
+The primary limitation of tabular Q-Learning, however, is its inability to scale to problems with large or continuous state spaces, a problem often called the "curse of dimensionality". Storing and updating a massive Q-table becomes computationally and memory-prohibitive. This challenge directly motivates the use of function approximators, such as neural networks, to estimate the Q-function, leading to the development of Deep Q-Networks (DQN).
 
 \subsection{Actor-Critic Architectures}
 
@@ -402,14 +396,14 @@ The primary limitation of tabular Q-Learning, however, is its inability to scale
     \caption{The Actor Critic scheme}
     \label{fig:rl_loop_2}
 \end{figure}
-The \textbf{Actor-Critic} architecture \ref{fig:rl_loop_2} provides a powerful and widely adopted method for solving RL problems, particularly in continuous action spaces. It explicitly represents both the policy and the value function using two distinct function approximators (e.g., neural networks).
+The \textbf{Actor-Critic} architecture shown in the Figure \ref{fig:rl_loop_2} provides a powerful and widely adopted method for solving RL problems, particularly in continuous action spaces. It explicitly represents both the policy and the value function using two distinct function approximators (e.g., neural networks).
 
 \begin{itemize}
     \item \textbf{The Critic}: Learns a value function (e.g., $v_\pi(s)$ or $q_\pi(s, a)$). Its role is to evaluate the actor's decisions by computing the TD error:
     \begin{equation}
         \delta_t = R_{t+1} + \gamma V(S_{t+1}) - V(S_t)
     \end{equation}
-    \item \textbf{The Actor}: Represents the policy, $\pi_\theta(a|s)$, parameterized by $\theta$. It receives the current state as input and outputs an action. It uses the TD error from the critic as a learning signal to update its parameters via policy gradient methods, improving its strategy over time.
+    \item \textbf{The Actor}: Represents the policy, $\pi_\theta(a|s)$, parameterized by $\theta$. It receives the current state as input and outputs an action. It uses the TD error from the critic as a learning signal to update its parameters, improving its strategy over time.
 \end{itemize}
 \noindent
 This separation of concerns allows for direct policy optimization in continuous or large action spaces while leveraging the stable learning dynamics of TD-based value estimation.
@@ -449,7 +443,7 @@ The role of the activation function is of fundamental importance. It introduces 
     % Ensure that the image 'NN.png' is in the same directory as the .tex file
     % or specify the full path.
     \includegraphics[width=0.8\linewidth]{NN.png}
-    \caption{Structure of a Neural Network}
+    \caption{Structure of a Neural Network.}
     \label{fig:nn}
 \end{figure}
 \noindent
@@ -481,7 +475,6 @@ In this equation, $\theta$ represents the weights of the neural network being tr
 The term $r + \gamma \max_{a'} Q(s', a'; \theta^{-})$ is the \textit{target value}. Here:
 \begin{itemize}
     \item $r$ is the immediate reward received after performing action $a$ in state $s$.
-    \item $\gamma$ (gamma) is the discount factor, a value between 0 and 1 that determines the importance of future rewards. A $\gamma$ closer to 1 gives more weight to long-term rewards.
     \item $\max_{a'} Q(s', a'; \theta^{-})$ is the maximum estimated Q-value for the next state $s'$ (the state reached after performing action $a$), calculated using the target network. This represents the best expected future reward from the next state.
 \end{itemize}
 \noindent
