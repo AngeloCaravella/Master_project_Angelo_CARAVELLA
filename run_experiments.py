@@ -671,7 +671,8 @@ def plot_electricity_prices(save_path, scenario_name, charge_prices, discharge_p
     min_len = min(len(charge_price_series), len(discharge_price_series))
     time_hours = np.arange(min_len) * timescale / 60
     fig, ax = plt.subplots(figsize=(15, 7))
-    ax.plot(time_hours, charge_price_series[:min_len], label='Charge Price', color='#e74c3c', linewidth=2)
+    # Plot the absolute value of charge prices so they can be compared on the same scale as discharge prices
+    ax.plot(time_hours, np.abs(charge_price_series[:min_len]), label='Charge Price', color='#e74c3c', linewidth=2)
     ax.plot(time_hours, discharge_price_series[:min_len], label='Discharge Price', color='#2ecc71', linewidth=2, linestyle='--')
     ax.set_xlabel("Time (hours)"); ax.set_ylabel("Price (€/kWh)")
     ax.set_title(f'Electricity Prices - Scenario: {scenario_name}', fontsize=16)
@@ -953,7 +954,10 @@ def get_algorithms(max_cs: int, is_thesis_mode: bool) -> Dict[str, Tuple[Any, An
         "SAC": (None, SAC, {}), 
         "DDPG": (None, DDPG, {}), 
         "DDPG+PER": (None, CustomDDPG, {'replay_buffer_class': PrioritizedReplayBuffer}),
-        "TQC": (None, TQC, {}),
+        "TQC": (None, TQC, {
+            'policy_kwargs': dict(n_quantiles=25, n_critics=2),
+            'top_quantiles_to_drop_per_net': 5
+        }),
     }
 
     # MPC algorithms

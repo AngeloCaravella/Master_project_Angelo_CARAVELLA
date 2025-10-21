@@ -1,0 +1,6 @@
+graph TD
+    subgraph PER Part 2 ["Bias Correction Mechanism"]
+        P1["<b>Problem:</b> Prioritized sampling introduces a statistical bias<br/>that, if uncorrected, would lead to skewed and unstable learning."] --> P2;
+        P2["<b>Solution:</b> Importance Sampling (IS) weights are calculated for each transition.<br/>This weight is controlled by a parameter, <b>beta</b>, which typically anneals from a starting value up to 1."] --> P3;
+        P3["The IS weights, controlled by beta, scale the gradient update for each transition.<br/>This corrects the bias by down-weighting updates for high-priority (and thus frequently sampled) transitions."]
+    end

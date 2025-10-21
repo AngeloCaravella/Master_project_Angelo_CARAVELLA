@@ -6,7 +6,7 @@ MPC originated in the 1970s within the process control industry, with pioneering
 \noindent
 At its core, MPC represents a proactive, forward-looking strategy that employs explicit mathematical system models to predict future evolution. At each control step, it solves a finite-horizon optimal control problem to determine the optimal control action sequence. Its primary strength, explaining widespread industrial adoption, lies in its inherent capability to handle complex system dynamics and operational constraints in a predictive manner~\cite{minchala2025systematic}.
 
-\section{MPC: Terminologies}
+\paragraph{MPC: Terminologies}
 
 Before formalizing the MPC optimization problem, it is essential to introduce the main temporal concepts that define its structure.
 
@@ -31,11 +31,11 @@ Before formalizing the MPC optimization problem, it is essential to introduce th
 These concepts together define the temporal structure of MPC.  
 At each sampling instant $t$, the controller predicts the system evolution over the \textit{prediction horizon} $N$, optimizes a control sequence of length $N_C$, and applies only the first control action. The process is then repeated after $T$ seconds, forming a closed-loop scheme known as \textbf{Receding Horizon Control (RHC)}.
 
-\section{Model Predictive Control Formulation}
+\subsection{Model Predictive Control Formulation}
 
-\textit{Section based on ``Predictive Control for Linear and Hybrid Systems'' by F. Borrelli, A. Bemporad, and M. Morari.}
+\textit{Subsection based on ""Predictive Control for Linear and Hybrid Systems"" by F. Borrelli, A. Bemporad, and M. Morari.}
 
-\subsection{The Finite-Time Optimal Control Problem}
+\paragraph{The Finite-Time Optimal Control Problem}
 
 At each time step $t$, given the current state measurement $x(t)$, the MPC law is defined by solving a constrained finite-time optimal control problem (FTOCP).
 
@@ -75,7 +75,7 @@ Here:
     \item $\mathcal{X}_f \subseteq \mathbb{R}^n$ is the terminal constraint set ensuring stability.
 \end{itemize}
 
-\subsection{The Receding Horizon Policy}
+\paragraph{The Receding Horizon Policy}
 
 The optimization yields an optimal sequence of control inputs:
 \begin{equation}
@@ -89,7 +89,7 @@ In the \textbf{Receding Horizon Control} (RHC) strategy, only the first control 
 \noindent
 At the next sampling instant $t+T$, a new measurement $x(t+T)$ is acquired, and the optimization is repeated over a shifted prediction window $[t+T, t+T+N]$. This process continues iteratively, forming a closed-loop predictive control system.
 
-\subsection{Summary of the MPC Workflow}
+\paragraph{Summary of the MPC Workflow}
 
 \begin{enumerate}
     \item Measure the current state $x(t)$ every sampling time $T$.
@@ -104,7 +104,7 @@ This closed-loop iterative procedure allows MPC to handle multi-variable dynamic
 
 
 
-\section{Preliminaries
+\paragraph{Preliminaries
 :General optimization problem}
 \begin{itemize}
     \item Optimization problem
@@ -126,7 +126,7 @@ This closed-loop iterative procedure allows MPC to handle multi-variable dynamic
     \item \(Z\): Constraint set.
 \end{itemize}
 
-\subsection{General optimization problem}
+\subsubsection{General optimization problem}
 \begin{itemize}
     \item Constrained set is usually defined using linear inequalities
     \[
@@ -152,7 +152,7 @@ This closed-loop iterative procedure allows MPC to handle multi-variable dynamic
     \end{figure}
 \end{itemize}
 
-\subsection{Convex optimization problem}
+\subsubsection{Convex optimization problem}
 \begin{itemize}
     \item \textbf{Convex set}: A set \(Z \in \mathbb{R}^p\) is convex if
     \begin{equation}
@@ -175,14 +175,14 @@ This closed-loop iterative procedure allows MPC to handle multi-variable dynamic
 \caption{On the left, a convex set; in the middle, a non-convex set; on the right, a convex function.}
 \end{figure}
 
-\subsection{Convex optimization problem}
+
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.8\textwidth]{Approximating.png} 
     \caption{Approximating a convex set with a polytope}
 \end{figure}
 
-\subsection{Convex optimization problem: Examples}
+\subsection*{Convex optimization problem: Examples}
 \begin{enumerate}
     \item \textbf{Linear programming problem}: is of the form
     \begin{align}
@@ -199,7 +199,7 @@ This closed-loop iterative procedure allows MPC to handle multi-variable dynamic
     \end{align}
 \end{enumerate}
 
-\subsection{Numerical optimization}
+\subsubsection{Numerical optimization}
 \begin{itemize}
     \item The two major approaches for numerical optimization
     \begin{enumerate}
@@ -208,7 +208,7 @@ This closed-loop iterative procedure allows MPC to handle multi-variable dynamic
     \end{enumerate}
 \end{itemize}
 
-\subsection{MPC: Classifications}
+\subsubsection{MPC: Classifications}
 \begin{itemize}
     \item Based on the type of system model used in optimization
     \begin{enumerate}
@@ -254,7 +254,7 @@ u_{\min} \leq\ &u_{t+k|t} \leq u_{\max}
 At each time step $t$, this complete problem is solved, but only the first action of the optimal sequence, $u_{t|t}^*$, is applied to the system. The process then repeats at the next time step, $t+1$, using new system state measurements. This feedback mechanism, known as a \textit{receding horizon} strategy, makes MPC robust to disturbances and model mismatch \cite{camacho2013model}.
 
 
-\section{Improvement of the Standard Fixed-Horizon MPC Formulation}
+\subsection{Improvement of the Standard Fixed-Horizon MPC Formulation}
 
 Model Predictive Control (MPC) addresses the control of a discrete-time nonlinear system, as described in \cite{krener2016adaptive}:
 \begin{equation}
@@ -268,14 +268,14 @@ where $x \in \mathbb{R}^n$ is the state and $u \in \mathbb{R}^m$ is the control 
 \end{equation}
 This minimization is subject to system dynamics, state and input constraints, and the crucial terminal constraint $x(N) \in \mathcal{X}_f$. Here, $\mathcal{X}_f$ is a terminal set where stability is guaranteed, and $V_f(x)$ is a terminal cost that acts as a control Lyapunov function on $\mathcal{X}_f$ \cite{krener2016adaptive}.
 
-\subsection{Limitation of the Fixed-Horizon Approach}
+\subsubsection{Limitation of the Fixed-Horizon Approach}
 The primary drawback of this standard formulation is the static nature of the horizon $N$. The choice of $N$ represents a difficult compromise. As Krener points out on page 2, "One would expect when the current state $x$ is far from the operating point, a relatively long horizon $N$ is needed... but as the state approaches the operating point shorter and shorter horizons can be used" \cite{krener2016adaptive}. A fixed horizon long enough for the worst-case scenario is computationally wasteful for the majority of the operational time, as it increases the dimensionality of the optimization problem ($m \times N$) solved online.
 
-\section{Improving the Formulation with Adaptive Horizon MPC (AHMPC)}
+\subsubsection{Improving the Formulation with Adaptive Horizon MPC (AHMPC)}
 
 The core innovation of Adaptive Horizon Model Predictive Control (AHMPC) is to make the horizon length state-dependent, adapting it online to be as short as possible while maintaining stability.
 
-\subsection{The Ideal (but Impractical) AHMPC Scheme}
+\subsubsection{The Ideal (but Impractical) AHMPC Scheme}
 The paper first introduces an "ideal" version of AHMPC. This scheme relies on a function $N(x)$, defined as the minimum integer $N$ for which a feasible control sequence exists that drives the state $x$ into the terminal set $\mathcal{X}_f$ (see Assumption 4 in \cite{krener2016adaptive}). The resulting optimal cost and control law are then state-dependent through this horizon:
 \begin{align}
     V(x) &= V_{N(x)}(x) \label{eq:ideal_cost} \\
@@ -283,7 +283,7 @@ The paper first introduces an "ideal" version of AHMPC. This scheme relies on a 
 \end{align}
 As shown in Section II of the paper, this formulation leads to a valid Lyapunov function, confirming its stabilizing properties. However, this scheme is impractical because "in general, it is impossible to compute the function $N(x)$" \cite{krener2016adaptive}.
 
-\subsection{The Practical AHMPC Algorithm}
+\subsubsection{The Practical AHMPC Algorithm}
 Section III of the paper presents a practical algorithm that circumvents the need to know $N(x)$ or even the terminal set $\mathcal{X}_f$ explicitly. The key idea is to use the terminal controller $\kappa_f(x)$ and terminal cost $V_f(x)$ to \textit{verify online} if the chosen horizon is sufficient.
 \\
 \noindent
@@ -308,26 +308,26 @@ At a given state $x$ and with a current horizon guess $N$, the algorithm is as f
     \end{itemize}
 \end{enumerate}
 
-\subsection{Advantages of the AHMPC Formulation}
+\subsubsection{Advantages of the AHMPC Formulation}
 This practical scheme offers significant advantages, as highlighted in the paper's conclusion:
 \begin{itemize}
     \item \textbf{Computational Efficiency:} The primary advantage is that "the AHMPC horizon length decreases as the process is stabilized thereby lessening the on-line computational burden" \cite{krener2016adaptive}.
     \item \textbf{No Explicit Terminal Set:} The algorithm cleverly "proceeds without knowing the minimum horizon length function $N(x)$ and without knowing the domain of Lyapunov stability of the terminal cost $V_f(x)$" \cite{krener2016adaptive}. This removes a major hurdle in traditional MPC design.
 \end{itemize}
 
-\section{Further Enhancements via Learning-Based Approaches}
+\subsection{Further Enhancements via Learning-Based Approaches}
 
 While the practical AHMPC algorithm provides a significant advantage, it still relies on an iterative, trial-and-error process of increasing $N$ when the current horizon is insufficient. This can introduce computational delays.
 \\
 \noindent
-Modern data-driven techniques, such as Deep Reinforcement Learning (DRL), offer a path to mitigate this. DRL has proven effective for learning complex control policies for challenging problems, such as managing Electric Vehicle charging in volatile markets \cite{orfanoudakis2024ev2gym}. A hybrid approach could be envisioned where a DRL agent is trained offline to approximate the ideal horizon function $N(x)$. This learned function would provide a highly accurate initial guess for the horizon at each step, potentially eliminating the need for online iterative adjustments and combining the computational speed of a learned policy with the rigorous stability and constraint-handling framework of AHMPC.
+Modern data-driven techniques, such as DRL, offer a path to mitigate this. DRL has proven effective for learning complex control policies for challenging problems, such as managing Electric Vehicle charging in volatile markets \cite{orfanoudakis2024ev2gym}. A hybrid approach could be envisioned where a DRL agent is trained offline to approximate the ideal horizon function $N(x)$. This learned function would provide a highly accurate initial guess for the horizon at each step, potentially eliminating the need for online iterative adjustments and combining the computational speed of a learned policy with the rigorous stability and constraint-handling framework of AHMPC.
 
 
 
 
 %%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%
-\section{Explicit MPC: Offline Pre-computation}
+\subsection{Explicit MPC: Offline Pre-computation}
 \begin{figure}[H]
     \centering
    
@@ -337,7 +337,6 @@ Modern data-driven techniques, such as Deep Reinforcement Learning (DRL), offer 
 \end{figure}
 \cite{Bemporad_Filippi}
 For systems with fast dynamics or limited online computational capacity, \textbf{Explicit MPC} offers an alternative approach. The key idea is to move the computational effort entirely offline. As detailed extensively in \cite{borrelli2017predictive}, this is achieved by treating the current state $x_t$ not as a fixed value, but as a vector of parameters. The constrained optimization problem is then solved offline for all possible initial states within a given range using \textbf{multi-parametric programming}.
-
 \noindent
 The authors of \cite{borrelli2017predictive} frame this as the main contribution of their work (Preface, page xii): 
 \begin{quote}
@@ -350,6 +349,7 @@ u^*(x_t) = \mathbf{F}_i x_t + \mathbf{g}_i \quad \text{if } x_t \in \mathcal{X}_
 \end{equation}
 \noindent
 The state space is partitioned into a set of convex polyhedral regions $\mathcal{X}_i$, with a unique affine control law defined for each region. Online operation is thereby reduced from solving a QP to a simple function evaluation: first, a fast lookup operation identifies which region $\mathcal{X}_i$ the current state $x_t$ occupies, and second, the corresponding simple affine control law is applied. This trades a very high offline computational burden and significant memory requirements for extremely fast and deterministic online execution \cite{bemporad2013explicit, borrelli2017predictive}.
+
 \subsection{Deep Learning for an Efficient Explicit MPC Representation}
 
 While implicit MPC provides an optimal control action, its reliance on solving a numerical optimization problem at each sampling time makes it unsuitable for systems with fast dynamics. An alternative is Explicit MPC, where the control law---a Piecewise Affine (PWA) function of the state---is pre-computed offline. However, this approach suffers from a significant drawback: the number of polyhedral regions, and thus the memory required to store the corresponding affine laws, can grow exponentially with the prediction horizon and the number of constraints \cite{karg2020efficient}. This "curse of dimensionality" severely limits its practical application, especially in memory-constrained embedded systems.

@@ -4,7 +4,7 @@
 \chapter{Sensitivity Analysis of the V2G System}
 \label{chap:sensitivity_analysis}
 
-\section{Introduction}
+
 The performance of a Vehicle-to-Grid (V2G) system is governed by a complex interplay of physical, economic, and behavioral parameters. Understanding which of these parameters have the most significant impact on system outcomes is crucial for designing robust and effective control strategies. A controller optimized for one specific set of conditions may perform poorly under slightly different circumstances. Sensitivity Analysis (SA) is a systematic methodology used to quantify how the variation in the inputs of a model influences the variation in its outputs.
 \noindent
 This chapter presents a comprehensive sensitivity analysis of the EV2Gym simulation environment. The primary objectives are:
@@ -23,17 +23,16 @@ The analysis was conducted using the custom-built \textbf{sensitivity\_analysis.
 
 In these sessions, the topic of global sensitivity analysis is discussed, which is presented as a very important method in uncertainty quantification.\noindent
  This method allows for a better understanding of the relationship between data, model, and prediction. There are many techniques for performing such global sensitivity analysis. However, before covering global sensitivity analysis, the speaker first discusses local sensitivity analysis.
-
-\section{Sensitivity Analysis (SA)}
-
+\\
+\noindent
 Sensitivity analysis is defined as a study where uncertain input parameters are varied to understand how that variation results in a change in some response of interest. This response of interest can be anything, such as a data variable or a prediction variable.
-
-\subsection{Definition}
+\\
+\noindent
 SA is the study of how variation of uncertain input parameters impacts the uncertainty of the response of interest.
 \noindent
 \textit{Note: There is no unique way of doing sensitivity analysis.}
-
-\subsection{Applications and Benefits of SA}
+\\
+\noindent
 In this context, sensitivity analysis allows for the reduction of uncertainty in predictions, as it facilitates the identification of input parameters that affect those predictions. This, in turn, can help identify what data needs to be acquired to reduce uncertainty on those parameters.
 
 \begin{itemize}
@@ -44,7 +43,7 @@ In this context, sensitivity analysis allows for the reduction of uncertainty in
 \noindent
 As a side note, it is mentioned that there is no single, unique way of performing sensitivity analysis. Therefore, referring to "the" sensitivity analysis would actually point to a specific method. Each method allows for the study of different aspects, and it is important to understand which method is suitable for a given situation and application.
 
-\section{What Really Matters?}
+\section*{What Really Matters?}
 An example is provided for understanding the variation of radiation dose over time for individuals near nuclear repositories. Modeling this involves numerous processes like transport, flow, reactions, and geochemistry, resulting in an extremely complicated nonlinear system. The output, however, is a simple function over time. \noindent
 The goal of sensitivity analysis in this context is to understand which of the complex inputs truly matter and what interactions are necessary to comprehend the final performance measure.
 
@@ -60,6 +59,23 @@ In local sensitivity analysis, the process starts from a base case. This could b
     \item Often based on partial derivatives of the response with respect to the parameters. The sensitivity measure is only informative for the particular set of parameters.
     \item Fast to compute ($N_p + 1$ model evaluations).
 \end{itemize}
+\begin{algorithm}[H]
+\caption{Local Sensitivity Analysis (LSA)}
+\begin{algorithmic}[1]
+\State \textbf{Input:} model $f(\mathbf{x})$ with parameters $\mathbf{x} = [x_1, x_2, \dots, x_{N_p}]$, base case $\mathbf{x}_0$
+\State \textbf{Output:} local sensitivity $S_i$ for each parameter $x_i$
+\State Build the base model: $y_0 = f(\mathbf{x}_0)$
+\For{$i = 1$ to $N_p$}
+\State Perturb parameter $i$ by a small $\Delta x_i$: $\mathbf{x}_i^+ = \mathbf{x}_0 + \Delta x_i \mathbf{e}_i$ 
+\State Calculate the answer: $y_i^+ = f(\mathbf{x}_i^+)$ 
+\State Calculate the local sensitivity: 
+\[ 
+S_i = \frac{y_i^+ - y_0}{\Delta x_i} \approx \frac{\partial f}{\partial x_i} \Big|_{\mathbf{x}_0} 
+\]
+\EndFor
+\State \textbf{Return:} $S_1, S_2, \dots, S_{N_p}$
+\end{algorithmic}
+\end{algorithm}
 
 \subsection{Global SA (GSA)}
 In global sensitivity analysis, the base case scenario is disregarded. Instead, a Monte Carlo simulation is performed on the input parameters. The model is run many times with various input parameters drawn from a prior distribution. The models are then evaluated to understand the multivariate distribution of the output that is generated due to the variation of the input parameters.
@@ -82,58 +98,66 @@ The challenges (very common in geosciences) or uncertainty quantification are:
     \item \textbf{Spatial aspect of the models:} There is a spatial aspect, such as the spatial distribution of hydraulic conductivity, permeability, porosity, or layering, which needs to be taken into account as it may have a considerable influence on the response. The problem is how to quantify the influence of spatial variability (which is not a simple variable) on some kind of response.
 \end{itemize}
 
-\section{Screening Techniques}
+\section*{Screening Techniques}
 Two techniques are introduced: one-at-a-time (OAT) analysis and the Morris method. Both are simplified approaches. They are quite useful for "screening" because they require only a small number of model evaluations. However, it is very difficult to draw general conclusions from these methods, as there are several drawbacks when applying them to the kind of problems being addressed.
+\subsection*{Algorithmic Description of OAT and Morris Methods}
 
-\subsection{One-at-a-time (OAT)}
-One-at-a-time analysis involves taking a base case (e.g., the mean of all parameters), fixing all other parameters, and varying one parameter at a time (e.g., by 10\%) to observe its influence. Simulations are run for these perturbations, and the influence of that parameter is recorded. The parameters can then be ranked from the most to the least influential, often displayed in a tornado chart.
+\begin{algorithm}[H]
+\caption{One-at-a-Time (OAT) Sensitivity Analysis}
+\begin{algorithmic}[1]
+\State \textbf{Input:} model $f(\mathbf{x})$ with parameters $\mathbf{x} = [x_1, \dots, x_{N_p}]$, base case $\mathbf{x}_0$, perturbation factor $\Delta$
+\State \textbf{Output:} parameter influence ranking
+\State Evaluate the base case: $y_0 = f(\mathbf{x}_0)$
+\For{$i = 1$ to $N_p$}
+    \State Perturb the $i$-th parameter: $\mathbf{x}_i^+ = \mathbf{x}_0 + \Delta x_i \mathbf{e}_i$
+    \State Evaluate the model: $y_i^+ = f(\mathbf{x}_i^+)$
+    \State Compute the effect of parameter $i$: $S_i = y_i^+ - y_0$
+\EndFor
+\State Rank parameters based on $|S_i|$ to determine their influence
+\State \textbf{Note:} Requires $2 \times N_p + 1$ model evaluations for full analysis.
+\end{algorithmic}
+\end{algorithm}
 
+\begin{algorithm}[H]
+\caption{Morris Method (Elementary Effects Method)}
+\begin{algorithmic}[1]
+\State \textbf{Input:} model $f(\mathbf{x})$ with parameters $\mathbf{x} = [x_1, \dots, x_{N_p}]$, number of trajectories $L$, perturbation $\Delta$
+\State \textbf{Output:} $\mu_n^*$, $\sigma_n$ for each parameter
+\For{$l = 1$ to $L$} 
+    \State Generate a random starting point $\mathbf{x}^{(l)}$ in the parameter space
+    \For{$n = 1$ to $N_p$}
+        \State Perturb parameter $n$: $\mathbf{x}^{(l)}_n = \mathbf{x}^{(l)} + \Delta \mathbf{e}_n$
+        \State Compute the elementary effect: 
+        \[
+        EE_n^{(l)} = \frac{f(\mathbf{x}^{(l)}_n) - f(\mathbf{x}^{(l)})}{\Delta}
+        \]
+    \EndFor
+\EndFor
+\For{$n = 1$ to $N_p$}
+    \State Compute mean of absolute elementary effects:
+    \[
+    \mu_n^* = \frac{1}{L} \sum_{l=1}^{L} |EE_n^{(l)}|
+    \]
+    \State Compute standard deviation of elementary effects:
+    \[
+    \sigma_n = \sqrt{\frac{1}{L-1} \sum_{l=1}^{L} (EE_n^{(l)} - \bar{EE}_n)^2}
+    \]
+\EndFor
+\State \textbf{Interpretation:} Plot $\sigma_n$ vs $\mu_n^*$ to classify parameters:
 \begin{itemize}
-    \item Most widely used screening method due to its simplicity.
-    \item Varies the input parameters one by one, keeping the other inputs fixed at a baseline \& monitors changes in the output.
-    \item Results often displayed in a Pareto chart (requires $2 \times N_p + 1$ simulations).
-    \item Similar to a local method.
+    \item Negligible effects: small $\mu_n^*$ and small $\sigma_n$
+    \item Linear and additive effects: large $\mu_n^*$ and small $\sigma_n$
+    \item Non-linear or interaction effects: large $\mu_n^*$ and large $\sigma_n$
 \end{itemize}
+\end{algorithmic}
+\end{algorithm}
 
-A problem with this method is that by fixing parameters, interactions are not studied. Also, the assumption that the base case (average of parameters) gives an average response is not true for non-linear systems. It also does not handle discrete parameters well.
-
-\subsection{The Morris Method}
-The Morris method is an extension of the one-at-a-time (OAT) designs. Instead of a single base case, a randomization is performed over $L$ trajectories (or base cases).
-\begin{itemize}
-    \item Based on a replication of OAT designs.
-    \item Based on the calculation of elementary effects ($EE_n$).
-    \item Evaluated by perturbing the n-th parameter of a point $x = (x_1, \dots, x_{N_p})$ by $\Delta$.
-    
-    The elementary effect is calculated as:
-    \[ EE_n = \frac{f(x_1, \dots, x_n + \Delta, \dots, x_{N_p}) - f(x_1, \dots, x_n, \dots, x_{N_p})}{\Delta} \]
-    \item To avoid dependency on the initial point $x$, the $EE_n$ are computed for $L$ trajectories, which results in a distribution of $EE_n$.
-\end{itemize}
-
-From this distribution, the mean and variance of the elementary effects can be calculated.
-
-\begin{itemize}
-    \item The mean of the absolute values of the elementary effects, $\mu_n^*$, assesses the overall impact (influence) of the parameter on the response.
-    \[ \mu_n^* = \frac{1}{L} \sum_{l=1}^{L} |EE_n^{(l)}| \]
-    A large mean indicates large changes in the response when perturbing a parameter (an influential parameter).
-    
-    \item The standard deviation or variance, $\sigma_n^2$, is a measure of non-linear and/or interaction effects.
-    \[ \sigma_n^2 = \frac{1}{L-1} \sum_{l=1}^{L} (EE_n^{(l)} - \mu_n)^2 \]
-    A large value indicates that the elementary effects depend highly on the choice of the sample point at which it is computed. A small $\sigma_n^2$ indicates similar values in elementary effects for different sample points, implying that the effect of the parameter is independent of other parameter values.
-\end{itemize}
-
-By plotting $\sigma_n$ versus $\mu_n^*$, parameters can be classified into three groups:
-\begin{enumerate}
-    \item \textbf{Negligible effects:} small $\mu_n^*$ and small $\sigma_n$.
-    \item \textbf{Linear and additive effects:} large $\mu_n^*$ and small $\sigma_n$.
-    \item \textbf{Non-linear and/or interactions effects:} large $\mu_n^*$ and large $\sigma_n$.
-\end{enumerate}
-
-\section{Note on Interactions}
+\section*{Note on Interactions}
 Interactions are an often poorly understood concept. An example is given where a material (e.g., shale rock) is tested, and its strength (response Z) is evaluated based on two factors: temperature (X) and composition ratio (Y). A factorial design can be set up with high and low levels for each factor.
 \noindent
 An interaction means that the effect of one factor depends on the level of another factor. The main effects of X and Y, as well as the interaction effect XY, can be estimated. In many cases, the interaction effect (the combined effect of temperature and composition) can be the most significant factor, more so than either factor individually. This indicates a non-linear relationship where the whole is greater than the sum of its parts.
 
-\subsection{Summary of Screening Techniques}
+\subsection*{Digest of Screening Techniques}
 \begin{itemize}
     \item Rapidly gives insight into parameter influence with a small number of model evaluations.
     \item Only provides qualitative/subjective measures of sensitivity.
@@ -360,7 +384,7 @@ The Morris analysis is invaluable for model simplification and for focusing cont
 \noindent
 To train a single, robust "generalist" agent, the agent must be exposed to a wide variety of scenarios during its training phase. The goal is to create a dataset of configuration files that adequately covers the entire parameter space defined in Table \ref{tab:sa_parameters_detailed}.
 
-\subsubsection{Grid Search and its Limitations}
+\subsubsection*{Grid Search and its Limitations}
 \noindent
 The most exhaustive approach is a Grid Search, which involves creating a scenario for every single possible combination of the parameter levels. As calculated previously, for the nine parameters, this would result in:
 \begin{equation}

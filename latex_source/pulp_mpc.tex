@@ -40,7 +40,7 @@ The Branch and Cut algorithm, as implemented in CBC, combines these two methods.
 \noindent
 In the context of the MPC for V2G scheduling, this is particularly important. The binary variables $\omega^{\text{ch}}_{i,t}$ and $\omega^{\text{dis}}_{i,t}$ (which decide whether to charge or discharge) make the problem a MILP. A naive exploration of all combinations would be computationally intractable, especially with a long prediction horizon and many EVs. The Branch and Cut algorithm allows CBC to intelligently navigate the vast search space, finding the optimal charging and discharging schedule that maximizes profit while respecting all physical and operational constraints, and doing so within a timeframe suitable for online control.
 
-\subsection{Mathematical Formulation and Linearization}
+\subsection*{Mathematical Formulation and Linearization}
 
 The implementation of the MPC controller, contained in the \textbf{pulp\_mpc.py} script, translates the optimization problem into a Mixed-Integer Linear Program (MILP) that can be solved efficiently using the open-source CBC (COIN-OR Branch and Cut) solver. However, the original mathematical formulation presented in some research papers, such as the one by Orfanoudakis et al. \cite{orfanoudakis2024ev2gym}, is inherently non-linear. To make the problem tractable in a real-time control context, several important simplifications and corrections were necessary.
 

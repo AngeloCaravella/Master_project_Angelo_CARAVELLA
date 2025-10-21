@@ -1,0 +1,15 @@
+Starting image generation... 
+--- Generating Interaction Loop diagrams... --- 
+Generating single mermaid chart
+Generating single mermaid chart
+Generating single mermaid chart
+--- Generating DDPG diagrams... --- 
+Generating single mermaid chart
+Generating single mermaid chart
+--- Generating SAC diagrams... --- 
+Generating single mermaid chart
+Generating single mermaid chart
+--- Generating PER diagrams... --- 
+Generating single mermaid chart
+Generating single mermaid chart
+--- Script finished. See log.txt for details. --- 

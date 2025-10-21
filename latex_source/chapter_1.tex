@@ -28,7 +28,7 @@ The chart \cite{Tavakoli2019} breaks down this growth into several categories:
 \noindent
 It is stated that "EVs are growing very fast in the car market, and it is predicted to take a significant market share shortly."
 
-\subsection{Background and Relevance of Electric Vehicles and Vehicle-to-Grid}
+\section{Background and Relevance of Electric Vehicles and Vehicle-to-Grid}
 
 The rapidly expanding EV market is reshaping modern mobility, offering a path to reduced carbon emissions and enhanced energy efficiency \cite{orfanoudakis2024ev2gym}. This transition is fundamental to environmental sustainability, as it lessens dependence on fossil fuels, mitigates climate change by cutting greenhouse gas emissions, and improves urban air quality. However, integrating millions of EVs into the power system is a significant challenge, threatening to intensify peak demand, strain transmission and distribution networks, and cause technical issues like voltage irregularities or line losses \cite{orfanoudakis2024ev2gym, salvatti2020electric}.
 \\
@@ -64,8 +64,8 @@ The parallel rise of EV adoption and RES deployment has created an environment o
 \noindent
 This has led to a surge in research focused on \textbf{Reinforcement Learning (RL)}, a paradigm that can, in theory, learn optimal control policies directly from environmental interaction without a perfect system model. While meta-heuristic algorithms have been explored, they often lack the real-time adaptability required for dynamic control \cite{Srihari}. The hypothesis to be tested is whether the theoretical promise of RL holds up against the engineering realities of the V2G problem. From this perspective, RL is not merely an optimization tool but an \textbf{enabling technology} for a more cognitive and robust energy infrastructure capable of navigating a decarbonized future. Within this domain, \textbf{Deep Reinforcement Learning (DRL)} has emerged as a particularly powerful approach, valued for its capacity to derive near-optimal strategies in dynamic and uncertain environments without relying on precise models or forecasts \cite{orfanoudakis2024ev2gym}.
 
-\subsection{Objectives and Contributions of the Thesis}
-This thesis confronts the complex multi-objective optimization problem at the heart of Vehicle-to-Grid (V2G) systems. The overarching objective is to move beyond a purely theoretical analysis by actively developing, testing, and enhancing a high-fidelity simulation architecture. This platform serves as a digital twin to rigorously evaluate and compare advanced control strategies, balancing economic benefits, user mobility needs, battery health, and grid stability under realistic stochastic conditions.
+\section{Objectives and Contributions of the Thesis}
+This thesis confronts the complex multi-objective optimization problem at the heart of V2G systems. The overarching objective is to move beyond a purely theoretical analysis by actively developing, testing, and enhancing a high-fidelity simulation architecture. This platform serves as a digital twin to rigorously evaluate and compare advanced control strategies, balancing economic benefits, user mobility needs, battery health, and grid stability under realistic stochastic conditions.
 \\
 \noindent
 More than a simple review of existing literature, this work focuses on the practical implementation and validation of a V2G simulation framework in Python. This tool is leveraged to demonstrate and explore novel perspectives for training intelligent agents. The main contributions are:
@@ -74,7 +74,7 @@ More than a simple review of existing literature, this work focuses on the pract
     \item \textbf{Enhancement of a V2G Simulation Architecture:} A key contribution is the systematic testing, validation, and enhancement of the \textbf{EV2Gym} simulation framework. This work solidifies its role as a robust platform for benchmarking control algorithms and includes the development of an interactive data application using \textbf{Streamlit} for results visualization and scenario analysis.
 
 
-    \item \textbf{Exploration of Novel Reinforcement Learning Perspectives:} The validated simulation environment is used to investigate and implement advanced training methodologies for RL agents. A key focus is placed on techniques like \textbf{adaptive reward shaping}, where the reward function dynamically evolves during training to guide the agent towards a more holistic and robust control policy.
+    \item \textbf{Exploration of Novel RL Perspectives:} The validated simulation environment is used to investigate and implement advanced training methodologies for RL agents. A key focus is placed on techniques like \textbf{adaptive reward shaping}, where the reward function dynamically evolves during training to guide the agent towards a more holistic and robust control policy.
 
 
     \item \textbf{Practical Implementation and Comparison of MPC Formulations:} The thesis details the development and implementation of multiple model-based controllers. This includes a classic \textbf{implicit MPC}, and a novel \textbf{Adaptive Horizon Model Predictive Control (AHMPC)}, all formulated in PuLP. \end{itemize}
@@ -84,7 +84,7 @@ More than a simple review of existing literature, this work focuses on the pract
 \subsection{Thesis Structure}
 The remainder of this thesis is organized as follows:
 \begin{itemize}
-    \item \textbf{Chapter 2: Overview of Optimal Management of EV Charging and Discharging} provides foundational knowledge on V2G technology, the complex multi-objective nature of EV charging optimization, and presents a comprehensive review of state-of-the-art research approaches.
+    \item \textbf{Chapter 2: Overview of Optimal Management of EV Charging and Discharging} provides foundational knowledge on the V2G technology, the complex multi-objective nature of EV charging optimization, and presents a comprehensive review of state-of-the-art research approaches.
 
     \item \textbf{Chapter 3: The V2G Simulation Framework: A Digital Twin for V2G Research} details the architecture and core models of the simulation environment. This chapter describes the enhancements made to the framework, establishing it as the central experimental platform for implementing and evaluating the control agents analyzed in this work.
 

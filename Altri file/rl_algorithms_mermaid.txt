@@ -1,0 +1,100 @@
+### 1. DDPG (Deep Deterministic Policy Gradient)
+
+DDPG è un algoritmo actor-critic che apprende una policy deterministica per ambienti con spazi di azione continui. Utilizza una rete "actor" per decidere l'azione e una rete "critic" per valutare tale azione.
+
+```mermaid
+graph TD
+    subgraph DDPG["Algoritmo DDPG"]
+        direction LR
+        subgraph CriticUpdate["Aggiornamento del Critic (Rete Q)"]
+            direction TB
+            A1["Campiona un minibatch di N transizioni (s, a, r, s') dal Replay Buffer"] --> A2;
+            A2["Calcola il target y: <br/> y = r + γ * Q'(s', μ'(s' | θ<sup>μ'</sup>) | θ<sup>Q'</sup>)"] --> A3;
+            A3["Aggiorna il Critic minimizzando la Loss:<br/>L = (1/N) * Σ(y - Q(s, a | θ<sup>Q</sup>))<sup>2</sup>"] --> A4;
+            A4["Applica il gradiente ∇<sub>θ<sup>Q</sup></sub> L"];
+        end
+
+        subgraph ActorUpdate["Aggiornamento dell'Actor (Rete Policy)"]
+            direction TB
+            B1["Campiona un minibatch di N stati (s) dal Replay Buffer"] --> B2;
+            B2["Aggiorna l'Actor usando il gradiente della policy:<br/>∇<sub>θ<sup>μ</sup></sub>J ≈ (1/N) * Σ[∇<sub>a</sub>Q(s,a|θ<sup>Q</sup>)|<sub>a=μ(s)</sub> * ∇<sub>θ<sup>μ</sup></sub>μ(s|θ<sup>μ</sup>)]"] --> B3;
+            B3["Applica il gradiente per aggiornare θ<sup>μ</sup>"];
+        end
+
+        subgraph TargetNetworks["Aggiornamenti Soft dei Target"]
+            direction TB
+            C1["Aggiorna Target Critic:<br/>θ<sup>Q'</sup> ← τθ<sup>Q</sup> + (1-τ)θ<sup>Q'</sup>"]
+            C2["Aggiorna Target Actor:<br/>θ<sup>μ'</sup> ← τθ<sup>μ</sup> + (1-τ)θ<sup>μ'</sup>"]
+        end
+    end
+```
+
+### 2. SAC (Soft Actor-Critic)
+
+SAC è un algoritmo actor-critic che ottimizza una policy stocastica massimizzando un trade-off tra il ritorno atteso e l'entropia. L'entropia incoraggia una maggiore esplorazione. Questa è una versione moderna che utilizza due reti Q e una temperatura di entropia α regolabile.
+
+```mermaid
+graph TD
+    subgraph SAC_Modern["Soft Actor-Critic (Moderno)"]
+        direction TB
+        
+        subgraph Setup
+            N1["Rete Actor (Policy): π<sub>φ</sub>(a|s)"]
+            N2["Due Reti Critic: Q<sub>θ1</sub>, Q<sub>θ2</sub>"]
+            N3["Due Reti Target Critic: Q<sub>θ_targ1</sub>, Q<sub>θ_targ2</sub>"]
+            N4["Temperatura di Entropia Regolabile: α"]
+        end
+
+        subgraph UpdateLoop["Ciclo di Aggiornamento (per ogni passo di gradiente)"]
+            direction TB
+            S1["Campiona un batch (s, a, r, s', d) dal Replay Buffer"] --> S2;
+            S2["<b>Aggiornamento Critic:</b><br/>1. Ottieni azione successiva e log-prob: a', logπ(a'|s') ~ π<sub>φ</sub>(·|s')<br/>2. Calcola Q target: Q' = min(Q<sub>θ_targ1</sub>(s',a'), Q<sub>θ_targ2</sub>(s',a')) - α*logπ(a'|s')<br/>3. Calcola il target di Bellman: y = r + γ(1-d)Q'<br/>4. Minimizza la Loss del Critic: L<sub>Q</sub> = MSE(Q<sub>θ1</sub>(s,a), y) + MSE(Q<sub>θ2</sub>(s,a), y)"] --> S3;
+            S3["<b>Aggiornamento Actor e Alpha:</b><br/>1. Ottieni nuova azione e log-prob: a<sub>new</sub>, logπ(a<sub>new</sub>|s) ~ π<sub>φ</sub>(·|s)<br/>2. Calcola il Q-value per la nuova azione: Q<sub>new</sub> = min(Q<sub>θ1</sub>(s,a<sub>new</sub>), Q<sub>θ2</sub>(s,a<sub>new</sub>))<br/>3. Minimizza la Loss dell'Actor: L<sub>π</sub> = E[α*logπ(a<sub>new</sub>|s) - Q<sub>new</sub>]<br/>4. Minimizza la Loss di Alpha: L<sub>α</sub> = E[-α * (logπ(a<sub>new</sub>|s) + target_entropy)]"] --> S4;
+            S4["<b>Aggiornamento Soft delle Reti Target:</b><br/>θ<sub>targ_i</sub> ← τθ<sub>i</sub> + (1-τ)θ<sub>targ_i</sub>"]
+        end
+
+        Setup --> UpdateLoop
+    end
+```
+
+### 3. DDPG + PER (Prioritized Experience Replay)
+
+PER non è un nuovo algoritmo, ma un miglioramento del Replay Buffer. Invece di campionare le transizioni in modo uniforme, PER dà la priorità a quelle da cui l'agente può imparare di più (cioè quelle con un errore di predizione più alto).
+
+```mermaid
+graph TD
+    subgraph DDPG_PER["DDPG con Prioritized Experience Replay (PER)"]
+        direction TB
+        
+        subgraph DDPG_Core["Core di DDPG (Invariato)"]
+            C1["Rete Actor μ(s|θ<sup>μ</sup>)"]
+            C2["Rete Critic Q(s,a|θ<sup>Q</sup>)"]
+            C3["Reti Target μ' e Q'"]
+        end
+
+        subgraph PER_Modification["Modifica PER all'Aggiornamento del Critic"]
+            direction LR
+            
+            subgraph Sampling["1. Campionamento dal Buffer"]
+                P1["Per ogni transizione, calcola la priorità:<br/>p<sub>i</sub> = |TD_error| + ε"] --> P2;
+                P2["Calcola la probabilità di campionamento:<br/>P(i) = p<sub>i</sub><sup>α</sup> / Σ<sub>k</sub>p<sub>k</sub><sup>α</sup>"] --> P3;
+                P3["Campiona il minibatch in base a P(i)"]
+            end
+
+            subgraph LossCalculation["2. Calcolo della Loss"]
+                L1["Per ogni transizione, calcola il peso di Importance Sampling (IS):<br/>w<sub>i</sub> = (N * P(i))<sup>-β</sup>"] --> L2;
+                L2["Normalizza i pesi: w<sub>i</sub> ← w<sub>i</sub> / max(w)"] --> L3;
+                L3["Calcola la Loss pesata per il Critic:<br/>L = (1/N) * Σ[w<sub>i</sub> * (y<sub>i</sub> - Q(s<sub>i</sub>,a<sub>i</sub>))<sup>2</sup>]"]
+            end
+
+            subgraph PriorityUpdate["3. Aggiornamento Priorità"]
+                U1["Dopo l'aggiornamento, calcola i nuovi TD error per il batch"] --> U2;
+                U2["Aggiorna le priorità p<sub>i</sub> nel buffer con i nuovi TD error"]
+            end
+
+            Sampling --> LossCalculation --> PriorityUpdate
+        end
+
+        DDPG_Core -- "Modificato da" --> PER_Modification
+    end
+```

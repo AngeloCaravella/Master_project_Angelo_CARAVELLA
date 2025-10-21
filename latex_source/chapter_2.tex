@@ -1,7 +1,7 @@
 
-\chapter{Foundations and State of the Art in Intelligent Control for Vehicle-to-Grid Systems}
+\chapter{Foundations and State of the Art in Intelligent Control for the V2G Systems}
 
-\section{Introduction}
+
 In order to provide an overview of the research domain, the literature review was complemented by a quantitative analysis of the papers collected for this thesis. Using a custom Python script, a citation graph was constructed, and the relevance of key terms was evaluated through PageRank scores. The outcome of this process is shown in Figure \ref{fig:pagerank_wordcloud}, which presents a weighted word cloud derived from the titles and abstracts of the reviewed works. In this visualization, the size of each word reflects its relative importance within the citation network.
 
 \begin{figure}[H]
@@ -39,9 +39,8 @@ Europe finds itself at the confluence of two unprecedented and deeply interlinke
 \noindent
 \\
 These transformations are not merely aspirational targets but constitute binding legal obligations established under the \textbf{European Green Deal} and the detailed \textbf{"Fit for 55"} legislative package. These frameworks translate climate ambitions into enforceable measures aimed at reducing net greenhouse gas emissions by 55\% by 2030 \cite{european_commission_2021_fit_for_55}. 
-The RED II directive (2018/2001/EU) sets rules to promote the use of renewable energy sources and establish binding national targets for renewable energy in the European Union (as can be seen in figure \ref{fig:RED3}).
-This policy architecture necessitates the rapid phase-out of fossil-fuelled vehicles alongside a dramatic expansion of renewable energy capacity, a goal further reinforced by the revised \textbf{Renewable Energy Directive (RED III)}, as detailed in Figure \ref{fig:RED3}.
- \noindent The figure \ref{fig:RED3} highlights the significantly increased ambition in RED III, including a higher overall renewable energy target, a more aggressive goal for the transport sector, and stricter requirements for traceability and legal enforceability. This escalation in policy ambition underscores the critical need for flexibility solutions like V2G to manage the grid and integrate higher shares of renewables.
+The Renewable Energy Directive RED II directive (2018/2001/EU) sets rules to promote the use of RESs and establish binding national targets for renewable energy in the European Union (as can be seen in Figure \ref{fig:RED3}).
+This policy architecture necessitates the rapid phase-out of fossil-fuelled vehicles alongside a dramatic expansion of renewable energy capacity, a goal further reinforced by the revised RED III, as detailed in Figure \ref{fig:RED3}. Figure \ref{fig:RED3} highlights the significantly increased ambition in RED III, including a higher overall renewable energy target, a more aggressive goal for the transport sector, and stricter requirements for traceability and legal enforceability. This escalation in policy ambition underscores the critical need for flexibility solutions like the V2G to manage the grid and integrate higher shares of renewables.
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.9\linewidth]{red.png}
@@ -52,7 +51,7 @@ This policy architecture necessitates the rapid phase-out of fossil-fuelled vehi
 \noindent
 EVs occupy a central position in this transition, simultaneously driving decarbonisation efforts while presenting complex challenges for grid stability. The initial response to mass EV adoption was characterised by concern within the power sector, viewing millions of new EVs as vast, correlated loads threatening to overwhelm distribution networks. This perspective has undergone a fundamental reassessment. EVs are now recognised not as burdens to be managed, but as essential, flexible assets for achieving Europe's energy objectives.
 \\
-This conceptual shift finds its most concrete expression in the \textbf{Vehicle-to-Grid (V2G)} technology, which fundamentally reimagines the role of EVs within the energy system.
+This conceptual shift finds its most concrete expression in the V2G technology, which fundamentally reimagines the role of EVs within the energy system.
 \\
 \noindent
 The V2G technology transforms previously passive, unidirectional energy consumers into active, distributed, and intelligent grid resources. The underlying opportunity is substantial: private vehicles spend approximately 96\% of their operational lifetime parked \cite{Englberger2021}, representing an enormous, geographically distributed, and currently underutilised repository of mobile energy storage.
@@ -60,17 +59,17 @@ The V2G technology transforms previously passive, unidirectional energy consumer
 \noindent
 The transformative potential of V2G becomes apparent when individual vehicles are coordinated through centrally managed aggregation. While a single EV's contribution is modest, an orchestrated fleet can function as a unified \textbf{Virtual Power Plant (VPP)}. These software-defined power plants aggregate the collective capacity of numerous distributed energy resources, delivering grid services at scales comparable to conventional generation facilities. The rapid response characteristics of contemporary battery inverters, operating at millisecond timescales, enable these aggregated fleets to provide a comprehensive range of critical grid services. This capability is a prerequisite for maintaining stability in grids increasingly dependent on variable wind and solar generation, thereby enabling the technical and economic viability of the EU's ambitious renewable energy targets \cite{Tavakoli2019}.
 \noindent
-The figure \ref{fig:rl_v2g_ops} diagram illustrates the multifaceted roles an EV fleet
+Figure \ref{fig:rl_v2g_ops} illustrates the multifaceted roles an EV fleet
 can play, orchestrated by an aggregator using RL. Key operations include gridstabilizing services (frequency control, demand response), economic optimization
 (bidding and pricing strategies), and user-centric management (energy storage,
 battery health). The objectives range from reducing electricity costs and enhancing
 grid flexibility to ensuring data privacy and transaction security, showcasing the
-complexity of optimizing V2G operations.
+complexity of optimizing the V2G operations.
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.9\linewidth]{Reinforcement_learning_V2G_operations.png}
-    \caption{RL applications in V2G from the perspective of participating entities.}
+    \caption{RL applications in the V2G context from the perspective of participating entities.}
     \label{fig:rl_v2g_ops}
 \end{figure}
 
@@ -78,51 +77,49 @@ complexity of optimizing V2G operations.
 The grid services enabled by the V2G technology, many of which are illustrated in Figure \ref{fig:rl_v2g_ops}, form the technical foundation for the smart, resilient, and decarbonised electricity system required for Europe's energy future:
 \\
 \noindent
-\textbf{Frequency Regulation:} Grid stability depends on maintaining a precise equilibrium between electricity supply and demand, manifested as a stable grid frequency (50 Hz in Europe). Deviations signal imbalances that can trigger cascading failures. V2G fleets, with their rapid-response inverters, can participate in ancillary service markets like Frequency Containment Reserve (FCR) and automatic Frequency Restoration Reserve (aFRR), injecting or absorbing power within seconds to counteract deviations and prevent blackouts \cite{alfaverh2022optima, white2011vehicle}.
+\textbf{Frequency Regulation:} Grid stability depends on maintaining a precise equilibrium between electricity supply and demand, manifested as a stable grid frequency (50 Hz in Europe). Deviations signal imbalances that can trigger cascading failures. The V2G fleets, with their rapid-response inverters, can participate in ancillary service markets like Frequency Containment Reserve (FCR) and automatic Frequency Restoration Reserve (aFRR), injecting or absorbing power within seconds to counteract deviations and prevent blackouts \cite{alfaverh2022optima, white2011vehicle}.
 \\
 \noindent 
-\textbf{Demand Response and Peak Shaving:} By intelligently shifting charging to off-peak periods and strategically discharging during peak demand, V2G systems flatten daily load profiles. This directly mitigates the "duck curve" phenomenon (Figure \ref{fig:duck_curve}) associated with high solar penetration. Such load management reduces reliance on expensive, carbon-intensive "peaker" plants and can defer or eliminate costly grid infrastructure upgrades \cite{orfanoudakis2024ev2gym, sadeghi2022deep}.\noindent
-Net load is the total electricity demand minus variable renewable energy generation. The deepening "belly" of the duck during midday reflects overgeneration from solar power, while the steep "neck" in the evening represents a rapid increase in demand as solar generation fades. This steep ramp poses a significant challenge for grid operators. V2G helps mitigate this by absorbing excess energy during the day (charging) and discharging it during the evening ramp to "flatten the curve".\cite{Bisetto_Francesca}
+\textbf{Demand Response and Peak Shaving:} By intelligently shifting charging to off-peak periods and strategically discharging during peak demand, the V2G systems flatten daily load profiles. This directly mitigates the “duck curve” phenomenon illustrated in Figure \ref{fig:duck_curve} for the case of California, which is typically associated with high solar penetration. Such load management reduces reliance on expensive, carbon-intensive "peaker" plants and can defer or eliminate costly grid infrastructure upgrades \cite{orfanoudakis2024ev2gym, sadeghi2022deep}. Net load is the total electricity demand minus variable renewable energy generation. The deepening "belly" of the duck during midday reflects overgeneration from solar power, while the steep "neck" in the evening represents a rapid increase in demand as solar generation fades. This steep ramp poses a significant challenge for grid operators. The V2G helps mitigate this by absorbing excess energy during the day (charging) and discharging it during the evening ramp to "flatten the curve" \cite{Bisetto_Francesca}.
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.8\linewidth]{duck.png}
-    \caption{The "Duck Curve" illustrating the evolution of net load on the California grid.}
+    \caption{The "duck curve" illustrating the evolution of net load on the California grid.}
     \label{fig:duck_curve}
 \end{figure}
 
 \noindent
-\textbf{Renewable Energy Integration:} The most strategically significant contribution of V2G is addressing renewable energy intermittency. V2G fleets act as large-scale energy buffers, absorbing excess solar and wind generation that would otherwise be curtailed. This stored energy is then released during periods of low generation. This mechanism directly increases the utilisation of renewable resources, supporting the integration objectives of RED III and enhancing overall system efficiency.
+\textbf{Renewable Energy Integration:} The most strategically significant contribution of the V2G is addressing renewable energy intermittency.The V2G fleets act as large-scale energy buffers, absorbing excess solar and wind generation that would otherwise be curtailed. This stored energy is then released during periods of low generation. This mechanism directly increases the utilisation of RESs.
 \\
 \noindent
-\textbf{Economic and Market Optimization:} Beyond grid stability, V2G enables sophisticated market participation. As shown in Figure \ref{fig:rl_v2g_ops}, aggregators can deploy intelligent bidding and pricing strategies. Reinforcement learning algorithms can learn optimal policies for participating in day-ahead and intraday energy markets, maximizing revenue for both the aggregator and EV owners by capitalizing on price volatility.
+\textbf{Economic and Market Optimization:} Beyond grid stability, the V2G enables sophisticated market participation. As shown in Figure \ref{fig:rl_v2g_ops}, aggregators can deploy intelligent bidding and pricing strategies. RL algorithms can learn optimal policies for participating in day-ahead and intraday energy markets, maximizing revenue for both the aggregator and EV owners by capitalizing on price volatility.
 \\
 \noindent
-\textbf{User-Centric Management and Security:} For V2G to succeed, it must align with user needs and address concerns. This includes optimizing charging and discharging cycles to minimize \textbf{battery degradation}, thus preserving vehicle lifespan. Furthermore, as V2G involves financial transactions and data exchange, robust \textbf{cyber security} is paramount to protect user privacy and ensure transaction security, another key domain for intelligent management systems.
+\textbf{User-Centric Management and Security:} For V2G to succeed, it must align with user needs and address concerns. This includes optimizing charging and discharging cycles to minimize \textbf{battery degradation}, thus preserving vehicle lifespan. Furthermore, as the V2G involves financial transactions and data exchange, robust \textbf{cyber security} is paramount to protect user privacy and ensure transaction security.
 \\
 \noindent
 This vision is being actively incorporated into European legal frameworks. The transformative \textbf{Alternative Fuels Infrastructure Regulation (AFIR, EU 2023/1804)} now mandates that new public charging infrastructure incorporate smart and bidirectional capabilities. 
 
 \subsection{ISO 15118-20}
-This is supported by technical standards like \textbf{ISO 15118-20}, which specifies protocols for a "Vehicle-to-Grid Communication Interface" (V2GCI). With mandatory implementation scheduled for 2027, the necessary infrastructure is being systematically established, supported by pilot initiatives like the \textbf{'SCALE'} and \textbf{'V2G Balearic Islands'} projects.
+The V2G is supported by technical standards like \textbf{ISO 15118-20}, which specifies protocols for a "Vehicle-to-Grid Communication Interface" (V2GCI). With mandatory implementation scheduled for 2027, the necessary infrastructure is being systematically established, supported by pilot initiatives like the \textbf{'SCALE'} and \textbf{'V2G Balearic Islands'} projects.
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.7\linewidth]{15118.png}
-    \caption{The protocol stack of ISO/IEC 15118 \cite{shin2016interoperability}}
+    \caption{The protocol stack of ISO/IEC 15118 \cite{shin2016interoperability}.}
     \label{fig:15118}
 \end{figure}
 \noindent
-ISO 15118-20 is the latest part of the ISO 15118 family(In figure \ref{fig:15118} the protocol stack of ISO/IEC 15118) , defining the communication between an EV and the Electric Vehicle Supply Equipment (EVSE). It extends previous versions (like ISO 15118-2) by introducing new functions, enhanced security, and full support for bidirectional power transfer (V2G). The goal of the protocol is to create a standardized, secure, and automatic data exchange that allows an EV and the charging station to negotiate how, when, and how much energy to transfer.
+ISO 15118-20 is the latest part of the ISO 15118 family (In Figure \ref{fig:15118} the protocol stack of ISO/IEC 15118), defining the communication between an EV and the Electric Vehicle Supply Equipment (EVSE). It extends previous versions (like ISO 15118-2) by introducing new functions, enhanced security, and full support for bidirectional power transfer (V2G). The goal of the protocol is to create a standardized, secure, and automatic data exchange that allows an EV and the charging station to negotiate how, when, and how much energy to transfer.
 \noindent
-Communication is established over Power Line Communication (PLC), using a TCP/IP stack over IPv6. The protocol uses TLS encryption to protect confidentiality and authenticity of the session. Once the physical link is established, the EV and the EVSE start a handshake to exchange certificates and initialize the communication channel. The EV then sends a \textit{ServiceDiscovery} message to check which services the EVSE supports, such as AC charging, DC charging, or bidirectional energy flow. After service negotiation, the two parties exchange \textit{Authorization}, \textit{ChargeParameterDiscovery}, and \textit{PowerDelivery} messages to determine the charging profile, power limits, and time schedules.
+Communication is established over Power Line Communication (PLC), using a TCP/IP stack over IPv6. The protocol uses TLS encryption to protect confidentiality and authenticity of the session. Once the physical link is established, the EV and the EVSE start a handshake to exchange certificates and initialize the communication channel. The EV then sends a \textit{ServiceDiscovery} message to check which services the EVSE supports, such as alternating current charging, direct current charging, or bidirectional energy flow. After service negotiation, the two parties exchange \textit{Authorization}, \textit{ChargeParameterDiscovery}, and \textit{PowerDelivery} messages to determine the charging profile, power limits, and time schedules.
 \noindent
-One of the main features of ISO 15118-20 is the \textit{Plug \& Charge} mechanism. This allows the EV to authenticate automatically using digital certificates issued by a trusted authority, removing the need for RFID cards or apps. Once authenticated, the EVSE can directly start charging and manage billing information securely. The protocol also supports \textit{Bidirectional Power Transfer}, enabling Vehicle-to-Grid (V2G) communication, where the EV can return energy to the grid under controlled conditions. All messages are encoded in XML or EXI format and structured according to strict data models to ensure interoperability.
+One of the main features of ISO 15118-20 is the \textit{Plug \& Charge} mechanism. This allows the EV to authenticate automatically using digital certificates issued by a trusted authority, removing the need for RFID cards or apps. Once authenticated, the EVSE can directly start charging and manage billing information securely. The protocol also supports \textit{Bidirectional Power Transfer}, enabling the V2G communication, where the EV can return energy to the grid under controlled conditions. All messages are encoded in XML or EXI format and structured according to strict data models to ensure interoperability.
 \noindent
-In addition, ISO 15118-20 defines methods for smart charging, tariff and schedule negotiation, and the exchange of metering data. It provides flexibility for different energy markets, supporting both local and remote authorization modes. Compared to previous standards, ISO 15118-20 introduces stricter cybersecurity requirements, mandatory TLS usage, improved message structures, and extended functionality for wireless and high-power DC charging. Overall, it forms the digital backbone for future intelligent energy management between vehicles and the grid, ensuring interoperability, efficiency, and secure automation in electric mobility.
+In addition, ISO 15118-20 defines methods for smart charging, tariff and schedule negotiation, and the exchange of metering data. It provides flexibility for different energy markets, supporting both local and remote authorization modes. Compared to previous standards, ISO 15118-20 introduces stricter cybersecurity requirements, mandatory TLS usage, improved message structures, and extended functionality for wireless and high-power direct current charging. 
 
-
-\subsection{V2G obstacles} 
-Despite this progress, substantial obstacles to widespread V2G deployment persist:
+\subsection{The V2G obstacles} 
+Despite the progress achieved in the V2G context, substantial obstacles to widespread V2G deployment persist:
 
 \begin{itemize}
     \item \textbf{Market and Economic Barriers:} A coherent, pan-European framework for compensating EV owners for grid services is still undeveloped. Accessing existing value streams is complex, and issues like the \textbf{"double taxation"} of electricity—taxing energy during both charging and discharging—create significant economic disincentives.
@@ -144,10 +141,11 @@ The fundamental challenge addressed by this thesis extends beyond simply enablin
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{The Optimizer's Trilemma: Navigating a Stochastic World}
-While the potential of V2G technology is substantial, the management of distributed vehicular assets presents a complex control challenge. Economic viability drives aggregator decisions, yet a narrow focus on profitability alone proves insufficient for sustainable operations. Effective V2G management requires balancing three competing objectives that frequently conflict with one another. This challenge can be framed as the "V2G Optimizer's Trilemma": the concurrent pursuit of \textbf{economic profitability}, preservation of \textbf{battery longevity}, and maintenance of \textbf{user convenience}.
+\subsection{The Optimizer's Trilemma: Navigating a Stochastic World}
+While the potential of V2G technology is substantial, the management of distributed vehicular assets presents a complex control challenge. Economic viability drives aggregator decisions, yet a narrow focus on profitability alone proves insufficient for sustainable operations. 
+\\
 \noindent
-Rather than representing a straightforward, static trade-off, this constitutes a dynamic, multi-objective optimisation challenge characterised by \textbf{stochasticity} and \textbf{uncertainty} arising from multiple, interconnected sources \cite{wang2022multi}:
+The management of the V2G systems can be viewed through what may be called the “V2G Optimizer’s Trilemma”, which reflects the need to balance three often conflicting objectives: economic profitability, battery longevity, and user convenience. Rather than representing a straightforward, static trade-off, this constitutes a dynamic, multi-objective optimisation challenge characterised by \textbf{stochasticity} and \textbf{uncertainty} arising from multiple, interconnected sources \cite{wang2022multi}:
 \\
     \noindent
     \textbf{Market Volatility:} Wholesale electricity prices exhibit significant variability driven by unpredictable supply variations (such as sudden reductions in wind generation capacity) and demand fluctuations (including heat-driven increases in cooling demand). Effective control systems must respond to these price signals dynamically and in real-time.
@@ -156,12 +154,10 @@ Rather than representing a straightforward, static trade-off, this constitutes a
 \textbf{Renewable Intermittency:} Co-located solar and wind generation exhibit inherently variable output patterns with limited predictability. Controllers must coordinate EV fleet operations to capture available generation during surplus periods without compromising other operational objectives.
     \\
     \noindent
-  \textbf{Human Behaviour:} Perhaps the most challenging uncertainty source involves EV owner patterns. Arrival times, departure schedules, and required state of charge (SoC) at departure lack deterministic characteristics. Emergency departures or unexpected schedule changes represent hard, non-negotiable constraints that intelligent systems must accommodate to preserve user trust and satisfaction.
+  \textbf{Human Behaviour:} Perhaps the most challenging uncertainty source involves EV owner patterns. Arrival times, departure schedules, and required SoC at departure lack deterministic characteristics. Emergency departures or unexpected schedule changes represent hard, non-negotiable constraints that intelligent systems must accommodate to preserve user trust and satisfaction.
 
 \noindent
-This dynamic, uncertain, and multifaceted operational environment renders static, rule-based control approaches (such as "charge when price falls below threshold X, discharge when exceeding threshold Y") inadequate and brittle. More sophisticated and adaptive methodologies are required,approaches capable of learning from operational experience and making optimal decisions under conditions of significant uncertainty. Reinforcement Learning excels in precisely this domain, providing a framework for developing control policies that demonstrate robustness, adaptability, and scalability.
-
-
+This dynamic, uncertain, and multifaceted operational environment renders static, rule-based control approaches inadequate and brittle. More sophisticated and adaptive methodologies are required such as approaches capable of learning from operational experience and making optimal decisions under conditions of significant uncertainty.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%
@@ -170,24 +166,10 @@ This dynamic, uncertain, and multifaceted operational environment renders static
 Access to reliable, real-time, and historical market data remains crucial for both control agent training in simulation environments and real-world deployment. Key public sources for European market data include:
 \\
 \noindent
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.9\linewidth]{entsoe.png}
-    \caption{https://transparency.entsoe.eu/ Entosoe website}
-    \label{fig:ent}
-\end{figure}
-\noindent
  \textbf{ENTSO-E Transparency Platform:} \ref{fig:ent}The European Network of Transmission System Operators for Electricity maintains a mandatory, open-access platform serving as a comprehensive repository of pan-European electricity market data. This includes harmonised day-ahead prices, load forecasts, and generation data, serving as the primary source for academic research through both web portal access and free RESTful API services.
-    \\
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=0.3\linewidth]{terna.jpeg}
-    \caption{https://www.terna.it/it Terna}
-    \label{fig:ter}
-\end{figure}
+\\
 \noindent
-   \textbf{National Transmission System Operators (TSOs):} Many national TSOs (including \texbf{Terna} (Figure \ref{fig:ter}) in Italy, National Grid in the UK, and RTE in France) publish detailed market data covering real-time frequency and imbalance prices for their respective jurisdictions.
+\textbf{National Transmission System Operators (TSOs):} Many national TSOs (including \texbf{Terna} ) in Italy, National Grid in the UK, and RTE in France) publish detailed market data covering real-time frequency and imbalance prices for their respective jurisdictions.
     \\
 \noindent
      \textbf{Power Exchanges:} Exchanges such as \textbf{EPEX SPOT} and \textbf{Nord Pool} constitute actual trading venues. While they represent direct price data sources, comprehensive real-time access typically requires commercial subscription services.
@@ -195,7 +177,7 @@ Access to reliable, real-time, and historical market data remains crucial for bo
 
 \subsection{Buying vs. Selling: The Critical Retail-Wholesale Spread}
 \noindent
-A critical yet frequently overlooked aspect of V2G economics involves the distinction between EV owner charging costs and aggregator grid sales revenue.
+A critical yet frequently overlooked aspect of the V2G economics involves the distinction between EV owner charging costs and aggregator grid sales revenue.
 
 \begin{itemize}
     \item \textbf{Selling Price (V2G Revenue):} When EVs provide energy to the grid, revenue calculation bases on \textbf{wholesale prices} (such as day-ahead spot prices). These prices reflect pure marginal energy costs at specific times.
@@ -209,43 +191,41 @@ A critical yet frequently overlooked aspect of V2G economics involves the distin
     \end{itemize}
 \end{itemize}
 \noindent
-This substantial gap between retail purchasing prices and wholesale selling prices constitutes the "retail-wholesale spread," creating the primary opportunity for profitable energy arbitrage. Successful control strategies must account for these price differentials to enable economically rational decision-making.
+This substantial gap between retail purchasing prices and wholesale selling prices constitutes the "retail-wholesale spread", creating the primary opportunity for profitable energy arbitrage. Successful control strategies must account for these price differentials to enable economically rational decision-making.
 
-\section{Modelling the V2G Ecosystem}
+\subsection{Modelling the V2G Ecosystem}
 \label{sec:ev_and_scenario}
 
-Before examining control algorithms, establishing clear, high-fidelity models of system core components becomes essential: the electric vehicle as a controllable cyber-physical asset, and the operational environment or "scenario." The interaction between these elements defines V2G optimisation task boundaries and objectives.
+Before examining control algorithms, establishing clear, high-fidelity models of system core components becomes essential: the EVs as a controllable cyber-physical asset, and the operational environment or "scenario". The interaction between these elements defines the V2G optimisation task boundaries and objectives.
 
 \subsection{The Grid-Interactive EV as a Controllable Asset}
-
-
 \noindent
-From a power grid perspective, EV represent sophisticated mobile energy storage devices. For V2G applications, EVs can be characterised through several key state variables and parameters:
+From a power grid perspective, EV represent sophisticated mobile energy storage devices. For the V2G applications, EVs can be characterised through several key state variables and parameters:
 \\
 \noindent
-    \textbf{The Battery:} The core grid asset component, defined by \textbf{nominal energy capacity} (in kWh), current \textbf{State of Charge (SoC)}, and \textbf{State of Health (SoH)} representing degradation over time. Operation is constrained by \textbf{power limits} (in kW) dictating maximum charge or discharge rates, and charging/discharging \textbf{efficiencies} accounting for energy losses.
+    \textbf{The Battery:} The core grid asset component, defined by \textbf{nominal energy capacity} (in kWh), current \textbf{SoC}, and \textbf{State of Health (SoH)} representing degradation over time. Operation is constrained by \textbf{power limits} (in kW) dictating maximum charge or discharge rates, and charging/discharging \textbf{efficiencies} accounting for energy losses.
     \\
     \noindent
-    \textbf{The On-Board Charger (OBC):} For AC charging applications, the OBC converts grid alternating current to battery direct current. Power rating often constitutes the primary bottleneck for both charging and V2G power output.
+    \textbf{The On-Board Charger (OBC):} For AC charging applications, the OBC converts grid alternating current to battery direct current. Power rating often constitutes the primary bottleneck for both charging and the V2G power output.
     \\
 \noindent    
-  \textbf{Communication Interface:} V2G participation requires vehicle-charging station (EVSE) communication capabilities. This is governed by standards including \textbf{ISO 15118} and protocols such as the \textbf{Open Charge Point Protocol (OCPP)}, enabling secure information exchange required for smart and bidirectional power flow operations.
+  \textbf{Communication Interface:} The V2G participation requires vehicle-charging station (EVSE) communication capabilities. This is governed by standards including \textbf{ISO 15118} and protocols such as the \textbf{Open Charge Point Protocol (OCPP)}, enabling secure information exchange required for smart and bidirectional power flow operations.
 \\
 \noindent
 Combined with vehicle availability patterns—arrival and departure times plus user energy requirements,these characteristics transform EVs from simple loads into fully dispatchable grid resources.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%\section{A New Paradigm for Control: Reinforcement Learning}
+%%%%%%%%%%%%%%%%%%%%%%%%
 
-\section{A New Paradigm for Control: Reinforcement Learning - Based on the work of Sutton \& Barto}
+\section{Reinforcement Learning}
 
 
 
 \begin{center}
     \begin{minipage}{0.8\textwidth}
         \large\itshape
-        ``Reinforcement learning is learning what to do---how to map situations to actions---so as to maximize a numerical reward signal.''
+        "RL is learning what to do---how to map situations to actions---so as to maximize a numerical reward signal."
     \end{minipage}
 \end{center}
 
@@ -256,19 +236,19 @@ Combined with vehicle availability patterns—arrival and departure times plus u
 \end{flushright}
 
 \noindent
-To address the complexities of uncertainty, multi-objective trade-offs, and dynamic systems, this work employs Reinforcement Learning (RL), a machine learning paradigm that learns optimal sequential decision-making policies through trial-and-error interaction with an environment. Unlike traditional optimal control methods, which depend on an explicit and accurate model of the environment's dynamics, RL agents learn directly from the outcomes of their actions. This model-free approach provides significant robustness in the face of uncertainty and unmodeled dynamics.
-
-\section{The Reinforcement Learning Problem}
-The problem of reinforcement learning is formalized as the interaction between a learning \textbf{agent} and its \textbf{environment}. This interaction unfolds over a sequence of discrete time steps, $t = 0, 1, 2, \dots$.
+To address the complexities of uncertainty, multi-objective trade-offs, and dynamic systems, this work employs RL as a core methodology, in addition to Model Predictive Control (MPC) methods, which are presented in another part of this work. RL is a machine learning paradigm that learns optimal sequential decision-making policies through trial-and-error interaction with an environment. Unlike traditional optimal control methods, which rely on an explicit and accurate model of the system dynamics, this model-free approach offers significant robustness against uncertainty and unmodeled behaviors, enabling adaptive control in complex and dynamic environments.
+\\
+\noindent
+As shown in the Figure \ref{fig:rl_loop} the problem of RL is formalized as the interaction between a learning \textbf{agent} and its \textbf{environment}. This interaction unfolds over a sequence of discrete time steps, $t = 0, 1, 2, \dots$.
 
 \subsection{The Agent-Environment Interface}
 At each time step $t$, the agent receives a representation of the environment's \textbf{state}, $S_t \in \mathcal{S}$, and on that basis selects an \textbf{action}, $A_t \in \mathcal{A}(S_t)$. One time step later, as a consequence of its action, the agent receives a numerical \textbf{reward}, $R_{t+1} \in \mathcal{R}$, and finds itself in a new state, $S_{t+1}$. This interaction loop forms the foundational framework of the RL problem.
 
 \begin{figure}[H]
     \centering
-    % Placeholder for a standard RL interaction diagram
+ 
     \includegraphics[width=0.8\linewidth]{RL.png}
-    \caption{The agent-environment interaction loop in reinforcement learning \cite{Sutton2018}.}
+    \caption{The agent-environment interaction loop in RL \cite{Sutton2018}.}
     \label{fig:rl_loop}
 \end{figure}
 
@@ -282,9 +262,9 @@ For \textit{episodic tasks} that terminate, the return is the finite sum of futu
 \end{equation}
 where $\gamma \in [0, 1)$ is the \textbf{discount factor}. It determines the present value of future rewards, ensuring the infinite sum is finite and balancing immediate gratification against long-term gains. A value of $\gamma=0$ results in a myopic agent concerned only with maximizing immediate rewards.
 
-\section{The Language of Learning: Markov Decision Processes}
+\subsection{The Language of Learning: Markov Decision Processes}
 
-The mathematical foundation of Reinforcement Learning (RL) is the \textbf{Markov Decision Process (MDP)}. An MDP provides a formal framework for modeling decision-making in stochastic environments where outcomes are partly random and partly under the control of a decision-maker.
+The mathematical foundation of RL is the \textbf{Markov Decision Process (MDP)}. An MDP provides a formal framework for modeling decision-making in stochastic environments where outcomes are partly random and partly under the control of a decision-maker.
 \\
 \noindent
 An MDP is formally defined as a tuple \( \langle S, A, P, R \rangle \), where:
@@ -311,11 +291,11 @@ A POMDP extends the MDP framework to situations where the agent's observations o
     \label{fig:mdp}
 \end{figure}
 \noindent
-The fundamental difference between an MDP and a POMDP lies in the agent's perception of the environment's state. In an MDP, the agent directly observes the state \(s\). In a POMDP, the agent receives an observation \(o\) and must infer a belief, which is a probability distribution over the possible states, to make a decision. As discussed in Sadeghi's work, this partial observability in POMDPs introduces a significant layer of complexity because the agent must act based on a belief state rather than a certain state.\cite{sadeghi2022deep}
+The fundamental difference between an MDP and a POMDP lies in the agent's perception of the environment's state. In an MDP, the agent directly observes the state \(s\). In a POMDP, the agent receives an observation \(o\) and must infer a belief, which is a probability distribution over the possible states, to make a decision. As discussed in Sadeghi's work, this partial observability in POMDPs introduces a significant layer of complexity because the agent must act based on a belief state rather than a certain state\cite{sadeghi2022deep}.
 \\
 \noindent
 In our current discussion, we will focus on the MDP framework, assuming that the state of the environment is fully observable to the agent.
-\subsection{The Markov Property}
+\subsection*{The Markov Property}
 The future is independent of the past given the present. A state signal $S_t$ is said to have the \textbf{Markov Property} if the environment's response at time $t+1$ depends only on the state and action at time $t$. The probability of transitioning to state $s'$ and receiving reward $r$ is independent of all previous states and actions:
 \begin{equation}
     p(s', r | s, a) \doteq \Pr\{S_{t+1}=s', R_{t+1}=r | S_t=s, A_t=a\}
@@ -335,25 +315,25 @@ The agent's learning objective is to find a good \textbf{policy}, $\pi(a|s)$, wh
     \end{equation}
 \end{itemize}
 
-\section{The Bellman Equations}
+\subsection{The Bellman Equations}
 The Bellman equations provide a recursive decomposition that is foundational to solving MDPs. They express the value of a state in terms of the values of its successor states.
 
-\subsection{The Bellman Expectation Equation}
+\subsection*{The Bellman Expectation Equation}
 For a given policy $\pi$, the state-value function must satisfy a self-consistency condition. The value of a state equals the expected immediate reward plus the discounted expected value of the next state:
 \begin{equation}
     v_\pi(s) = \sum_a \pi(a|s) \sum_{s', r} p(s', r | s, a) [r + \gamma v_\pi(s')]
 \end{equation}
 This is the \textbf{Bellman expectation equation} for $v_\pi$. It forms the basis for policy evaluation algorithms.
 
-\subsection{The Bellman Optimality Equation}
+\subsection*{The Bellman Optimality Equation}
 The ultimate goal is to find an \textbf{optimal policy}, $\pi_*$, which is a policy that achieves a higher or equal expected return than all other policies from all states. All optimal policies share the same optimal value functions, $v_*(s)$ and $q_*(s, a)$. The optimal value function for a state is the maximum expected return achievable from that state:
 \begin{equation}
     v_*(s) = \max_a \mathbb{E}[R_{t+1} + \gamma v_*(S_{t+1}) | S_t=s, A_t=a] = \max_a \sum_{s', r} p(s', r | s, a) [r + \gamma v_*(s')]
 \end{equation}
 This is the \textbf{Bellman optimality equation}. Solving it means finding the optimal policy.
 
-\subsection{Generalized Policy Iteration (GPI)}
-Most RL algorithms can be understood within the framework of \textbf{Generalized Policy Iteration (GPI)}, as described in Chapter 4 of \cite{Sutton2018}. GPI refers to the general idea of letting two interacting processes, policy evaluation and policy improvement, work towards a common optimal solution.
+\subsection*{Generalized Policy Iteration (GPI)}
+Most RL algorithms can be understood within the framework of \textbf{Generalized Policy Iteration (GPI)}, as described in Chapter 4 of the book: \cite{Sutton2018}. GPI refers to the general idea of letting two interacting processes, policy evaluation and policy improvement, work towards a common optimal solution.
 
 \begin{itemize}
     \item \textbf{Policy Evaluation}: Given a policy $\pi$, compute its value function $v_\pi$. This step aims to make the value function consistent with the current policy.
@@ -369,12 +349,12 @@ In addition to \textbf{Dynamic Programming} methods based on a perfect model of 
 \item \textbf{Policy-Based vs. Value-Based}: The main distinction is that in \textit{policy-based} methods, the policy is directly parameterized and optimized via gradient or other optimization methods (e.g., \textit{REINFORCE}, \textit{Actor-Critic}), while in \textit{value-based} methods, the policy is derived from the value function. In other words, value-based methods use value as an intermediary to improve the policy, while policy-based methods update the policy directly.
 \end{itemize}
 
-Overall, GPI offers a unifying framework: whether using a perfect model (DP) or learning from model-free data (value-based or policy-based), the interplay between policy evaluation and policy improvement remains the guiding principle. It is precisely this flexibility that makes GPI fundamental to understanding most modern reinforcement learning algorithms.
+Overall, GPI offers a unifying framework: whether using a perfect model (DP) or learning from model-free data (value-based or policy-based), the interplay between policy evaluation and policy improvement remains the guiding principle. It is precisely this flexibility that makes GPI fundamental to understanding most modern RL algorithms.
 
-\section{Learning from Experience: MC and TD Methods}
-When a model of the environment is not available, we must learn from sampled experience. Chapters 5 and 6 of \cite{Sutton2018} introduce two primary model-free approaches.
+\subsection{Learning from Experience: MC and TD Methods}
+When a model of the environment is not available, we must learn from sampled experience. Chapters 5 and 6 of the book \cite{Sutton2018} introduce two primary model-free approaches.
 
-\subsection{Monte Carlo (MC) Methods}
+\subsection*{Monte Carlo (MC) Methods}
 MC methods learn value functions by averaging the returns from sample episodes.
 \begin{itemize}
     \item \textbf{Principle}: An update to $V(S_t)$ is made only at the end of an episode.
@@ -383,7 +363,7 @@ MC methods learn value functions by averaging the returns from sample episodes.
     \item \textbf{Properties}: MC methods are unbiased but can have high variance and are only applicable to episodic tasks. They do not \textit{bootstrap} \footnote{It means that MC updates only from complete sampled returns.}.
 \end{itemize}
 
-\subsection{Temporal-Difference (TD) Learning}
+\subsection*{Temporal-Difference (TD) Learning}
 TD learning is a central and novel idea in RL, combining ideas from both MC and DP.
 \begin{itemize}
     \item \textbf{Principle}: TD methods update the value estimate for a state based on the observed reward and the estimated value of the successor state. They learn from incomplete episodes.
@@ -396,8 +376,33 @@ In practice,\textbf{most RL algorithms prefer TD methods over Monte Carlo method
 \noindent
 A classic example is Q-Learning, which directly learns the optimal function $Q^*(s,a)$ via TD updates without knowing the dynamics of the environment. While Monte Carlo is useful for obtaining bias-free estimates, TD methods are the heart of modern practical RL algorithms.
 
-\section{Actor-Critic Architectures}
-The \textbf{Actor-Critic} architecture provides a powerful and widely adopted method for solving RL problems, particularly in continuous action spaces. It explicitly represents both the policy and the value function using two distinct function approximators (e.g., neural networks).
+\subsection{Q-Learning: Off-Policy TD Control}
+\label{sec:q_learning}
+
+\noindent
+Building directly upon the principles of Temporal-Difference (TD) learning, Q-Learning stands as one of the most foundational and influential algorithms in RL. It is an \textbf{off-policy} TD control algorithm that directly learns the optimal action-value function, $q_*(s, a)$, independent of the policy being followed during exploration. This separation of the policy being learned from the policy used to generate experience is a hallmark of off-policy methods and allows for more flexible exploration strategies.
+\\ \noindent
+For environments with discrete state and action spaces, Q-Learning maintains a table of Q-values, often referred to as the Q-table, with an entry for every state-action pair. The learning process involves iteratively updating these Q-values using the Bellman Optimality Equation as a foundation, but in a model-free context. After the agent takes an action $A_t$ in state $S_t$ and observes the reward $R_{t+1}$ and the next state $S_{t+1}$, the Q-value is updated according to the following rule:
+\\ \noindent
+\begin{equation}
+    Q(S_t, A_t) \leftarrow Q(S_t, A_t) + \alpha \left[ R_{t+1} + \gamma \max_{a} Q(S_{t+1}, a) - Q(S_t, A_t) \right]
+    \label{eq:q_learning_update}
+\end{equation}
+\\ \noindent
+Here, $\alpha$ is the learning rate, which determines how much the new information overrides the old estimate. The core of the update is the TD error, calculated from the TD target $R_{t+1} + \gamma \max_{a} Q(S_{t+1}, a)$. The term $\max_{a} Q(S_{t+1}, a)$ represents the agent's current best estimate of the optimal future value from the next state $S_{t+1}$. By always using the maximum Q-value of the next state, the algorithm learns a greedy, optimal policy, regardless of what exploratory action is actually taken next.
+\\ \noindent
+The primary limitation of tabular Q-Learning, however, is its inability to scale to problems with large or continuous state spaces, a problem often called the "curse of dimensionality." Storing and updating a massive Q-table becomes computationally and memory-prohibitive. This challenge directly motivates the use of function approximators, such as neural networks, to estimate the Q-function, leading to the development of Deep Q-Networks (DQN).
+
+\subsection{Actor-Critic Architectures}
+
+\begin{figure}[H]
+    \centering
+   
+    \includegraphics[width=0.8\linewidth]{Actor_critic_RL_architecture.png}
+    \caption{The Actor Critic scheme}
+    \label{fig:rl_loop_2}
+\end{figure}
+The \textbf{Actor-Critic} architecture \ref{fig:rl_loop_2} provides a powerful and widely adopted method for solving RL problems, particularly in continuous action spaces. It explicitly represents both the policy and the value function using two distinct function approximators (e.g., neural networks).
 
 \begin{itemize}
     \item \textbf{The Critic}: Learns a value function (e.g., $v_\pi(s)$ or $q_\pi(s, a)$). Its role is to evaluate the actor's decisions by computing the TD error:
@@ -415,55 +420,90 @@ This separation of concerns allows for direct policy optimization in continuous 
 \input{reward}
 
 
-\section{The Rise of Deep Reinforcement Learning for V2G Control}
-The convergence of Reinforcement Learning (RL) with the substantial representational capabilities of deep neural networks has given rise to Deep Reinforcement Learning (DRL), which currently represents the leading edge of V2G control research. The development of DRL algorithms has yielded a comprehensive toolkit, primarily divided into two main families: off-policy and on-policy methods, each exhibiting distinct operational characteristics. The following figure illustrates the evolutionary relationships between the algorithms that will be discussed, highlighting how newer ideas were built to overcome the limitations of their predecessors.
+\section{The Rise of Deep Reinforcement Learning for the V2G Control}
+The convergence of RL with the substantial representational capabilities of deep neural networks has given rise to DRL, which currently represents the leading edge of the V2G control research. The development of DRL algorithms has yielded a comprehensive toolkit, primarily divided into two main families: off-policy and on-policy methods, each exhibiting distinct operational characteristics. The following Figure illustrates the evolutionary relationships between the algorithms that will be discussed, highlighting how newer ideas were built to overcome the limitations of their predecessors.
 
-\subsection{Neural Networks as Function Approximators}
-
-Neural networks are computational models, inspired by the interconnected structure of neurons in the human brain, designed to recognize complex patterns in data. They are comprised of layers of interconnected nodes, or \textit{neurons}. Each neuron receives inputs, performs a weighted sum of these inputs, adds a bias, and then passes the result through a non-linear activation function to produce an output. This process can be described mathematically for a single neuron as:
-
+\subsection*{Neural Networks as Function Approximators}
+\noindent
+Neural networks are advanced computational models whose architecture is inspired by the complex and interconnected structure of neurons in the human brain. Their primary function is to recognize and learn complex patterns within data, making them extremely powerful tools for tasks such as classification, regression, and, as we will see, control.
+\\ \noindent
+A neural network is composed of layers of interconnected nodes, commonly called \textit{neurons}. Each neuron acts as a small processing unit: it receives a series of inputs, each of which is multiplied by a specific weight. These weights represent the importance or strength of the connection between neurons. Subsequently, all weighted products are summed, and a \textit{bias} value is added to this sum. The bias allows the neuron to activate even in the absence of significant inputs or to adjust the activation threshold. The result of this weighted sum and bias is then passed through a \textit{non-linear activation function} to produce the neuron's output.
+\\ \noindent
+This process can be described mathematically for a single neuron as follows:
 \begin{equation}
  y = f\left(\sum_{i=1}^{n} w_i x_i + b\right)
 \end{equation}
 \noindent
-Here, $y$ represents the neuron's output, $x_i$ are the inputs, which are multiplied by their corresponding weights $w_i$. A bias, $b$, is added to the weighted sum. This entire result is then transformed by an activation function, $f$. The role of the activation function is crucial as it introduces non-linearity, enabling the network to learn and model complex, non-linear relationships in the data. Common examples of activation functions include the Sigmoid, hyperbolic tangent (tanh), and the Rectified Linear Unit (ReLU).
-\\
-\noindent
-
+Here, $y$ represents the output of this individual neuron. The $x_i$ are the inputs that the neuron receives, and each of them is multiplied by its corresponding weight $w_i$. The term $b$ is the bias, which is added to the weighted sum. The entire expression $\left(\sum_{i=1}^{n} w_i x_i + b\right)$ is often called the "net input" or "weighted sum." This result is then transformed by the activation function, $f$.
+\\ \noindent
+In the context of RL, while this equation describes a single neuron's operation, a full neural network (especially a Deep Neural Network) is composed of many such neurons arranged in layers. The \textbf{inputs $x_i$} to the first layer of the network typically represent the \textbf{state of the environment, $s$}. This state can be a vector of numerical features, raw pixel values from an image, or any other data representation describing the agent's current situation. The \textbf{final output $y$} of the entire neural network, which is the result of many interconnected neurons performing the operation described above, will vary depending on the specific RL algorithm:
+\begin{itemize}
+    \item In \textbf{Deep Q-Networks (DQN)}, the network's output layer produces the \textbf{estimated Q-values for each possible action $a$} in the given state $s$. So, if there are $N$ discrete actions, the network will have $N$ output neurons, and their collective outputs represent $Q(s, a_1), Q(s, a_2), \dots, Q(s, a_N)$.
+    \item In \textbf{Policy Gradient methods}, the network's output layer typically produces a \textbf{probability distribution over the possible actions} for the given state $s$. Each output neuron corresponds to an action, and its output (often after a softmax activation) represents the probability $\pi(a_i|s)$ of taking action $a_i$ in state $s$.
+\end{itemize}
+\\ \noindent
+The role of the activation function is of fundamental importance. It introduces non-linearity into the model, a crucial characteristic that allows the network to learn and model complex, non-linear relationships present in the data. Without non-linear activation functions, a neural network, regardless of the number of layers, would behave like a simple linear model, drastically limiting its learning capacity. Common examples of activation functions include the Sigmoid function (which compresses the output between 0 and 1), the hyperbolic tangent (tanh, which compresses the output between -1 and 1), and the Rectified Linear Unit (ReLU, which returns the input if positive, otherwise zero), the latter being particularly popular for its computational efficiency and ability to mitigate the vanishing gradient problem.
+\\ \noindent
 \begin{figure}[H]
     \centering
-   
+    % Ensure that the image 'NN.png' is in the same directory as the .tex file
+    % or specify the full path.
     \includegraphics[width=0.8\linewidth]{NN.png}
-    \caption{Structure of a Neural network }
+    \caption{Structure of a Neural Network}
     \label{fig:nn}
 \end{figure}
 \noindent
-A neural network is constructed with an input layer \ref{fig:nn}, which receives the raw data, one or more \textit{hidden layers} where the computation occurs, and an output layer that produces the final prediction or decision. 
-\\
+A neural network is structured into several layers. The \textit{input layer}, as shown in Figure \ref{fig:nn}, is the first layer and receives raw data from the environment or dataset. This is followed by one or more \textit{hidden layers}, where most of the data processing and transformations occur. Finally, the \textit{output layer} produces the final prediction, decision, or action of the agent.
+\\ \noindent
+\textbf{When a network contains multiple hidden layers, it is termed a \textit{deep neural network} (DNN)}. This "depth" is a key characteristic that allows the network to learn a hierarchical representation of features from the data. This means that each layer learns to identify patterns progressively more complex: for example, in an image, the first layer might detect edges and corners, the second layer might combine these edges to form more complex shapes, and subsequent layers might assemble these shapes to recognize entire objects. This ability to extract features at different levels of abstraction is what makes DNNs so effective.
+\\ \noindent
+\subsection{The Fundamental Role of DNNs in DRL}
 \noindent
-\textbf{When a network contains multiple hidden layers, it is termed a \textit{deep neural network} }(DNN). This depth allows the network to learn a hierarchical representation of features from the data, where each layer learns to identify progressively more complex patterns.
-
-\section{The Fundamental Role of DNNs in DRL}
-
-A prime example of this is the Deep Q-Network (DQN) algorithm, where a DNN is used to approximate the action-value function, $Q(s, a)$. The network receives the environment's state, $s$, as input and outputs the estimated Q-value for each possible action, $a$. The network is trained by minimizing a loss function, typically the mean squared error between the predicted Q-value and a target Q-value derived from the Bellman equation. The loss function is given by:
-
+The integration of Deep Neural Networks (DNNs) into RL gave rise to the field of DRL, marking an era of unprecedented progress. DNNs have provided RL agents with the ability to learn directly from high-dimensional inputs, such as raw pixels of an image, and to generalize effectively across vast state spaces, overcoming the limitations of traditional RL methods.
+\\ \noindent
+\subsection{Deep Q-Network (DQN) for Value Function Approximation}
+\noindent
+A paradigmatic example of DNN application in DRL is the Deep Q-Network (DQN) algorithm. In this approach, a DNN is employed to approximate the action-value function, $Q(s, a)$. The function $Q(s, a)$ estimates the "value" or expected cumulative reward an agent can obtain by performing an action $a$ in a given state $s$ and following an optimal policy thereafter.
+\\ \noindent
+\textbf{Neural Network Input in DQN:} The DQN's neural network receives the \textbf{environment's state, $s$, as input}. This state can be a direct representation of the environment's observation, such as the raw pixels of a game screen (as in the case of Atari games), or a vector of extracted features describing the current state.
+\\ \noindent
+\textbf{Neural Network Output in DQN:} In response to the input state $s$, the neural network outputs the \textbf{estimated Q-values for each possible action, $a$}. If the agent can choose among $N$ discrete actions, the network's output will be a vector of $N$ values, where each element $Q(s, a_i; \theta)$ represents the estimated Q-value for action $a_i$ in state $s$, given the network's weights $\theta$.
+\\ \noindent
+\textbf{Learning Process and Loss Function:} The network is trained by minimizing a loss function, which is typically the Mean Squared Error (MSE) between the network's predicted Q-value and a "target value" derived from the Bellman equation. The Bellman equation is fundamental in RL and describes the relationship between the value of a state and the values of subsequent states.
+\\ \noindent
+The loss function is given by:
 \begin{equation}
  L(\theta) = \mathbb{E}_{(s, a, r, s') \sim D} \left[ \left( r + \gamma \max_{a'} Q(s', a'; \theta^{-}) - Q(s, a; \theta) \right)^2 \right]
 \end{equation}
 \noindent
-In this equation, $\theta$ are the weights of the neural network being trained, while $\theta^{-}$ are the weights of a separate, periodically updated target network used to stabilize training. The term $r + \gamma \max_{a'} Q(s', a'; \theta^{-})$ is the target value, and the expectation $\mathbb{E}$ is taken over a batch of experiences $(s, a, r, s')$ sampled from a replay memory $D$. This approach enabled the agent to learn directly from high-dimensional sensory inputs, like raw pixels in Atari games, achieving human-level performance.\cite{Mnih2015}
-\\
+In this equation, $\theta$ represents the weights of the neural network being trained (the "main network"). The term $\theta^{-}$ denotes the weights of a separate \textit{target network}. This target network is a copy of the main network that is updated periodically (e.g., every $C$ training steps) rather than at every iteration. The use of a target network is crucial for stabilizing the training process, as it provides a more stable target compared to a target that would continuously change with the main network's updates.
+\\ \noindent
+The term $r + \gamma \max_{a'} Q(s', a'; \theta^{-})$ is the \textit{target value}. Here:
+\begin{itemize}
+    \item $r$ is the immediate reward received after performing action $a$ in state $s$.
+    \item $\gamma$ (gamma) is the discount factor, a value between 0 and 1 that determines the importance of future rewards. A $\gamma$ closer to 1 gives more weight to long-term rewards.
+    \item $\max_{a'} Q(s', a'; \theta^{-})$ is the maximum estimated Q-value for the next state $s'$ (the state reached after performing action $a$), calculated using the target network. This represents the best expected future reward from the next state.
+\end{itemize}
 \noindent
-Beyond value approximation, deep neural networks are also pivotal in policy gradient methods, where they directly parameterize the agent's policy, $\pi$. In this setup, the network, often called a \textit{policy network}, takes a state as input and outputs a probability distribution over the possible actions. The network's weights, $\theta$, are updated by performing gradient ascent on an objective function, $J(\theta)$, which represents the expected cumulative reward. The policy gradient theorem provides a way to update the policy parameters:
-
+The expectation $\mathbb{E}$ is taken over a batch of experiences $(s, a, r, s')$ sampled from a \textit{replay memory} $D$. The replay memory is a buffer that stores observed transitions $(s, a, r, s')$. Randomly sampling from it breaks temporal correlations between consecutive experiences, improving learning stability and efficiency.
+\\ \noindent
+This approach enabled agents to learn directly from high-dimensional sensory inputs, like raw pixels in Atari games, achieving human-level performance and sometimes surpassing it\cite{Mnih2015}. 
+\\ \noindent
+\subsection{Policy Gradient Methods}
+\noindent
+Beyond value approximation, deep neural networks are also pivotal in \textit{policy gradient methods}. In these methods, the DNN does not approximate a value but directly parameterizes the agent's \textit{policy}, $\pi$. The policy defines the agent's behavior, specifying the probability of choosing a certain action in a given state.
+\\ \noindent
+\textbf{Neural Network Input and Output in Policy Gradient Methods:} In this setup, the network, often called a \textit{policy network}, takes a state $s$ as input and outputs a probability distribution over the possible actions. For example, if there are $N$ actions, the output will be a vector of $N$ probabilities, where the sum of these probabilities is 1. Each probability indicates the likelihood that the agent will choose the corresponding action in that state.
+\\ \noindent
+\textbf{Network Weight Update:} The network's weights, $\theta$, are updated by performing \textit{gradient ascent} on an objective function, $J(\theta)$, which represents the expected cumulative reward. The goal is to maximize this function, meaning to find the weights $\theta$ that lead to policies maximizing rewards. The \textit{policy gradient theorem} provides a way to calculate the gradient of this objective function with respect to the policy parameters:
+\\ \noindent
 \begin{equation}
  \nabla_{\theta} J(\theta) = \mathbb{E}_{\tau \sim \pi_{\theta}} \left[ \sum_{t=0}^{T} \nabla_{\theta} \log \pi_{\theta}(a_t|s_t) G_t \right]
 \end{equation}
 \noindent
-Here, the gradient of the objective function is calculated as the expectation of the sum of the gradients of the log probabilities of the actions taken, each weighted by the cumulative future reward, $G_t$. This effectively increases the probability of actions that lead to higher returns.\cite{Sutton2018}
-\\
-\noindent
-The integration of deep neural networks has thus marked a significant leap in the quality and capability of reinforcement learning. By enabling agents to learn from high-dimensional raw data and generalize across vast state spaces, DRL has unlocked solutions to complex control problems previously considered out of reach, and it now stands as a critical tool for advancing research in V2G control systems.\cite{Qiu2022}
+Here, the gradient of the objective function is calculated as the expectation of the sum of the gradients of the log probabilities of the actions taken, each weighted by the cumulative future reward, $G_t$. $G_t$ is the sum of discounted rewards from time $t$ until the end of the episode. This update mechanism effectively increases the probability of actions that led to higher returns and decreases the probability of those that led to lower returns \cite{Sutton2018}.
+\\ \noindent
+The integration of deep neural networks has thus marked a significant leap in the quality and capability of RL. By enabling agents to learn from high-dimensional raw data and generalize across vast state spaces, DRL has unlocked solutions to complex control problems previously considered out of reach, and it now stands as a critical tool for advancing research in the V2G control systems\cite{Qiu2022}. 
 
 \input{off_on.tex}
 \input{mpc.tex}
@@ -475,12 +515,12 @@ While DRL represents the cutting edge, contextualizing it within the broader con
 
 \begin{table}[H]
 \centering
-\caption{Comparative Analysis: DRL vs. Model Predictive Control (MPC) for V2G}
+\caption{Comparative Analysis: DRL vs. Model Predictive Control (MPC) for the V2G}
 \label{tab:drl_vs_mpc}
 \resizebox{0.5\textwidth}{!}{
 \begin{tabular}{|p{0.2\linewidth}|p{0.35\linewidth}|p{0.35\linewidth}|}
 \hline
-\textbf{Aspect} & \textbf{Deep Reinforcement Learning (DRL)} & \textbf{Model Predictive Control (MPC)} \\
+\textbf{Aspect} & \textbf{DRL} & \textbf{MPC} \\
 \hline
 \textbf{Paradigm} & Model-Free, learning-based. Learns an optimal policy (a reactive function) via trial-and-error interaction with the environment. & Model-Based, optimisation-based. Solves a constrained optimisation problem at each time step based on a system model and forecasts. \\
 \hline
@@ -488,14 +528,14 @@ While DRL represents the cutting edge, contextualizing it within the broader con
 \hline
 \textbf{Weaknesses} & \begin{itemize} \item Can be highly sample-inefficient during the training phase. \item Lacks hard safety guarantees (an active and important area of research). \item The "black box" nature of neural network policies can make them difficult to interpret or verify. \end{itemize} & \begin{itemize} \item Performance is fundamentally shackled to the accuracy of the system model and external forecasts. \item Computationally expensive at each time step, suffering from the "curse of dimensionality" with system size. \item Can be brittle to unexpected forecast errors and unmodelled dynamics. \end{itemize} \\
 \hline
-\textbf{V2G Suitability} & Excellent for dynamic, highly uncertain environments with complex, non-linear trade-offs and a large number of assets. & Good for problems with simple, well-defined dynamics and reliable forecasts, but struggles with the real-world stochasticity and scale of V2G. \\
+\textbf{The V2G Suitability} & Excellent for dynamic, highly uncertain environments with complex, non-linear trade-offs and a large number of assets. & Good for problems with simple, well-defined dynamics and reliable forecasts, but struggles with the real-world stochasticity and scale of the V2G. \\
 \hline
 \end{tabular}
 }
 \end{table}
 
 \noindent
-\textbf{Model Predictive Control (MPC)} stands as the most powerful model-based alternative. Its primary and most compelling strength lies in its native ability to handle hard constraints, which is critical for ensuring safe operation (such as never violating transformer limits or user energy requirements). However, its performance remains fundamentally constrained by the accuracy of its internal model and forecasts of future disturbances (prices, user behavior) \cite{faggio2023design}. In practice, creating accurate, tractable models for the entire V2G domain proves nearly impossible due to non-linear battery dynamics, extreme market volatility, and the profound unpredictability of human behavior. Furthermore, as EV fleet sizes grow, optimization problem dimensionality explodes, making online computation required at each time step intractable for large fleets.
+\textbf{MPC} stands as the most powerful model-based alternative. Its primary and most compelling strength lies in its native ability to handle hard constraints, which is critical for ensuring safe operation (such as never violating transformer limits or user energy requirements). However, its performance remains fundamentally constrained by the accuracy of its internal model and forecasts of future disturbances (prices, user behavior) \cite{faggio2023design}. In practice, creating accurate, tractable models for the entire V2G domain proves nearly impossible due to non-linear battery dynamics, extreme market volatility, and the profound unpredictability of human behavior. Furthermore, as EV fleet sizes grow, optimization problem dimensionality explodes, making online computation required at each time step intractable for large fleets.
 \\
 \noindent
 Other methods, such as \textbf{meta-heuristic algorithms} (including genetic algorithms and particle swarm optimization), are sometimes proposed. However, these are typically employed for offline scheduling and lack the real-time, reactive responsiveness required for dynamic V2G control in rapidly changing environments.

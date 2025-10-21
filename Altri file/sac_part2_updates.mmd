@@ -1,0 +1,6 @@
+graph TD
+    subgraph SAC Part 2 ["Network Update Rules"]
+        S3["<b>Critic Update:</b><br/>Critics are trained using a target value that includes the immediate reward,<br/>the discounted value of the next state, and the discounted policy entropy."] --> S4;
+        S4["<b>Actor Update:</b><br/>The Actor policy is updated to maximize the expected future return<br/>and expected future entropy, according to the values from the Critics."] --> S5;
+        S5["<b>Temperature (α) Update:</b><br/>The temperature parameter is automatically adjusted to maintain<br/>a target entropy level, dynamically balancing exploration and exploitation."]
+    end

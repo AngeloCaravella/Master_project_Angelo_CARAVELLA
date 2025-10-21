@@ -1,0 +1,23 @@
+graph TD
+    subgraph DDPG["DDPG: Technical Flow"]
+        direction LR
+        subgraph CriticUpdate["Critic Update (Q-Network)"]
+            direction TB
+            A1["1. Sample a minibatch of transitions from the replay buffer"] --> A2;
+            A2["2. Calculate a target value using the reward and the target Actor/Critic networks' evaluation of the next state"] --> A3;
+            A3["3. Update the main Critic by minimizing the difference between its Q-value prediction and the calculated target value"]
+        end
+
+        subgraph ActorUpdate["Actor Update (Policy Network)"]
+            direction TB
+            B1["1. Sample a minibatch of states from the replay buffer"] --> B2;
+            B2["2. Calculate the gradient for the Actor's policy by using the Critic's evaluation of the Actor's proposed actions"] --> B3;
+            B3["3. Update the main Actor's weights in the direction that leads to higher Q-values (better actions)"]
+        end
+
+        subgraph TargetUpdate["Target Network Update"]
+            direction TB
+            C1["The target networks for both Actor and Critic are updated slowly ('soft update') to track the main networks."]
+            C2["This provides a stable learning target and improves convergence."]
+        end
+    end

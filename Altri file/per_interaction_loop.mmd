@@ -1,0 +1,9 @@
+graph TD
+    subgraph "How PER Modifies the Interaction Loop"
+        style ReplayBuffer fill:#ccf,stroke:#333,stroke-width:2px
+        style PER_Module fill:#cfc,stroke:#333,stroke-width:2px
+
+        ReplayBuffer(Replay Buffer) -- "Stores (s,a,r,s',p)" --> PER_Module(PER Module);
+        Critic -- "Calculates TD Error for transitions" --> PER_Module;
+        PER_Module -- "Provides prioritized samples &<br/>Importance Sampling (IS) weights" --> Critic;
+    end

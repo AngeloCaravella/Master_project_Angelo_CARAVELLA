@@ -4,12 +4,12 @@
 \chapter{An Enhanced V2G Simulation Framework for Robust Control}
 \label{chap:ev2gym}
 
-Developing, validating, and benchmarking advanced control algorithms for Vehicle-to-Grid (V2G) systems presents significant challenges. Real-world experimentation is often impractical due to high costs, logistical constraints, and potential risks to grid stability and vehicle hardware. A realistic, flexible, and standardized simulation environment is therefore essential. This thesis builds upon \textbf{EV2Gym}, an open-source simulator designed for V2G smart charging research \cite{orfanoudakis2024ev2gym}. The work presented here extends the original framework substantially, transforming it into a high-fidelity \textbf{digital twin} suitable not only for single-scenario optimization, but also for developing and rigorously evaluating \textbf{robust, generalist control agents}.
+Developing, validating, and benchmarking advanced control algorithms for V2G systems presents significant challenges. Real-world experimentation is often impractical due to high costs, logistical constraints, and potential risks to grid stability and vehicle hardware. A realistic, flexible, and standardized simulation environment is therefore essential. This thesis builds upon \textbf{EV2Gym}, an open-source simulator designed for the V2G smart charging research \cite{orfanoudakis2024ev2gym}. The work presented here extends the original framework substantially, transforming it into a high-fidelity \textbf{digital twin} suitable not only for single-scenario optimization, but also for developing and rigorously evaluating \textbf{robust, generalist control agents}.
 
 \noindent
 The enhanced framework supports two complementary modes of experimentation: detailed analysis of agents specialized for a single environment, and a novel methodology for training and testing agents capable of generalizing across multiple diverse and unpredictable scenarios. This chapter presents the extended architecture, its data-driven models, and its evaluation capabilities, establishing the methodological foundation for subsequent chapters.
 
-\section{Core Simulator Architecture}
+\section*{Core Simulator Architecture}
 The framework maintains the modular architecture of EV2Gym, which mirrors the key entities of a real-world V2G system. It is built on the OpenAI Gym (now Gymnasium) API, which provides a standardized agent-environment interface based on states, actions, and rewards \cite{brockman2016openai}.
 
 \begin{figure}[H]
@@ -37,7 +37,7 @@ The simulation process follows a reproducible three-phase structure: (1) \textbf
 
 A key contribution of this thesis is the development of a unified and powerful experimentation workflow, orchestrated primarily by the \textbf{run\_experiments.py} script (with an interactive interface provided by \textbf{run\_interactive.py}). This approach replaces the previous fragmentation, offering a single platform to manage the entire lifecycle of training, benchmarking, and evaluation for V2G control agents. The workflow is designed to be both flexible for research and rigorous for evaluation, supporting the goal of developing both specialized and generalized agents.
 
-\subsection{Orchestration and Execution Interfaces}
+\subsection*{Orchestration and Execution Interfaces}
 
 The \textbf{run\_experiments.py} script serves as the central hub for all experimentation. To ensure flexibility and reproducibility, the project offers two execution modes:
 
@@ -54,7 +54,7 @@ The key steps in the workflow include:
     \item \textbf{Battery Calibration:} The option to run \textbf{Fit\_battery.py} is provided to calibrate the parameters of the battery degradation model, ensuring that simulations use the most up-to-date data.
 \end{itemize}
 
-\subsection {Scenario structure Yaml file}
+\subsection*{Scenario structure Yaml file}
 
 The YAML (YAML Ain't Markup Language) configuration file serves as the foundational blueprint for defining a simulation experiment within the EV2Gym framework.
 It is a powerful and indispensable tool for the systematic study of EV smart charging strategies. It provides a structured and transparent method for defining the physical, economic, and stochastic properties of the simulation environment. A thorough understanding and deliberate manipulation of these parameters are essential for formulating meaningful research questions, generating valid results, and drawing robust conclusions about the performance of various control algorithms.
@@ -77,7 +77,7 @@ simulation\_length: 112
     \end{lstlisting}
 \end{description}
 
-\section{Temporal and Contextual Settings}
+\subsection{Temporal and Contextual Settings}
 
 These parameters anchor the simulation to a specific point in time, which is crucial for sourcing external data such as electricity prices and solar irradiance profiles.
 
@@ -95,7 +95,7 @@ random\_day: True
     \item[\textbf{\textbf{simulation\_days}}] Constrains the simulation to specific day types (\textbf{weekdays}, \textbf{weekends}, or \textbf{both}), allowing for the study of distinct demand patterns.
 \end{description}
 
-\section{Stochastic Demand Modeling}
+\subsection{Stochastic Demand Modeling}
 
 This section governs the arrival and behavior of Electric Vehicles (EVs), which constitute the primary source of flexible load in the simulation.
 
@@ -109,19 +109,19 @@ spawn\_multiplier: 5
     \end{lstlisting}
 \end{description}
 
-\section{Economic Framework}
+\subsection{Economic Framework}
 
 These parameters establish the financial incentives and constraints that drive the optimization objective.
 
 \begin{description}
-    \item[\textbf{\textbf{discharge\_price\_factor}}] A foundational economic lever for Vehicle-to-Grid (V2G) operations. It defines the remuneration for discharging energy back to the grid as a fraction of the purchasing price. A value less than 1.0 models a realistic bid-ask spread, ensuring economic viability for the grid operator.
+    \item[\textbf{\textbf{discharge\_price\_factor}}] A foundational economic lever for V2G operations. It defines the remuneration for discharging energy back to the grid as a fraction of the purchasing price. A value less than 1.0 models a realistic bid-ask spread, ensuring economic viability for the grid operator.
     \begin{lstlisting}
 # A factor of 0.95 means selling energy yields 95% of the purchasing price.
 discharge\_price\_factor: 0.95
     \end{lstlisting}
 \end{description}
 
-\section{Physical Infrastructure}
+\subsection{Physical Infrastructure}
 
 This section specifies the hardware and topological constraints of the charging network. These are the "hard" constraints that no algorithm can violate without incurring significant penalties.
 
@@ -145,7 +145,7 @@ charging\_station:
     \end{lstlisting}
 \end{description}
 
-\section{Exogenous Energy Events}
+\subsection{Exogenous Energy Events}
 
 These parameters introduce external, often uncontrollable, energy flows and grid requests that add realism and complexity to the simulation.
 
@@ -157,7 +157,7 @@ These parameters introduce external, often uncontrollable, energy flows and grid
     \item[\textbf{\textbf{demand\_response}}] Models a request from the grid operator to curtail power consumption for a specified duration. The \textbf{notification\_of\_event\_minutes} parameter is crucial, as it provides the forecast horizon that advanced control algorithms (like MPC) require to plan and adapt their charging strategies effectively.
 \end{description}
 
-\section{Electric Vehicle Fleet Specification}
+\subsection{Electric Vehicle Fleet Specification}
 
 This section defines the characteristics of the vehicles being charged.
 
@@ -267,7 +267,7 @@ To address the critical issue of battery health in V2G operations, the simulator
 
 \noindent
 \begin{itemize}
-    \item \textbf{Calendar Aging ($d_{cal}$):} Time-dependent capacity loss, influenced by the battery's average State of Charge (SoC) and temperature ($\Theta$). The formula is:
+    \item \textbf{Calendar Aging ($d_{cal}$):} Time-dependent capacity loss, influenced by the battery's average SoC and temperature ($\Theta$). The formula is:
     \begin{equation}
         d_{cal} = 0.75 \cdot (\epsilon_0 \cdot \overline{SoC} - \epsilon_1) \cdot e^{-\epsilon_2/\Theta} \cdot \frac{t_{days}}{(t_{days}+1)^{0.25}}
     \end{equation}
@@ -480,7 +480,7 @@ The class manages the high-level simulation flow.
 \section{Reinforcement Learning Formulation}
 Since the control problem is formalized as a Markov Decision Process (MDP); defined by the tuple ($S, A, P, R$), now will be explained each tuple (exception makes P).
 
-\section{State Space ($S$)}
+\subsection{State Space ($S$)}
 The state $s_t \in S$ is a feature vector providing a comprehensive snapshot of the environment at time $t$. The framework uses the \textbf{V2G\_profit\_max\_loads} state representation, which is specifically designed to provide the agent with all necessary information for complex, forward-looking profit maximization strategies. It combines temporal information, market signals, grid constraints, and detailed data for each individual electric vehicle (There is also the version for the no load case but without loss of generality we can consider only this one).
 \\
 \noindent
@@ -513,7 +513,7 @@ The components are defined as follows:
 
     \item \textbf{EV Status (per Charging Station)}: For each charging station $i$, the state provides the critical information of the connected vehicle. If a station is empty, these values are replaced with zeros.
     \begin{itemize}
-        \item $SoC_{i,t} \in [0, 1]$: The current State of Charge of the connected EV.
+        \item $SoC_{i,t} \in [0, 1]$: The current SoC of the connected EV.
         \item $\Delta t_{i,t}^{\text{dep}} \in \mathbb{Z}^+$: The remaining time until the EV's scheduled departure, measured in timesteps. This represents the window of opportunity for charging.
     \end{itemize}
 \end{itemize}
@@ -594,10 +594,10 @@ The complete logic for this calculation is detailed in Algorithm \ref{alg:adapti
 \end{algorithm}
 
 
-\subsubsection{Dynamic Economic Profit}
+\subsection{Dynamic Economic Profit}
 The foundation of the reward is the economic profit $\Pi_t$, but its contribution is scaled by a dynamic multiplier, $\mu_p$. This multiplier is designed to increase the agent's focus on profit only when it is performing well on other key metrics. It is calculated based on a base value ($"\mu_{\text{base}} = 0.1"$) plus a bonus that depends on historical satisfaction ($"\bar{s}_{hist}"$) and overload frequency ($"\bar{f}_{ov}"$). The agent is maximally rewarded for profit ($"\mu_p \to 1.0"$) only when satisfaction is near-perfect and overloads are rare. If performance on either metric degrades, the multiplier automatically decreases, reducing the incentive for profit-seeking and forcing the agent to prioritize correcting its behavior.
 
-\subsubsection{Adaptive User Satisfaction Penalty}
+\subsection{Adaptive User Satisfaction Penalty}
 The penalty for failing to meet user charging demands, $P_t^{\text{sat}}$, adapts based on the system's recent performance. The environment maintains a short-term memory of user satisfaction scores, from which an average historical score, $\bar{s}_{hist}$, is calculated. A \textit{satisfaction severity multiplier}, $\sigma_{sat}$, is then computed, which grows quadratically as the historical average satisfaction drops. This ensures that as performance degrades, the consequences of new failures become substantially more severe.
 \begin{equation}
     \sigma_{sat} = 200.0 \cdot (1 - \bar{s}_{hist})^2
@@ -605,7 +605,7 @@ The penalty for failing to meet user charging demands, $P_t^{\text{sat}}$, adapt
 \noindent
 A penalty is only applied if the minimum satisfaction score among currently connected users, $S_{\min}$, falls below a critical threshold (95\%). The magnitude of the penalty is the product of the adaptive multiplier and the current satisfaction deficit.
 
-\subsubsection{Adaptive Transformer Overload Penalty}
+\subsection{Adaptive Transformer Overload Penalty}
 The transformer overload penalty, $P_t^{\text{tr}}$, operates on a similar adaptive principle, responding to the recent frequency of overloads, $F_{hist}^{\text{tr}}$. If the total power drawn, $O_t$, exceeds the transformer's limit, a penalty is applied. This penalty consists of a fixed base amount plus an adaptive component, which scales with both the historical frequency of overloads and the magnitude of the current overload.
 \begin{equation}
     P_t^{\text{tr}} = 5.0 + (50.0 \cdot F_{hist}^{\text{tr}}) \cdot O_t, \quad \text{if } O_t > 0

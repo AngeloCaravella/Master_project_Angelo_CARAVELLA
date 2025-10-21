@@ -65,7 +65,7 @@ inflexible_loads: # Offices, homes
 
 # PV solar Power
 solar_power:
-  include: True # True or False
+  include: False # True or False
   solar_power_capacity_multiplier_mean: 1 # 1 is default, the higher the number the more solar power
   forecast_mean: 20 # in percentage of load at time t%
   forecast_std: 5 # in percentage of load at time t%
@@ -99,7 +99,7 @@ ev_specs_file: ./ev2gym/data/ev_specs_v2g_enabled2024.json # path to the file wi
 
 # Default Transformer model
 transformer:
-  max_power: 200 # in kW
+  max_power: 100 # in kW
 
 # Default Charging Station model
 charging_station:  
@@ -128,6 +128,6 @@ ev:
   min_battery_capacity: 15 # in kWh
   min_time_of_stay: 180 # in minutes
   min_emergency_battery_capacity: 25 # in kWh
-  desired_capacity: 1 # in (0-1) (0% - 100%)
+  desired_capacity: 0.9 # in (0-1) (0% - 100%)
   #if trasition_soc is < 1, the curve of the line is affected by:
   transition_soc_multiplier: 5 # default 1 (the higher the number the shorter the effect of CCCV region)

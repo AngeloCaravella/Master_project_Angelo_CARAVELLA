@@ -1,0 +1,6 @@
+graph TD
+    subgraph DDPG Part 1 ["Critic Network (Q-Function)"]
+        A1["Sample a minibatch of transitions from the replay buffer"] --> A2;
+        A2["Calculate the target Q-value (y) using the Bellman equation, incorporating<br/>the reward and the Target Networks' evaluation of the next state."] --> A3;
+        A3["Update the Critic's weights by minimizing the loss (e.g., Mean Squared Error)<br/>between the Critic's Q-value prediction and the calculated target value y."]
+    end

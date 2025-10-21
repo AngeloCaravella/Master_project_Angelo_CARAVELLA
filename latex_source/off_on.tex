@@ -1,5 +1,5 @@
 \section{Off-policy and on-policy methods}
-The convergence of RL with the substantial representational capabilities of deep neural networks has given rise to \textbf{Deep Reinforcement Learning (DRL)}, which currently represents the leading edge of V2G control research. The development of DRL algorithms has yielded a comprehensive toolkit, primarily divided into two main families: off-policy and on-policy methods, each exhibiting distinct operational characteristics.
+The convergence of RL with the substantial representational capabilities of deep neural networks has given rise to \textbf{DRL}, which currently represents the leading edge of V2G control research. The development of DRL algorithms has yielded a comprehensive toolkit, primarily divided into two main families: off-policy and on-policy methods, each exhibiting distinct operational characteristics.
 The following figure illustrates the evolutionary relationships between the algorithms that  will be discussed, highlighting how newer ideas were built to overcome the limitations of their predecessors.
 \\
 \noindent
@@ -59,7 +59,7 @@ Off-policy algorithms distinguish themselves through their ability to learn opti
 
 Soft Actor-Critic (SAC) \cite{haarnoja2018soft,haarnoja2019soft} is a state-of-the-art off-policy, model-free, actor-critic algorithm designed for continuous control tasks. It is recognized for its \textbf{superior sample efficiency and stability}. SAC's key innovation lies in its \textbf{maximum entropy framework}, where the agent's objective is to maximize both expected reward and policy entropy. This entropy bonus encourages agents to explore broadly, improving noise robustness and reducing the risk of converging to poor local optima. 
 \noindent
-By explicitly promoting randomness in the policy, SAC addresses the exploration-exploitation trade-off in a principled manner. \cite{gu2025optimization} extend this idea to safe reinforcement learning, considering constraints such as battery degradation to maintain reliable and safe operations in real-world Vehicle-to-Grid (V2G) applications.
+By explicitly promoting randomness in the policy, SAC addresses the exploration-exploitation trade-off in a principled manner. \cite{gu2025optimization} extend this idea to safe reinforcement learning, considering constraints such as battery degradation to maintain reliable and safe operations in real-world V2G applications.
 
 \subsubsection{Deep Deterministic Policy Gradient (DDPG)}
 
@@ -97,7 +97,8 @@ TD3 \cite{fujimoto2018addressing} was developed to mitigate DDPG's instabilities
 (1) \textbf{clipped double Q-learning}, using two critic networks and taking the minimum estimate; 
 (2) \textbf{delayed policy updates}, updating the actor less frequently than the critics; 
 (3) \textbf{target policy smoothing}, adding noise to target actions for regularization. 
-
+\\
+\noindent
 These enhancements make TD3 a robust and reliable baseline for complex V2G scheduling tasks. Studies have applied TD3 to optimize EV charging and discharging schedules while considering grid stability \cite{Dou, Ding}, demonstrating its ability to balance economic incentives with physical constraints.
 
 \subsection{On-Policy Methods: Stability through Cautious Updates}
