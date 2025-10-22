@@ -100,7 +100,7 @@ This subsection analyzes the impact of each algorithm on the grid, focusing on t
         \includegraphics[width=\linewidth]{../results/benchmark_20251015_215905/Critic/overload_composition_Critic_TQC.png}
         \caption{TQC}
     \end{subfigure}
-    \caption{Grid load for SAC and TQC RL algorithms. The SAC agents learn to respect the grid constraints better than TQC}
+    \caption{Grid load for SAC and TQC RL algorithms. The SAC agents learn to respect the grid constraints better than TQC.}
     \label{fig:Critic_overload_rl1}
 \end{figure}
 
@@ -143,14 +143,14 @@ The following plots show the detailed charging and discharging behavior for a sa
     \centering
     \begin{subfigure}{0.49\textwidth}
         \includegraphics[width=\linewidth]{../results/benchmark_20251015_215905/Critic/individual_ev_profiles_Critic_Online_MPC_Adaptive.png}
-        \caption{MPC Adaptive: it behaves charging a little bit and then sometimes there is a negative ramp}
+        \caption{Adaptive MPC: it slightly charges at times, but occasionally exhibits a negative ramp due to discharging.}
     \end{subfigure}
     \hfill
     \begin{subfigure}{0.49\textwidth}
         \includegraphics[width=\linewidth]{../results/benchmark_20251015_215905/Critic/individual_ev_profiles_Critic_SAC.png}
         \caption{SAC}
     \end{subfigure}
-    \caption{SAC:it behaves charging full some Evs and leaving others not being completely charge focused, instead others are used to gain profit }
+    \caption{The SAC tends to fully charge some EVs while leaving others partially charged, focusing instead on using certain vehicles to maximize profit.}
     \label{fig:Critic_profiles_advanced}
 \end{figure}
 

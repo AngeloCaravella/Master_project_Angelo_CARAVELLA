@@ -3,13 +3,13 @@
 The Model Predictive Control (MPC) implemented with PuLP solves a profit maximization problem at each control interval over a finite prediction horizon $H$. This formulation is designed for online, real-time control, where decisions are made based on the current system state and future predictions. This approach is often termed an "implicit" MPC because the control law is not pre-computed; instead, it is found by solving a full optimization problem at every control interval.
 
 \paragraph{Implementation Details}
-This online controller is implemented as the \textbf{OnlineMPC\_Solver} class within the \textbf{pulp\_mpc.py} module. At each invocation of its \textbf{get\_action} method, it dynamically constructs and solves a Mixed-Integer Linear Program (MILP) using the \textbf{PuLP} modeling library. PuLP acts as a high-level modeling interface for the underlying \textbf{CBC (COIN-OR Branch and Cut)} solver, an open-source solver capable of handling MILPs.
+This online controller is implemented as the \textbf{OnlineMPC\_Solver} class within the \textbf{pulp\_mpc.py} module. At each invocation of its \textbf{get\_action} method, it dynamically constructs and solves a Mixed-Integer Linear Programming (MILP) using the \textbf{PuLP} modeling library. PuLP acts as a high-level modeling interface for the underlying \textbf{CBC (COIN-OR Branch and Cut)} solver, an open-source solver capable of handling MILPs.
 
 
 \subsection{The CBC Solver and Branch and Cut Algorithm}
 \label{sec:cbc_branch_cut}
 
-The core of the online MPC controller is the CBC (COIN-OR Branch and Cut) solver, which is tasked with solving the Mixed-Integer Linear Program (MILP) formulated at each time step. CBC is a powerful, open-source solver that implements a sophisticated algorithm known as \textbf{Branch and Cut}; which is an exact method for solving MILPs,is an improved version of the Branch-and-Bound
+The core of the online MPC controller is the CBC (COIN-OR Branch and Cut) solver, which is tasked with solving the MILP formulated at each time step. CBC is a powerful, open-source solver that implements a sophisticated algorithm known as \textbf{Branch and Cut}; which is an exact method for solving MILPs,is an improved version of the Branch-and-Bound
 algorithm. The algorithm is a hybrid of two powerful techniques:\textbf{the Branch and Bound algorithm and the Cutting Plane method}.
 
 \subsubsection{The Branch and Bound Method}
@@ -42,7 +42,7 @@ In the context of the MPC for V2G scheduling, this is particularly important. Th
 
 \subsection*{Mathematical Formulation and Linearization}
 
-The implementation of the MPC controller, contained in the \textbf{pulp\_mpc.py} script, translates the optimization problem into a Mixed-Integer Linear Program (MILP) that can be solved efficiently using the open-source CBC (COIN-OR Branch and Cut) solver. However, the original mathematical formulation presented in some research papers, such as the one by Orfanoudakis et al. \cite{orfanoudakis2024ev2gym}, is inherently non-linear. To make the problem tractable in a real-time control context, several important simplifications and corrections were necessary.
+The implementation of the MPC controller, contained in the \textbf{pulp\_mpc.py} script, translates the optimization problem into a MILP that can be solved efficiently using the open-source CBC (COIN-OR Branch and Cut) solver. However, the original mathematical formulation presented in some research papers, such as the one by Orfanoudakis et al. \cite{orfanoudakis2024ev2gym}, is inherently non-linear. To make the problem tractable in a real-time control context, several important simplifications and corrections were necessary.
 
 \subsubsection{The Original Problem: A Complex MINLP}
 

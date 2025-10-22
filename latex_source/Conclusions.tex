@@ -1,0 +1,53 @@
+\chapter{Conclusions and Future Work}
+\label{chap:conclusions}
+
+This thesis has undertaken a comprehensive investigation into the complex, multi-objective problem of intelligent EV charging and Vehicle-to-Grid (V2G) management. Through the enhancement of the EV2Gym simulation framework and a rigorous comparative analysis of heuristic, model-based (MPC), and Deep Reinforcement Learning (DRL) control strategies, this work has yielded several key insights into the challenges and opportunities of integrating EVs into the power grid.
+
+\section{Summary of Key Findings}
+
+Our experimental campaign demonstrated a clear hierarchy of performance among the different control paradigms:
+
+\begin{itemize}
+    \item \textbf{Heuristic Baselines (AFAP, ALAP):} These simple, rule-based methods consistently failed to navigate the complexities of the V2G environment. Their inability to respond to price signals or respect grid constraints resulted in significant economic losses and severe transformer overloads, confirming their inadequacy for real-world smart charging applications.
+
+\item \textbf{MPC:} The MPC controllers, particularly the adaptive horizon variant, proved to be highly effective and reliable. They demonstrated a strong ability to enforce hard constraints, successfully avoiding transformer overloads while achieving respectable economic performance. However, their performance is fundamentally tied to the accuracy of forecasts, and their computational cost remains a significant consideration for large-scale deployments. Moreover, if the problem becomes infeasible and the algorithm is not properly tuned—especially in terms of the prediction and control horizons ($N_p$ and $N_c$)—the controller may fail to converge or even stall, compromising overall system operability.
+
+\item \textbf{DRL:} The DRL agents, especially SAC and DDPG, showcased the highest potential for profitability by effectively learning to exploit price differentials through V2G operations. The results indicated that while more advanced algorithms such as TD3 or TQC are theoretically designed to outperform DDPG by reducing overestimation bias and improving stability, in practice they can yield suboptimal solutions if not carefully tuned and optimized. This highlights that the true potential of DRL lies not only in algorithm selection but, most importantly, in the proper design and calibration of the learning process itself.
+
+\section{The Critical Role of System Parameters and Training Methodology}
+
+The sensitivity analysis conducted in Chapter 4 provided definitive evidence on the parameters that govern V2G system performance. The \textbf{Discharge Price Factor} was identified as the single most dominant driver of profitability, with its influence exhibiting strong non-linearities and interactions. Similarly, the \textbf{Transformer Max Power} emerged as a critical bottleneck, whose impact is heavily modulated by the EV demand (spawn multiplier). This underscores the necessity for control agents to be robust to variations in these key environmental factors.
+\noindent
+However, it should be noted that the \textbf{Morris sensitivity analysis}, while useful for identifying dominant parameters, presents certain limitations in this context. Since it is not inherently designed for evaluating near-optimal trajectories and relies on random sampling, its reliability can be affected when applied to highly non-linear, optimization-based systems. Therefore, to obtain more consistent and meaningful results, the analysis would require either a larger number of trajectories or a finer discretization of the input levels, ideally calibrated around optimal or near-optimal operating regions.
+\noindent
+Perhaps the most significant contribution of this thesis is the demonstrated success of advanced DRL training techniques. The development of the \textbf{\texttt{FastProfitAdaptiveReward}} function, which dynamically balances profit-seeking with constraint satisfaction based on historical performance, led to agents that learned more stable and profitable policies than those trained with a static reward function.
+\noindent
+Furthermore, the implementation of a \textbf{two-stage Curriculum Learning (CL) strategy} proved to be exceptionally effective. By first training the agent to master basic constraint satisfaction before exposing it to the full profit maximization objective, the CL approach enabled the agent to discover superior policies that were otherwise inaccessible. The marked increase in performance during the second stage of the curriculum provides strong evidence that guiding the learning process is crucial for solving complex, multi-objective real-world problems.
+
+
+\section{Future Work}
+
+\label{subsec:Qiu_bridge}
+
+While Qiu et al.\ (2023) survey reinforcement-learning applications for EV dispatch (G2V, V2H, V2G) with an emphasis on operational and dispatch problems, their treatment is predominantly technical (states/actions/rewards, ancillary services, network and communication concerns) rather than primarily framed around profit-maximization in market settings \cite{Qiu2023}. Nevertheless, several technical contributions and identified gaps in their review can be taken as concrete starting points to strengthen profit-oriented DRL controllers:
+
+\begin{itemize}
+    \item \textbf{Adopt network-aware state representations.} Use the richer state vectors proposed for V2G (time, SoC, nodal price, local RES, nodal demand, voltage/frequency deviations, carbon-price signals) when training profit-seeking agents, so that economic actions remain feasible with respect to physical network constraints. This reduces the risk of profit-seeking policies that violate grid limits. \cite{Qiu2023}
+
+    \item \textbf{Reward design: multi-objective and constrained formulations.} Qiu et al.\ show that common practice mixes economic reward with constraint penalties; for profit-driven V2G, prefer either multi-objective RL (Pareto fronts) or explicit constrained-RL formulations (e.g., constrained policy optimization, Lagrangian/CPO) so that revenue objectives do not compromise safety. Include sensitivity analyses of penalty weights in any ablation study. \cite{Qiu2023}
+
+    \item \textbf{Hybrid DRL--MPC (safety layer) and runtime ``shielding''.} To reconcile economic optimization with hard grid constraints, implement a hierarchical control where a DRL agent proposes market-optimal setpoints and an MPC (or other certifying controller) enforces feasibility (voltage, transformer limits, thermal limits). Qiu et al.\ identify this co-design requirement between power and control modules as key for realistic dispatch. \cite{Qiu2023}
+
+    \item \textbf{MARL and scalability techniques for market-level coordination.} Leverage the MARL insights (mean-field approximations, parameter sharing, federated schemes, GNN-based function approximators) to scale profit optimization from a single aggregator to many distributed aggregators or prosumers while preserving privacy and reducing communication overhead. \cite{Qiu2023}
+
+    \item \textbf{Environment realism, co-optimization and cyber considerations.} Extend price-driven environments with AC power-flow constraints, transformer aging/capacity models, and communication-channel models (latency/packet-loss and potential cyber risks) so that revenue-seeking policies remain robust under realistic operational and adversarial conditions. Qiu et al.\ explicitly call for such co-optimization of communication and power systems. \cite{Qiu2023}
+
+    \item \textbf{Sim-to-real via HIL, transfer learning and curated datasets.} Follow their recommendation to validate algorithms using HIL tests and real-world traces (prices, arrival/departure, measurement noise); publish anonymized datasets and training checkpoints so that market-aware DRL methods can be replicated and stress-tested under real uncertainty. \cite{Qiu2023}
+\end{itemize}
+
+\noindent
+Taken together, these technical building blocks from Qiu et al.\ provide principled ways to convert market/profit objectives into \emph{operationally safe} DRL controllers: richer state/action modelling, constrained or multi-objective reward design, hybrid safety layers, scalable MARL architectures, realistic co-optimized environments, and sim-to-real validation.
+\\
+\noindent
+In conclusion, while this thesis has primarily addressed the economic dimension of DRL-based V2G control, the technical foundations discussed by Qiu et al.\ (2023)---including safety, scalability, and robustness---represent complementary directions that can strengthen the reliability and real-world feasibility of profit-driven control frameworks. Combining these two perspectives will be essential for developing intelligent agents that are not only economically optimal but also operationally secure and grid-compliant.
+In conclusion, this thesis has demonstrated that while the V2G problem is formidable, it is not intractable. Through the principled application of advanced control theory and machine learning, particularly DRL methodologies refined with adaptive rewards and curriculum learning, it is possible to develop intelligent agents that can effectively balance economic incentives with the physical and operational constraints of the power grid. The findings presented here lay a strong foundation for the continued development of the robust, efficient, and intelligent control systems that will be essential for a future of sustainable transportation and energy.

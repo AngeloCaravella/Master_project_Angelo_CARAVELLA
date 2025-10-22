@@ -405,12 +405,5 @@ This method uses a custom Gymnasium environment, \textbf{RobustnessEnv}, which w
 \noindent
 This "on-the-fly" scenario generation ensures that the agent is exposed to a near-infinite variety of conditions, as every episode is unique. It is the most efficient method in terms of both disk space and computational overhead, as it removes the file I/O bottleneck entirely. The neural network architecture is fixed beforehand to handle the maximum possible dimensions (e.g., 100 charging stations), and padding is used dynamically for any episode that uses a smaller dimension, as explained in the previous chapter. This approach represents a state-of-the-art method for training highly robust and generalizable control agents.
 
-\input{sensitivity_results.tex}
 
 
-\section{Conclusion}
-The sensitivity analysis performed in this chapter provides critical insights into the dynamics of the V2G control problem. The results clearly indicate that the system's performance is not equally sensitive to all parameters. Economic factors, such as the \textbf{Discharge Price Factor}, and hard physical constraints, like the \textbf{Transformer Max Power}, were identified as the most dominant drivers of profitability and grid stability.
-\noindent
-The analysis also highlighted the different responses of various control strategies to these parameter changes. While simple heuristics are brittle and perform poorly outside of their optimal operating conditions, advanced controllers like MPC and RL agents demonstrate greater resilience, although their performance is still heavily influenced by these key parameters.
-\noindent
-These findings have significant implications for the development of robust control agents. A successful generalist agent must be able to recognize the current parameter regime (e.g., a low-price-spread environment vs. a high-spread one) and adapt its strategy accordingly. The insights gained from this analysis directly inform the design of the reward functions and state representations for the reinforcement learning agents developed in the subsequent chapters.
