@@ -411,7 +411,7 @@
 \@writefile{toc}{\contentsline {paragraph}{Forecasting with Uncertainty.}{74}{section*.77}\protected@file@percent }
 \@writefile{toc}{\contentsline {subsection}{\numberline {3.6.4}Main Gym Environment (\textbf  {ev2gym\_env.py})}{74}{subsection.3.6.4}\protected@file@percent }
 \@writefile{toc}{\contentsline {subsubsection}{Environment Structure and Main Loop}{74}{section*.78}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{Initialization (\textbf  {init}).}{74}{section*.79}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Initialization (\textbf  {\__init__}).}{74}{section*.79}\protected@file@percent }
 \@writefile{toc}{\contentsline {paragraph}{Simulation Step (\textbf  {step(actions)}).}{74}{section*.80}\protected@file@percent }
 \abx@aux@cite{0}{orfanoudakis2024ev2gym}
 \abx@aux@segm{0}{0}{orfanoudakis2024ev2gym}
@@ -464,126 +464,125 @@
 \abx@aux@segm{0}{0}{orfanoudakis2024ev2gym}
 \@writefile{toc}{\contentsline {subsubsection}{The Cutting Plane Method}{88}{section*.92}\protected@file@percent }
 \@writefile{toc}{\contentsline {subsubsection}{Branch and Cut in CBC for MPC}{88}{section*.93}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.11.2}Mathematical Formulation and Linearization}{88}{subsection.3.11.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{The Original Problem: A Complex MINLP}{88}{section*.94}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{The Linearization Strategy: Transforming the MINLP into a MILP}{90}{section*.95}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{The Original Problem: A Complex MINLP}{88}{section*.95}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{The Linearization Strategy: Transforming the MINLP into a MILP}{90}{section*.96}\protected@file@percent }
 \@writefile{loa}{\contentsline {algorithm}{\numberline {5}{\ignorespaces Online MPC Solver for EV Charging and Discharging Control}}{90}{algorithm.5}\protected@file@percent }
 \newlabel{alg:online_mpc}{{5}{90}{Online MPC Solver for EV Charging and Discharging Control}{algorithm.5}{}}
-\@writefile{toc}{\contentsline {paragraph}{Simplification of Equations (10), (11), and (17)}{91}{section*.96}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{The Key Role of Constraints (15) and (16)}{91}{section*.97}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Simplification of Equations (10), (11), and (17)}{91}{section*.97}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{The Key Role of Constraints (15) and (16)}{91}{section*.98}\protected@file@percent }
 \newlabel{eq:lin_ich_limit_new}{{3.14}{91}{The Key Role of Constraints (15) and (16)}{equation.3.14}{}}
 \newlabel{eq:lin_idis_limit_new}{{3.15}{91}{The Key Role of Constraints (15) and (16)}{equation.3.15}{}}
-\@writefile{toc}{\contentsline {subsubsection}{Omissions and Adherence to the Theoretical Formulation}{91}{section*.98}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{Omissions and Adherence to the Theoretical Formulation}{91}{section*.99}\protected@file@percent }
 \@writefile{toc}{\contentsline {section}{\numberline {3.12}Lyapunov-based Adaptive Horizon MPC}{91}{section.3.12}\protected@file@percent }
-\@writefile{loa}{\contentsline {algorithm}{\numberline {6}{\ignorespaces Lyapunov-based Adaptive Horizon MPC}}{93}{algorithm.6}\protected@file@percent }
-\newlabel{alg:lyapunov_mpc}{{6}{93}{Lyapunov-based Adaptive Horizon MPC}{algorithm.6}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {3.13}Benchmark Results and Algorithm Comparison}{93}{section.3.13}\protected@file@percent }
-\newlabel{sec:benchmark_results}{{3.13}{93}{Benchmark Results and Algorithm Comparison}{section.3.13}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.13.1}Scenario 1: Critical Case (High Demand & High Price Volatility)}{94}{subsection.3.13.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{Scenario Conditions}{94}{section*.99}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {3.5}{\ignorespaces Electricity price profile for the Critical scenario. The high volatility, with significant peaks and troughs, creates a challenging environment that rewards effective charge/discharge scheduling.}}{94}{figure.caption.100}\protected@file@percent }
-\newlabel{fig:Critic_prices}{{3.5}{94}{Electricity price profile for the Critical scenario. The high volatility, with significant peaks and troughs, creates a challenging environment that rewards effective charge/discharge scheduling}{figure.caption.100}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {3.6}{\ignorespaces Number of EVs present at the charging station over time. The scenario simulates a high-density environment, leading to significant aggregate demand for power.}}{95}{figure.caption.101}\protected@file@percent }
-\newlabel{fig:Critic_ev_presence}{{3.6}{95}{Number of EVs present at the charging station over time. The scenario simulates a high-density environment, leading to significant aggregate demand for power}{figure.caption.101}{}}
-\@writefile{toc}{\contentsline {subsubsection}{Overall Performance Summary}{95}{section*.102}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {3.7}{\ignorespaces Overall performance summary comparing all algorithms across key metrics. In this high-stress scenario, the advanced RL agents (SAC, TQC) and the adaptive MPC demonstrate superior profitability, effectively leveraging V2G, but DDPG goes better in the overall metrics better managing the trasformer overload. Heuristic methods like AFAP and ALAP result in significant economic losses and grid overloads.}}{95}{figure.caption.103}\protected@file@percent }
-\newlabel{fig:Critic_perf_summary}{{3.7}{95}{Overall performance summary comparing all algorithms across key metrics. In this high-stress scenario, the advanced RL agents (SAC, TQC) and the adaptive MPC demonstrate superior profitability, effectively leveraging V2G, but DDPG goes better in the overall metrics better managing the trasformer overload. Heuristic methods like AFAP and ALAP result in significant economic losses and grid overloads}{figure.caption.103}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {3.8}{\ignorespaces Tabular summary of performance metrics. This table provides the precise numerical data for Total Profit, User Satisfaction, Grid Overload, and Battery Degradation, confirming the visual insights from the bar chart.}}{96}{figure.caption.104}\protected@file@percent }
-\newlabel{fig:Critic_summary_table}{{3.8}{96}{Tabular summary of performance metrics. This table provides the precise numerical data for Total Profit, User Satisfaction, Grid Overload, and Battery Degradation, confirming the visual insights from the bar chart}{figure.caption.104}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {3.9}{\ignorespaces Average profit generated per EV. This metric normalizes the total profit by the number of vehicles served, highlighting the economic efficiency of each control strategy on a per-user basis.}}{96}{figure.caption.105}\protected@file@percent }
-\newlabel{fig:Critic_profit_per_ev}{{3.9}{96}{Average profit generated per EV. This metric normalizes the total profit by the number of vehicles served, highlighting the economic efficiency of each control strategy on a per-user basis}{figure.caption.105}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {3.10}{\ignorespaces Average State of Charge (SoC) of all connected EVs over time. RL and MPC agents maintain a lower average SoC during low-price periods to prepare for charging, while heuristics like AFAP charge aggressively upon arrival.}}{97}{figure.caption.106}\protected@file@percent }
-\newlabel{fig:Critic_avg_soc}{{3.10}{97}{Average State of Charge (SoC) of all connected EVs over time. RL and MPC agents maintain a lower average SoC during low-price periods to prepare for charging, while heuristics like AFAP charge aggressively upon arrival}{figure.caption.106}{}}
-\@writefile{toc}{\contentsline {subsubsection}{Grid Impact Analysis}{98}{section*.107}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {3.11}{\ignorespaces Grid load for heuristic algorithms. Both AFAP and ALAP show significant and prolonged periods of transformer overload, as they do not coordinate charging to respect grid limits.}}{98}{figure.caption.108}\protected@file@percent }
-\newlabel{fig:Critic_overload_heuristics}{{3.11}{98}{Grid load for heuristic algorithms. Both AFAP and ALAP show significant and prolonged periods of transformer overload, as they do not coordinate charging to respect grid limits}{figure.caption.108}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {3.12}{\ignorespaces Grid load for MPC algorithms. The MPC controllers are enough effective at preventing overloads, keeping the total load just below the transformer's maximum capacity.}}{98}{figure.caption.109}\protected@file@percent }
-\newlabel{fig:Critic_overload_mpc}{{3.12}{98}{Grid load for MPC algorithms. The MPC controllers are enough effective at preventing overloads, keeping the total load just below the transformer's maximum capacity}{figure.caption.109}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {3.13}{\ignorespaces Grid load for SAC and TQC RL algorithms. The SAC agents learn to respect the grid constraints better than TQC.}}{98}{figure.caption.110}\protected@file@percent }
-\newlabel{fig:Critic_overload_rl1}{{3.13}{98}{Grid load for SAC and TQC RL algorithms. The SAC agents learn to respect the grid constraints better than TQC}{figure.caption.110}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {3.14}{\ignorespaces Grid load for DDPG-based RL algorithms. These agents also learn to avoid overloads, though some minor spikes can occasionally be seen during the learning process.}}{99}{figure.caption.111}\protected@file@percent }
-\newlabel{fig:Critic_overload_rl2}{{3.14}{99}{Grid load for DDPG-based RL algorithms. These agents also learn to avoid overloads, though some minor spikes can occasionally be seen during the learning process}{figure.caption.111}{}}
-\@writefile{toc}{\contentsline {subsubsection}{Individual EV Charging Profiles}{100}{section*.112}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {3.15}{\ignorespaces Individual EV profiles for heuristic algorithms. AFAP charges immediately upon arrival, while ALAP waits until the last possible moment. Neither strategy responds to price signals.}}{100}{figure.caption.113}\protected@file@percent }
-\newlabel{fig:Critic_profiles_heuristics}{{3.15}{100}{Individual EV profiles for heuristic algorithms. AFAP charges immediately upon arrival, while ALAP waits until the last possible moment. Neither strategy responds to price signals}{figure.caption.113}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {3.16}{\ignorespaces The SAC tends to fully charge some EVs while leaving others partially charged, focusing instead on using certain vehicles to maximize profit.}}{100}{figure.caption.114}\protected@file@percent }
-\newlabel{fig:Critic_profiles_advanced}{{3.16}{100}{The SAC tends to fully charge some EVs while leaving others partially charged, focusing instead on using certain vehicles to maximize profit}{figure.caption.114}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.13.2}MPC sensitivity for the Np/Nc ratio}{101}{subsection.3.13.2}\protected@file@percent }
-\newlabel{fig:sub1}{{3.17a}{101}{Performance}{figure.caption.115}{}}
-\newlabel{sub@fig:sub1}{{a}{101}{Performance}{figure.caption.115}{}}
-\newlabel{fig:sub2}{{3.17b}{101}{Solver status}{figure.caption.115}{}}
-\newlabel{sub@fig:sub2}{{b}{101}{Solver status}{figure.caption.115}{}}
-\newlabel{fig:sub3}{{3.17c}{101}{Solver time}{figure.caption.115}{}}
-\newlabel{sub@fig:sub3}{{c}{101}{Solver time}{figure.caption.115}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {3.17}{\ignorespaces MPC sensivity}}{101}{figure.caption.115}\protected@file@percent }
-\newlabel{fig:tre_subfigure}{{3.17}{101}{MPC sensivity}{figure.caption.115}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {3.18}{\ignorespaces Adaptive horizon}}{101}{figure.caption.116}\protected@file@percent }
-\newlabel{fig:adaptive}{{3.18}{101}{Adaptive horizon}{figure.caption.116}{}}
-\@writefile{toc}{\contentsline {chapter}{\numberline {4}Sensitivity Analysis of the V2G System}{102}{chapter.4}\protected@file@percent }
+\@writefile{loa}{\contentsline {algorithm}{\numberline {6}{\ignorespaces Lyapunov-based Adaptive Horizon MPC}}{92}{algorithm.6}\protected@file@percent }
+\newlabel{alg:lyapunov_mpc}{{6}{92}{Lyapunov-based Adaptive Horizon MPC}{algorithm.6}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {3.13}Benchmark Results and Algorithm Comparison}{92}{section.3.13}\protected@file@percent }
+\newlabel{sec:benchmark_results}{{3.13}{92}{Benchmark Results and Algorithm Comparison}{section.3.13}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.13.1}Scenario 1: Critical Case (High Demand & High Price Volatility)}{93}{subsection.3.13.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{Scenario Conditions}{93}{section*.100}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {3.5}{\ignorespaces Electricity price profile for the Critical scenario. The high volatility, with significant peaks and troughs, creates a challenging environment that rewards effective charge/discharge scheduling.}}{93}{figure.caption.101}\protected@file@percent }
+\newlabel{fig:Critic_prices}{{3.5}{93}{Electricity price profile for the Critical scenario. The high volatility, with significant peaks and troughs, creates a challenging environment that rewards effective charge/discharge scheduling}{figure.caption.101}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {3.6}{\ignorespaces Number of EVs present at the charging station over time. The scenario simulates a high-density environment, leading to significant aggregate demand for power.}}{94}{figure.caption.102}\protected@file@percent }
+\newlabel{fig:Critic_ev_presence}{{3.6}{94}{Number of EVs present at the charging station over time. The scenario simulates a high-density environment, leading to significant aggregate demand for power}{figure.caption.102}{}}
+\@writefile{toc}{\contentsline {subsubsection}{Overall Performance Summary}{94}{section*.103}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {3.7}{\ignorespaces Overall performance summary comparing all algorithms across key metrics. In this high-stress scenario, the advanced RL agents (SAC, TQC) and the adaptive MPC demonstrate superior profitability, effectively leveraging V2G, but DDPG goes better in the overall metrics better managing the trasformer overload. Heuristic methods like AFAP and ALAP result in significant economic losses and grid overloads.}}{94}{figure.caption.104}\protected@file@percent }
+\newlabel{fig:Critic_perf_summary}{{3.7}{94}{Overall performance summary comparing all algorithms across key metrics. In this high-stress scenario, the advanced RL agents (SAC, TQC) and the adaptive MPC demonstrate superior profitability, effectively leveraging V2G, but DDPG goes better in the overall metrics better managing the trasformer overload. Heuristic methods like AFAP and ALAP result in significant economic losses and grid overloads}{figure.caption.104}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {3.8}{\ignorespaces Tabular summary of performance metrics. This table provides the precise numerical data for Total Profit, User Satisfaction, Grid Overload, and Battery Degradation, confirming the visual insights from the bar chart.}}{95}{figure.caption.105}\protected@file@percent }
+\newlabel{fig:Critic_summary_table}{{3.8}{95}{Tabular summary of performance metrics. This table provides the precise numerical data for Total Profit, User Satisfaction, Grid Overload, and Battery Degradation, confirming the visual insights from the bar chart}{figure.caption.105}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {3.9}{\ignorespaces Average profit generated per EV. This metric normalizes the total profit by the number of vehicles served, highlighting the economic efficiency of each control strategy on a per-user basis.}}{95}{figure.caption.106}\protected@file@percent }
+\newlabel{fig:Critic_profit_per_ev}{{3.9}{95}{Average profit generated per EV. This metric normalizes the total profit by the number of vehicles served, highlighting the economic efficiency of each control strategy on a per-user basis}{figure.caption.106}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {3.10}{\ignorespaces Average State of Charge (SoC) of all connected EVs over time. RL and MPC agents maintain a lower average SoC during low-price periods to prepare for charging, while heuristics like AFAP charge aggressively upon arrival.}}{96}{figure.caption.107}\protected@file@percent }
+\newlabel{fig:Critic_avg_soc}{{3.10}{96}{Average State of Charge (SoC) of all connected EVs over time. RL and MPC agents maintain a lower average SoC during low-price periods to prepare for charging, while heuristics like AFAP charge aggressively upon arrival}{figure.caption.107}{}}
+\@writefile{toc}{\contentsline {subsubsection}{Grid Impact Analysis}{97}{section*.108}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {3.11}{\ignorespaces Grid load for heuristic algorithms. Both AFAP and ALAP show significant and prolonged periods of transformer overload, as they do not coordinate charging to respect grid limits.}}{97}{figure.caption.109}\protected@file@percent }
+\newlabel{fig:Critic_overload_heuristics}{{3.11}{97}{Grid load for heuristic algorithms. Both AFAP and ALAP show significant and prolonged periods of transformer overload, as they do not coordinate charging to respect grid limits}{figure.caption.109}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {3.12}{\ignorespaces Grid load for MPC algorithms. The MPC controllers are enough effective at preventing overloads, keeping the total load just below the transformer's maximum capacity.}}{97}{figure.caption.110}\protected@file@percent }
+\newlabel{fig:Critic_overload_mpc}{{3.12}{97}{Grid load for MPC algorithms. The MPC controllers are enough effective at preventing overloads, keeping the total load just below the transformer's maximum capacity}{figure.caption.110}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {3.13}{\ignorespaces Grid load for SAC and TQC RL algorithms. The SAC agents learn to respect the grid constraints better than TQC.}}{97}{figure.caption.111}\protected@file@percent }
+\newlabel{fig:Critic_overload_rl1}{{3.13}{97}{Grid load for SAC and TQC RL algorithms. The SAC agents learn to respect the grid constraints better than TQC}{figure.caption.111}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {3.14}{\ignorespaces Grid load for DDPG-based RL algorithms. These agents also learn to avoid overloads, though some minor spikes can occasionally be seen during the learning process.}}{98}{figure.caption.112}\protected@file@percent }
+\newlabel{fig:Critic_overload_rl2}{{3.14}{98}{Grid load for DDPG-based RL algorithms. These agents also learn to avoid overloads, though some minor spikes can occasionally be seen during the learning process}{figure.caption.112}{}}
+\@writefile{toc}{\contentsline {subsubsection}{Individual EV Charging Profiles}{99}{section*.113}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {3.15}{\ignorespaces Individual EV profiles for heuristic algorithms. AFAP charges immediately upon arrival, while ALAP waits until the last possible moment. Neither strategy responds to price signals.}}{99}{figure.caption.114}\protected@file@percent }
+\newlabel{fig:Critic_profiles_heuristics}{{3.15}{99}{Individual EV profiles for heuristic algorithms. AFAP charges immediately upon arrival, while ALAP waits until the last possible moment. Neither strategy responds to price signals}{figure.caption.114}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {3.16}{\ignorespaces The SAC tends to fully charge some EVs while leaving others partially charged, focusing instead on using certain vehicles to maximize profit.}}{99}{figure.caption.115}\protected@file@percent }
+\newlabel{fig:Critic_profiles_advanced}{{3.16}{99}{The SAC tends to fully charge some EVs while leaving others partially charged, focusing instead on using certain vehicles to maximize profit}{figure.caption.115}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.13.2}MPC sensitivity for the Np/Nc ratio}{100}{subsection.3.13.2}\protected@file@percent }
+\newlabel{fig:sub1}{{3.17a}{100}{Performance}{figure.caption.116}{}}
+\newlabel{sub@fig:sub1}{{a}{100}{Performance}{figure.caption.116}{}}
+\newlabel{fig:sub2}{{3.17b}{100}{Solver status}{figure.caption.116}{}}
+\newlabel{sub@fig:sub2}{{b}{100}{Solver status}{figure.caption.116}{}}
+\newlabel{fig:sub3}{{3.17c}{100}{Solver time}{figure.caption.116}{}}
+\newlabel{sub@fig:sub3}{{c}{100}{Solver time}{figure.caption.116}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {3.17}{\ignorespaces MPC sensivity}}{100}{figure.caption.116}\protected@file@percent }
+\newlabel{fig:tre_subfigure}{{3.17}{100}{MPC sensivity}{figure.caption.116}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {3.18}{\ignorespaces Adaptive horizon}}{100}{figure.caption.117}\protected@file@percent }
+\newlabel{fig:adaptive}{{3.18}{100}{Adaptive horizon}{figure.caption.117}{}}
+\@writefile{toc}{\contentsline {chapter}{\numberline {4}Sensitivity Analysis of the V2G System}{101}{chapter.4}\protected@file@percent }
 \@writefile{lof}{\addvspace {10\p@ }}
 \@writefile{lot}{\addvspace {10\p@ }}
-\newlabel{chap:sensitivity_analysis}{{4}{102}{Sensitivity Analysis of the V2G System}{chapter.4}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {4.1}Introduction to Global Sensitivity Analysis}{102}{section.4.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {4.2}Different Classes of Sensitivity Analysis}{103}{section.4.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.2.1}Local SA}{103}{subsection.4.2.1}\protected@file@percent }
-\@writefile{loa}{\contentsline {algorithm}{\numberline {7}{\ignorespaces Local Sensitivity Analysis (LSA)}}{104}{algorithm.7}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.2.2}Global SA (GSA)}{104}{subsection.4.2.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {4.3}Challenges}{104}{section.4.3}\protected@file@percent }
-\@writefile{loa}{\contentsline {algorithm}{\numberline {8}{\ignorespaces One-at-a-Time (OAT) Sensitivity Analysis}}{105}{algorithm.8}\protected@file@percent }
-\@writefile{loa}{\contentsline {algorithm}{\numberline {9}{\ignorespaces Morris Method (Elementary Effects Method)}}{106}{algorithm.9}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {4.4}Methodology for Sensitivity and Robustness Analysis}{107}{section.4.4}\protected@file@percent }
-\newlabel{sec:sa_methodology}{{4.4}{107}{Methodology for Sensitivity and Robustness Analysis}{section.4.4}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.4.1}Parameter and Model-Output Space}{107}{subsection.4.4.1}\protected@file@percent }
-\@writefile{lot}{\contentsline {table}{\numberline {4.1}{\ignorespaces Parameters and Levels for Sensitivity Analysis}}{108}{table.caption.121}\protected@file@percent }
-\newlabel{tab:sa_parameters_detailed}{{4.1}{108}{Parameters and Levels for Sensitivity Analysis}{table.caption.121}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.4.2}One-at-a-Time (OaaT) Sensitivity Analysis}{108}{subsection.4.4.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.4.3}Global Sensitivity Analysis: The Morris Method}{108}{subsection.4.4.3}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{Implementation with SALib}{109}{section*.122}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{Interpreting the $\mu ^*-\sigma $ Plot}{110}{section*.123}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {4.1}{\ignorespaces Conceptual Morris plot illustrating different parameter behaviors.}}{111}{figure.caption.124}\protected@file@percent }
-\newlabel{fig:morris_plot_interpretation}{{4.1}{111}{Conceptual Morris plot illustrating different parameter behaviors}{figure.caption.124}{}}
-\@writefile{toc}{\contentsline {subsubsection}{Common Patterns in $\mu ^*-\sigma $ Plots}{112}{section*.125}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.4.4}Stochastic Sampling for Robustness Training}{112}{subsection.4.4.4}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.4.5}Dynamic Parameter Randomization}{113}{subsection.4.4.5}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {4.5}Analysis of Results}{114}{section.4.5}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.5.1}Morris Method Global Analysis Results}{114}{subsection.4.5.1}\protected@file@percent }
-\newlabel{fig:morris_ddpg}{{4.2a}{114}{Morris Analysis for DDPG}{figure.caption.127}{}}
-\newlabel{sub@fig:morris_ddpg}{{a}{114}{Morris Analysis for DDPG}{figure.caption.127}{}}
-\newlabel{fig:morris_sac}{{4.2b}{114}{Morris Analysis for SAC}{figure.caption.127}{}}
-\newlabel{sub@fig:morris_sac}{{b}{114}{Morris Analysis for SAC}{figure.caption.127}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {4.2}{\ignorespaces Morris sensitivity analysis plots for DDPG and SAC. The comparison reveals both shared sensitivities and critical differences in their learned strategies.}}{114}{figure.caption.127}\protected@file@percent }
-\newlabel{fig:morris_plots_comparison}{{4.2}{114}{Morris sensitivity analysis plots for DDPG and SAC. The comparison reveals both shared sensitivities and critical differences in their learned strategies}{figure.caption.127}{}}
-\@writefile{toc}{\contentsline {subsubsection}{Critical Interpretation and Comparison}{114}{section*.128}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.5.2}One-at-a-Time (OaaT) Results}{115}{subsection.4.5.2}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {4.3}{\ignorespaces Impact of maximum transformer power on battery degradation for the SAC algorithm.}}{115}{figure.caption.129}\protected@file@percent }
-\newlabel{fig:oat_transformer_degradation_sac}{{4.3}{115}{Impact of maximum transformer power on battery degradation for the SAC algorithm}{figure.caption.129}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {4.4}{\ignorespaces Impact of Discharge Price Factor on Total Profits for various algorithms.}}{115}{figure.caption.130}\protected@file@percent }
-\newlabel{fig:oat_discharge_profit}{{4.4}{115}{Impact of Discharge Price Factor on Total Profits for various algorithms}{figure.caption.130}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {4.5}{\ignorespaces Illustration of how the discharge price (selling price) changes relative to the charge price (buying price) based on the discharge price factor.}}{116}{figure.caption.131}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {4.6}{\ignorespaces Impact of Transformer Max Power on Peak Transformer Loading.}}{116}{figure.caption.132}\protected@file@percent }
-\newlabel{fig:oat_transformer_load}{{4.6}{116}{Impact of Transformer Max Power on Peak Transformer Loading}{figure.caption.132}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {4.7}{\ignorespaces Impact of EV Desired Capacity on Average User Satisfaction.}}{117}{figure.caption.133}\protected@file@percent }
-\newlabel{fig:oat_desired_capacity}{{4.7}{117}{Impact of EV Desired Capacity on Average User Satisfaction}{figure.caption.133}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.5.3}Reward Function and Curriculum Learning Analysis}{117}{subsection.4.5.3}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {4.8}{\ignorespaces Training time performance comparison between the original reward function (\textbf  {ProfitMax\_Penalty}) and the new adaptive function (\textbf  {FastProfitAdaptive}), with and without Curriculum Learning.}}{118}{figure.caption.134}\protected@file@percent }
-\newlabel{fig:reward_comparison_summary}{{4.8}{118}{Training time performance comparison between the original reward function (\textbf {ProfitMax\_Penalty}) and the new adaptive function (\textbf {FastProfitAdaptive}), with and without Curriculum Learning}{figure.caption.134}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {4.9}{\ignorespaces Performance comparison on the KPI between the original reward function (\textbf  {ProfitMax\_Penalty}) and the new adaptive function (\textbf  {FastProfitAdaptive}), with and without Curriculum Learning.}}{118}{figure.caption.135}\protected@file@percent }
-\newlabel{fig:reward_comparison_summary_2}{{4.9}{118}{Performance comparison on the KPI between the original reward function (\textbf {ProfitMax\_Penalty}) and the new adaptive function (\textbf {FastProfitAdaptive}), with and without Curriculum Learning}{figure.caption.135}{}}
-\@writefile{lof}{\contentsline {figure}{\numberline {4.10}{\ignorespaces Comparison of training progress for DDPG with the original vs. the new adaptive reward function. The new function leads to a more stable and consistently positive reward signal during training.}}{119}{figure.caption.136}\protected@file@percent }
-\newlabel{fig:ddpg_rewards}{{4.10}{119}{Comparison of training progress for DDPG with the original vs. the new adaptive reward function. The new function leads to a more stable and consistently positive reward signal during training}{figure.caption.136}{}}
-\@writefile{toc}{\contentsline {subsubsection}{Curriculum Learning Stages}{119}{section*.137}\protected@file@percent }
-\@writefile{lof}{\contentsline {figure}{\numberline {4.11}{\ignorespaces Training progress during the two stages of Curriculum Learning. A clear and significant improvement in reward is visible upon switching to the adaptive reward function in Stage 2, demonstrating the effectiveness of the CL strategy.}}{119}{figure.caption.138}\protected@file@percent }
-\newlabel{fig:cl_stages}{{4.11}{119}{Training progress during the two stages of Curriculum Learning. A clear and significant improvement in reward is visible upon switching to the adaptive reward function in Stage 2, demonstrating the effectiveness of the CL strategy}{figure.caption.138}{}}
-\@writefile{toc}{\contentsline {chapter}{\numberline {5}Conclusions and Future Work}{120}{chapter.5}\protected@file@percent }
+\newlabel{chap:sensitivity_analysis}{{4}{101}{Sensitivity Analysis of the V2G System}{chapter.4}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {4.1}Introduction to Global Sensitivity Analysis}{101}{section.4.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {4.2}Different Classes of Sensitivity Analysis}{102}{section.4.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.2.1}Local SA}{102}{subsection.4.2.1}\protected@file@percent }
+\@writefile{loa}{\contentsline {algorithm}{\numberline {7}{\ignorespaces Local Sensitivity Analysis (LSA)}}{103}{algorithm.7}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.2.2}Global SA (GSA)}{103}{subsection.4.2.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {4.3}Challenges}{103}{section.4.3}\protected@file@percent }
+\@writefile{loa}{\contentsline {algorithm}{\numberline {8}{\ignorespaces One-at-a-Time (OAT) Sensitivity Analysis}}{104}{algorithm.8}\protected@file@percent }
+\@writefile{loa}{\contentsline {algorithm}{\numberline {9}{\ignorespaces Morris Method (Elementary Effects Method)}}{105}{algorithm.9}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {4.4}Methodology for Sensitivity and Robustness Analysis}{106}{section.4.4}\protected@file@percent }
+\newlabel{sec:sa_methodology}{{4.4}{106}{Methodology for Sensitivity and Robustness Analysis}{section.4.4}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.4.1}Parameter and Model-Output Space}{106}{subsection.4.4.1}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {4.1}{\ignorespaces Parameters and Levels for Sensitivity Analysis}}{107}{table.caption.122}\protected@file@percent }
+\newlabel{tab:sa_parameters_detailed}{{4.1}{107}{Parameters and Levels for Sensitivity Analysis}{table.caption.122}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.4.2}One-at-a-Time (OaaT) Sensitivity Analysis}{107}{subsection.4.4.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.4.3}Global Sensitivity Analysis: The Morris Method}{107}{subsection.4.4.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{Implementation with SALib}{108}{section*.123}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{Interpreting the $\mu ^*-\sigma $ Plot}{109}{section*.124}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {4.1}{\ignorespaces Conceptual Morris plot illustrating different parameter behaviors.}}{110}{figure.caption.125}\protected@file@percent }
+\newlabel{fig:morris_plot_interpretation}{{4.1}{110}{Conceptual Morris plot illustrating different parameter behaviors}{figure.caption.125}{}}
+\@writefile{toc}{\contentsline {subsubsection}{Common Patterns in $\mu ^*-\sigma $ Plots}{111}{section*.126}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.4.4}Stochastic Sampling for Robustness Training}{111}{subsection.4.4.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.4.5}Dynamic Parameter Randomization}{112}{subsection.4.4.5}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {4.5}Analysis of Results}{113}{section.4.5}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.5.1}Morris Method Global Analysis Results}{113}{subsection.4.5.1}\protected@file@percent }
+\newlabel{fig:morris_ddpg}{{4.2a}{113}{Morris Analysis for DDPG}{figure.caption.128}{}}
+\newlabel{sub@fig:morris_ddpg}{{a}{113}{Morris Analysis for DDPG}{figure.caption.128}{}}
+\newlabel{fig:morris_sac}{{4.2b}{113}{Morris Analysis for SAC}{figure.caption.128}{}}
+\newlabel{sub@fig:morris_sac}{{b}{113}{Morris Analysis for SAC}{figure.caption.128}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {4.2}{\ignorespaces Morris sensitivity analysis plots for DDPG and SAC. The comparison reveals both shared sensitivities and critical differences in their learned strategies.}}{113}{figure.caption.128}\protected@file@percent }
+\newlabel{fig:morris_plots_comparison}{{4.2}{113}{Morris sensitivity analysis plots for DDPG and SAC. The comparison reveals both shared sensitivities and critical differences in their learned strategies}{figure.caption.128}{}}
+\@writefile{toc}{\contentsline {subsubsection}{Critical Interpretation and Comparison}{113}{section*.129}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.5.2}One-at-a-Time (OaaT) Results}{114}{subsection.4.5.2}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {4.3}{\ignorespaces Impact of maximum transformer power on battery degradation for the SAC algorithm.}}{114}{figure.caption.130}\protected@file@percent }
+\newlabel{fig:oat_transformer_degradation_sac}{{4.3}{114}{Impact of maximum transformer power on battery degradation for the SAC algorithm}{figure.caption.130}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {4.4}{\ignorespaces Impact of Discharge Price Factor on Total Profits for various algorithms.}}{114}{figure.caption.131}\protected@file@percent }
+\newlabel{fig:oat_discharge_profit}{{4.4}{114}{Impact of Discharge Price Factor on Total Profits for various algorithms}{figure.caption.131}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {4.5}{\ignorespaces Illustration of how the discharge price (selling price) changes relative to the charge price (buying price) based on the discharge price factor.}}{115}{figure.caption.132}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {4.6}{\ignorespaces Impact of Transformer Max Power on Peak Transformer Loading.}}{115}{figure.caption.133}\protected@file@percent }
+\newlabel{fig:oat_transformer_load}{{4.6}{115}{Impact of Transformer Max Power on Peak Transformer Loading}{figure.caption.133}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {4.7}{\ignorespaces Impact of EV Desired Capacity on Average User Satisfaction.}}{116}{figure.caption.134}\protected@file@percent }
+\newlabel{fig:oat_desired_capacity}{{4.7}{116}{Impact of EV Desired Capacity on Average User Satisfaction}{figure.caption.134}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.5.3}Reward Function and Curriculum Learning Analysis}{116}{subsection.4.5.3}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {4.8}{\ignorespaces Training time performance comparison between the original reward function (\textbf  {ProfitMax\_Penalty}) and the new adaptive function (\textbf  {FastProfitAdaptive}), with and without Curriculum Learning.}}{117}{figure.caption.135}\protected@file@percent }
+\newlabel{fig:reward_comparison_summary}{{4.8}{117}{Training time performance comparison between the original reward function (\textbf {ProfitMax\_Penalty}) and the new adaptive function (\textbf {FastProfitAdaptive}), with and without Curriculum Learning}{figure.caption.135}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {4.9}{\ignorespaces Performance comparison on the KPI between the original reward function (\textbf  {ProfitMax\_Penalty}) and the new adaptive function (\textbf  {FastProfitAdaptive}), with and without Curriculum Learning.}}{117}{figure.caption.136}\protected@file@percent }
+\newlabel{fig:reward_comparison_summary_2}{{4.9}{117}{Performance comparison on the KPI between the original reward function (\textbf {ProfitMax\_Penalty}) and the new adaptive function (\textbf {FastProfitAdaptive}), with and without Curriculum Learning}{figure.caption.136}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {4.10}{\ignorespaces Comparison of training progress for DDPG with the original vs. the new adaptive reward function. The new function leads to a more stable and consistently positive reward signal during training.}}{118}{figure.caption.137}\protected@file@percent }
+\newlabel{fig:ddpg_rewards}{{4.10}{118}{Comparison of training progress for DDPG with the original vs. the new adaptive reward function. The new function leads to a more stable and consistently positive reward signal during training}{figure.caption.137}{}}
+\@writefile{toc}{\contentsline {subsubsection}{Curriculum Learning Stages}{118}{section*.138}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {4.11}{\ignorespaces Training progress during the two stages of Curriculum Learning. A clear and significant improvement in reward is visible upon switching to the adaptive reward function in Stage 2, demonstrating the effectiveness of the CL strategy.}}{118}{figure.caption.139}\protected@file@percent }
+\newlabel{fig:cl_stages}{{4.11}{118}{Training progress during the two stages of Curriculum Learning. A clear and significant improvement in reward is visible upon switching to the adaptive reward function in Stage 2, demonstrating the effectiveness of the CL strategy}{figure.caption.139}{}}
+\@writefile{toc}{\contentsline {chapter}{\numberline {5}Conclusions and Future Work}{119}{chapter.5}\protected@file@percent }
 \@writefile{lof}{\addvspace {10\p@ }}
 \@writefile{lot}{\addvspace {10\p@ }}
-\newlabel{chap:conclusions}{{5}{120}{Conclusions and Future Work}{chapter.5}{}}
-\@writefile{toc}{\contentsline {section}{\numberline {5.1}Summary of Key Findings}{120}{section.5.1}\protected@file@percent }
+\newlabel{chap:conclusions}{{5}{119}{Conclusions and Future Work}{chapter.5}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {5.1}Summary of Key Findings}{119}{section.5.1}\protected@file@percent }
 \abx@aux@cite{0}{Qiu2023}
 \abx@aux@segm{0}{0}{Qiu2023}
-\@writefile{toc}{\contentsline {section}{\numberline {5.2}The Critical Role of System Parameters and Training Methodology}{121}{section.5.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {5.3}Future Work}{121}{section.5.3}\protected@file@percent }
-\newlabel{subsec:Qiu_bridge}{{5.3}{121}{Future Work}{section.5.3}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {5.2}The Critical Role of System Parameters and Training Methodology}{120}{section.5.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {5.3}Future Work}{120}{section.5.3}\protected@file@percent }
+\newlabel{subsec:Qiu_bridge}{{5.3}{120}{Future Work}{section.5.3}{}}
 \abx@aux@cite{0}{Qiu2023}
 \abx@aux@segm{0}{0}{Qiu2023}
 \abx@aux@cite{0}{Qiu2023}
@@ -652,4 +651,4 @@
 \abx@aux@defaultrefcontext{0}{white2011vehicle}{nty/global//global/global/global}
 \abx@aux@defaultrefcontext{0}{NaXu}{nty/global//global/global/global}
 \abx@aux@defaultrefcontext{0}{Zhang2023}{nty/global//global/global/global}
-\gdef \@abspage@last{128}
+\gdef \@abspage@last{127}

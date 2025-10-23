@@ -460,7 +460,7 @@ The \textbf{EV2Gym} class is the central orchestrator of the entire simulation. 
 \subsubsection{Environment Structure and Main Loop}
 The class manages the high-level simulation flow.
 \noindent
-\paragraph{Initialization (\textbf{\__init__}).} Upon creation, the environment reads a configuration file to instantiate all the necessary components: it creates the specified number of \textbf{Transformer} and \textbf{EV\_Charger} objects, loads the EV arrival scenarios, and sets up electricity price profiles.
+\paragraph{Initialization (\textbf{init}).} Upon creation, the environment reads a configuration file to instantiate all the necessary components: it creates the specified number of \textbf{Transformer} and \textbf{EV\_Charger} objects, loads the EV arrival scenarios, and sets up electricity price profiles.
 \noindent
 \paragraph{Simulation Step (\textbf{step(actions)}).} This method drives the simulation forward by one time step ($\Delta t$). The sequence of operations is as follows:
 \begin{enumerate}
@@ -622,4 +622,4 @@ The framework includes a Model Predictive Control implementation in \textbf{pulp
 
 
 
-\input{simulation}
+\input{Simulation}

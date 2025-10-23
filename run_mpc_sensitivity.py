@@ -1,4 +1,3 @@
-
 import os
 import yaml
 import numpy as np
@@ -32,13 +31,14 @@ def parse_mean_std_string(s):
             return (mean_val, std_val)
         except ValueError:
             return (np.nan, np.nan)
-    elif len(parts) == 1: # Case where there's no std dev (e.g., "17.00")
+    elif len(parts) == 1:  # Case where there's no std dev (e.g., "17.00")
         try:
             mean_val = float(parts[0])
-            return (mean_val, 0.0) # Assume 0 std dev if not present
+            return (mean_val, 0.0)  # Assume 0 std dev if not present
         except ValueError:
             return (np.nan, np.nan)
-    return (np.nan, np.nan) # Default for unparseable strings
+    return (np.nan, np.nan)  # Default for unparseable strings
+
 
 def plot_mpc_results(all_results_df, output_dir, plot_filename_prefix):
     """Generates plots for MPC sensitivity analysis results."""
@@ -52,7 +52,8 @@ def plot_mpc_results(all_results_df, output_dir, plot_filename_prefix):
     }
     
     fig, axes = plt.subplots(1, len(metrics_to_plot), figsize=(5 * len(metrics_to_plot), 6))
-    if len(metrics_to_plot) == 1: axes = [axes] # Ensure axes is iterable for single plot
+    if len(metrics_to_plot) == 1:
+        axes = [axes]
     fig.suptitle('MPC Performance Metrics by Configuration', fontsize=16)
 
     for i, (metric_base_name, title) in enumerate(metrics_to_plot.items()):
@@ -60,15 +61,20 @@ def plot_mpc_results(all_results_df, output_dir, plot_filename_prefix):
         metric_mean_col = f"{metric_base_name}_mean"
         metric_std_col = f"{metric_base_name}_std"
         if metric_mean_col in all_results_df.columns:
-            ax.bar(all_results_df['Configuration'], all_results_df[metric_mean_col], 
-                   yerr=all_results_df[metric_std_col], capsize=5, color='skyblue')
+            ax.bar(
+                all_results_df['Configuration'],
+                all_results_df[metric_mean_col],
+                yerr=all_results_df[metric_std_col],
+                capsize=5,
+                color='skyblue'
+            )
             ax.set_title(title)
             ax.set_ylabel(title.split('(')[-1].replace(')', ''))
-            ax.tick_params(axis='x', rotation=45)
+            ax.tick_params(axis='x', rotation=90)
             ax.grid(axis='y', linestyle='--', alpha=0.7)
         else:
             ax.set_title(f"{title} (Data Missing - Column '{metric_mean_col}' not found)")
-            ax.axis('off') # Hide axis if data is missing
+            ax.axis('off')
 
     plt.tight_layout(rect=[0, 0.03, 1, 0.95])
     plt.savefig(os.path.join(output_dir, f"{plot_filename_prefix}_performance.png"))
@@ -82,7 +88,8 @@ def plot_mpc_results(all_results_df, output_dir, plot_filename_prefix):
     }
 
     fig, axes = plt.subplots(1, len(time_metrics_to_plot), figsize=(5 * len(time_metrics_to_plot), 6))
-    if len(time_metrics_to_plot) == 1: axes = [axes]
+    if len(time_metrics_to_plot) == 1:
+        axes = [axes]
     fig.suptitle('MPC Solver Time Metrics by Configuration', fontsize=16)
 
     for i, (metric_base_name, title) in enumerate(time_metrics_to_plot.items()):
@@ -90,11 +97,16 @@ def plot_mpc_results(all_results_df, output_dir, plot_filename_prefix):
         metric_mean_col = f"{metric_base_name}_mean"
         metric_std_col = f"{metric_base_name}_std"
         if metric_mean_col in all_results_df.columns:
-            ax.bar(all_results_df['Configuration'], all_results_df[metric_mean_col], 
-                   yerr=all_results_df[metric_std_col], capsize=5, color='lightcoral')
+            ax.bar(
+                all_results_df['Configuration'],
+                all_results_df[metric_mean_col],
+                yerr=all_results_df[metric_std_col],
+                capsize=5,
+                color='lightcoral'
+            )
             ax.set_title(title)
             ax.set_ylabel('Time (s)')
-            ax.tick_params(axis='x', rotation=45)
+            ax.tick_params(axis='x', rotation=90)
             ax.grid(axis='y', linestyle='--', alpha=0.7)
         else:
             ax.set_title(f"{title} (Data Missing - Column '{metric_mean_col}' not found)")
@@ -113,7 +125,8 @@ def plot_mpc_results(all_results_df, output_dir, plot_filename_prefix):
     }
 
     fig, axes = plt.subplots(1, len(status_metrics_to_plot), figsize=(5 * len(status_metrics_to_plot), 6))
-    if len(status_metrics_to_plot) == 1: axes = [axes]
+    if len(status_metrics_to_plot) == 1:
+        axes = [axes]
     fig.suptitle('MPC Solver Status Counts by Configuration', fontsize=16)
 
     for i, (metric_base_name, title) in enumerate(status_metrics_to_plot.items()):
@@ -121,11 +134,16 @@ def plot_mpc_results(all_results_df, output_dir, plot_filename_prefix):
         metric_mean_col = f"{metric_base_name}_mean"
         metric_std_col = f"{metric_base_name}_std"
         if metric_mean_col in all_results_df.columns:
-            ax.bar(all_results_df['Configuration'], all_results_df[metric_mean_col], 
-                   yerr=all_results_df[metric_std_col], capsize=5, color='lightgreen')
+            ax.bar(
+                all_results_df['Configuration'],
+                all_results_df[metric_mean_col],
+                yerr=all_results_df[metric_std_col],
+                capsize=5,
+                color='lightgreen'
+            )
             ax.set_title(title)
             ax.set_ylabel('Number of Steps')
-            ax.tick_params(axis='x', rotation=45)
+            ax.tick_params(axis='x', rotation=90)
             ax.grid(axis='y', linestyle='--', alpha=0.7)
         else:
             ax.set_title(f"{title} (Data Missing - Column '{metric_mean_col}' not found)")
@@ -136,60 +154,59 @@ def plot_mpc_results(all_results_df, output_dir, plot_filename_prefix):
     plt.close(fig)
     print(f"Plot saved: {plot_filename_prefix}_solver_status.png")
 
-    # --- Plot 4: Adaptive Horizon History (if any adaptive configs are present) ---
+    # --- Plot 4: Adaptive Horizon History ---
     adaptive_configs = [cfg for cfg in all_results_df['Configuration'] if 'Adaptive' in cfg]
-    
+
     if adaptive_configs and 'adaptive_horizon_history' in all_results_df.columns:
         fig, ax = plt.subplots(figsize=(12, 7))
         fig.suptitle('Adaptive Horizon (H) Over Time', fontsize=16)
         
-        plot_data = all_results_df[all_results_df['Configuration'].isin(adaptive_configs)][['Configuration', 'adaptive_horizon_history']]
+        plot_data = all_results_df[all_results_df['Configuration'].isin(adaptive_configs)][
+            ['Configuration', 'adaptive_horizon_history']
+        ]
         
-        colors = plt.colormaps.get_cmap('tab10') # Use plt.colormaps.get_cmap
-        
+        colors = plt.colormaps.get_cmap('tab10')
         found_adaptive_data_to_plot = False
 
         for i, (idx, row) in enumerate(plot_data.iterrows()):
             config_name = row['Configuration']
-            history = row['adaptive_horizon_history'] # history should already be parsed as a list of lists or NaN
-            
-            if pd.isna(history):
-                continue
+            history = row['adaptive_horizon_history']
 
-            # Ensure history is a list of lists (from multiple simulations)
-            if not history:
+            # --- FIX robust per NaN, None o liste vuote ---
+            if history is None or (isinstance(history, float) and np.isnan(history)):
                 continue
-            
-            # If history is a single list (e.g., from a single simulation), wrap it in another list
+            if isinstance(history, (list, np.ndarray)) and len(history) == 0:
+                continue
+            # ------------------------------------------------
+
             if not all(isinstance(h, list) for h in history):
                 history = [history]
 
-            # Filter out any empty sub-lists before finding max_len
             non_empty_histories = [h for h in history if h]
-            
             if not non_empty_histories:
                 continue
 
             max_len = max(len(h) for h in non_empty_histories)
-
             if max_len == 0:
                 continue
 
             padded_histories = []
             for h in non_empty_histories:
-                if h:
-                    padded_histories.append(h + [h[-1]] * (max_len - len(h)))
-                else:
-                    padded_histories.append([0] * max_len)
+                padded_histories.append(h + [h[-1]] * (max_len - len(h)))
 
             avg_history = np.mean(padded_histories, axis=0)
             std_history = np.std(padded_histories, axis=0)
-            
+
             if len(avg_history) > 0:
                 color = colors(i / len(plot_data))
                 ax.plot(range(len(avg_history)), avg_history, label=config_name, color=color, linewidth=2)
-                ax.fill_between(range(len(avg_history)), avg_history - std_history, avg_history + std_history, 
-                                color=color, alpha=0.1)
+                ax.fill_between(
+                    range(len(avg_history)),
+                    avg_history - std_history,
+                    avg_history + std_history,
+                    color=color,
+                    alpha=0.1
+                )
                 found_adaptive_data_to_plot = True
 
         if found_adaptive_data_to_plot:
@@ -239,7 +256,7 @@ def run_mpc_sensitivity_analysis(
 
         for sim_num in range(num_simulations):
             print(f"  Simulation {sim_num + 1}/{num_simulations}...")
-            
+
             env = EV2Gym(
                 config_file=base_config_file,
                 generate_rnd_game=True,
@@ -264,7 +281,7 @@ def run_mpc_sensitivity_analysis(
             done = False
             total_solver_time = 0
             step_count = 0
-            
+
             solver_timeout_count = 0
             infeasible_count = 0
             non_optimal_count = 0
@@ -276,23 +293,23 @@ def run_mpc_sensitivity_analysis(
                 solver_start_time = time.time()
                 action, solver_status = mpc_solver.get_action(env)
                 solver_end_time = time.time()
-                
+
                 solver_duration = solver_end_time - solver_start_time
                 total_solver_time += solver_duration
-                
+
                 if solver_status == 'Timeout':
                     solver_timeout_count += 1
                 elif solver_status == 'Infeasible':
                     infeasible_count += 1
                 elif solver_status != 'Optimal':
                     non_optimal_count += 1
-                
+
                 if use_adaptive:
                     current_sim_adaptive_horizon_history.append(mpc_solver.current_H)
 
                 obs, reward, terminated, truncated, info = env.step(action)
                 done = terminated or truncated
-            
+
             unwrapped_env = env
             ev_load = np.sum(unwrapped_env.cs_power, axis=0)
             inflexible_load = np.sum(unwrapped_env.tr_inflexible_loads, axis=0)
@@ -317,7 +334,7 @@ def run_mpc_sensitivity_analysis(
 
             for metric, value in stats.items():
                 all_results[config_name][metric].append(value)
-            
+
             if use_adaptive:
                 all_adaptive_horizon_histories[config_name].append(current_sim_adaptive_horizon_history)
 
@@ -333,11 +350,11 @@ def run_mpc_sensitivity_analysis(
         for metric, values in metrics.items():
             mean_val = np.mean(values)
             std_val = np.std(values)
-            
+
             row_df[f"{metric}_mean"] = mean_val
             row_df[f"{metric}_std"] = std_val
-            row_display[metric] = f"{mean_val:.2f} ± {std_val:.2f}" if num_simulations > 1 else f"{mean_val:.2f}"
-        
+            row_display[metric] = f"{mean_val:.2f} ± {std_val:.2f}" if len(values) > 1 else f"{mean_val:.2f}"
+
         if config_name in all_adaptive_horizon_histories:
             row_df['adaptive_horizon_history'] = all_adaptive_horizon_histories[config_name]
         else:
@@ -350,7 +367,9 @@ def run_mpc_sensitivity_analysis(
         df_summary_numeric = pd.DataFrame(summary_data_for_df)
         df_summary_display = pd.DataFrame(summary_data_for_display)
 
-        csv_path = os.path.join(output_dir, f"mpc_sensitivity_summary_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}.csv")
+        csv_path = os.path.join(
+            output_dir, f"mpc_sensitivity_summary_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}.csv"
+        )
         df_summary_display.to_csv(csv_path, index=False, encoding='utf-8')
         print(f"\n--- Sensitivity Analysis Complete ---")
         print(f"Results saved to: {csv_path}")
@@ -363,10 +382,12 @@ def run_mpc_sensitivity_analysis(
     else:
         print("\n--- No results to display. ---")
 
+
 def get_interactive_input(prompt, default=None):
     """Helper function to get user input with a default value."""
     user_input = input(f"{prompt} (default: {default}): ")
     return user_input or default
+
 
 if __name__ == "__main__":
     choice = get_interactive_input(

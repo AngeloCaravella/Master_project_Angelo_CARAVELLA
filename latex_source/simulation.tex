@@ -154,7 +154,49 @@ The following plots show the detailed charging and discharging behavior for a sa
     \label{fig:Critic_profiles_advanced}
 \end{figure}
 
-% --- Placeholders for other scenarios ---
+\subsection{MPC sensitivity for the Np/Nc ratio}
+\begin{figure}[H]
+    \centering
+    % Prima subfigure
+    \begin{subfigure}[b]{0.4\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{../sensitivity_analysis_results/Risultati_scelti/mpc_sensitivity_20251023_082248_performance.png}
+        \caption{Performance}
+        \label{fig:sub1}
+    \end{subfigure}
+    \hfill
+    % Seconda subfigure
+    \begin{subfigure}[b]{0.4\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{../sensitivity_analysis_results/Risultati_scelti/mpc_sensitivity_20251023_082248_solver_status.png}
+        \caption{Solver status}
+        \label{fig:sub2}
+    \end{subfigure}
+    \hfill
+    % Terza subfigure
+    \begin{subfigure}[b]{0.4\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{../sensitivity_analysis_results/Risultati_scelti/mpc_sensitivity_20251023_082248_solver_time.png}
+        \caption{Solver time}
+        \label{fig:sub3}
+    \end{subfigure}
+    
+    \caption{MPC sensivity}
+    \label{fig:tre_subfigure}
+\end{figure}
+With this sensitivity analysis performed in the Figures \ref{fig:tre_subfigure}, we can conclude that increasing the 
+N\_p/N\_c ratio may improve profit but does not enhance average satisfaction. 
+The overload remains zero, which is naturally a result of the high utilization 
+of V2G and, consequently, the higher profit.
+\\
+\noindent
+For the adpative MPC we can understand how the algorithm change adaptively through time from Figure \ref{fig:adaptive}.
+\begin{figure}[H]
+       \centering
+       \includegraphics[width=0.8\linewidth]{../sensitivity_analysis_results/Risultati_scelti/mpc_sensitivity_20251023_082248_adaptive_horizon.png}
+       \caption{Adaptive horizon}
+       \label{fig:adaptive}
+\end{figure}
 
 %\subsection{Scenario 2: Realistic Case}
 % TODO: Add analysis and plots for the Realistic scenario.
