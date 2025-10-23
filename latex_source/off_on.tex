@@ -1,9 +1,9 @@
 \section{Off-policy and on-policy methods}
-The convergence of RL with the substantial representational capabilities of deep neural networks has given rise to \textbf{DRL}, which currently represents the leading edge of V2G control research. The development of DRL algorithms has yielded a comprehensive toolkit, primarily divided into two main families: off-policy and on-policy methods, each exhibiting distinct operational characteristics.
-The following figure illustrates the evolutionary relationships between the algorithms that  will be discussed, highlighting how newer ideas were built to overcome the limitations of their predecessors.
+The development of DRL algorithms has yielded a comprehensive toolkit, primarily divided into two main families: off-policy and on-policy methods, each exhibiting distinct operational characteristics.
+The following Figure \ref{fig:rl_methods} illustrates the evolutionary relationships between the algorithms that  will be discussed, highlighting how newer ideas were built to overcome the limitations of their predecessors.
 \\
 \noindent
-\textit{It can be considered as a \textbf{rule of thumb} in the case of actor-critic algorithms that: many off-policy algorithms use the critic as a Q-function because it allows updating the actor using experiences from the replay buffer, without strictly following the current policy (e.g., DDPG, SAC, TQC); while on-policy algorithms often use the critic as a V-function because directly evaluating the state with the current policy is more stable (e.g., A2C, PPO).}
+It can be considered as a \textbf{rule of thumb} in the case of actor-critic algorithms that: many off-policy algorithms use the critic as a Q-function because it allows updating the actor using experiences from the replay buffer, without strictly following the current policy (e.g., DDPG, SAC, TQC); while on-policy algorithms often use the critic as a V-function because directly evaluating the state with the current policy is more stable (e.g., A2C, PPO).
 
 \begin{figure}[H]
 \centering
@@ -47,7 +47,7 @@ for tree={
     ]
 ]
 \end{forest}
-\caption{Hierarchical classification of Reinforcement Learning methods.}
+\caption{Hierarchical classification of RL methods.}
 \label{fig:rl_methods}
 \end{figure}
 

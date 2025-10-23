@@ -415,9 +415,9 @@ This separation of concerns allows for direct policy optimization in continuous 
 
 
 \section{The Rise of Deep Reinforcement Learning for the V2G Control}
-The convergence of RL with the substantial representational capabilities of deep neural networks has given rise to DRL, which currently represents the leading edge of the V2G control research. The development of DRL algorithms has yielded a comprehensive toolkit, primarily divided into two main families: off-policy and on-policy methods, each exhibiting distinct operational characteristics. The following Figure illustrates the evolutionary relationships between the algorithms that will be discussed, highlighting how newer ideas were built to overcome the limitations of their predecessors.
+The convergence of RL with the substantial representational capabilities of deep neural networks (DRL) has given rise to DRL, which currently represents the leading edge of the V2G control research. The development of DRL algorithms has yielded a comprehensive toolkit, primarily divided into two main families: off-policy and on-policy methods, each exhibiting distinct operational characteristics.
 
-\subsection*{Neural Networks as Function Approximators}
+\subsection{Neural Networks as Function Approximators}
 \noindent
 Neural networks are advanced computational models whose architecture is inspired by the complex and interconnected structure of neurons in the human brain. Their primary function is to recognize and learn complex patterns within data, making them extremely powerful tools for tasks such as classification, regression, and, as we will see, control.
 \\ \noindent
@@ -430,7 +430,7 @@ This process can be described mathematically for a single neuron as follows:
 \noindent
 Here, $y$ represents the output of this individual neuron. The $x_i$ are the inputs that the neuron receives, and each of them is multiplied by its corresponding weight $w_i$. The term $b$ is the bias, which is added to the weighted sum. The entire expression $\left(\sum_{i=1}^{n} w_i x_i + b\right)$ is often called the "net input" or "weighted sum." This result is then transformed by the activation function, $f$.
 \\ \noindent
-In the context of RL, while this equation describes a single neuron's operation, a full neural network (especially a Deep Neural Network) is composed of many such neurons arranged in layers. The \textbf{inputs $x_i$} to the first layer of the network typically represent the \textbf{state of the environment, $s$}. This state can be a vector of numerical features, raw pixel values from an image, or any other data representation describing the agent's current situation. The \textbf{final output $y$} of the entire neural network, which is the result of many interconnected neurons performing the operation described above, will vary depending on the specific RL algorithm:
+In the context of RL, while this equation describes a single neuron's operation, a full neural network (especially a DNN) is composed of many such neurons arranged in layers. The \textbf{inputs $x_i$} to the first layer of the network typically represent the \textbf{state of the environment, $s$}. This state can be a vector of numerical features, raw pixel values from an image, or any other data representation describing the agent's current situation. The \textbf{final output $y$} of the entire neural network, which is the result of many interconnected neurons performing the operation described above, will vary depending on the specific RL algorithm:
 \begin{itemize}
     \item In \textbf{Deep Q-Networks (DQN)}, the network's output layer produces the \textbf{estimated Q-values for each possible action $a$} in the given state $s$. So, if there are $N$ discrete actions, the network will have $N$ output neurons, and their collective outputs represent $Q(s, a_1), Q(s, a_2), \dots, Q(s, a_N)$.
     \item In \textbf{Policy Gradient methods}, the network's output layer typically produces a \textbf{probability distribution over the possible actions} for the given state $s$. Each output neuron corresponds to an action, and its output (often after a softmax activation) represents the probability $\pi(a_i|s)$ of taking action $a_i$ in state $s$.
@@ -453,7 +453,7 @@ A neural network is structured into several layers. The \textit{input layer}, as
 \\ \noindent
 \subsection{The Fundamental Role of DNNs in DRL}
 \noindent
-The integration of Deep Neural Networks (DNNs) into RL gave rise to the field of DRL, marking an era of unprecedented progress. DNNs have provided RL agents with the ability to learn directly from high-dimensional inputs, such as raw pixels of an image, and to generalize effectively across vast state spaces, overcoming the limitations of traditional RL methods.
+The integration of DNNs into RL gave rise to the field of DRL, marking an era of unprecedented progress. DNNs have provided RL agents with the ability to learn directly from high-dimensional inputs, such as raw pixels of an image, and to generalize effectively across vast state spaces, overcoming the limitations of traditional RL methods.
 \\ \noindent
 \subsection{Deep Q-Network (DQN) for Value Function Approximation}
 \noindent
@@ -463,8 +463,9 @@ A paradigmatic example of DNN application in DRL is the Deep Q-Network (DQN) alg
 \\ \noindent
 \textbf{Neural Network Output in DQN:} In response to the input state $s$, the neural network outputs the \textbf{estimated Q-values for each possible action, $a$}. If the agent can choose among $N$ discrete actions, the network's output will be a vector of $N$ values, where each element $Q(s, a_i; \theta)$ represents the estimated Q-value for action $a_i$ in state $s$, given the network's weights $\theta$.
 \\ \noindent
-\textbf{Learning Process and Loss Function:} The network is trained by minimizing a loss function, which is typically the Mean Squared Error (MSE) between the network's predicted Q-value and a "target value" derived from the Bellman equation. The Bellman equation is fundamental in RL and describes the relationship between the value of a state and the values of subsequent states.
-\\ \noindent
+\textbf{Learning Process and Loss Function:} The network is trained by minimizing a loss function, which is typically the Mean Squared Error (MSE) between the network's predicted Q-value and a "target value" derived from the Bellman equation. 
+\\ 
+\noindent
 The loss function is given by:
 \begin{equation}
  L(\theta) = \mathbb{E}_{(s, a, r, s') \sim D} \left[ \left( r + \gamma \max_{a'} Q(s', a'; \theta^{-}) - Q(s, a; \theta) \right)^2 \right]
@@ -495,8 +496,6 @@ Beyond value approximation, deep neural networks are also pivotal in \textit{pol
 \end{equation}
 \noindent
 Here, the gradient of the objective function is calculated as the expectation of the sum of the gradients of the log probabilities of the actions taken, each weighted by the cumulative future reward, $G_t$. $G_t$ is the sum of discounted rewards from time $t$ until the end of the episode. This update mechanism effectively increases the probability of actions that led to higher returns and decreases the probability of those that led to lower returns \cite{Sutton2018}.
-\\ \noindent
-The integration of deep neural networks has thus marked a significant leap in the quality and capability of RL. By enabling agents to learn from high-dimensional raw data and generalize across vast state spaces, DRL has unlocked solutions to complex control problems previously considered out of reach, and it now stands as a critical tool for advancing research in the V2G control systems\cite{Qiu2022}. 
 
 \input{off_on.tex}
 \input{mpc.tex}
