@@ -374,7 +374,7 @@ if __name__ == "__main__":
     )
 
     if choice == '1':
-        BASE_CONFIG_FILE = "C:\\Users\\angel\\OneDrive\\Desktop\\Project_Master\\ev2gym\\example_config_files\\V2GProfitMax.yaml"
+        BASE_CONFIG_FILE = "C:\\Users\\angel\\OneDrive\\Desktop\\Project_Master\\ev2gym\\example_config_files\\Critic.yaml"
         PRICE_DATA_FILE = "C:\\Users\\angel\\OneDrive\\Desktop\\Project_Master\\ev2gym\\data\\Netherlands_day-ahead-2015-2024.csv"
         
         SELECTED_REWARD_FUNCTION = reward_module.FastProfitAdaptiveReward
