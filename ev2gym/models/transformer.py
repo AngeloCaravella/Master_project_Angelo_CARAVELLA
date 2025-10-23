@@ -1,9 +1,9 @@
 '''
 This file contains the Transformer class which is used to model the transformer in the ev_city environment
 '''
-
 import numpy as np
 import math
+
 
 class Transformer():
     """
@@ -35,8 +35,9 @@ class Transformer():
 
         """
 
-        self.id = id        
-        self.voltage = env.config['charging_station']['voltage'] * math.sqrt(env.config['charging_station']['phases'])
+        self.id = id
+        self.voltage = env.config['charging_station']['voltage'] * \
+            math.sqrt(env.config['charging_station']['phases'])
         max_current = max_power * 1000 / self.voltage
 
         self.max_current = np.ones(simulation_length)*max_current
@@ -173,8 +174,8 @@ class Transformer():
 
         load_forecast = self.inflexible_load_forecast[step:step+horizon]
         pv_forecast = self.pv_generation_forecast[step:step+horizon]
-        
-        if step < len(self.inflexible_load_forecast):                        
+
+        if step < len(self.inflexible_load_forecast):
             load_forecast[0] = self.inflexible_load[step]
             pv_forecast[0] = self.solar_power[step]
 
@@ -193,10 +194,8 @@ class Transformer():
         if env.config['solar_power']['include']:
             mult = env.config['solar_power']['solar_power_capacity_multiplier_mean']
             mult = env.tr_rng.normal(mult, 0.1)
-            # BUG: The line below incorrectly couples the solar power with the transformer's max_power, breaking sensitivity analysis.
-            # self.solar_power = -self.solar_power * \
-            #     mult * max(self.max_power)
-            self.solar_power = -self.solar_power * mult
+            self.solar_power = -self.solar_power * \
+                mult * max(self.max_power)
 
     def generate_pv_generation_forecast(self, env) -> None:
         '''
@@ -223,11 +222,9 @@ class Transformer():
             mult = env.tr_rng.normal(mult, 0.1)
 
             # scale up the data to match the max_power of the transformers
-            # BUG: The line below incorrectly couples the inflexible load with the transformer's max_power, breaking sensitivity analysis.
-            # self.inflexible_load = self.inflexible_load * \
-            #     mult * (max(self.max_power) /
-            #             self.inflexible_load.max()+0.0000001)
-            self.inflexible_load = self.inflexible_load * mult
+            self.inflexible_load = self.inflexible_load * \
+                mult * (max(self.max_power) /
+                        self.inflexible_load.max()+0.0000001)
             # for each step
             for j in range(env.simulation_length):
                 if self.inflexible_load[j] > self.max_power[j]:

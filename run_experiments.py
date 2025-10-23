@@ -435,13 +435,17 @@ def plot_performance_metrics(stats_collection, save_path, scenario_name, algorit
     metrics_map = {
         'total_profits': f'Total Profit (€) for {total_evs} EVs',
         'average_user_satisfaction': 'Average User Satisfaction (%)',
-        'peak_transformer_loading_pct': 'Peak Transformer Loading (%)',
-        'training_time': 'Training Time (s)'
+        'peak_transformer_loading_pct': 'Peak Transformer Loading (%)'
     }
     model_names = [name for name in algorithms_to_plot if name in stats_collection]
     if not model_names: return
     algo_categories, category_colors, legend_elements = get_color_map_and_legend(model_names)
-    fig, axes = plt.subplots(1, 5, figsize=(40, 8)); axes = axes.flatten()
+    num_metrics = len(metrics_map)
+    fig, axes = plt.subplots(1, num_metrics, figsize=(8 * num_metrics, 8))
+    if num_metrics == 1:
+        axes = [axes]
+    else:
+        axes = axes.flatten()
     fig.suptitle(f'Aggregated Performance Metrics - Scenario: {scenario_name}\n'
                  f'({num_charging_points} charging points, {transformer_limit} kW transformer limit)', fontsize=22)
     for i, (metric, title) in enumerate(metrics_map.items()):

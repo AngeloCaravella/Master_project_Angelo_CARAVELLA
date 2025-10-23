@@ -65,7 +65,7 @@ inflexible_loads: # Offices, homes
 
 # PV solar Power
 solar_power:
-  include: False # True or False
+  include: True # True or False
   solar_power_capacity_multiplier_mean: 1 # 1 is default, the higher the number the more solar power
   forecast_mean: 20 # in percentage of load at time t%
   forecast_std: 5 # in percentage of load at time t%
