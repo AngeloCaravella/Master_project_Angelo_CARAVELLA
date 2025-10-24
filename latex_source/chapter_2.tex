@@ -443,21 +443,17 @@ The role of the activation function is of fundamental importance. It introduces 
     % Ensure that the image 'NN.png' is in the same directory as the .tex file
     % or specify the full path.
     \includegraphics[width=0.8\linewidth]{NN.png}
-    \caption{Structure of a Neural Network.}
+    \caption{Structure of a neural network.}
     \label{fig:nn}
 \end{figure}
 \noindent
 A neural network is structured into several layers. The \textit{input layer}, as shown in Figure \ref{fig:nn}, is the first layer and receives raw data from the environment or dataset. This is followed by one or more \textit{hidden layers}, where most of the data processing and transformations occur. Finally, the \textit{output layer} produces the final prediction, decision, or action of the agent.
 \\ \noindent
 \textbf{When a network contains multiple hidden layers, it is termed a \textit{deep neural network} (DNN)}. This "depth" is a key characteristic that allows the network to learn a hierarchical representation of features from the data. This means that each layer learns to identify patterns progressively more complex: for example, in an image, the first layer might detect edges and corners, the second layer might combine these edges to form more complex shapes, and subsequent layers might assemble these shapes to recognize entire objects. This ability to extract features at different levels of abstraction is what makes DNNs so effective.
-\\ \noindent
-\subsection{The Fundamental Role of DNNs in DRL}
+
+\subsection{Deep Q-Network for Value Function Approximation}
 \noindent
-The integration of DNNs into RL gave rise to the field of DRL, marking an era of unprecedented progress. DNNs have provided RL agents with the ability to learn directly from high-dimensional inputs, such as raw pixels of an image, and to generalize effectively across vast state spaces, overcoming the limitations of traditional RL methods.
-\\ \noindent
-\subsection{Deep Q-Network (DQN) for Value Function Approximation}
-\noindent
-A paradigmatic example of DNN application in DRL is the Deep Q-Network (DQN) algorithm. In this approach, a DNN is employed to approximate the action-value function, $Q(s, a)$. The function $Q(s, a)$ estimates the "value" or expected cumulative reward an agent can obtain by performing an action $a$ in a given state $s$ and following an optimal policy thereafter.
+A paradigmatic example of DNN application in DRL is the DQN algorithm. In this approach, a DNN is employed to approximate the action-value function, $Q(s, a)$. The function $Q(s, a)$ estimates the "value" or expected cumulative reward an agent can obtain by performing an action $a$ in a given state $s$ and following an optimal policy thereafter.
 \\ \noindent
 \textbf{Neural Network Input in DQN:} The DQN's neural network receives the \textbf{environment's state, $s$, as input}. This state can be a direct representation of the environment's observation, such as the raw pixels of a game screen (as in the case of Atari games), or a vector of extracted features describing the current state.
 \\ \noindent
@@ -481,11 +477,11 @@ The term $r + \gamma \max_{a'} Q(s', a'; \theta^{-})$ is the \textit{target valu
 \noindent
 The expectation $\mathbb{E}$ is taken over a batch of experiences $(s, a, r, s')$ sampled from a \textit{replay memory} $D$. The replay memory is a buffer that stores observed transitions $(s, a, r, s')$. Randomly sampling from it breaks temporal correlations between consecutive experiences, improving learning stability and efficiency.
 \\ \noindent
-This approach enabled agents to learn directly from high-dimensional sensory inputs, like raw pixels in Atari games, achieving human-level performance and sometimes surpassing it\cite{Mnih2015}. 
+This approach enabled agents to learn directly from high-dimensional sensory inputs, like raw pixels in Atari games, achieving human-level performance and sometimes surpassing it \cite{Mnih2015}.                          
 \\ \noindent
 \subsection{Policy Gradient Methods}
 \noindent
-Beyond value approximation, deep neural networks are also pivotal in \textit{policy gradient methods}. In these methods, the DNN does not approximate a value but directly parameterizes the agent's \textit{policy}, $\pi$. The policy defines the agent's behavior, specifying the probability of choosing a certain action in a given state.
+Beyond value approximation, DNNS are also pivotal in \textit{policy gradient methods}. In these methods, the DNN does not approximate a value but directly parameterizes the agent's \textit{policy}, $\pi$. The policy defines the agent's behavior, specifying the probability of choosing a certain action in a given state.
 \\ \noindent
 \textbf{Neural Network Input and Output in Policy Gradient Methods:} In this setup, the network, often called a \textit{policy network}, takes a state $s$ as input and outputs a probability distribution over the possible actions. For example, if there are $N$ actions, the output will be a vector of $N$ probabilities, where the sum of these probabilities is 1. Each probability indicates the likelihood that the agent will choose the corresponding action in that state.
 \\ \noindent

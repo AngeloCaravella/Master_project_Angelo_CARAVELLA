@@ -70,7 +70,7 @@ def create_comparison_plot(results_dir):
     # As per user request, define one of each type for a focused comparison
     target_algorithms = {
         'heuristic': 'ALAP',
-        'mpc': 'Online_MPC_Adaptive',
+        'mpc': 'MPC_2',
         'rl': 'SAC'
     }
 
@@ -299,7 +299,7 @@ def run_morris_analysis(base_scenario_full_path, key_parameters, PREDEFINED_LEVE
         print(f"Results for {algo_name} saved in: {base_results_path}")
 
     print(f"\n--- Morris Analysis Complete. ---")
-    if get_user_input("\nGenerate normalized comparison plot for key algorithms (ALAP, Online_MPC_Adaptive, SAC)? (y/n)", "y").lower() == 'y':
+    if get_user_input("\nGenerate normalized comparison plot for key algorithms (ALAP, MPC_2, SAC)? (y/n)", "y").lower() == 'y':
         create_comparison_plot(base_results_path)
 
 def run_oat_analysis(config_path, key_parameters, PREDEFINED_LEVELS, base_scenario_full_path):

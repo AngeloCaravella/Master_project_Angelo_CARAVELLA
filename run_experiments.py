@@ -967,12 +967,12 @@ def get_algorithms(max_cs: int, is_thesis_mode: bool) -> Dict[str, Tuple[Any, An
 
     # MPC algorithms
     mpc_algorithms = {
-        "Online_MPC_NonAdaptive": (pulp_mpc.OnlineMPC_Solver, None, {
+        "MPC": (pulp_mpc.OnlineMPC_Solver, None, {
             'prediction_horizon': 5, 
             'control_horizon': 1, 
             'use_adaptive_horizon': False,
         }),
-        "Online_MPC_Adaptive": (pulp_mpc.OnlineMPC_Solver, None, {
+        "MPC_2": (pulp_mpc.OnlineMPC_Solver, None, {
             'use_adaptive_horizon': True,
             'h_max': 5,
             'control_horizon': 5,
@@ -983,7 +983,7 @@ def get_algorithms(max_cs: int, is_thesis_mode: bool) -> Dict[str, Tuple[Any, An
     
     THESIS_ALGORITHMS_BASE = [
         "AFAP", "ALAP", "RR", "SAC", "DDPG", "DDPG+PER", "TQC", 
-        "Online_MPC_NonAdaptive", "Online_MPC_Adaptive"
+        "MPC", "MPC_2"
     ]
     
     THESIS_ALGORITHMS = {k: v for k, v in ALL_ALGORITHMS.items() if k in THESIS_ALGORITHMS_BASE}
