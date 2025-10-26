@@ -2,191 +2,175 @@
 \babel@toc {italian}{}\relax 
 \babel@toc {english}{}\relax 
 \contentsline {chapter}{List of Acronyms}{3}{section*.3}%
-\contentsline {chapter}{\numberline {1}Introduction}{7}{chapter.1}%
-\contentsline {section}{\numberline {1.1}Background and Relevance of Electric Vehicles and Vehicle-to-Grid}{7}{section.1.1}%
-\contentsline {section}{\numberline {1.2}Challenges in EV Integration into the Electricity Grid and the Role of Artificial Intelligence}{9}{section.1.2}%
-\contentsline {section}{\numberline {1.3}Objectives and Contributions of the Thesis}{10}{section.1.3}%
-\contentsline {subsection}{\numberline {1.3.1}Thesis Structure}{11}{subsection.1.3.1}%
-\contentsline {chapter}{\numberline {2}Foundations and State of the Art in Intelligent Control for the V2G Systems}{12}{chapter.2}%
-\contentsline {section}{\numberline {2.1}The V2G Imperative: A Foundation of Europe's Green Transition}{13}{section.2.1}%
-\contentsline {subsection}{\numberline {2.1.1}ISO 15118-20}{16}{subsection.2.1.1}%
-\contentsline {subsection}{\numberline {2.1.2}The V2G obstacles}{18}{subsection.2.1.2}%
-\contentsline {subsection}{\numberline {2.1.3}The Optimizer's Trilemma: Navigating a Stochastic World}{18}{subsection.2.1.3}%
-\contentsline {subsection}{\numberline {2.1.4}Sources for Energy Price Data}{19}{subsection.2.1.4}%
-\contentsline {subsection}{\numberline {2.1.5}Buying vs. Selling: The Critical Retail-Wholesale Spread}{19}{subsection.2.1.5}%
-\contentsline {subsection}{\numberline {2.1.6}Modelling the V2G Ecosystem}{20}{subsection.2.1.6}%
-\contentsline {section}{\numberline {2.2}Reinforcement Learning}{21}{section.2.2}%
-\contentsline {subsection}{\numberline {2.2.1}The Agent-Environment Interface}{21}{subsection.2.2.1}%
-\contentsline {subsection}{\numberline {2.2.2}Goals, Rewards, and Returns}{21}{subsection.2.2.2}%
-\contentsline {subsection}{\numberline {2.2.3}The Language of Learning: Markov Decision Processes}{22}{subsection.2.2.3}%
-\contentsline {subsection}{\numberline {2.2.4}Policies and Value Functions}{23}{subsection.2.2.4}%
-\contentsline {subsection}{\numberline {2.2.5}The Bellman Equations}{24}{subsection.2.2.5}%
-\contentsline {subsection}{\numberline {2.2.6}Generalized Policy Iteration (GPI)}{24}{subsection.2.2.6}%
-\contentsline {subsection}{\numberline {2.2.7}Learning from Experience: Monte Carlo (MC) and Temporal-Difference (TD) Methods}{25}{subsection.2.2.7}%
-\contentsline {subsection}{\numberline {2.2.8}Q-Learning: Off-Policy TD Control}{26}{subsection.2.2.8}%
-\contentsline {subsection}{\numberline {2.2.9}Actor-Critic Architectures}{27}{subsection.2.2.9}%
-\contentsline {section}{\numberline {2.3}Reward Engineering: Shaping Agent Behavior}{28}{section.2.3}%
-\contentsline {subsection}{\numberline {2.3.1}Potential-Based Reward Shaping}{28}{subsection.2.3.1}%
-\contentsline {subsection}{\numberline {2.3.2}Theoretical Foundation and Policy Invariance}{28}{subsection.2.3.2}%
-\contentsline {subsection}{\numberline {2.3.3}Practical Implications and Design Considerations}{29}{subsection.2.3.3}%
-\contentsline {section}{\numberline {2.4}Curriculum Learning}{29}{section.2.4}%
-\contentsline {subsection}{\numberline {2.4.1}Specific Principles and Applications}{30}{subsection.2.4.1}%
-\contentsline {subsection}{\numberline {2.4.2}Curriculum Learning in V2G}{30}{subsection.2.4.2}%
-\contentsline {section}{\numberline {2.5}The Rise of Deep Reinforcement Learning for the V2G Control}{31}{section.2.5}%
-\contentsline {subsection}{\numberline {2.5.1}The Fundamental Role of DNNs in DRL}{33}{subsection.2.5.1}%
-\contentsline {subsection}{\numberline {2.5.2}Deep Q-Network (DQN) for Value Function Approximation}{34}{subsection.2.5.2}%
+\contentsline {chapter}{\numberline {1}Introduction}{8}{chapter.1}%
+\contentsline {section}{\numberline {1.1}Background and Relevance of Electric Vehicles and Vehicle-to-Grid}{8}{section.1.1}%
+\contentsline {section}{\numberline {1.2}Challenges in EV Integration into the Electricity Grid and the Role of Artificial Intelligence}{10}{section.1.2}%
+\contentsline {section}{\numberline {1.3}Objectives and Contributions of the Thesis}{11}{section.1.3}%
+\contentsline {subsection}{\numberline {1.3.1}Thesis Structure}{12}{subsection.1.3.1}%
+\contentsline {chapter}{\numberline {2}Foundations and State of the Art in Intelligent Control for the V2G Systems}{13}{chapter.2}%
+\contentsline {section}{\numberline {2.1}The V2G Imperative: A Foundation of Europe's Green Transition}{14}{section.2.1}%
+\contentsline {subsection}{\numberline {2.1.1}ISO 15118-20}{17}{subsection.2.1.1}%
+\contentsline {subsection}{\numberline {2.1.2}The V2G obstacles}{19}{subsection.2.1.2}%
+\contentsline {subsection}{\numberline {2.1.3}The Optimizer's Trilemma: Navigating a Stochastic World}{19}{subsection.2.1.3}%
+\contentsline {subsection}{\numberline {2.1.4}Sources for Energy Price Data}{20}{subsection.2.1.4}%
+\contentsline {subsection}{\numberline {2.1.5}Buying vs. Selling: The Critical Retail-Wholesale Spread}{20}{subsection.2.1.5}%
+\contentsline {subsection}{\numberline {2.1.6}Modelling the V2G Ecosystem}{21}{subsection.2.1.6}%
+\contentsline {section}{\numberline {2.2}Reinforcement Learning}{22}{section.2.2}%
+\contentsline {subsection}{\numberline {2.2.1}The Agent-Environment Interface}{22}{subsection.2.2.1}%
+\contentsline {subsection}{\numberline {2.2.2}Goals, Rewards, and Returns}{22}{subsection.2.2.2}%
+\contentsline {subsection}{\numberline {2.2.3}The Language of Learning: Markov Decision Processes}{23}{subsection.2.2.3}%
+\contentsline {subsection}{\numberline {2.2.4}Policies and Value Functions}{24}{subsection.2.2.4}%
+\contentsline {subsection}{\numberline {2.2.5}The Bellman Equations}{25}{subsection.2.2.5}%
+\contentsline {subsection}{\numberline {2.2.6}Generalized Policy Iteration (GPI)}{25}{subsection.2.2.6}%
+\contentsline {subsection}{\numberline {2.2.7}Learning from Experience: Monte Carlo (MC) and Temporal-Difference (TD) Methods}{26}{subsection.2.2.7}%
+\contentsline {subsection}{\numberline {2.2.8}Q-Learning: Off-Policy TD Control}{27}{subsection.2.2.8}%
+\contentsline {subsection}{\numberline {2.2.9}Actor-Critic Architectures}{28}{subsection.2.2.9}%
+\contentsline {section}{\numberline {2.3}Reward Engineering: Shaping Agent Behavior}{29}{section.2.3}%
+\contentsline {subsection}{\numberline {2.3.1}Potential-Based Reward Shaping}{29}{subsection.2.3.1}%
+\contentsline {subsection}{\numberline {2.3.2}Theoretical Foundation and Policy Invariance}{29}{subsection.2.3.2}%
+\contentsline {subsection}{\numberline {2.3.3}Practical Implications and Design Considerations}{30}{subsection.2.3.3}%
+\contentsline {section}{\numberline {2.4}Curriculum Learning}{30}{section.2.4}%
+\contentsline {subsection}{\numberline {2.4.1}Specific Principles and Applications}{31}{subsection.2.4.1}%
+\contentsline {subsection}{\numberline {2.4.2}Curriculum Learning in V2G}{31}{subsection.2.4.2}%
+\contentsline {section}{\numberline {2.5}The Rise of Deep Reinforcement Learning for the V2G Control}{32}{section.2.5}%
+\contentsline {subsection}{\numberline {2.5.1}Neural Networks as Function Approximators}{32}{subsection.2.5.1}%
+\contentsline {subsection}{\numberline {2.5.2}Deep Q-Network for Value Function Approximation}{34}{subsection.2.5.2}%
 \contentsline {subsection}{\numberline {2.5.3}Policy Gradient Methods}{35}{subsection.2.5.3}%
 \contentsline {section}{\numberline {2.6}Off-policy and on-policy methods}{35}{section.2.6}%
-\contentsline {subsection}{\numberline {2.6.1}Off-policy Reinforcement Learning}{36}{subsection.2.6.1}%
-\contentsline {subsubsection}{Soft Actor-Critic (SAC)}{36}{section*.20}%
-\contentsline {subsubsection}{Deep Deterministic Policy Gradient (DDPG)}{37}{section*.21}%
-\contentsline {subsubsection}{Enhancement: Prioritized Experience Replay (PER)}{37}{section*.22}%
-\contentsline {subsubsection}{Truncated Quantile Critics (TQC)}{37}{section*.23}%
-\contentsline {subsubsection}{Twin Delayed DDPG (TD3)}{38}{section*.24}%
-\contentsline {subsection}{\numberline {2.6.2}On-Policy Methods: Stability through Cautious Updates}{38}{subsection.2.6.2}%
-\contentsline {subsubsection}{Advantage Actor-Critic (A2C/A3C)}{38}{section*.25}%
-\contentsline {subsubsection}{Trust Region Policy Optimization (TRPO)}{39}{section*.26}%
-\contentsline {subsubsection}{Proximal Policy Optimization (PPO)}{39}{section*.27}%
-\contentsline {subsection}{\numberline {2.6.3}Gradient-Free Methods: An Alternative Path}{39}{subsection.2.6.3}%
-\contentsline {subsubsection}{Augmented Random Search (ARS)}{39}{section*.28}%
-\contentsline {section}{\numberline {2.7}The Model-Based Benchmark: Model Predictive Control (MPC)}{40}{section.2.7}%
-\contentsline {paragraph}{MPC: Terminologies}{40}{section*.29}%
-\contentsline {subsection}{\numberline {2.7.1}Model Predictive Control Formulation}{41}{subsection.2.7.1}%
-\contentsline {paragraph}{The Finite-Time Optimal Control Problem}{41}{section*.31}%
-\contentsline {paragraph}{The Receding Horizon Policy}{42}{section*.32}%
-\contentsline {paragraph}{Summary of the MPC Workflow}{42}{section*.33}%
-\contentsline {paragraph}{Preliminaries :General optimization problem}{42}{section*.34}%
-\contentsline {subsubsection}{General optimization problem}{43}{section*.35}%
-\contentsline {subsubsection}{Convex optimization problem}{43}{section*.37}%
-\contentsline {subsection}{\numberline {2.7.2}Convex optimization problem: Examples}{44}{subsection.2.7.2}%
-\contentsline {subsubsection}{Numerical optimization}{45}{section*.40}%
-\contentsline {subsubsection}{MPC: Classifications}{45}{section*.41}%
-\contentsline {subsection}{\numberline {2.7.3}Implicit MPC: Online Optimization}{45}{subsection.2.7.3}%
-\contentsline {subsection}{\numberline {2.7.4}Improvement of the Standard Fixed-Horizon MPC Formulation}{46}{subsection.2.7.4}%
-\contentsline {subsubsection}{Limitation of the Fixed-Horizon Approach}{47}{section*.42}%
-\contentsline {subsubsection}{Improving the Formulation with Adaptive Horizon MPC (AHMPC)}{47}{section*.43}%
-\contentsline {subsubsection}{The Ideal (but Impractical) AHMPC Scheme}{47}{section*.44}%
-\contentsline {subsubsection}{The Practical AHMPC Algorithm}{47}{section*.45}%
-\contentsline {subsubsection}{Advantages of the AHMPC Formulation}{48}{section*.46}%
-\contentsline {subsection}{\numberline {2.7.5}Further Enhancements via Learning-Based Approaches}{48}{subsection.2.7.5}%
-\contentsline {subsection}{\numberline {2.7.6}Explicit MPC: Offline Pre-computation}{49}{subsection.2.7.6}%
-\contentsline {subsection}{\numberline {2.7.7}Deep Learning for an Efficient Explicit MPC Representation}{50}{subsection.2.7.7}%
-\contentsline {subsubsection}{Training via Implicit MPC Data Generation}{50}{section*.48}%
-\contentsline {subsubsection}{Exact PWA Representation with Deep ReLU Networks}{50}{section*.49}%
-\contentsline {section}{\numberline {2.8}A Comparative Perspective on Control Methodologies}{51}{section.2.8}%
-\contentsline {section}{\numberline {2.9}Rule-Based Heuristic Baselines}{53}{section.2.9}%
-\contentsline {subsubsection}{As-Fast-As-Possible (AFAP)}{53}{section*.51}%
-\contentsline {subsubsection}{As-Late-As-Possible (ALAP)}{53}{section*.52}%
-\contentsline {subsubsection}{Round Robin Schedulers}{53}{section*.53}%
-\contentsline {section}{\numberline {2.10}A Primer on Lithium-Ion Battery Chemistries and Degradation}{54}{section.2.10}%
-\contentsline {subsection}{\numberline {2.10.1}Fundamental Concepts and Degradation Mechanisms}{54}{subsection.2.10.1}%
-\contentsline {subsection}{\numberline {2.10.2}Key Automotive Chemistries}{55}{subsection.2.10.2}%
-\contentsline {subsection}{\numberline {2.10.3}Voltage Profiles and the Challenge of SoC Estimation}{56}{subsection.2.10.3}%
-\contentsline {subsection}{\numberline {2.10.4}Comparative Analysis and Safety Considerations}{56}{subsection.2.10.4}%
-\contentsline {chapter}{\numberline {3}An Enhanced V2G Simulation Framework for Robust Control}{58}{chapter.3}%
-\contentsline {section}{\numberline {3.1}A Unified Experimentation and Evaluation Workflow}{60}{section.3.1}%
-\contentsline {section}{\numberline {3.2}Core Simulation Parameters}{61}{section.3.2}%
-\contentsline {subsection}{\numberline {3.2.1}Temporal and Contextual Settings}{61}{subsection.3.2.1}%
-\contentsline {subsection}{\numberline {3.2.2}Stochastic Demand Modeling}{61}{subsection.3.2.2}%
-\contentsline {subsection}{\numberline {3.2.3}Economic Framework}{62}{subsection.3.2.3}%
-\contentsline {subsection}{\numberline {3.2.4}Physical Infrastructure}{62}{subsection.3.2.4}%
-\contentsline {subsection}{\numberline {3.2.5}Exogenous Energy Events}{63}{subsection.3.2.5}%
-\contentsline {subsection}{\numberline {3.2.6}Electric Vehicle Fleet Specification}{63}{subsection.3.2.6}%
-\contentsline {subsection}{\numberline {3.2.7}Dual-Mode Training: Specialists and Generalists}{63}{subsection.3.2.7}%
-\contentsline {subsubsection}{Advanced Multi-Scenario Training Strategies}{64}{section*.60}%
-\contentsline {subsection}{\numberline {3.2.8}MPC Integration and Approximation}{64}{subsection.3.2.8}%
-\contentsline {subsection}{\numberline {3.2.9}Rigorous and Reproducible Benchmarking}{64}{subsection.3.2.9}%
-\contentsline {subsection}{\numberline {3.2.10}Software Implementation and Project Structure}{65}{subsection.3.2.10}%
-\contentsline {section}{\numberline {3.3}Core Physical Models}{66}{section.3.3}%
-\contentsline {subsection}{\numberline {3.3.1}EV Model and Charging/Discharging Dynamics}{67}{subsection.3.3.1}%
-\contentsline {subsection}{\numberline {3.3.2}Battery Degradation Model}{67}{subsection.3.3.2}%
-\contentsline {subsection}{\numberline {3.3.3}Reproducible Benchmarking and Evaluation}{67}{subsection.3.3.3}%
-\contentsline {subsection}{\numberline {3.3.4}Interactive Web-Based Dashboard}{68}{subsection.3.3.4}%
-\contentsline {subsubsection}{Simulation Orchestrator}{68}{section*.62}%
-\contentsline {subsubsection}{Results Visualizer}{68}{section*.63}%
-\contentsline {section}{\numberline {3.4}Evaluation Metrics}{68}{section.3.4}%
-\contentsline {section}{\numberline {3.5}Simulator Implementation Details}{69}{section.3.5}%
-\contentsline {subsubsection}{Vehicle Definition Modes}{69}{section*.64}%
-\contentsline {subsubsection}{Empirical Calibration of the Degradation Model}{70}{section*.65}%
-\contentsline {section}{\numberline {3.6}Simulation Framework Components}{70}{section.3.6}%
-\contentsline {subsection}{\numberline {3.6.1}Electric Vehicle Model (\textbf {ev.py})}{70}{subsection.3.6.1}%
-\contentsline {subsubsection}{State and Attribute Representation}{71}{section*.66}%
-\contentsline {subsubsection}{Charging and Discharging Dynamics}{71}{section*.67}%
-\contentsline {paragraph}{Two-Stage Charging Model (\textbf {\_charge} method).}{71}{section*.68}%
-\contentsline {paragraph}{Discharging Model (\textbf {\_discharge} method).}{72}{section*.69}%
-\contentsline {subsubsection}{User Satisfaction Metric}{72}{section*.70}%
-\contentsline {subsection}{\numberline {3.6.2}Charging Station Model (\textbf {ev\_charger.py})}{72}{subsection.3.6.2}%
-\contentsline {subsubsection}{Role and Attributes}{72}{section*.71}%
-\contentsline {subsubsection}{Operational Logic (\textbf {step} method)}{72}{section*.72}%
-\contentsline {subsection}{\numberline {3.6.3}Transformer Model (\textbf {transformer.py})}{73}{subsection.3.6.3}%
-\contentsline {subsubsection}{Model Components}{73}{section*.73}%
-\contentsline {subsubsection}{Core Functionality}{73}{section*.74}%
-\contentsline {paragraph}{Load Aggregation.}{73}{section*.75}%
-\contentsline {paragraph}{Overload Detection.}{74}{section*.76}%
-\contentsline {paragraph}{Forecasting with Uncertainty.}{74}{section*.77}%
-\contentsline {subsection}{\numberline {3.6.4}Main Gym Environment (\textbf {ev2gym\_env.py})}{74}{subsection.3.6.4}%
-\contentsline {subsubsection}{Environment Structure and Main Loop}{74}{section*.78}%
-\contentsline {paragraph}{Initialization (\textbf {init}).}{74}{section*.79}%
-\contentsline {paragraph}{Simulation Step (\textbf {step(actions)}).}{74}{section*.80}%
-\contentsline {paragraph}{Reset (\textbf {reset}).}{75}{section*.81}%
-\contentsline {section}{\numberline {3.7}Reinforcement Learning Formulation}{75}{section.3.7}%
-\contentsline {subsection}{\numberline {3.7.1}State Space ($S$)}{75}{subsection.3.7.1}%
-\contentsline {subsection}{\numberline {3.7.2}Action Space ($A$)}{76}{subsection.3.7.2}%
-\contentsline {subsection}{\numberline {3.7.3}Reward Function ($R$)}{76}{subsection.3.7.3}%
-\contentsline {section}{\numberline {3.8}A History-Based Adaptive Reward for Profit Maximization}{77}{section.3.8}%
-\contentsline {subsection}{\numberline {3.8.1}Dynamic Economic Profit}{78}{subsection.3.8.1}%
-\contentsline {subsection}{\numberline {3.8.2}Adaptive User Satisfaction Penalty}{79}{subsection.3.8.2}%
-\contentsline {subsection}{\numberline {3.8.3}Adaptive Transformer Overload Penalty}{79}{subsection.3.8.3}%
-\contentsline {section}{\numberline {3.9}Reinforcement Learning Algorithms}{79}{section.3.9}%
-\contentsline {subsubsection}{Soft Actor-Critic (SAC)}{79}{section*.82}%
-\contentsline {paragraph}{Implementation Details}{81}{section*.84}%
-\contentsline {subsubsection}{Deep Deterministic Policy Gradient + PER (DDPG+PER)}{82}{section*.85}%
-\contentsline {paragraph}{Implementation Details}{84}{section*.87}%
-\contentsline {subsubsection}{Truncated Quantile Critics (TQC)}{84}{section*.88}%
-\contentsline {paragraph}{Implementation Details}{86}{section*.89}%
-\contentsline {section}{\numberline {3.10}Model Predictive Control (MPC) Implementation}{86}{section.3.10}%
-\contentsline {section}{\numberline {3.11}Online MPC Formulation (PuLP Implementation)}{86}{section.3.11}%
-\contentsline {paragraph}{Implementation Details}{87}{section*.90}%
-\contentsline {subsection}{\numberline {3.11.1}The CBC Solver and Branch and Cut Algorithm}{87}{subsection.3.11.1}%
-\contentsline {subsubsection}{The Branch and Bound Method}{87}{section*.91}%
-\contentsline {subsubsection}{The Cutting Plane Method}{88}{section*.92}%
-\contentsline {subsubsection}{Branch and Cut in CBC for MPC}{88}{section*.93}%
-\contentsline {subsection}{\numberline {3.11.2}Mathematical Formulation and Linearization}{88}{subsection.3.11.2}%
-\contentsline {subsubsection}{The Original Problem: A Complex MINLP}{88}{section*.94}%
-\contentsline {subsubsection}{The Linearization Strategy: Transforming the MINLP into a MILP}{90}{section*.95}%
-\contentsline {paragraph}{Simplification of Equations (10), (11), and (17)}{91}{section*.96}%
-\contentsline {paragraph}{The Key Role of Constraints (15) and (16)}{91}{section*.97}%
-\contentsline {subsubsection}{Omissions and Adherence to the Theoretical Formulation}{91}{section*.98}%
-\contentsline {section}{\numberline {3.12}Lyapunov-based Adaptive Horizon MPC}{91}{section.3.12}%
-\contentsline {section}{\numberline {3.13}Benchmark Results and Algorithm Comparison}{93}{section.3.13}%
-\contentsline {subsection}{\numberline {3.13.1}Scenario 1: Critical Case (High Demand & High Price Volatility)}{94}{subsection.3.13.1}%
-\contentsline {subsubsection}{Scenario Conditions}{94}{section*.99}%
-\contentsline {subsubsection}{Overall Performance Summary}{95}{section*.102}%
-\contentsline {subsubsection}{Grid Impact Analysis}{98}{section*.107}%
-\contentsline {subsubsection}{Individual EV Charging Profiles}{100}{section*.112}%
-\contentsline {subsection}{\numberline {3.13.2}MPC sensitivity for the Np/Nc ratio}{101}{subsection.3.13.2}%
-\contentsline {chapter}{\numberline {4}Sensitivity Analysis of the V2G System}{102}{chapter.4}%
-\contentsline {section}{\numberline {4.1}Introduction to Global Sensitivity Analysis}{102}{section.4.1}%
-\contentsline {section}{\numberline {4.2}Different Classes of Sensitivity Analysis}{103}{section.4.2}%
-\contentsline {subsection}{\numberline {4.2.1}Local SA}{103}{subsection.4.2.1}%
-\contentsline {subsection}{\numberline {4.2.2}Global SA (GSA)}{104}{subsection.4.2.2}%
-\contentsline {section}{\numberline {4.3}Challenges}{104}{section.4.3}%
-\contentsline {section}{\numberline {4.4}Methodology for Sensitivity and Robustness Analysis}{107}{section.4.4}%
-\contentsline {subsection}{\numberline {4.4.1}Parameter and Model-Output Space}{107}{subsection.4.4.1}%
-\contentsline {subsection}{\numberline {4.4.2}One-at-a-Time (OaaT) Sensitivity Analysis}{108}{subsection.4.4.2}%
-\contentsline {subsection}{\numberline {4.4.3}Global Sensitivity Analysis: The Morris Method}{108}{subsection.4.4.3}%
-\contentsline {subsubsection}{Implementation with SALib}{109}{section*.122}%
-\contentsline {subsubsection}{Interpreting the $\mu ^*-\sigma $ Plot}{110}{section*.123}%
-\contentsline {subsubsection}{Common Patterns in $\mu ^*-\sigma $ Plots}{112}{section*.125}%
-\contentsline {subsection}{\numberline {4.4.4}Stochastic Sampling for Robustness Training}{112}{subsection.4.4.4}%
-\contentsline {subsection}{\numberline {4.4.5}Dynamic Parameter Randomization}{113}{subsection.4.4.5}%
-\contentsline {section}{\numberline {4.5}Analysis of Results}{114}{section.4.5}%
-\contentsline {subsection}{\numberline {4.5.1}Morris Method Global Analysis Results}{114}{subsection.4.5.1}%
-\contentsline {subsubsection}{Critical Interpretation and Comparison}{114}{section*.128}%
-\contentsline {subsection}{\numberline {4.5.2}One-at-a-Time (OaaT) Results}{115}{subsection.4.5.2}%
-\contentsline {subsection}{\numberline {4.5.3}Reward Function and Curriculum Learning Analysis}{117}{subsection.4.5.3}%
-\contentsline {subsubsection}{Curriculum Learning Stages}{119}{section*.137}%
-\contentsline {chapter}{\numberline {5}Conclusions and Future Work}{120}{chapter.5}%
-\contentsline {section}{\numberline {5.1}Summary of Key Findings}{120}{section.5.1}%
-\contentsline {section}{\numberline {5.2}The Critical Role of System Parameters and Training Methodology}{121}{section.5.2}%
-\contentsline {section}{\numberline {5.3}Future Work}{121}{section.5.3}%
+\contentsline {subsection}{\numberline {2.6.1}Off-policy RL}{36}{subsection.2.6.1}%
+\contentsline {subsubsection}{Soft Actor-Critic}{36}{section*.19}%
+\contentsline {subsubsection}{Deep Deterministic Policy Gradient}{37}{section*.20}%
+\contentsline {subsubsection}{Prioritized Experience Replay}{37}{section*.21}%
+\contentsline {subsubsection}{Truncated Quantile Critics}{37}{section*.22}%
+\contentsline {subsubsection}{Twin Delayed DDPG}{38}{section*.23}%
+\contentsline {subsection}{\numberline {2.6.2}On-Policy RL}{38}{subsection.2.6.2}%
+\contentsline {subsubsection}{Advantage Actor-Critic}{38}{section*.24}%
+\contentsline {subsubsection}{Trust Region Policy Optimization}{39}{section*.25}%
+\contentsline {subsubsection}{Proximal Policy Optimization}{39}{section*.26}%
+\contentsline {subsection}{\numberline {2.6.3}Gradient-Free Methods}{39}{subsection.2.6.3}%
+\contentsline {subsubsection}{Augmented Random Search}{39}{section*.27}%
+\contentsline {section}{\numberline {2.7}The Model-Based Benchmark: Model Predictive Control}{40}{section.2.7}%
+\contentsline {subsection}{\numberline {2.7.1}Model Predictive Control Formulation}{40}{subsection.2.7.1}%
+\contentsline {subsection}{\numberline {2.7.2}MPC Classification}{41}{subsection.2.7.2}%
+\contentsline {subsection}{\numberline {2.7.3}Implicit MPC: Online Optimization}{42}{subsection.2.7.3}%
+\contentsline {subsection}{\numberline {2.7.4}Improvement of the Fixed-Horizon MPC Formulation}{43}{subsection.2.7.4}%
+\contentsline {paragraph}{The Lagrangian \(l(x,u)\).}{43}{section*.28}%
+\contentsline {subsection}{\numberline {2.7.5}Explicit MPC: Offline Pre-computation}{45}{subsection.2.7.5}%
+\contentsline {subsection}{\numberline {2.7.6}Deep Learning for an Efficient Explicit MPC Representation}{46}{subsection.2.7.6}%
+\contentsline {section}{\numberline {2.8}A Primer on Lithium-Ion Battery Chemistries and Degradation}{47}{section.2.8}%
+\contentsline {subsection}{\numberline {2.8.1}Fundamental Concepts and Degradation Mechanisms}{47}{subsection.2.8.1}%
+\contentsline {subsection}{\numberline {2.8.2}Key Automotive Chemistries}{48}{subsection.2.8.2}%
+\contentsline {subsection}{\numberline {2.8.3}Voltage Profiles and the Challenge of SoC Estimation}{49}{subsection.2.8.3}%
+\contentsline {subsection}{\numberline {2.8.4}Comparative Analysis and Safety Considerations}{49}{subsection.2.8.4}%
+\contentsline {chapter}{\numberline {3}An Enhanced V2G Simulation Framework for Robust Control}{51}{chapter.3}%
+\contentsline {section}{\numberline {3.1}Core Simulator Architecture}{51}{section.3.1}%
+\contentsline {section}{\numberline {3.2}A Unified Experimentation and Evaluation Workflow}{53}{section.3.2}%
+\contentsline {subsection}{\numberline {3.2.1}Orchestration and Execution Interfaces}{53}{subsection.3.2.1}%
+\contentsline {subsection}{\numberline {3.2.2}Scenario structure Yaml file}{53}{subsection.3.2.2}%
+\contentsline {section}{\numberline {3.3}Core Simulation Parameters}{54}{section.3.3}%
+\contentsline {subsection}{\numberline {3.3.1}Temporal and Contextual Settings}{54}{subsection.3.3.1}%
+\contentsline {subsection}{\numberline {3.3.2}Stochastic Demand Modeling}{55}{subsection.3.3.2}%
+\contentsline {subsection}{\numberline {3.3.3}Economic Framework}{55}{subsection.3.3.3}%
+\contentsline {subsection}{\numberline {3.3.4}Physical Infrastructure}{55}{subsection.3.3.4}%
+\contentsline {subsection}{\numberline {3.3.5}Exogenous Energy Events}{56}{subsection.3.3.5}%
+\contentsline {subsection}{\numberline {3.3.6}Electric Vehicle Fleet Specification}{56}{subsection.3.3.6}%
+\contentsline {subsection}{\numberline {3.3.7}Dual-Mode Training: Specialists and Generalists}{57}{subsection.3.3.7}%
+\contentsline {subsubsection}{Advanced Multi-Scenario Training Strategies}{57}{section*.33}%
+\contentsline {subsection}{\numberline {3.3.8}MPC Integration and Approximation}{58}{subsection.3.3.8}%
+\contentsline {subsection}{\numberline {3.3.9}Rigorous and Reproducible Benchmarking}{58}{subsection.3.3.9}%
+\contentsline {subsection}{\numberline {3.3.10}Software Implementation and Project Structure}{59}{subsection.3.3.10}%
+\contentsline {section}{\numberline {3.4}Core Physical Models}{60}{section.3.4}%
+\contentsline {subsection}{\numberline {3.4.1}EV Model and Charging/Discharging Dynamics}{60}{subsection.3.4.1}%
+\contentsline {subsection}{\numberline {3.4.2}Battery Degradation Model}{60}{subsection.3.4.2}%
+\contentsline {subsection}{\numberline {3.4.3}Reproducible Benchmarking and Evaluation}{61}{subsection.3.4.3}%
+\contentsline {subsection}{\numberline {3.4.4}Interactive Web-Based Dashboard}{61}{subsection.3.4.4}%
+\contentsline {subsubsection}{Simulation Orchestrator}{61}{section*.35}%
+\contentsline {subsubsection}{Results Visualizer}{61}{section*.36}%
+\contentsline {section}{\numberline {3.5}Evaluation Metrics}{62}{section.3.5}%
+\contentsline {section}{\numberline {3.6}Simulator Implementation Details}{63}{section.3.6}%
+\contentsline {subsection}{\numberline {3.6.1}Vehicle Definition Modes}{63}{subsection.3.6.1}%
+\contentsline {subsection}{\numberline {3.6.2}Empirical Calibration of the Degradation Model}{63}{subsection.3.6.2}%
+\contentsline {section}{\numberline {3.7}Simulation Framework Components}{64}{section.3.7}%
+\contentsline {subsection}{\numberline {3.7.1}Electric Vehicle Model (\textbf {ev.py})}{64}{subsection.3.7.1}%
+\contentsline {subsubsection}{State and Attribute Representation}{64}{section*.37}%
+\contentsline {subsubsection}{Charging and Discharging Dynamics}{64}{section*.38}%
+\contentsline {paragraph}{Two-Stage Charging Model (\textbf {\_charge} method).}{65}{section*.39}%
+\contentsline {paragraph}{Discharging Model (\textbf {\_discharge} method).}{65}{section*.40}%
+\contentsline {subsubsection}{User Satisfaction Metric}{65}{section*.41}%
+\contentsline {subsection}{\numberline {3.7.2}Charging Station Model (\textbf {ev\_charger.py})}{65}{subsection.3.7.2}%
+\contentsline {subsubsection}{Role and Attributes}{65}{section*.42}%
+\contentsline {subsubsection}{Operational Logic (\textbf {step} method)}{66}{section*.43}%
+\contentsline {subsection}{\numberline {3.7.3}Transformer Model (\textbf {transformer.py})}{66}{subsection.3.7.3}%
+\contentsline {subsubsection}{Model Components}{66}{section*.44}%
+\contentsline {subsubsection}{Core Functionality}{67}{section*.45}%
+\contentsline {paragraph}{Load Aggregation.}{67}{section*.46}%
+\contentsline {paragraph}{Overload Detection.}{67}{section*.47}%
+\contentsline {paragraph}{Forecasting with Uncertainty.}{67}{section*.48}%
+\contentsline {subsection}{\numberline {3.7.4}Main Gym Environment (\textbf {ev2gym\_env.py})}{67}{subsection.3.7.4}%
+\contentsline {subsubsection}{Environment Structure and Main Loop}{67}{section*.49}%
+\contentsline {paragraph}{Initialization (\textbf {init}).}{67}{section*.50}%
+\contentsline {paragraph}{Simulation Step (\textbf {step(actions)}).}{67}{section*.51}%
+\contentsline {paragraph}{Reset (\textbf {reset}).}{68}{section*.52}%
+\contentsline {section}{\numberline {3.8}Rule-Based Heuristic Baselines}{68}{section.3.8}%
+\contentsline {subsubsection}{As-Fast-As-Possible}{68}{section*.53}%
+\contentsline {subsubsection}{As-Late-As-Possible}{69}{section*.54}%
+\contentsline {subsubsection}{Round Robin Schedulers}{69}{section*.55}%
+\contentsline {section}{\numberline {3.9}Reinforcement Learning Formulation}{69}{section.3.9}%
+\contentsline {subsection}{\numberline {3.9.1}State Space ($S$)}{69}{subsection.3.9.1}%
+\contentsline {subsection}{\numberline {3.9.2}Action Space ($A$)}{71}{subsection.3.9.2}%
+\contentsline {subsection}{\numberline {3.9.3}Reward Function ($R$)}{71}{subsection.3.9.3}%
+\contentsline {section}{\numberline {3.10}A History-Based Adaptive Reward for Profit Maximization}{71}{section.3.10}%
+\contentsline {subsection}{\numberline {3.10.1}Dynamic Economic Profit}{72}{subsection.3.10.1}%
+\contentsline {subsection}{\numberline {3.10.2}Adaptive User Satisfaction Penalty}{73}{subsection.3.10.2}%
+\contentsline {subsection}{\numberline {3.10.3}Adaptive Transformer Overload Penalty}{73}{subsection.3.10.3}%
+\contentsline {section}{\numberline {3.11}RL Algorithms}{73}{section.3.11}%
+\contentsline {subsection}{\numberline {3.11.1}Soft Actor-Critic}{73}{subsection.3.11.1}%
+\contentsline {subsection}{\numberline {3.11.2}Deep Deterministic Policy Gradient + PER}{75}{subsection.3.11.2}%
+\contentsline {subsection}{\numberline {3.11.3}Truncated Quantile Critics}{76}{subsection.3.11.3}%
+\contentsline {section}{\numberline {3.12}MPC Implementation}{77}{section.3.12}%
+\contentsline {subsection}{\numberline {3.12.1}The CBC Solver and Branch and Cut Algorithm}{78}{subsection.3.12.1}%
+\contentsline {subsubsection}{The Branch and Bound Method}{78}{section*.58}%
+\contentsline {subsubsection}{The Cutting Plane Method}{79}{section*.59}%
+\contentsline {subsubsection}{Branch and Cut in CBC for MPC}{79}{section*.60}%
+\contentsline {subsection}{\numberline {3.12.2}Mathematical Formulation and Linearization}{79}{subsection.3.12.2}%
+\contentsline {subsubsection}{The Original Problem: A Complex MINLP}{79}{section*.61}%
+\contentsline {subsubsection}{The Linearization Strategy: Transforming the MINLP into a MILP}{81}{section*.62}%
+\contentsline {subsubsection}{Omissions and Adherence to the Theoretical Formulation}{82}{section*.63}%
+\contentsline {section}{\numberline {3.13}Lyapunov-based Adaptive Horizon MPC}{82}{section.3.13}%
+\contentsline {section}{\numberline {3.14}Benchmark Results and Algorithm Comparison}{83}{section.3.14}%
+\contentsline {subsection}{\numberline {3.14.1}Description of the scenarios}{84}{subsection.3.14.1}%
+\contentsline {subsection}{\numberline {3.14.2}Scenario 1: Critical Case}{85}{subsection.3.14.2}%
+\contentsline {subsubsection}{Scenario Conditions}{85}{section*.65}%
+\contentsline {subsubsection}{Overall Performance Summary}{86}{section*.68}%
+\contentsline {subsubsection}{Grid Impact Analysis}{89}{section*.73}%
+\contentsline {subsubsection}{Individual EV Charging Profiles}{90}{section*.78}%
+\contentsline {subsection}{\numberline {3.14.3}MPC sensitivity for the Np/Nc ratio}{91}{subsection.3.14.3}%
+\contentsline {chapter}{\numberline {4}Sensitivity Analysis of the V2G System}{93}{chapter.4}%
+\contentsline {section}{\numberline {4.1}Introduction to Global Sensitivity Analysis}{93}{section.4.1}%
+\contentsline {section}{\numberline {4.2}Different Classes of Sensitivity Analysis}{94}{section.4.2}%
+\contentsline {subsection}{\numberline {4.2.1}Local SA}{94}{subsection.4.2.1}%
+\contentsline {subsection}{\numberline {4.2.2}Global SA (GSA)}{95}{subsection.4.2.2}%
+\contentsline {section}{\numberline {4.3}Challenges}{95}{section.4.3}%
+\contentsline {section}{\numberline {4.4}Screening Techniques}{96}{section.4.4}%
+\contentsline {subsection}{\numberline {4.4.1}Note on Interactions}{97}{subsection.4.4.1}%
+\contentsline {section}{\numberline {4.5}Methodology for Sensitivity and Robustness Analysis}{98}{section.4.5}%
+\contentsline {subsection}{\numberline {4.5.1}Parameter and Model-Output Space}{98}{subsection.4.5.1}%
+\contentsline {subsection}{\numberline {4.5.2}One-at-a-Time (OaaT) Sensitivity Analysis}{99}{subsection.4.5.2}%
+\contentsline {subsection}{\numberline {4.5.3}Global Sensitivity Analysis: The Morris Method}{99}{subsection.4.5.3}%
+\contentsline {subsubsection}{Implementation with SALib}{100}{section*.86}%
+\contentsline {subsubsection}{Interpreting the $\mu ^*-\sigma $ Plot}{101}{section*.87}%
+\contentsline {subsubsection}{Common Patterns in $\mu ^*-\sigma $ Plots}{103}{section*.89}%
+\contentsline {subsection}{\numberline {4.5.4}Stochastic Sampling for Robustness Training}{103}{subsection.4.5.4}%
+\contentsline {subsection}{\numberline {4.5.5}Dynamic Parameter Randomization}{104}{subsection.4.5.5}%
+\contentsline {section}{\numberline {4.6}Analysis of Results}{105}{section.4.6}%
+\contentsline {subsection}{\numberline {4.6.1}Morris Method Global Analysis Results}{105}{subsection.4.6.1}%
+\contentsline {subsubsection}{Critical Interpretation and Comparison}{105}{section*.92}%
+\contentsline {subsection}{\numberline {4.6.2}One-at-a-Time (OaaT) Results}{106}{subsection.4.6.2}%
+\contentsline {subsection}{\numberline {4.6.3}Reward Function and Curriculum Learning Analysis}{108}{subsection.4.6.3}%
+\contentsline {subsubsection}{Curriculum Learning Stages}{110}{section*.101}%
+\contentsline {chapter}{\numberline {5}Conclusions and Future Work}{111}{chapter.5}%
+\contentsline {section}{\numberline {5.1}Summary of Key Findings}{111}{section.5.1}%
+\contentsline {section}{\numberline {5.2}The Critical Role of System Parameters and Training Methodology}{112}{section.5.2}%
+\contentsline {section}{\numberline {5.3}Future Work}{112}{section.5.3}%
+\babel@toc {italian}{}\relax 
+\babel@toc {english}{}\relax 

@@ -1,15 +1,16 @@
-\section{Online MPC Formulation (PuLP Implementation)}
 
+\section{MPC Implementation}
+The framework includes a Model Predictive Control implementation in \textbf{pulp\_mpc.py}, which serves as a powerful classical optimization baseline.
 The MPC implemented with PuLP solves a profit maximization problem at each control interval over a finite prediction horizon $H$. This formulation is designed for online, real-time control, where decisions are made based on the current system state and future predictions. This approach is often termed an "implicit" MPC because the control law is not pre-computed; instead, it is found by solving a full optimization problem at every control interval.
-
-\paragraph{Implementation Details}
+\\
+\noindent
 This online controller is implemented as the \textbf{OnlineMPC\_Solver} class within the \textbf{pulp\_mpc.py} module. At each invocation of its \textbf{get\_action} method, it dynamically constructs and solves a Mixed-Integer Linear Programming (MILP) using the \textbf{PuLP} modeling library. PuLP acts as a high-level modeling interface for the underlying \textbf{CBC (COIN-OR Branch and Cut)} solver, an open-source solver capable of handling MILPs.
 
 
 \subsection{The CBC Solver and Branch and Cut Algorithm}
 \label{sec:cbc_branch_cut}
 
-The core of the online MPC controller is the CBC (COIN-OR Branch and Cut) solver, which is tasked with solving the MILP formulated at each time step. CBC is a powerful, open-source solver that implements a sophisticated algorithm known as \textbf{Branch and Cut}; which is an exact method for solving MILPs,is an improved version of the Branch-and-Bound
+The core of the online MPC controller is the CBC (COIN-OR Branch and Cut) solver, which is tasked with solving the MILP formulated at each time step. CBC is a powerful, open-source solver that implements a sophisticated algorithm known as \textbf{Branch and Cut}; which is an exact method for solving MILPs, is an improved version of the Branch-and-Bound
 algorithm. The algorithm is a hybrid of two powerful techniques:\textbf{the Branch and Bound algorithm and the Cutting Plane method}.
 
 \subsubsection{The Branch and Bound Method}
@@ -18,8 +19,7 @@ The Branch and Bound algorithm is a systematic method for solving optimization p
 \begin{enumerate}
     \item \textbf{Relaxation:} The algorithm starts by solving a "relaxed" version of the problem, where the integer constraints are ignored (i.e., integer variables are treated as continuous). This provides a fractional solution and an initial upper bound (for a maximization problem) on the optimal integer solution.
     
-    \item \textbf{Branching:} If the solution to the relaxed problem contains fractional values for variables that should be integers, the algorithm "branches" on one of these fractional variables(As in
-the B\&B). For a variable $x$ with a fractional value (e.g., 2.5), it creates two new subproblems (branches): one with the added constraint $x \le 2$ and another with the constraint $x \ge 3$. This process effectively divides the problem space.
+    \item \textbf{Branching:} If the solution to the relaxed problem contains fractional values for variables that should be integers, the algorithm "branches" on one of these fractional variables. For a variable $x$ with a fractional value (e.g., 2.5), it creates two new subproblems (branches): one with the added constraint $x \le 2$ and another with the constraint $x \ge 3$. This process effectively divides the problem space.
     
     \item \textbf{Bounding:} For each new subproblem, the relaxed version is solved. The solution provides a local upper bound for that branch. If this bound is worse than the best integer solution found so far (the "incumbent"), that entire branch can be "pruned" (discarded), as it cannot lead to a better solution.
     
@@ -42,20 +42,21 @@ In the context of the MPC for V2G scheduling, this is particularly important. Th
 
 \subsection{Mathematical Formulation and Linearization}
 
-The implementation of the MPC controller, contained in the \textbf{pulp\_mpc.py} script, translates the optimization problem into a MILP that can be solved efficiently using the open-source CBC (COIN-OR Branch and Cut) solver. However, the original mathematical formulation presented in some research papers, such as the one by Orfanoudakis et al. \cite{orfanoudakis2024ev2gym}, is inherently non-linear. To make the problem tractable in a real-time control context, several important simplifications and corrections were necessary.
+The implementation of MPC, contained in the \textbf{pulp\_mpc.py} script, translates the optimization problem into a MILP that can be solved efficiently using the open-source CBC (COIN-OR Branch and Cut) solver. However, the original mathematical formulation presented in some research papers, such as the one by Orfanoudakis et al. \cite{orfanoudakis2024ev2gym}, is inherently non-linear. To make the problem tractable in a real-time control context, several important simplifications and corrections were necessary.
 
 \subsubsection{The Original Problem: A Complex MINLP}
 
 The original theoretical formulation of the problem is a \textbf{Mixed-Integer Non-Linear Program (MINLP)}, which is an optimization problem with both continuous and integer variables, and with non-linear constraints or objective function. The non-linearity arises from the very definition of power and current, where a continuous variable (the current \textbf{I}) is multiplied by a binary variable (the state \textbf{omega}).
-
-Specifically, the sources of non-linearity in the reference formulation are:
+\\
+\noindent
+Specifically, the sources of non-linearity are:
 \begin{itemize}
-    \item \textbf{Equations (10) and (11) - Power Definition:} The charging ($P^{\text{ch}}$) and discharging ($P^{\text{dis}}$) power is defined as the product of current, voltage, and efficiency, but also includes the binary state variable. For example: $P^{\text{ch}} = I^{\text{ch}} \cdot V \cdot \eta^{\text{ch}} \cdot \omega^{\text{ch}}$. This is a multiplication of two variables ($I^{\text{ch}}$ and $\omega^{\text{ch}}$), making the expression quadratic and therefore non-linear.
-    \item \textbf{Equation (17) - Charging Station Current:} The total current for a charging station ($I^{\text{cs}}$) is also defined as a sum of non-linear terms: $I^{\text{cs}} = \sum (I^{\text{ch}} \cdot \omega^{\text{ch}} + I^{\text{dis}} \cdot \omega^{\text{dis}})$.
+    \item \textbf{Power Definition:} The charging ($P^{\text{ch}}$) and discharging ($P^{\text{dis}}$) power is defined as the product of current, voltage, and efficiency, but also includes the binary state variable. For example: $P^{\text{ch}} = I^{\text{ch}} \cdot V \cdot \eta^{\text{ch}} \cdot \omega^{\text{ch}}$. This is a multiplication of two variables ($I^{\text{ch}}$ and $\omega^{\text{ch}}$), making the expression quadratic and therefore non-linear.
+    \item \textbf{Charging Station Current:} The total current for a charging station ($I^{\text{cs}}$) is also defined as a sum of non-linear terms: $I^{\text{cs}} = \sum (I^{\text{ch}} \cdot \omega^{\text{ch}} + I^{\text{dis}} \cdot \omega^{\text{dis}})$.
 \end{itemize}
 
 Solving a MINLP is a computationally very arduous task. It requires specialized, often commercial, solvers and a computation time that can grow exponentially, making it unsuitable for a control application that requires responses in a matter of seconds.
-
+In the next page scheme \ref{alg:online_mpc} shows the MPC algorithm created.  
 \subsubsection{The Linearization Strategy: Transforming the MINLP into a MILP}
 
 \begin{algorithm}[H]
@@ -105,15 +106,15 @@ Solving a MINLP is a computationally very arduous task. It requires specialized,
 }
 \end{algorithm}
 
-\paragraph{Simplification of Equations (10), (11), and (17)}
 The multiplication by $\omega$ is removed from the power and current definitions. The powers $P^{\text{ch}}$ and $P^{\text{dis}}$ are defined in a purely linear way, as a function of only the current $I$.
-
-\paragraph{The Key Role of Constraints (15) and (16)}
 The "on/off" logic is entirely delegated to the current limit constraints, which are modified to include the $\omega$ variable. Our code implements:
+\begin{subequations}
 \begin{align}
-    I^{\text{ch}}_{i,t} &\le \bar{I}^{\text{ch}}_{i} \cdot \omega^{\text{ch}}_{i,t} \label{eq:lin_ich_limit_new} \\
-    I^{\text{dis}}_{i,t} &\le \bar{I}^{\text{dis}}_{i} \cdot \omega^{\text{dis}}_{i,t} \label{eq:lin_idis_limit_new}
+    I^{\text{ch}}_{i,t} &\le \bar{I}^{\text{ch}}_{i} \cdot \omega^{\text{ch}}_{i,t} \\
+    I^{\text{dis}}_{i,t} &\le \bar{I}^{\text{dis}}_{i} \cdot \omega^{\text{dis}}_{i,t}
 \end{align}
+\end{subequations}
+
 This approach ensures that if the optimizer sets $\omega^{\text{ch}}=0$, the constraint forces the current $I^{\text{ch}}$ to zero, effectively turning off the power. If $\omega^{\text{ch}}=1$, the current is free to flow up to its maximum. The same logic applies to the discharge constraint.
 
 \subsubsection{Omissions and Adherence to the Theoretical Formulation}
@@ -122,12 +123,10 @@ In addition to linearization, the implementation in \textbf{pulp\_mpc.py} makes 
 
 \begin{itemize}
     \item \textbf{Omission of Non-Linearity:} As described, the main "omission" is the non-linear formulation itself, which is replaced by its efficient, linear counterpart.
-    \item \textbf{Correction of Battery Dynamics (Eq. 13):} The original formulation sometimes states $E_{t} = E_{t-1} + (P^{\text{ch}} + P^{\text{dis}})\Delta t$, which is physically incorrect. Our implementation corrects this dynamic to $E_{t} = E_{t-1} + (P^{\text{ch}}\eta^{\text{ch}} - P^{\text{dis}}/\eta^{\text{dis}})\Delta t$, correctly modeling the accumulation and consumption of energy.
-    \item \textbf{Correction of Transformer Load (Eq. 19):} Similarly, the total EV load on the transformer is calculated as $P^{\text{ch}} - P^{\text{dis}}$, correctly subtracting the power injected into the grid during discharge.
+    \item \textbf{Correction of Battery Dynamics:} The original formulation sometimes states $E_{t} = E_{t-1} + (P^{\text{ch}} + P^{\text{dis}})\Delta t$, which is physically incorrect. Our implementation corrects this dynamic to $E_{t} = E_{t-1} + (P^{\text{ch}}\eta^{\text{ch}} - P^{\text{dis}}/\eta^{\text{dis}})\Delta t$, correctly modeling the accumulation and consumption of energy.
+    \item \textbf{Correction of Transformer Load:} Similarly, the total EV load on the transformer is calculated as $P^{\text{ch}} - P^{\text{dis}}$, correctly subtracting the power injected into the grid during discharge.
 
 \end{itemize}
-
-In conclusion, the \textbf{pulp\_mpc.py} code is not a simple translation of the theoretical formula, but an engineered implementation that (a) transforms an intractable MINLP into an efficient MILP, and (b) corrects certain physical inaccuracies to achieve a more realistic and reliable model behavior.
 
 \section{Lyapunov-based Adaptive Horizon MPC}
 

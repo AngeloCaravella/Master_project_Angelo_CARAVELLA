@@ -1,5 +1,0 @@
-graph TD
-    subgraph SAC Part 1 ["Framework & Architecture"]
-        S1["<b>Objective:</b> Maximize the cumulative reward plus the policy's entropy.<br/>This encourages exploration and prevents premature convergence."] --> S2;
-        S2["<b>Core Architecture:</b><br/>- A stochastic Actor policy (π)<br/>- Two Q-function Critics (Q1, Q2) to mitigate overestimation bias<br/>- Two corresponding Target Q-function Critics for stability<br/>- An adjustable Temperature Parameter (α) to balance the reward/entropy trade-off"]
-    end

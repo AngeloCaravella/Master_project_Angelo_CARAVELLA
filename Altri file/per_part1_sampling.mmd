@@ -1,5 +1,0 @@
-graph TD
-    subgraph PER Part 1 ["Prioritized Sampling Mechanism"]
-        P1["The priority 'p' of each transition is determined by its Temporal Difference (TD) error.<br/>A higher TD error signifies a more 'surprising' transition where the agent has more to learn."] --> P2;
-        P2["Transitions are sampled non-uniformly based on a probability P(i),<br/>which is proportional to the priority 'p' raised to the power of a parameter, <b>alpha</b>.<br/>Alpha (0 to 1) controls the degree of prioritization: alpha=0 results in uniform random sampling."]
-    end

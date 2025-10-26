@@ -40,6 +40,91 @@ from matplotlib.patches import Patch
 from stable_baselines3.common.vec_env import DummyVecEnv
 from desired_soc_summary import print_desired_soc_summary
 
+# --- NEW IMPORTS FOR DUELING SAC ---
+import torch.nn as nn
+from stable_baselines3.common.torch_layers import create_mlp
+from stable_baselines3.sac.policies import SACPolicy, ContinuousCritic
+# --- END NEW IMPORTS ---
+
+
+# =====================================================================================
+# --- DUELING SAC IMPLEMENTATION ---
+# =====================================================================================
+
+# 1. Define the Dueling Q-network module
+class DuelingQNet(nn.Module):
+    """
+    Dueling Q-Network for SAC.
+    Q(s, a) = V(s) + A(s, a)
+    """
+    def __init__(self, features_dim: int, action_dim: int, qf_arch: List[List[int]], activation_fn: type[nn.Module] = nn.ReLU):
+        super().__init__()
+        
+        # qf_arch is [shared_arch, value_arch, advantage_arch]
+        shared_arch, value_arch, advantage_arch = qf_arch
+        
+        # Shared network
+        shared_net, last_layer_dim_shared = create_mlp(features_dim, -1, shared_arch, activation_fn)
+        self.shared_net = nn.Sequential(*shared_net)
+
+        # Value stream
+        value_net, _ = create_mlp(last_layer_dim_shared, 1, value_arch, activation_fn)
+        self.value_net = nn.Sequential(*value_net)
+
+        # Advantage stream
+        advantage_net, _ = create_mlp(last_layer_dim_shared + action_dim, 1, advantage_arch, activation_fn)
+        self.advantage_net = nn.Sequential(*advantage_net)
+
+    def forward(self, features: torch.Tensor, action: torch.Tensor) -> torch.Tensor:
+        # The input `features` is already the extracted features from the observation
+        shared_features = self.shared_net(features)
+        value = self.value_net(shared_features)
+        
+        advantage_input = torch.cat([shared_features, action], dim=1)
+        advantage = self.advantage_net(advantage_input)
+        
+        return value + advantage
+
+# 2. Define a custom ContinuousCritic that uses the DuelingQNet
+class DuelingContinuousCritic(ContinuousCritic):
+    def __init__(
+        self,
+        observation_space: gym.spaces.Space,
+        action_space: gym.spaces.Space,
+        net_arch: List[List[int]], # This will be the dueling architecture
+        features_extractor: nn.Module,
+        features_dim: int,
+        activation_fn: type[nn.Module] = nn.ReLU,
+        normalize_images: bool = True,
+        n_critics: int = 2,
+        share_features_extractor: bool = True,
+    ):
+        # Call parent __init__ but we will replace q_networks
+        # We need to pass a dummy net_arch to the parent to avoid errors
+        super().__init__(
+            observation_space, action_space, [1], # dummy net_arch
+            features_extractor, features_dim, activation_fn,
+            normalize_images, n_critics, share_features_extractor
+        )
+        
+        self.q_networks = []
+        action_dim = action_space.shape[0]
+        for i in range(n_critics):
+            q_net = DuelingQNet(features_dim, action_dim, net_arch, activation_fn)
+            self.q_networks.append(q_net)
+        self.q_networks = nn.ModuleList(self.q_networks)
+
+    def forward(self, obs: torch.Tensor, actions: torch.Tensor) -> Tuple[torch.Tensor, ...]:
+        features = self.extract_features(obs)
+        return tuple(q_net(features, actions) for q_net in self.q_networks)
+
+# 3. Define a custom SACPolicy that uses the DuelingContinuousCritic
+class DuelingSACPolicy(SACPolicy):
+    def make_critic(self, features_extractor: Optional[nn.Module] = None) -> DuelingContinuousCritic:
+        critic_kwargs = self._get_kwargs_for_critic(features_extractor)
+        return DuelingContinuousCritic(**critic_kwargs).to(self.device)
+
+
 # =====================================================================================
 # --- CLASSI WRAPPER E AMBIENTI (INVARIATE) ---
 # =====================================================================================
@@ -168,8 +253,7 @@ class CurriculumEnv(gym.Env):
         return self._pad_observation(obs), reward, terminated, truncated, info
 
     def close(self):
-        if self.current_env:
-            self.current_env.close()
+        if self.current_env: self.current_env.close()
 
 class ShuffledMultiScenarioEnv(gym.Env):
     def __init__(self, config_files, reward_function, state_function):
@@ -446,7 +530,7 @@ def plot_performance_metrics(stats_collection, save_path, scenario_name, algorit
         axes = [axes]
     else:
         axes = axes.flatten()
-    fig.suptitle(f'Aggregated Performance Metrics - Scenario: {scenario_name}\n'
+    fig.suptitle(f'Aggregated Performance Metrics - Scenario: {scenario_name}\n' 
                  f'({num_charging_points} charging points, {transformer_limit} kW transformer limit)', fontsize=22)
     for i, (metric, title) in enumerate(metrics_map.items()):
         ax = axes[i]
@@ -541,30 +625,58 @@ def plot_ev_presence(save_path, scenario_name, ev_counts, timescale):
     plt.savefig(os.path.join(save_path, f"ev_presence_{scenario_name}.png"))
     plt.close(fig)
 
-def plot_average_soc_over_time(save_path, scenario_name, soc_data, timescale):
-    if not soc_data: return
+def plot_average_soc_over_time(save_path, scenario_name, soc_data, timescale, clip_min=0.0, clip_max=1.0):
+    """
+    Plotta la SoC media nel tempo e clippa i valori fuori dall'intervallo [clip_min, clip_max].
+    - soc_data: dict {algorithm_name: [run1_series, run2_series, ...]} dove ogni run è una lista/np.array.
+    - timescale: in minuti (come nel tuo codice).
+    - clip_min/clip_max: valori di clipping (default 0.0-1.0).
+    """
+    if not soc_data:
+        return
+
     fig, ax = plt.subplots(figsize=(15, 8))
     algorithms_to_plot = list(soc_data.keys())
     _, category_colors, _ = get_color_map_and_legend(algorithms_to_plot)
+
     for name, runs in soc_data.items():
-        if not runs: continue
+        if not runs:
+            continue
+
+        # allinea le run alla lunghezza minima
         min_len = min(len(run) for run in runs)
-        aligned_runs = [run[:min_len] for run in runs]
+        aligned_runs = np.array([np.array(run[:min_len], dtype=float) for run in runs])
+
+        # Calcoli statistici
         mean_soc = np.mean(aligned_runs, axis=0)
         std_soc = np.std(aligned_runs, axis=0)
-        time_hours = np.arange(min_len) * timescale / 60
+
+        # CLIPPING: clamp mean e banda a [clip_min, clip_max]
+        lower = mean_soc - std_soc
+        upper = mean_soc + std_soc
+
+        mean_clipped = np.clip(mean_soc, clip_min, clip_max)
+        lower_clipped = np.clip(lower, clip_min, clip_max)
+        upper_clipped = np.clip(upper, clip_min, clip_max)
+
+        # Time axis (ore)
+        time_hours = np.arange(min_len) * timescale / 60.0
+
         color = category_colors.get(name, "#cccccc")
-        ax.plot(time_hours, mean_soc, label=name, color=color, linewidth=2)
-        ax.fill_between(time_hours, mean_soc - std_soc, mean_soc + std_soc, color=color, alpha=0.2)
+        ax.plot(time_hours, mean_clipped, label=name, color=color, linewidth=2)
+        ax.fill_between(time_hours, lower_clipped, upper_clipped, color=color, alpha=0.2)
+
     ax.set_xlabel("Time (hours)")
     ax.set_ylabel("Average State of Charge (SoC)")
     ax.set_title(f"Average SoC Over Time - Scenario: {scenario_name}")
-    ax.yaxis.set_major_formatter(plt.FuncFormatter(lambda y, _: f'{y:.0%}'))
+    ax.yaxis.set_major_formatter(plt.FuncFormatter(lambda y, _: f'{y:.0%}'))  # assume frazione 0..1
     ax.grid(True, linestyle='--', alpha=0.6)
     ax.legend(title="Algorithms")
     plt.tight_layout()
+    os.makedirs(save_path, exist_ok=True)
     plt.savefig(os.path.join(save_path, f"average_soc_over_time_{scenario_name}.png"))
     plt.close(fig)
+
 
 def plot_individual_ev_sessions(save_path, scenario_name, algorithm_name, departed_evs, timescale):
     """
@@ -809,7 +921,17 @@ def run_benchmark(config_files, reward_func, algorithms_to_run, num_simulations,
                         if not os.path.exists(model_path): 
                             if generate_plots: print(f"!!! Model {name} not found. Skipping."); 
                             continue
-                        model = rl_class.load(model_path, env=env_instance, device="cuda" if torch.cuda.is_available() else "cpu")
+
+                        custom_objects = {}
+                        if name == "SAC" and kwargs.get("policy") == DuelingSACPolicy:
+                            custom_objects = {
+                                "DuelingQNet": DuelingQNet,
+                                "DuelingContinuousCritic": DuelingContinuousCritic,
+                                "DuelingSACPolicy": DuelingSACPolicy,
+                            }
+
+                        model = rl_class.load(model_path, env=env_instance, custom_objects=custom_objects, device="cuda" if torch.cuda.is_available() else "cpu")
+
                     else:
                         model = algorithm_class(env=env_instance.unwrapped, **kwargs)
 
@@ -956,7 +1078,18 @@ def get_algorithms(max_cs: int, is_thesis_mode: bool) -> Dict[str, Tuple[Any, An
         "AFAP": (ChargeAsFastAsPossible, None, {}), 
         "ALAP": (ChargeAsLateAsPossible, None, {}), 
         "RR": (RoundRobin, None, {}),
-        "SAC": (None, SAC, {}), 
+        "SAC": (None, SAC, {
+            'policy': DuelingSACPolicy,
+            'learning_rate': 1e-4,
+            'learning_starts': 5000,
+            'policy_kwargs': dict(
+                net_arch=dict(
+                    pi=[256, 256], 
+                    # For the Dueling Critic: [shared, value, advantage]
+                    qf=[[400, 300], [256], [256]] 
+                )
+            )
+        }), 
         "DDPG": (None, DDPG, {}), 
         "DDPG+PER": (None, CustomDDPG, {'replay_buffer_class': PrioritizedReplayBuffer}),
         "TQC": (None, TQC, {
@@ -1009,7 +1142,11 @@ def train_rl_models_if_requested(scenarios_to_test: List[str], selected_reward_f
     for name, (_, rl_class, kwargs) in rl_models_to_run.items():
         print(f"--- Training {name} ---")
         start_time = time.process_time()
-        model = rl_class("MlpPolicy", train_env, verbose=0, device="cuda" if torch.cuda.is_available() else "cpu", **kwargs)
+        
+        # Pass policy class directly if it is specified in kwargs
+        policy_class = kwargs.pop("policy", "MlpPolicy")
+        
+        model = rl_class(policy_class, train_env, verbose=0, device="cuda" if torch.cuda.is_available() else "cpu", **kwargs)
         model.learn(total_timesteps=steps_for_training, callback=[ProgressCallback(steps_for_training), TrainingPlotCallback(name, session_name)])
         end_time = time.process_time()
         training_times[name] = end_time - start_time

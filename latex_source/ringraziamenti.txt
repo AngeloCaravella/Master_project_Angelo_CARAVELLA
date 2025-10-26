@@ -1,0 +1,46 @@
+
+\newpage\selectlanguage{italian}
+\chapter*{Ringraziamenti}
+\begin{onehalfspacing}
+Desidero esprimere la mia più sincera gratitudine a tutte le persone — familiari e amici — che mi hanno accompagnato durante questi ultimi due anni.  
+Sono stati anni intensi e ricchi di cambiamenti: oltre all’aspetto universitario che fa da cornice, ci sono state esperienze — come quella di Siemens a Milano, ma anche quelle di supplenza a Benevento e Sant’Agata de’ Goti — che mi hanno profondamente arricchito e aiutato a crescere sia come persona che come futuro professionista.
+Ringrazio me stesso per la testardaggine con cui ho portato avanti alcune scelte, anche quando non era facile.  
+Ringrazio me stesso per aver avuto il coraggio di lanciarmi in tante cose diverse, a volte forse troppe, chiedendomi spesso se tutto ciò avesse davvero senso.  
+Tra queste esperienze, anche la musica ha avuto un ruolo importante: nonostante la costanza ballerina, sono riuscito a suonare la chitarra e il basso, a volte insieme a mio padre, altre volte con amici e persone conosciute lungo il cammino. Sono momenti che hanno dato ritmo e leggerezza a questo percorso.
+Credo che il nostro compito, al di là del ruolo che assumiamo — ingegneri, medici, insegnanti o altro — sia prima di tutto quello di essere persone disposte a imparare e a maturare con il tempo, senza fuggire né ignorare i segnali che provengono dagli altri o da noi stessi.  
+Siamo una generazione che, nella sua fragilità, trova una grande risorsa: \textbf{il dubbio}. Senza il dubbio non potremmo metterci veramente in gioco.  
+Spesso cerchiamo risposte sicure e rassicuranti, che ci leghino a una persona o a un luogo, ma io credo nell’esatto contrario: \textbf{l’incertezza è ciò che ci mantiene vivi}, perché ogni cosa che valga la pena di essere vissuta è inevitabilmente difficile.  
+\noindent
+Come scriveva Nietzsche:
+\begin{displayquote}
+«Il deserto cresce: guai a chi cela deserti dentro di sé!»
+\end{displayquote}
+\\
+\noindent
+E allora distruggiamolo, questo deserto — con la curiosità, con il coraggio e con la voglia di continuare a imparare.
+
+\end{onehalfspacing}
+
+\vspace{1.5cm}
+\selectlanguage{english}
+\chapter*{Acknowledgments}
+\begin{onehalfspacing}
+
+I would like to express my deepest gratitude to all the people — family and friends — who have accompanied me during these past two years.  
+They have been intense and transformative years: beyond the academic aspect that frames them, there have been experiences — such as my time at Siemens in Milan, and my teaching assignments in Benevento and Sant’Agata de’ Goti — that have deeply enriched me and helped me grow both personally and professionally.  
+I thank myself for being stubborn enough to stand by certain choices, even when it wasn’t easy.  
+I thank myself for having the courage to dive into so many different things — sometimes too many — and for often wondering whether it all truly made sense.  
+Among these experiences, music has also played an important role: even without great consistency, I managed to play guitar and bass — sometimes with my father, other times with friends and fellow musicians I met along the way. These moments added rhythm and lightness to my journey.
+I believe that our task, beyond any role we might have — engineers, doctors, teachers, and so on — is first and foremost to be people willing to learn and mature over time, without running away or ignoring the signals that come from others or from within ourselves.  
+We are a generation that turns its weakness into its greatest resource: \textbf{doubt}.  
+Without doubt, we cannot truly challenge ourselves.  We often seek safe and comforting answers that tie us to a person or a place, but I believe the opposite is true: \textbf{uncertainty is all we really have}, and everything worth living for is inevitably difficult.  
+\noindent
+As Nietzsche once wrote:
+\begin{displayquote}
+“The desert grows: woe to him who hides deserts within himself.”
+\end{displayquote}
+\\
+\noindent
+So let us destroy that desert — with curiosity, with courage, and with the will to keep learning.
+
+\end{onehalfspacing}

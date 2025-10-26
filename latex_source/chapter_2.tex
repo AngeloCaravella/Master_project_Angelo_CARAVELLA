@@ -12,7 +12,7 @@ In order to provide an overview of the research domain, the literature review wa
 \end{figure}
 
 \noindent
-This visualization confirms the research focus, with primary terms like \textbf{Energy}, \textbf{Power}, \textbf{Grid}, and \textbf{EVs} setting the context. The similar prominence of \textbf{Learning} and \textbf{Control}, alongside strong secondary terms like \textbf{Reinforcement}, \textbf{Agent}, and \textbf{Policy}, firmly anchors the methodology in Reinforcement Learning. The inclusion of \textbf{MPC} (Model Predictive Control) highlights the central dialogue between model-free and model-based approaches explored in this thesis.
+This visualization confirms the research focus, with primary terms like \textbf{Energy}, \textbf{Power}, \textbf{Grid}, and \textbf{EVs} setting the context. The similar prominence of \textbf{Learning} and \textbf{Control}, alongside strong secondary terms like \textbf{Reinforcement}, \textbf{Agent}, and \textbf{Policy}, firmly anchors the methodology in RL. The inclusion of \textbf{MPC} (Model Predictive Control) highlights the central dialogue between model-free and model-based approaches explored in this thesis.
 
 \section{The V2G Imperative: A Foundation of Europe's Green Transition}
 \vspace*{0.5cm} % vertical space before the quote
@@ -385,7 +385,7 @@ For environments with discrete state and action spaces, Q-Learning maintains a t
 \\ \noindent
 Here, $\alpha$ is the learning rate, which determines how much the new information overrides the old estimate. The core of the update is the TD error, calculated from the TD target $R_{t+1} + \gamma \max_{a} Q(S_{t+1}, a)$. The term $\max_{a} Q(S_{t+1}, a)$ represents the agent's current best estimate of the optimal future value from the next state $S_{t+1}$. By always using the maximum Q-value of the next state, the algorithm learns a greedy, optimal policy, regardless of what exploratory action is actually taken next.
 \\ \noindent
-The primary limitation of tabular Q-Learning, however, is its inability to scale to problems with large or continuous state spaces, a problem often called the "curse of dimensionality". Storing and updating a massive Q-table becomes computationally and memory-prohibitive. This challenge directly motivates the use of function approximators, such as neural networks, to estimate the Q-function, leading to the development of Deep Q-Networks (DQN).
+The primary limitation of tabular Q-Learning, however, is its inability to scale to problems with large or continuous state spaces, a problem often called the "curse of dimensionality". Storing and updating a massive Q-table becomes computationally and memory-prohibitive. This challenge directly motivates the use of function approximators, such as neural networks, to estimate the Q-function, leading to the development of DQN.
 
 \subsection{Actor-Critic Architectures}
 
@@ -393,7 +393,7 @@ The primary limitation of tabular Q-Learning, however, is its inability to scale
     \centering
    
     \includegraphics[width=0.8\linewidth]{Actor_critic_RL_architecture.png}
-    \caption{The Actor Critic scheme}
+    \caption{The Actor Critic scheme.}
     \label{fig:rl_loop_2}
 \end{figure}
 The \textbf{Actor-Critic} architecture shown in the Figure \ref{fig:rl_loop_2} provides a powerful and widely adopted method for solving RL problems, particularly in continuous action spaces. It explicitly represents both the policy and the value function using two distinct function approximators (e.g., neural networks).
@@ -495,45 +495,6 @@ Here, the gradient of the objective function is calculated as the expectation of
 
 \input{off_on.tex}
 \input{mpc.tex}
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{A Comparative Perspective on Control Methodologies}
-
-While DRL represents the cutting edge, contextualizing it within the broader control strategy landscape remains crucial for academic rigor. The choice between learning-based, model-free approaches and optimization-based, model-based approaches represents fundamental philosophical and practical trade-offs.
-
-\begin{table}[H]
-\centering
-\caption{Comparative Analysis: DRL vs. Model Predictive Control (MPC) for the V2G}
-\label{tab:drl_vs_mpc}
-\resizebox{0.7\textwidth}{!}{
-\begin{tabular}{|p{0.2\linewidth}|p{0.35\linewidth}|p{0.35\linewidth}|}
-\hline
-\textbf{Aspect} & \textbf{DRL} & \textbf{MPC} \\
-\hline
-\textbf{Paradigm} & Model-Free, learning-based. Learns an optimal policy (a reactive function) via trial-and-error interaction with the environment. & Model-Based, optimisation-based. Solves a constrained optimisation problem at each time step based on a system model and forecasts. \\
-\hline
-\textbf{Strengths} & \begin{itemize} \item Highly robust to uncertainty and unmodelled stochasticity. \item Does not require an explicit, accurate system model. \item Can learn complex, non-linear control policies. \item Extremely fast inference time (a single forward pass) once trained. \end{itemize} & \begin{itemize} \item Explicitly and rigorously handles hard constraints, providing safety guarantees. \item Proactive and anticipatory if forecasts are accurate. \item Well-established, mature, and theoretically understood. \end{itemize} \\
-\hline
-\textbf{Weaknesses} & \begin{itemize} \item Can be highly sample-inefficient during the training phase. \item Lacks hard safety guarantees (an active and important area of research). \item The "black box" nature of neural network policies can make them difficult to interpret or verify. \end{itemize} & \begin{itemize} \item Performance is fundamentally shackled to the accuracy of the system model and external forecasts. \item Computationally expensive at each time step, suffering from the "curse of dimensionality" with system size. \item Can be brittle to unexpected forecast errors and unmodelled dynamics. \end{itemize} \\
-\hline
-\textbf{The V2G Suitability} & Excellent for dynamic, highly uncertain environments with complex, non-linear trade-offs and a large number of assets. & Good for problems with simple, well-defined dynamics and reliable forecasts, but struggles with the real-world stochasticity and scale of the V2G. \\
-\hline
-\end{tabular}
-}
-\end{table}
-
-\noindent
-\textbf{MPC} stands as the most powerful model-based alternative. Its primary and most compelling strength lies in its native ability to handle hard constraints, which is critical for ensuring safe operation (such as never violating transformer limits or user energy requirements). However, its performance remains fundamentally constrained by the accuracy of its internal model and forecasts of future disturbances (prices, user behavior) \cite{faggio2023design}. In practice, creating accurate, tractable models for the entire V2G domain proves nearly impossible due to non-linear battery dynamics, extreme market volatility, and the profound unpredictability of human behavior. Furthermore, as EV fleet sizes grow, optimization problem dimensionality explodes, making online computation required at each time step intractable for large fleets.
-\\
-\noindent
-Other methods, such as \textbf{meta-heuristic algorithms} (including genetic algorithms and particle swarm optimization), are sometimes proposed. However, these are typically employed for offline scheduling and lack the real-time, reactive responsiveness required for dynamic V2G control in rapidly changing environments.
-
-% ===================================================================
-% HEURISTIC
-% ===================================================================
-
-\input{Heuristics.tex}
-
 
 
 % ===================================================================

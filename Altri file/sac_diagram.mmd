@@ -1,9 +1,0 @@
-graph TD
-    subgraph SAC["SAC: Technical Flow"]
-        direction TB
-        S1["<b>Core Idea:</b> The agent learns to act successfully while also acting as randomly as possible."] --> S2;
-        S2["<b>Networks:</b><br/>- One Actor (stochastic policy)<br/>- Two Critics (Q-functions)<br/>- Two Target Critics (for stability)<br/>- An adjustable temperature parameter (alpha)"] --> S3;
-        S3["<b>Critic Update:</b> The two Critics are trained to estimate the action-value. The target value includes not only the future reward but also the entropy of the policy at the next state."] --> S4;
-        S4["<b>Actor Update:</b> The Actor is updated to choose actions that maximize the values estimated by the Critics, plus the future entropy of its own policy."] --> S5;
-        S5["<b>Temperature Update:</b> The alpha parameter is automatically adjusted to maintain a target level of policy entropy, balancing exploration and exploitation."]
-    end

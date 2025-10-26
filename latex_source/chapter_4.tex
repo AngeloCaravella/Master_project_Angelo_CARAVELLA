@@ -95,7 +95,7 @@ The challenges (very common in geosciences) or uncertainty quantification are:
     \item \textbf{Spatial aspect of the models:} There is a spatial aspect, such as the spatial distribution of hydraulic conductivity, permeability, porosity, or layering, which needs to be taken into account as it may have a considerable influence on the response. The problem is how to quantify the influence of spatial variability (which is not a simple variable) on some kind of response.
 \end{itemize}
 
-\section*{Screening Techniques}
+\section{Screening Techniques}
 Two techniques are introduced: one-at-a-time (OAT) analysis and the Morris method. Both are simplified approaches. They are quite useful for "screening" because they require only a small number of model evaluations. However, it is very difficult to draw general conclusions from these methods, as there are several drawbacks when applying them to the kind of problems being addressed.
 \subsection*{Algorithmic Description of OAT and Morris Methods}
 
@@ -149,7 +149,7 @@ Two techniques are introduced: one-at-a-time (OAT) analysis and the Morris metho
 \end{algorithmic}
 \end{algorithm}
 
-\section*{Note on Interactions}
+\subsection{Note on Interactions}
 Interactions are an often poorly understood concept. An example is given where a material (e.g., shale rock) is tested, and its strength (response Z) is evaluated based on two factors: temperature (X) and composition ratio (Y). A factorial design can be set up with high and low levels for each factor.
 \noindent
 An interaction means that the effect of one factor depends on the level of another factor. The main effects of X and Y, as well as the interaction effect XY, can be estimated. In many cases, the interaction effect (the combined effect of temperature and composition) can be the most significant factor, more so than either factor individually. This indicates a non-linear relationship where the whole is greater than the sum of its parts.
@@ -203,10 +203,8 @@ The primary advantage of OaaT is its simplicity and the clarity of its results. 
 \subsection{Global Sensitivity Analysis: The Morris Method}
 \noindent
 To overcome the limitations of OaaT, we employ the Morris method, a global sensitivity analysis technique proposed by Max D. Morris in 1991 for efficient parameter screening. It is a "one-at-a-time" method, but it is executed at many different points in the input parameter space, and the results are then averaged.
-
 \noindent
 The sampling process is organized into \textbf{trajectories}, where each trajectory represents a path through the high-dimensional input space. A key implementation choice is the use of \textbf{Optimal Trajectories}, a sophisticated sampling strategy designed to overcome the potential biases of purely random sampling.
-
 \noindent
 The concept is analogous to surveying a large area: instead of taking random paths, which might accidentally cluster in one region and miss others entirely, an optimal approach involves pre-planning the paths to ensure the entire area is covered as uniformly as possible. In the context of the Morris method, `SALib` selects a set of trajectories that are maximally "spread out" from each other. This ensures that the elementary effects are calculated in highly diverse regions of the parameter space (e.g., under conditions of both high and low solar power, high and low electricity prices, etc.). By guaranteeing a more systematic and uniform exploration, this optimal sampling strategy produces more robust and reliable sensitivity indices ($\mu^*$ and $\sigma$) for a given number of simulations, reducing the risk of drawing conclusions from an unrepresentative sample of the model's behavior.
 

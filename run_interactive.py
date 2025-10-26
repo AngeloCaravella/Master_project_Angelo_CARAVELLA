@@ -7,11 +7,11 @@ import yaml
 import json
 from collections import defaultdict
 
-# Importazioni da librerie di RL
+# RL library imports
 from stable_baselines3 import SAC, DDPG, TD3, PPO
 from sb3_contrib import TQC
 
-# Importazioni dalla libreria custom ev2gym e da altri script
+# Imports from the custom ev2gym library and other scripts
 from run_experiments import (
     calculate_max_cs,
     get_algorithms,
@@ -20,7 +20,7 @@ from run_experiments import (
 )
 from ev2gym.rl_agent import reward as reward_module
 
-# --- Funzioni di utilità per l'interfaccia utente ---
+# --- User Interface Utility Functions ---
 
 def get_interactive_input(prompt, default=None):
     """Helper function to get user input with a default value."""
@@ -35,35 +35,35 @@ def select_from_list(items, prompt, multiple=False, default_choice=1):
         print(f"  {i+1}. {os.path.basename(display_name).replace('.yaml', '')}")
     
     if not items:
-        print("Nessun elemento disponibile per la selezione.")
+        print("No items available for selection.")
         return [] if multiple else None
 
     if multiple:
-        choices_str = get_interactive_input(f"Seleziona uno o più (es. '1 3', 'tutti')", 'tutti').lower()
-        if 'tutti' in choices_str:
+        choices_str = get_interactive_input(f"Select one or more (e.g., '1 3', 'all')", 'all').lower()
+        if 'all' in choices_str:
             return items
         try:
             indices = [int(i) - 1 for i in choices_str.split()]
             return [items[i] for i in indices if 0 <= i < len(items)]
         except (ValueError, IndexError):
-            print("Selezione non valida. Verranno usati tutti gli elementi.")
+            print("Invalid selection. Using all items.")
             return items
     else:
         try:
-            choice_str = get_interactive_input(f"Scelta", str(default_choice))
+            choice_str = get_interactive_input(f"Choice", str(default_choice))
             choice = int(choice_str) - 1
             if 0 <= choice < len(items):
                 return items[choice]
             else:
                 raise IndexError
         except (ValueError, IndexError):
-            print(f"Selezione non valida. Verrà usata la scelta di default ({default_choice}).")
+            print(f"Invalid selection. Using the default choice ({default_choice}).")
             return items[default_choice - 1]
 
 def get_available_rl_algorithms():
     """
-    Restituisce un dizionario di algoritmi RL compatibili con spazi di azione continui.
-    DQN e altri algoritmi per azioni discrete sono esclusi.
+    Returns a dictionary of RL algorithms compatible with continuous action spaces.
+    DQN and other discrete action algorithms are excluded.
     """
     return {
         "SAC": (None, SAC, {}),
@@ -76,11 +76,11 @@ def get_available_rl_algorithms():
         "PPO": (None, PPO, {}),
     }
 
-def select_model_directory(prompt="Seleziona il set di modelli da caricare:"):
+def select_model_directory(prompt="Select the set of models to load:"):
     """Lets the user select a directory from ./saved_models/."""
     saved_models_dir = './saved_models/'
     if not os.path.exists(saved_models_dir) or not os.listdir(saved_models_dir):
-        print(f"\nERRORE: Nessuna cartella trovata in '{saved_models_dir}'. Esegui prima l'addestramento.")
+        print(f"\nERROR: No folders found in '{saved_models_dir}'. Please run training first.")
         return None, False
 
     available_models = sorted([d for d in os.listdir(saved_models_dir) if os.path.isdir(os.path.join(saved_models_dir, d))])
@@ -91,134 +91,134 @@ def select_model_directory(prompt="Seleziona il set di modelli da caricare:"):
 
     model_dir = os.path.join(saved_models_dir, selected_model_name)
     
-    # La modalità multi-scenario è ora lo standard
+    # Multi-scenario mode is now the standard
     is_multi_scenario = True
-    print(f"\nModelli selezionati da: {model_dir} (modalità multi-scenario di default)")
+    print(f"\nModels selected from: {model_dir} (multi-scenario mode by default)")
     return model_dir, is_multi_scenario
 
-# --- Flussi Principali: Addestramento e Plot ---
+# --- Main Flows: Training and Plotting ---
 
 def run_training_flow():
-    """Gestisce il flusso di lavoro per l'addestramento di nuovi modelli."""
-    print("\n--- Inizio Flusso di Addestramento ---")
+    """Manages the workflow for training new models."""
+    print("\n--- Starting Training Flow ---")
 
-    # 1. Seleziona algoritmi da addestrare
+    # 1. Select algorithms to train
     available_rl_algos = get_available_rl_algorithms()
     selected_algo_names = select_from_list(
         list(available_rl_algos.keys()), 
-        "Seleziona gli algoritmi RL da addestrare:", 
+        "Select the RL algorithms to train:", 
         multiple=True
     )
     if not selected_algo_names:
-        print("Nessun algoritmo selezionato. Addestramento annullato.")
+        print("No algorithms selected. Training cancelled.")
         return
 
     algorithms_to_train = {k: available_rl_algos[k] for k in selected_algo_names}
-    print(f"Algoritmi da addestrare: {list(algorithms_to_train.keys())}")
+    print(f"Algorithms to be trained: {list(algorithms_to_train.keys())}")
 
-    # 2. Configurazione dell'addestramento (semplificata)
+    # 2. Training configuration (simplified)
     config_path = "ev2gym/example_config_files/"
     available_scenarios = sorted(glob(os.path.join(config_path, "*.yaml")))
     
-    print("\nL'addestramento verrà eseguito in modalità 'Parametri Dinamici'.")
-    print("Questa modalità addestra i modelli con parametri variati dinamicamente per una maggiore robustezza.")
-    base_scenario_path = select_from_list(available_scenarios, "Seleziona uno scenario di BASE per la randomizzazione dei parametri:")
+    print("\nTraining will be performed in 'Dynamic Parameters' mode.")
+    print("This mode trains models with dynamically varied parameters for greater robustness.")
+    base_scenario_path = select_from_list(available_scenarios, "Select a BASE scenario for parameter randomization:")
     
-    steps_for_training = int(get_interactive_input("Per quanti passi di training totali?", "100000"))
-    session_name = get_interactive_input("Inserisci un nome per questa sessione di addestramento", f"dynamic_{'_'.join(selected_algo_names).lower()}_{time.strftime('%Y%m%d')}")
+    steps_for_training = int(get_interactive_input("For how many total training steps?", "100000"))
+    session_name = get_interactive_input("Enter a name for this training session", f"dynamic_{'_'.join(selected_algo_names).lower()}_{time.strftime('%Y%m%d')}")
     model_dir = f'./saved_models/{"" .join(c for c in session_name if c.isalnum() or c in ("_", "-")).rstrip()}/'
     os.makedirs(model_dir, exist_ok=True)
 
-    # 3. Selezione reward e file prezzi
+    # 3. Select reward and price file
     available_rewards = [(name, func) for name, func in inspect.getmembers(reward_module, inspect.isfunction) if inspect.getmodule(func) == reward_module]
-    selected_reward_tuple = select_from_list(available_rewards, "Scegli la funzione di reward:", default_choice=1)
+    selected_reward_tuple = select_from_list(available_rewards, "Choose the reward function:", default_choice=1)
     selected_reward_func = selected_reward_tuple[1]
 
     price_data_dir = os.path.join(os.path.dirname(__file__), 'ev2gym', 'data')
     available_price_files = sorted([f for f in os.listdir(price_data_dir) if f.endswith('.csv')])
     default_price_file = "Netherlands_day-ahead-2015-2024.csv"
     default_price_index = available_price_files.index(default_price_file) + 1 if default_price_file in available_price_files else 1
-    selected_price_file_name = select_from_list(available_price_files, "Seleziona il file CSV per i prezzi dell'energia:", default_choice=default_price_index)
+    selected_price_file_name = select_from_list(available_price_files, "Select the CSV file for energy prices:", default_choice=default_price_index)
     selected_price_file_abs_path = os.path.join(price_data_dir, selected_price_file_name)
 
-    # 4. Esecuzione dell'addestramento
-    print(f"\n--- Inizio addestramento nella cartella: {model_dir} ---")
+    # 4. Execute training
+    print(f"\n--- Starting training in folder: {model_dir} ---")
     train_rl_models_if_requested(
         scenarios_to_test=[base_scenario_path],
         selected_reward_func=selected_reward_func,
         algorithms_to_run=algorithms_to_train,
-        is_multi_scenario=True, # Sempre True con la nuova modalità
+        is_multi_scenario=True, # Always True with the new mode
         model_dir=model_dir,
         selected_price_file_abs_path=selected_price_file_abs_path,
         steps_for_training=steps_for_training,
-        training_mode='dynamic', # Modalità di default robusta
+        training_mode='dynamic', # Robust default mode
         session_name=session_name
     )
-    print("\n--- Addestramento Completato ---")
+    print("\n--- Training Completed ---")
 
 def run_plotting_flow():
-    """Gestisce il flusso di lavoro per il benchmark e il plotting di modelli esistenti."""
-    print("\n--- Inizio Flusso di Plotting ---")
+    """Manages the workflow for benchmarking and plotting existing models."""
+    print("\n--- Starting Plotting Flow ---")
 
-    # 1. Seleziona la cartella dei modelli
+    # 1. Select the models folder
     model_dir, is_multi_scenario = select_model_directory()
     if not model_dir:
         return
 
-    # 2. Rileva algoritmi disponibili in quella cartella
+    # 2. Detect available algorithms in that folder
     available_model_files = glob(os.path.join(model_dir, '*_model.zip'))
     trained_rl_algos = [os.path.basename(f).replace('_model.zip', '').replace('_', '+').upper() for f in available_model_files]
     
     if not trained_rl_algos:
-        print(f"Nessun file modello .zip trovato in {model_dir}. Impossibile procedere.")
+        print(f"No .zip model files found in {model_dir}. Cannot proceed.")
         return
         
-    print(f"Algoritmi RL addestrati trovati in questa sessione: {trained_rl_algos}")
+    print(f"Trained RL algorithms found in this session: {trained_rl_algos}")
 
-    # 3. Ottieni algoritmi di base (Euristiche, MPC) e RL
+    # 3. Get base algorithms (Heuristics, MPC) and RL
     MAX_CS = calculate_max_cs("ev2gym/example_config_files/")
     all_base_algos = get_algorithms(MAX_CS, is_thesis_mode=True)
     baselines = {k: v for k, v in all_base_algos.items() if v[1] is None}
     
-    # Usa la nuova funzione dinamica per ottenere le definizioni degli algoritmi RL
+    # Use the new dynamic function to get RL algorithm definitions
     all_rl_definitions = get_available_rl_algorithms()
     available_rl_from_files = {k: v for k, v in all_rl_definitions.items() if k in trained_rl_algos}
 
-    # Unisci le definizioni di tutti gli algoritmi disponibili per questo plot
+    # Merge the definitions of all available algorithms for this plot
     all_available_definitions = {**baselines, **available_rl_from_files}
 
-    # 4. Seleziona algoritmi da plottare
-    # L'ordine qui determina come appaiono nella lista di selezione
+    # 4. Select algorithms to plot
+    # The order here determines how they appear in the selection list
     plot_candidates = sorted(list(baselines.keys())) + sorted(list(available_rl_from_files.keys()))
-    selected_for_plot = select_from_list(plot_candidates, "Seleziona gli algoritmi da confrontare nel benchmark:", multiple=True)
+    selected_for_plot = select_from_list(plot_candidates, "Select the algorithms to compare in the benchmark:", multiple=True)
     
     if not selected_for_plot:
-        print("Nessun algoritmo selezionato per il plot. Annullato.")
+        print("No algorithms selected for plotting. Cancelled.")
         return
 
     algorithms_to_run = {k: all_available_definitions[k] for k in selected_for_plot}
-    print(f"\nAlgoritmi che verranno eseguiti nel benchmark: {list(algorithms_to_run.keys())}")
+    print(f"\nAlgorithms that will be run in the benchmark: {list(algorithms_to_run.keys())}")
 
-    # 5. Configurazione del benchmark
+    # 5. Benchmark configuration
     config_path = "ev2gym/example_config_files/"
     available_scenarios = sorted(glob(os.path.join(config_path, "*.yaml")))
-    benchmark_scenarios = select_from_list(available_scenarios, "Seleziona gli scenari per il BENCHMARK:", multiple=True)
+    benchmark_scenarios = select_from_list(available_scenarios, "Select the scenarios for the BENCHMARK:", multiple=True)
     
     available_rewards = [(name, func) for name, func in inspect.getmembers(reward_module, inspect.isfunction) if inspect.getmodule(func) == reward_module]
-    selected_reward_tuple = select_from_list(available_rewards, "Scegli la funzione di reward (assicurati sia la stessa dell'addestramento):", default_choice=1)
+    selected_reward_tuple = select_from_list(available_rewards, "Choose the reward function (make sure it's the same as for training):", default_choice=1)
     selected_reward_func = selected_reward_tuple[1]
 
     price_data_dir = os.path.join(os.path.dirname(__file__), 'ev2gym', 'data')
     available_price_files = sorted([f for f in os.listdir(price_data_dir) if f.endswith('.csv')])
     default_price_file = "Netherlands_day-ahead-2015-2024.csv"
     default_price_index = available_price_files.index(default_price_file) + 1 if default_price_file in available_price_files else 1
-    selected_price_file_name = select_from_list(available_price_files, "Seleziona il file CSV per i prezzi dell'energia:", default_choice=default_price_index)
+    selected_price_file_name = select_from_list(available_price_files, "Select the CSV file for energy prices:", default_choice=default_price_index)
     selected_price_file_abs_path = os.path.join(price_data_dir, selected_price_file_name)
 
-    num_sims = int(get_interactive_input("Quante simulazioni di valutazione per scenario?", "1"))
+    num_sims = int(get_interactive_input("How many evaluation simulations per scenario?", "1"))
 
-    # 6. Esecuzione del benchmark
-    print("\n--- Inizio Benchmark e Generazione Grafici ---")
+    # 6. Execute benchmark
+    print("\n--- Starting Benchmark and Plot Generation ---")
     run_benchmark(
         config_files=benchmark_scenarios,
         reward_func=selected_reward_func,
@@ -228,35 +228,35 @@ def run_plotting_flow():
         is_multi_scenario=is_multi_scenario,
         price_data_file=selected_price_file_abs_path
     )
-    print("\n--- ESECUZIONE COMPLETATA ---")
+    print("\n--- EXECUTION COMPLETED ---")
 
 
 def main():
-    """Funzione principale che orchestra l'esecuzione."""
+    """Main function to orchestrate the execution."""
     
-    # --- Esecuzione preliminare di Fit_battery.py ---
-    if get_interactive_input("Vuoi eseguire 'Fit_battery.py' per calibrare il modello di degradazione? (s/n)", "n").lower() == 's':
-        print("--- Esecuzione di Fit_battery.py ---")
+    # --- Preliminary execution of Fit_battery.py ---
+    if get_interactive_input("Do you want to run 'Fit_battery.py' to calibrate the degradation model? (y/n)", "n").lower() == 'y':
+        print("--- Running Fit_battery.py ---")
         try:
             subprocess.run(["python", "Fit_battery.py"], check=True)
-            print("--- Fit_battery.py completato. ---")
+            print("--- Fit_battery.py completed. ---")
         except (subprocess.CalledProcessError, FileNotFoundError) as e:
-            print(f"ERRORE: {e}. Lo script procederà con i parametri esistenti.")
+            print(f"ERROR: {e}. The script will proceed with existing parameters.")
 
-    # --- Menu Principale ---
+    # --- Main Menu ---
     while True:
-        choice = get_interactive_input("\nCosa vuoi fare?\n  1. Addestrare nuovi modelli RL\n  2. Eseguire benchmark e plottare risultati di modelli esistenti\n\nScelta", "2")
+        choice = get_interactive_input("\nWhat do you want to do?\n  1. Train new RL models\n  2. Run benchmark and plot results of existing models\n\nChoice", "2")
         if choice == '1':
             run_training_flow()
         elif choice == '2':
             run_plotting_flow()
         else:
-            print("Scelta non valida.")
+            print("Invalid choice.")
 
-        if get_interactive_input("\nVuoi eseguire un'altra operazione? (s/n)", "n").lower() != 's':
+        if get_interactive_input("\nDo you want to perform another operation? (y/n)", "n").lower() != 'y':
             break
             
-    print("\n--- Programma terminato. ---")
+    print("\n--- Program terminated. ---")
 
 if __name__ == "__main__":
     main()

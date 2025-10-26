@@ -7,25 +7,25 @@
 Developing, validating, and benchmarking advanced control algorithms for V2G systems presents significant challenges. Real-world experimentation is often impractical due to high costs, logistical constraints, and potential risks to grid stability and vehicle hardware. A realistic, flexible, and standardized simulation environment is therefore essential. This thesis builds upon \textbf{EV2Gym}, an open-source simulator designed for the V2G smart charging research \cite{orfanoudakis2024ev2gym}. The work presented here extends the original framework substantially, transforming it into a high-fidelity \textbf{digital twin} suitable not only for single-scenario optimization, but also for developing and rigorously evaluating \textbf{robust, generalist control agents}.
 
 \noindent
-The enhanced framework supports two complementary modes of experimentation: detailed analysis of agents specialized for a single environment, and a novel methodology for training and testing agents capable of generalizing across multiple diverse and unpredictable scenarios. This chapter presents the extended architecture, its data-driven models, and its evaluation capabilities, establishing the methodological foundation for subsequent chapters.
+The enhanced framework supports two complementary modes of experimentation: detailed analysis of agents specialized for a single environment, and a novel methodology for training and testing agents capable of generalizing across multiple diverse and unpredictable scenarios. 
 
-\section*{Core Simulator Architecture}
+\section{Core Simulator Architecture}
 The framework maintains the modular architecture of EV2Gym, which mirrors the key entities of a real-world V2G system. It is built on the OpenAI Gym (now Gymnasium) API, which provides a standardized agent-environment interface based on states, actions, and rewards \cite{brockman2016openai}.
 
 \begin{figure}[H]
     \centering
    
     \includegraphics[width=0.8\linewidth]{Diagram_charge.png}
-    \caption{Diagram of charging and discharging scheduling for EVs. \cite{Dou}.}
+    \caption{Diagram of charging and discharging scheduling for EVs \cite{Dou}.}
     \label{fig:rl_cahrg}
 \end{figure}
 
-The architecture consists of several interacting components:
+As shown in the Fiure\ref{fig:rl_cahrg} consists of several interacting components:
 \begin{itemize}
     \item \textbf{Charge Point Operator (CPO):} The central management component of the simulation, responsible for controlling the charging infrastructure and serving as the primary interface for the control algorithm (the DRL agent). The CPO aggregates system state information and dispatches control actions to individual chargers.
-    \item \textbf{Chargers:} Digital representations of physical charging stations, configurable by type (AC/DC), maximum power, and efficiency. This enables simulation of heterogeneous charging infrastructures.
+    \item \textbf{Chargers:} Digital representations of physical charging stations, configurable by type, maximum power, and efficiency. This enables simulation of heterogeneous charging infrastructures.
     \item \textbf{Power Transformers:} These components model the physical connection points to the grid, aggregating the electrical load from multiple chargers. They enforce the physical power limits of the local distribution network and can model inflexible base loads (e.g., buildings) and local renewable generation (e.g., solar panels).
-    \item \textbf{Electric Vehicles (EVs):} Dynamic and autonomous agents, each defined by its battery capacity, power limits, current and desired energy levels, and specific arrival and departure times.
+    \item \textbf{EVs:} Dynamic and autonomous agents, each defined by its battery capacity, power limits, current and desired energy levels, and specific arrival and departure times.
 \end{itemize}
 
 The simulation process follows a reproducible three-phase structure: (1) \textbf{Initialization} from a comprehensive YAML configuration file, (2) a discrete-time \textbf{Simulation Loop} where the agent interacts with the environment, and (3) a final \textbf{Evaluation and Visualization} phase that generates standardized performance metrics.
@@ -37,31 +37,31 @@ The simulation process follows a reproducible three-phase structure: (1) \textbf
 
 A key contribution of this thesis is the development of a unified and powerful experimentation workflow, orchestrated primarily by the \textbf{run\_experiments.py} script (with an interactive interface provided by \textbf{run\_interactive.py}). This approach replaces the previous fragmentation, offering a single platform to manage the entire lifecycle of training, benchmarking, and evaluation for V2G control agents. The workflow is designed to be both flexible for research and rigorous for evaluation, supporting the goal of developing both specialized and generalized agents.
 
-\subsection*{Orchestration and Execution Interfaces}
+\subsection{Orchestration and Execution Interfaces}
 
 The \textbf{run\_experiments.py} script serves as the central hub for all experimentation. To ensure flexibility and reproducibility, the project offers two execution modes:
 
 \begin{enumerate}
     \item \textbf{Interactive Mode (\textbf{run\_interactive.py}):} Provides a guided, step-by-step command-line interface, ideal for initial configuration, testing, and running single experiments. The user responds to successive prompts to select scenarios, algorithms, and training parameters.
-    \item \textbf{Scripted/Batch Mode (\textbf{run\_experiments.py}):} Utilizes the \textbf{argparse} module to accept all configuration parameters (e.g., \textbf{--scenarios}, \textbf{--reward_func}, \textbf{--training_mode}) directly as command-line arguments. This mode is essential for automation, reproducibility, and running large batches of experiments on servers or high-performance computing systems.
+    \item \textbf{Scripted/Batch Mode (\textbf{run\_experiments.py}):} Utilizes the \textbf{argparse} module to accept all configuration parameters (e.g., \textbf{--scenarios}, \textbf{--reward\_func}, \textbf{--training\_mode}) directly as command-line arguments. This mode is essential for automation, reproducibility, and running large batches of experiments on servers or high-performance computing systems.
 \end{enumerate}
 
 The key steps in the workflow include:
 
 \begin{itemize}
-    \item \textbf{Algorithm Selection:} The script dynamically defines the algorithms to be executed, which can include Deep Reinforcement Learning agents (e.g., SAC,DDPG, DDPG+PER, TQC), classical optimization methods (Model Predictive Control), and heuristics (e.g., AFAP, ALAP).
+    \item \textbf{Algorithm Selection:} The script dynamically defines the algorithms to be executed, which can include DRL agents (e.g., SAC, DDPG, DDPG+PER, TQC), classical optimization methods MPC, and heuristics.
     \item \textbf{Scenario and Reward Selection:} The user selects one or more \textbf{.yaml} configuration files and the desired reward function from the \textbf{reward.py} module.
     \item \textbf{Battery Calibration:} The option to run \textbf{Fit\_battery.py} is provided to calibrate the parameters of the battery degradation model, ensuring that simulations use the most up-to-date data.
 \end{itemize}
 
-\subsection*{Scenario structure Yaml file}
+\subsection{Scenario structure Yaml file}
 
 The YAML (YAML Ain't Markup Language) configuration file serves as the foundational blueprint for defining a simulation experiment within the EV2Gym framework.
 It is a powerful and indispensable tool for the systematic study of EV smart charging strategies. It provides a structured and transparent method for defining the physical, economic, and stochastic properties of the simulation environment. A thorough understanding and deliberate manipulation of these parameters are essential for formulating meaningful research questions, generating valid results, and drawing robust conclusions about the performance of various control algorithms.
 
 \section{Core Simulation Parameters}
 
-This primary section establishes the temporal boundaries and fundamental operational logic of the simulation.
+This section establishes the temporal boundaries and fundamental operational logic of the simulation.
 
 \begin{description}
     \item[\textbf{\textbf{timescale}}] Defines the temporal granularity of a single simulation step, measured in minutes. This parameter is critical as it dictates the resolution of the control problem; a smaller timescale allows for finer control but increases computational complexity.
@@ -70,10 +70,10 @@ This primary section establishes the temporal boundaries and fundamental operati
 timescale: 15 
     \end{lstlisting}
 
-    \item[\textbf{\textbf{simulatio\_length}}] Specifies the total duration of a single simulation episode, measured in the number of steps defined by \textbf{timescale}.
+    \item[\textbf{\textbf{simulation\_length}}] Specifies the total duration of a single simulation episode, measured in the number of steps defined by \textbf{timescale}.
     \begin{lstlisting}
 # Duration in steps per simulation
-simulation\_length: 112 
+simulation_length: 112 
     \end{lstlisting}
 \end{description}
 
@@ -87,7 +87,7 @@ These parameters anchor the simulation to a specific point in time, which is cru
 year: 2022
 month: 1
 day: 17
-random\_day: True
+random_day: True
     \end{lstlisting}
 
     \item[\textbf{\textbf{time}}] The initial \textbf{hour} and \textbf{minute} of the simulation. These typically remain fixed across resets to ensure consistent starting conditions.
@@ -97,7 +97,7 @@ random\_day: True
 
 \subsection{Stochastic Demand Modeling}
 
-This section governs the arrival and behavior of Electric Vehicles (EVs), which constitute the primary source of flexible load in the simulation.
+This section governs the arrival and behavior of EVs, which constitute the primary source of flexible load in the simulation.
 
 \begin{description}
     \item[\textbf{\textbf{scenario}}] Defines the archetypal environment (e.g., \textbf{workplace}, \textbf{public}, \textbf{private}), which loads a corresponding statistical model for EV arrival times, departure times, and required energy.
@@ -105,7 +105,7 @@ This section governs the arrival and behavior of Electric Vehicles (EVs), which 
     \item[\textbf{\textbf{spawn\_multiplier}}] A scalar value that adjusts the baseline EV arrival rate. A value greater than 1 increases the density of EVs, thereby intensifying the stress on the charging infrastructure and creating more challenging control problems.
     \begin{lstlisting}
 scenario: workplace
-spawn\_multiplier: 5
+spawn_multiplier: 5
     \end{lstlisting}
 \end{description}
 
@@ -117,7 +117,7 @@ These parameters establish the financial incentives and constraints that drive t
     \item[\textbf{\textbf{discharge\_price\_factor}}] A foundational economic lever for V2G operations. It defines the remuneration for discharging energy back to the grid as a fraction of the purchasing price. A value less than 1.0 models a realistic bid-ask spread, ensuring economic viability for the grid operator.
     \begin{lstlisting}
 # A factor of 0.95 means selling energy yields 95% of the purchasing price.
-discharge\_price\_factor: 0.95
+discharge_price_factor: 0.95
     \end{lstlisting}
 \end{description}
 
@@ -138,8 +138,8 @@ transformer:
     
     \item[\textbf{\textbf{charging\_station}}] Specifies the default electrical properties of a charging station, including maximum current, voltage, and number of phases. These are used to calculate the maximum power per station.
     \begin{lstlisting}
-charging\_station:  
-  max\_charge\_current: 32 # Amperes
+charging_station:  
+  max_charge_current: 32 # Amperes
   voltage: 400 # Volts
   phases: 3
     \end{lstlisting}
@@ -150,7 +150,7 @@ charging\_station:
 These parameters introduce external, often uncontrollable, energy flows and grid requests that add realism and complexity to the simulation.
 
 \begin{description}
-    \item[\textbf{\textbf{inflexible\_loads}}] Models background energy consumption from sources other than EVs (e.g., building lighting, HVAC). When enabled, this load consumes a portion of the transformer's capacity, reducing the available power for EV charging.
+    \item[\textbf{\textbf{inflexible\_loads}}] Models background energy consumption from sources other than EVs (e.g., building lighting, Heating, Ventilation and Air Conditioning (HVAC)). When enabled, this load consumes a portion of the transformer's capacity, reducing the available power for EV charging.
     
     \item[\textbf{\textbf{solar\_power}}] Simulates on-site photovoltaic generation. This introduces a source of low-cost, intermittent energy that intelligent algorithms can leverage to reduce charging costs.
     
@@ -167,7 +167,7 @@ This section defines the characteristics of the vehicles being charged.
     \item[\textbf{\textbf{ev}}] This subsection defines the default properties of a single EV. Key parameters include:
     \begin{itemize}
         \item \textbf{charge\_efficiency} and \textbf{discharge\_efficiency}: Model the energy losses inherent in the charging and discharging processes. Values less than 1.0 are physically realistic and are the source of the \textbf{Q\_lost} metric.
-        \item \textbf{desired\_capacity}: Represents the target state-of-charge requested by the user, modeling the fact that not all users require a full 100% charge.
+        \item \textbf{desired\_capacity}: Represents the target state-of-charge requested by the user, modeling the fact that not all users require a full 100\% charge.
     \end{itemize}
     \begin{lstlisting}
 ev:
@@ -186,7 +186,7 @@ The new workflow seamlessly manages the training of both "specialist" agents (op
 
 \begin{itemize}
     \item \textbf{Single-Domain Specialization:} If only one scenario is selected, the RL agent is trained exclusively on that \textbf{EV2Gym} environment.
-    \item \textbf{Multi-Scenario Generalization:} If multiple scenarios are selected, the script automatically utilizes the custom \textbf{MultiScenarioEnv} wrapper. This Gymnasium environment:
+    \item \textbf{Multi-Scenario Generalization:} If multiple scenarios are selected, the script automatically utilizes the custom \textbf{MultiScenarioEnv} wrapper. This Gymnasium environment is designed to:
     \begin{itemize}
         \item \textbf{Random Selection:} At the start of each training episode, it randomly selects a configuration file and initializes a new \textbf{EV2Gym} environment.
         \item \textbf{Handling Heterogeneous Spaces:} To allow a single neural network to control environments with a varying number of charging stations (and thus different observation and action space sizes), the maximum size (\textbf{MAX\_CS}) across all scenarios is calculated. The returned observation is \textbf{padded} with zeros up to the maximum size (\textbf{max\_obs\_shape}), and the network's action is \textbf{sliced} to the actual size required by the current environment (\textbf{curren\_env.action\_space.shape}). This mechanism, supported by the \textbf{CompatibilityWrapper} during evaluation, is crucial for training generalist agents.
@@ -204,7 +204,10 @@ In addition to random selection, the workflow supports advanced strategies to en
 
 \subsection{MPC Integration and Approximation}
 
-The workflow integrates a classical Linear MPC.\noindent \textbf{Linear MPC:} The \textbf{run\_experiments.py} script utilizes an MPC based on a linear optimization model (\textbf{OnlineMPC\_Solver}).
+The workflow integrates a classical Linear MPC.The \textbf{run\_experiments.py} script utilizes an MPC based on a linear optimization model (\textbf{OnlineMPC\_Solver}).
+The proposed MPC algorithm manages V2G charging using a linear optimization model over a predictive horizon. At each simulation step, it identifies the active EVs and extracts their relevant parameters, such as efficiencies, voltages, and initial and desired energy levels. The optimization problem is then formulated with decision variables representing charge/discharge currents, battery energy, and binary charging states. The objective is to maximize net profit from charging and discharging while respecting time-varying electricity prices.
+Several constraints ensure realistic operation: simultaneous charging and discharging are prohibited, currents are limited by EV and infrastructure capabilities, battery dynamics and capacity limits are enforced, the desired energy at departure is satisfied, and transformer limits are respected. Optionally, an adaptive prediction horizon based on a Lyapunov condition adjusts the horizon to improve stability and convergence toward desired energy targets.
+The problem is solved using the CBC solver, and the resulting first-step net power for each charging station is normalized to generate the MPC action. Overall, the algorithm combines classical linear MPC with practical V2G constraints and an adaptive mechanism, providing robust, real-time charging decisions across heterogeneous EV scenarios.
     
  
 \subsection{Rigorous and Reproducible Benchmarking}
@@ -237,21 +240,21 @@ The practical implementation is organized within a modular Python package named 
     \centering
    
     \includegraphics[width=0.8\linewidth]{Package.png}
-    \caption{Directory and file structure of the EV2Gym package. \cite{orfanoudakis2024ev2gym}.}
+    \caption{Directory and file structure of the EV2Gym package \cite{orfanoudakis2024ev2gym}.}
     \label{fig:Package}
 \end{figure}
 
 
 
-
-
-
-The key subdirectories within the \textbf{ev2gym} package are:
+As shown in the Figure \re{fig:Package} the key subdirectories within the \textbf{ev2gym} package are:
 \begin{itemize}
-    \item \textbf{baselines/}: Contains implementations for all non-RL controllers, including rule-based heuristics (in \textbf{heuristics.py}) and all variants of the Model Predictive Controllers (in \textbf{pulp\_mpc.py}).
-    \item \textbf{rl\_agent/}: The central location for all Reinforcement Learning logic, containing modules for state vector construction (\textbf{state.py}), the library of available reward functions (\textbf{reward.py}), and the implementation of custom RL algorithms (\textbf{custom\_algorithms.py}).
-    \item \textbf{utilities/}: A collection of helper functions and utility classes used across the entire framework.
-    \item \textbf{models/}: Designated for storing serialized, pre-trained machine learning models, such as the Random Forest model used by the Approximate-Explicit MPC.
+    \item \textbf{baselines}: Contains implementations for all non-RL controllers, including rule-based heuristics (in \textbf{heuristics.py}) and all variants of the MPC (in \textbf{pulp\_mpc.py}).
+    \item \textbf{rl\_agent}: The central location for all RL logic, containing modules for state vector construction (\textbf{state.py}), the library of available reward functions (\textbf{reward.py}), and the implementation 
+\\
+\noindent
+of custom RL algorithms (\textbf{custom\_algorithms.py}).
+    \item \textbf{utilities}: A collection of helper functions and utility classes used across the entire framework.
+    \item \textbf{models}: Designated for storing serialized, pre-trained machine learning models, such as the Random Forest model used by the Approximate-Explicit MPC.
 \end{itemize}
 
 This modular software design allows for independent development and testing of different components, such as control algorithms and reward functions, while maintaining a consistent and unified simulation environment.
@@ -267,7 +270,7 @@ To address the critical issue of battery health in V2G operations, the simulator
 
 \noindent
 \begin{itemize}
-    \item \textbf{Calendar Aging ($d_{cal}$):} Time-dependent capacity loss, influenced by the battery's average SoC and temperature ($\Theta$). The formula is:
+    \item \textbf{Calendar Aging ($d_{cal}$):} Time-dependent capacity loss, influenced by the battery's average $\bar{SoC}$ and temperature ($\Theta$). The formula is:
     \begin{equation}
         d_{cal} = 0.75 \cdot (\epsilon_0 \cdot \overline{SoC} - \epsilon_1) \cdot e^{-\epsilon_2/\Theta} \cdot \frac{t_{days}}{(t_{days}+1)^{0.25}}
     \end{equation}
@@ -279,7 +282,7 @@ To address the critical issue of battery health in V2G operations, the simulator
 \end{itemize}
 
 \noindent
-The total capacity loss is the sum $Q_{lost} = d_{cal} + d_{cyc}$. This integrated model enables direct quantification of how different control strategies impact the battery's long-term State of Health (SoH), supporting the training of agents that balance profitability with battery preservation.
+The total capacity loss is the sum $Q_{lost} = d_{cal} + d_{cyc}$. This integrated model enables direct quantification of how different control strategies impact the battery's long-term SoH, supporting the training of agents that balance profitability with battery preservation.
 
 \noindent
 A key feature of thissim framework is that the physical parameters for this model ($\epsilon_0, \epsilon_1, \epsilon_2, \zeta_0, \zeta_1, Q_{acc}$) are not fixed. They can be empirically calibrated from real-world experimental data using the provided \textbf{Fit\_battery.py} script, as detailed in Section \ref{sec:sim_architecture}.
@@ -309,44 +312,51 @@ Upon clicking the "Run Simulation" button, the application constructs the equiva
 The second part of the dashboard is a dedicated results browser. It automatically scans the \textbf{results/} directory and presents a list of all completed benchmark runs (organized by timestamp). The user can select a specific benchmark, and the application will find and display all the generated plots (e.g., performance comparisons, battery degradation graphs) directly on the page. This feature allows for quick and convenient inspection and comparison of outcomes from different experiments.
 
 \section{Evaluation Metrics}
-To ensure a fair and comprehensive comparison, all algorithms are evaluated against an identical set of pre-generated scenarios through a "replay" mechanism. The \textbf{mean} and \textbf{standard deviation} of performance are calculated across multiple simulation runs. The key metrics include:
+
+To ensure a fair and consistent comparison, all algorithms are tested on the same set of pre-generated scenarios using a "replay" mechanism. For each metric, we report both the \textbf{mean} and \textbf{standard deviation} over multiple simulation runs. The main evaluation metrics are:
 
 \begin{itemize}
-    \item \textbf{Total Profit (\$):} The net economic outcome, calculated as revenue from energy sales minus the cost of energy purchases.
+    \item \textbf{Total Profit (\$):}  
+    This metric represents the net economic outcome of the energy management system. It is computed as the revenue obtained from selling energy minus the cost of purchasing energy, summed over all EVs and simulation time steps:
     \[
-    \Pi_{\text{total}} = \sum_{t=0}^{T_{\text{sim}}} \sum_{i=1}^{N} \left( C_{\text{sell}}(t) P_{\text{dis},i}(t) - C_{\text{buy}}(t) P_{\text{ch},i}(t) \right) \Delta t
+    \Pi_{\text{total}} = \sum_{t=0}^{T_{\text{sim}}} \sum_{i=1}^{N} \Big( C_{\text{sell}}(t) P_{\text{dis},i}(t) - C_{\text{buy}}(t) P_{\text{ch},i}(t) \Big) \Delta t
     \]
-    
-   
-    \item \textbf{User Satisfaction (Average):} The fraction of energy delivered compared to what was requested by the user, averaged across all EV sessions. A score of 1 indicates perfect service.
+    where \(P_{\text{dis},i}(t)\) and \(P_{\text{ch},i}(t)\) are the discharging and charging power of EV \(i\) at time \(t\), \(C_{\text{sell}}(t)\) and \(C_{\text{buy}}(t)\) are the corresponding energy prices, and \(\Delta t\) is the simulation time step.
+
+    \item \textbf{User Satisfaction:}  
+    This metric measures how well the energy demands of the users are met. It is defined as the fraction of energy actually delivered relative to the energy requested by each EV, averaged across all sessions. A score of 1 indicates perfect service:
     \[
-    US_{\text{avg}} = \frac{1}{N_{\text{EVs}}} \sum_{k=1}^{N_{\text{EVs}}} \min \left(1, \frac{E_k(t_k^{\text{dep}})}{E_k^{\text{des}}} \right)
+    US_{\text{avg}} = \frac{1}{N_{\text{EVs}}} \sum_{k=1}^{N_{\text{EVs}}} \min \Big(1, \frac{E_k(t_k^{\text{dep}})}{E_k^{\text{des}}} \Big)
     \]
-    
-    \item \textbf{Transformer Overload (kWh):} The total energy that exceeded \\ \noindent 
-the transformer's rated power limit. An ideal controller should achieve a value of 0.
+    where \(E_k(t_k^{\text{dep}})\) is the energy delivered to EV \(k\) by its departure time, and \(E_k^{\text{des}}\) is the energy requested by the user.
+
+    \item \textbf{Transformer Overload (kWh):}  
+    This metric quantifies the total energy that exceeds the rated maximum power capacity of the transformer. Ideally, this should be zero:
     \[
-    O_{\text{tr}} = \sum_{t=0}^{T_{\text{sim}}} \sum_{j=1}^{N_T} \max(0, P_j^{\text{tr}}(t) - P_j^{\text{tr,max}}) \cdot \Delta t
+    O_{\text{tr}} = \sum_{t=0}^{T_{\text{sim}}} \sum_{j=1}^{N_T} \max\Big(0, P_j^{\text{tr}}(t) - P_j^{\text{tr,max}} \Big) \cdot \Delta t
     \]
-    
-    \item \textbf{Battery Degradation } The cost of battery aging due to both cyclic and calendar effects.
+    where \(P_j^{\text{tr}}(t)\) is the instantaneous power through transformer \(j\), and \(P_j^{\text{tr,max}}\) is its rated power.
+
+    \item \textbf{Battery Degradation:}  
+    This metric captures the cost of battery aging due to both cyclic and calendar effects:
     \[
-    D_{\text{batt}} = \sum_{k=1}^{N_{\text{EVs}}} (\text{CyclicCost}_k + \text{CalendarCost}_k)
+    D_{\text{batt}} = \sum_{k=1}^{N_{\text{EVs}}} \Big(\text{CyclicCost}_k + \text{CalendarCost}_k \Big)
     \]
+    where \(\text{CyclicCost}_k\) and \(\text{CalendarCost}_k\) are the contributions of charging cycles and calendar aging for EV \(k\), respectively.
 \end{itemize}
 
 \section{Simulator Implementation Details}
 \label{sec:sim_architecture}
-During the analysis and implementation of new metrics, fundamental details about the \textbf{EV2Gym} simulator's architecture emerged, which warrant documentation. The configuration of Electric Vehicles (EVs) and the calculation of their degradation follow a specific logic dependent on a key parameter in the \textbf{.yaml} configuration files.
+During the analysis and implementation of new metrics, fundamental details about the \textbf{EV2Gym} simulator's architecture emerged, which warrant documentation. The configuration of EVs and the calculation of their degradation follow a specific logic dependent on a key parameter in the \textbf{.yaml} configuration files.
 
-\subsubsection{Vehicle Definition Modes}
+\subsection{Vehicle Definition Modes}
 The simulator operates in two distinct modes, controlled by the boolean flag \textbf{heterogeneous\_ev\_specs}:
 \begin{itemize}
     \item \textbf{Heterogeneous Mode (\textbf{True}):} In this mode, the simulator ignores the default vehicle specifications in the \textbf{.yaml} file. Instead, it loads a list of vehicle profiles from an external JSON file, specified by the \textbf{ev\_specs\_file} parameter\\ \noindent (e.g., \textbf{ev\_specs\_v2g\_enabled2024.json}). This allows for the creation of a realistic fleet with diverse battery capacities, charging powers, and efficiencies. For instance, the fleet may include a \textbf{Peugeot 208} with a 46.3 kWh battery and a 7.4 kW charge rate, alongside a \textbf{Volkswagen ID.4} with a 77 kWh battery and an 11 kW charge rate. A vehicle is randomly selected from this list for each new arrival event.
     \item \textbf{Homogeneous Mode (\textbf{False}):} In this mode, the external JSON file is ignored. All vehicles created in the simulation are identical, and their characteristics are defined exclusively by the \textbf{ev:} block within the \textbf{.yaml} configuration file. The \textbf{battery\_capacity} parameter in this block becomes the single source of truth for the entire fleet.
 \end{itemize}
 
-\subsubsection{Empirical Calibration of the Degradation Model}
+\subsection{Empirical Calibration of the Degradation Model}
 A significant enhancement in this work is the move towards a more physically representative and flexible battery degradation model. While the underlying semi-empirical model for calendar and cyclic aging remains, the methodology for parameterizing it has been fundamentally improved, addressing previous inconsistencies.
 \noindent
 This is achieved through the \textbf{Fit\_battery.py} script, a new utility for empirical model calibration. The script implements the following workflow:
@@ -363,7 +373,7 @@ This calibration workflow, integrated optionally into the main \textbf{run\_expe
 The simulation environment is constructed from a set of modular classes, each representing a key physical or logical component of the EV charging ecosystem. This section details the implementation and mathematical underpinnings of each component.
 
 \subsection{Electric Vehicle Model (\textbf{ev.py})}
-The \textbf{EV} class is the most fundamental component, encapsulating the state, physical constraints, and charging behavior of a single electric vehicle. It serves as the primary dynamic element within the simulation.
+The \textbf{EV} class is the most fundamental component, encapsulating the state, physical constraints, and charging behavior of a single EV. It serves as the primary dynamic element within the simulation.
 
 \subsubsection{State and Attribute Representation}
 Each EV instance is defined by a set of static and dynamic attributes that govern its behavior throughout its connection period.
@@ -373,28 +383,24 @@ Each EV instance is defined by a set of static and dynamic attributes that gover
     \item \textbf{Dynamic State Variables:} The core state variable is the current energy stored in the battery, denoted as $E_{i,t}$ at time step $t$. This state is updated at every simulation step.
     \item \textbf{Goal-Oriented Attributes:} The EV's objective is defined by its desired energy at departure, $E^{\text{des}}_i$. This is used to calculate user satisfaction.
 \end{itemize}
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{Charging and Discharging Dynamics}
-The model implements a sophisticated two-stage charging process to accurately reflect the behavior of lithium-ion batteries, particularly the transition from the constant current (CC) to the constant voltage (CV) phase.
+The battery model implements realistic charging and discharging behavior using a two-stage approach, reflecting the actual behavior of lithium-ion batteries. All calculations are performed in terms of SoC.
 
 \paragraph{Two-Stage Charging Model (\textbf{\_charge} method).}
-The charging rate is not constant up to full capacity. The model captures the characteristic tapering of current as the battery approaches its maximum charge.
+Charging is not constant until full capacity; the battery gradually reduces its charging rate as it fills up. The model handles this in two stages:
+
 \begin{enumerate}
-    \item \textbf{Constant Current (CC) Phase:} When the State of Charge ($SoC_{i,t}$) is below a transition threshold, $SoC^{\text{trans}}$, the battery charges at a constant power. The rate of change of energy is limited by both the pilot signal from the charger, $P^{\text{pilot}}_{i,t}$, and the EV's own maximum charging power, $P^{\text{ch,max}}_i$. The effective charging power is $P^{\text{ch}}_{i,t} = \min(P^{\text{pilot}}_{i,t}, P^{\text{ch,max}}_i)$. The energy evolution is:
-    \begin{equation}
-        E_{i,t} = E_{i,t-1} + \eta_{\text{ch}} \cdot P^{\text{ch}}_{i,t} \cdot \frac{\Delta t}{60}
-    \end{equation}
-    where $\Delta t$ is the timescale in minutes.
+    \item \textbf{CC phase:} When the battery SoC is below the transition SoC, it charges at a roughly constant rate. The charging speed is limited by both the maximum power the battery allows and the charger pilot signal, ensuring safe charging in the early stage.
     
-    \item \textbf{Constant Voltage (CV) Phase:} Once $SoC_{i,t}$ exceeds $SoC^{\text{trans}}$, the charging power begins to decrease, even if the pilot signal remains high. The implementation in the \textbf{\_charge} method approximates this tapering effect using an exponential decay function. The model calculates a new transition SoC based on the pilot signal and then computes the new SoC using a formula that ensures a smooth, decaying charge rate as the SoC approaches 100%. This prevents unrealistic assumptions of constant maximum power charging until the battery is full.
+    \item \textbf{CV phase:} Once the battery reaches the transition SoC, the charging rate starts to taper off even if the charger could provide more current. The model simulates this by gradually reducing the effective charging rate as SoC approaches 100\%, reflecting the natural slowdown of lithium-ion battery charging near full capacity.
 \end{enumerate}
 
 \paragraph{Discharging Model (\textbf{\_discharge} method).}
-Discharging is modeled as a linear process, constrained by the EV's maximum discharge power and the battery's minimum energy level. The energy delivered to the grid, $P^{\text{dis}}_{i,t}$, results in a larger energy withdrawal from the battery due to inefficiency:
-\begin{equation}
-    E_{i,t} = E_{i,t-1} + \frac{P^{\text{dis}}_{i,t}}{\eta_{\text{dis}}} \cdot \frac{\Delta t}{60}
-\end{equation}
-where $P^{\text{dis}}_{i,t}$ is negative by convention. The operation is constrained such that $E_{i,t} \ge E^{\text{min}}_i$.
+Discharging is mostly linear. The battery delivers energy while respecting the maximum discharge power and the minimum SoC limit. Discharge efficiency is applied, meaning the battery uses slightly more energy than what is delivered. The method also tracks if SoC drops below an emergency threshold to ensure safe operation.
+
+
+%%%%%%%%%%%%%%%%%%%%%%
 
 \subsubsection{User Satisfaction Metric}
 Upon departure at time $t^{\text{dep}}_i$, the performance of the charging service is quantified by a user satisfaction metric, $S_i$. This is defined as the ratio of the final energy level to the desired energy level, capped at 100\%.
@@ -429,6 +435,8 @@ At each simulation step, the \textbf{step} method executes the core logic of the
     \item \textbf{Economic Calculation:} It calculates the net profit for the time step based on the aggregated energy and real-time electricity prices ($c^{\text{buy}}_t, c^{\text{sell}}_t$).
     \item \textbf{Departure Management:} It checks for departing EVs, collects their final user satisfaction scores, and frees up the corresponding ports.
 \end{enumerate}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 
 \subsection{Transformer Model (\textbf{transformer.py})}
 The \textbf{Transformer} class represents a critical piece of grid infrastructure, modeling the point of common coupling for a group of charging stations and other local loads. Its primary function is to enforce an aggregate power limit.
@@ -437,7 +445,7 @@ The \textbf{Transformer} class represents a critical piece of grid infrastructur
 Each transformer is characterized by its maximum power capacity, $P^{\text{max}}_{\text{TR}}$. It also manages two external time-series data streams:
 \begin{itemize}
     \item \textbf{Inflexible Load ($P^{\text{inflex}}_{t}$):} Represents the background power consumption from other sources (e.g., buildings) connected to the same transformer.
-    \item \textbf{Solar Power ($P^{\text{PV}}_{t}$):} Represents local photovoltaic generation, which acts as a negative load.
+    \item \textbf{Solar Power ($P^{\text{PV}}_{t}$):} Represents local photovoltaic generation, \textbf{which acts as a negative load}.
 \end{itemize}
 
 \subsubsection{Core Functionality}
@@ -452,10 +460,10 @@ The transformer's logic is centered around monitoring its total load and checkin
     \text{Overload} \iff |P_{\text{TR},t}| > P^{\text{max}}_{\text{TR}}
 \end{equation}
 \paragraph{Forecasting with Uncertainty.} The model includes methods (\textbf{generate\_...\_forecast}) to simulate imperfect knowledge of future loads and generation. It creates forecasts by taking the true profiles and adding zero-mean Gaussian noise, where the standard deviation is a configurable percentage of the true value. This allows for the development of robust control strategies that can handle prediction errors.
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \subsection{Main Gym Environment (\textbf{ev2gym\_env.py})}
-The \textbf{EV2Gym} class is the central orchestrator of the entire simulation. It integrates all the aforementioned physical models into a cohesive whole and exposes it through the standardized \textbf{gymnasium.Env} interface, making it compatible with a wide range of reinforcement learning algorithms.
+The \textbf{EV2Gym} class is the central orchestrator of the entire simulation. It integrates all the aforementioned physical models into a cohesive whole and exposes it through the standardized \textbf{gymnasium.Env} interface, making it compatible with a wide range of RL algorithms.
 
 \subsubsection{Environment Structure and Main Loop}
 The class manages the high-level simulation flow.
@@ -476,15 +484,24 @@ The class manages the high-level simulation flow.
 \end{enumerate}
 \paragraph{Reset (\textbf{reset}).} This method re-initializes the entire environment to a starting state, allowing for the start of a new simulation episode, which could represent a new day or a different random scenario.
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% ===================================================================
+% HEURISTIC
+% ===================================================================
+
+\input{Heuristics.tex}
+
+
 
 \section{Reinforcement Learning Formulation}
 Since the control problem is formalized as a Markov Decision Process (MDP); defined by the tuple ($S, A, P, R$), now will be explained each tuple (exception makes P).
 
 \subsection{State Space ($S$)}
-The state $s_t \in S$ is a feature vector providing a comprehensive snapshot of the environment at time $t$. The framework uses the \textbf{V2G\_profit\_max\_loads} state representation, which is specifically designed to provide the agent with all necessary information for complex, forward-looking profit maximization strategies. It combines temporal information, market signals, grid constraints, and detailed data for each individual electric vehicle (There is also the version for the no load case but without loss of generality we can consider only this one).
+The state $s_t \in S$ is a feature vector providing a comprehensive snapshot of the environment at time $t$. The framework uses the \textbf{V2G\_profit\_max\_loads} state representation, which is specifically designed to provide the agent with all necessary information for complex, forward-looking profit maximization strategies. It combines temporal information, market signals, grid constraints, and detailed data for each individual EV.
 \\
 \noindent
-The state vector $s_t$ is a flattened concatenation of several distinct components \cite{orfanoudakis2024ev2gym}(There are no key changes from the paper) :
+The state vector $s_t$ is a flattened concatenation of several distinct components \cite{orfanoudakis2024ev2gym}:
 
 \begin{equation}
     s_t = [k_t \oplus P_{t-1}^{\text{total}} \oplus \mathbf{c}_{t \rightarrow t+H-1} \oplus (\bigoplus_{j=1}^{N_T} s_{t,j}^{\text{tr}}) \oplus (\bigoplus_{i=1}^{N_{CS}} s_{t,i}^{\text{ev}})]
@@ -616,8 +633,6 @@ This structure enforces a critical lesson: while an occasional, minor overload m
 
 \input{Reinforcement_learning}
 
-\section{Model Predictive Control (MPC) Implementation}
-The framework includes a Model Predictive Control implementation in \textbf{pulp\_mpc.py}, which serves as a powerful classical optimization baseline.
 \input{pulp_mpc}
 
 
